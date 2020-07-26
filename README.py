@@ -16,7 +16,10 @@ doc("""
 this works just like a standard jupyter notebook. Only code you include in 
 an `cm` block would be shown.
 """)
+
 with doc:
+    from cmx import doc
+
     for i in range(10):
         doc.print(i, end=' ')
 

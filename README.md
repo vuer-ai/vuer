@@ -1,17 +1,18 @@
 
 # Introducing CMX
 
-> use Python Scripts as live documents.
+> REPL with Python Scripts via live documents.
 
 ## See CMX In Action
+
+- [ ] gif overlay with link to youtube video (with music)
 
 
 this works just like a standard jupyter notebook. Only code you include in 
 an `cm` block would be shown.
 
 ``` python
-for i in range(10):
-    doc.print(i, end=' ')
+from cmx import doc
 ```
 ```
 Out[0]:
