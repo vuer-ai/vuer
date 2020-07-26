@@ -1,0 +1,28 @@
+# OS
+.DS_Store
+# PyCharm project files
+.idea
+# IDE files
+.eggs
+.tox
+# Setuptools distribution and build folders.
+dist
+build
+
+
+# Python egg metadata, regenerated from source files by setuptools.
+.ipynb_checkpoints
+.cache
+*.egg-info
+MUJOCO_LOG.txt
+
+*out
+*.npy
+*.csv
+*.p
+
+*.swp
+*.gz
+*.npy
+*.pyc
+*.py~
