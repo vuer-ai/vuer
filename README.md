@@ -13,6 +13,9 @@ an `cm` block would be shown.
 
 ``` python
 from cmx import doc
+
+for i in range(10):
+    doc.print(i, end=' ')
 ```
 ```
 Out[0]:

@@ -20,7 +20,7 @@ def get_block(filename, line_number):
             if current_line_number < line_number:
                 continue
             new_indent = get_indent(line)
-            if new_indent < indent:
+            if line != "\n" and new_indent < indent:
                 break
             else:
                 indent = new_indent
