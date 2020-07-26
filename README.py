@@ -1,12 +1,13 @@
 """
 # Introducing CMX
 
-> use Python Scripts as live documents.
+> REPL with Python Scripts via live documents.
 
 ## See CMX In Action
+
+- [ ] gif overlay with link to youtube video (with music)
 """
 from cmx import doc
-import matplotlib.pyplot as plt
 
 doc.config("README.md")
 doc(__doc__)
@@ -41,11 +42,9 @@ at each frame?
 - [ ] advanced layout
 - [ ] saving matplotlib figures
 - [ ] video component
-
     ``` python
     cm.video(url="https://")
     ```
-
 - [ ] image component
 - [ ] table component
 - [ ] scope inspection component

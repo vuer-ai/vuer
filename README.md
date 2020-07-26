@@ -11,7 +11,7 @@ an `cm` block would be shown.
 
 ``` python
 for i in range(10):
-    cm.print(i, end=' ')
+    doc.print(i, end=' ')
 ```
 ```
 Out[0]:
@@ -40,11 +40,9 @@ at each frame?
 - [ ] advanced layout
 - [ ] saving matplotlib figures
 - [ ] video component
-
     ``` python
     cm.video(url="https://")
     ```
-
 - [ ] image component
 - [ ] table component
 - [ ] scope inspection component
