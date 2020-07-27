@@ -1,18 +1,22 @@
 Introducing CMX
 ===============
 
-   use Python Scripts as live documents.
+   REPL with Python Scripts via live documents.
 
 See CMX In Action
 -----------------
+
+-  [ ] gif overlay with link to youtube video (with music)
 
 this works just like a standard jupyter notebook. Only code-block you include
 in an ``cm`` block would be shown.
 
 .. code-block:: python
 
+   from cmx import doc
+
    for i in range(10):
-       cm.print(i, end=' ')
+       doc.print(i, end=' ')
 
 ::
 
@@ -44,12 +48,7 @@ To-dos
 
 -  [ ] advanced layout
 -  [ ] saving matplotlib figures
--  [ ] video component
-
-   .. code-block:: python
-
-      cm.video(url="https://")
-
+-  [ ] video component ``python   cm.video(url="https://")``
 -  [ ] image component
 -  [ ] table component
 -  [ ] scope inspection component
