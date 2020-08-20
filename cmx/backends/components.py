@@ -1,4 +1,6 @@
 from cmx import utils
+import pandas as pd
+from io import StringIO
 
 
 def attrs(**kwargs):
@@ -10,6 +12,7 @@ def styles(**kwargs):
 
 
 class Component:
+    style = {}
     children = []
 
     def __init__(self, tag="div", children=None, **kwargs):
@@ -27,10 +30,11 @@ class Component:
 
     @property
     def _html(self):
+        # todo: add styles to this.
         return f"<{tag}>{''.join([b._html for b in self.children])}</{tag}>"
 
 
-class Text(Component):
+class Span(Component):
     tag = "span"
 
     def __init__(self, *args, sep=" ", end="\n", dedent=None, **kwargs):
@@ -45,7 +49,48 @@ class Text(Component):
 
     @property
     def _html(self):
-        return f"<span>{self.text}</span>"
+        return f"<{tag}>{self.text}</{tag}>"
+
+
+class Text(Span):
+    tag = None
+
+    @property
+    def _html(self):
+        return self.text
+
+
+class Pre(Component):
+    tag = "pre"
+
+    def __init__(self, text, lang=None):
+        self.text = text
+        self.lang = lang
+
+    @property
+    def _md(self):
+        return f"```{self.lang if self.lang else ''}\n" \
+               f"{self.text}" \
+               "```\n"
+
+    @property
+    def _html(self):
+        # todo: support language strings
+        if self.lang:
+            segs = [
+                '<pre>',
+                f'<code class="{self.lang}">',
+                f'{self.text}',
+                f'</code>',
+                '</pre>'
+            ]
+        else:
+            seg = [
+                '<pre>',
+                f'{self.text}',
+                '</pre>'
+            ]
+        return "\n".join(segs) + "\n"
 
 
 class Link(Component):
@@ -68,27 +113,30 @@ class Link(Component):
 class Img(Component):
     tag = "img"
 
-    def __init__(self, src=None, caption=None, above=False, **kwargs):
+    def __init__(self, src=None, caption=None, bottom=False, zoom=None, **kwargs):
         super().__init__(**kwargs)
         self.src = src
         self.caption = caption
-        self.above = above
+        self.bottom = bottom
+        if zoom is not None:
+            self.style = {"zoom": zoom}
 
     @property
     def _html(self):
         if self.caption is not None:
-            if self.above:
+            if self.bottom:
                 return f'<div>' \
+                       f'<img style="{styles(margin="0.5em", **self.style)}" src="{self.src}" {self._attrs}/>' \
                        f'<div style="text-align: center">{self.caption}</div>' \
-                       f'<img style="margin: 0.5em" src="{self.src}" {self._attrs}/>' \
                        f'</div>'
 
             return f'<div>' \
-                   f'<img style="margin: 0.5em" src="{self.src}" {self._attrs}/>' \
                    f'<div style="text-align: center">{self.caption}</div>' \
+                   f'<img style="{styles(margin="0.5em", **self.style)}" src="{self.src}" {self._attrs}/>' \
                    f'</div>'
+
         # prevent stretched when inside flex-box.
-        return f'<img style="align-self:center" src="{self.src}" {self._attrs}/>'
+        return f'<img style="{styles(align_self="center", **self.style)}" src="{self.src}" {self._attrs}/>'
 
 
 class Image(Img):
@@ -121,10 +169,11 @@ class Image(Img):
 
 
 class Video(Component):
-    def __init__(self, data, caption=None, src=None, width=320, height=240, controls=True):
-        self.data = data
-        self.src = src
+    def __init__(self, caption=None, src=None, width=320, height=240, controls=True):
         self.caption = caption
+        self.src = src
+        self.width = width
+        self.height = height
         self.controls = controls
 
     @property
@@ -142,16 +191,25 @@ class Row(Component):
                   flex_direction="row",
                   item_align="center", )
 
-    def __init__(self, wrap, **kwargs):
+    def __init__(self, wrap, styles={}, **kwargs):
         if wrap is not None:
-            self.wrap = "wrap" if wrap else "nowrap"
+            wrap = "wrap" if wrap else "nowrap"
 
-        self.styles = dict(wrap=self.wrap, **Row.styles)
+        self.styles = dict(flex_wrap=wrap, **Row.styles)
+        self.styles.update(styles)
+
         super().__init__(**kwargs)
 
     @property
     def _html(self):
+        # use children's HTML instead of markdown.
         return f'<div style="{styles(**self.styles)}">{"".join([c._html for c in self.children])}</div>'
+
+
+# todo: use table component for images
+# fixme: Not Implemented
+class TableRow(Component):
+    pass
 
 
 class Grid(Component):
@@ -161,3 +219,20 @@ class Grid(Component):
     @property
     def _html(self):
         return f"<div>{self.text}</div>"
+
+
+class Table(Component):
+    def __init__(self, csv_str=None, show_index=None, format="github", sep=",*", **kwargs):
+        self.show_index = show_index
+        self.kwargs = kwargs
+        self.format = format
+        self.data = pd.read_csv(StringIO(csv_str), sep=sep)
+
+    @property
+    def _md(self):
+        return self.data.to_markdown(showindex=self.show_index,
+                                     tablefmt=self.format, **self.kwargs) + "\n"
+
+    @property
+    def _html(self):
+        return self.data.to_html(index=self.show_index, **self.kwargs)

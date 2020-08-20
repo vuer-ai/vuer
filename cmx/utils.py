@@ -1,40 +1,45 @@
 def is_empty(line):
     return len(line.strip()) == 0
 
+
 def get_indent(text):
-    return len(text) - len(text.lstrip())
+    for line in text.split("\n"):
+        if line:
+            return len(line) - len(line.lstrip())
+    return 0
 
 
-def dedent(lines):
-    indent = float("inf")
-    lines = lines.split('\n')
-
+def dedent(text):
+    lines = text.split('\n')
     for l in lines:
-        new_indent = get_indent(l)
-        if not is_empty(l) and new_indent < indent:
-            indent = new_indent
-
+        if l:
+            break
+    indent = get_indent(l)
     return '\n'.join([l[indent:] for l in lines])
 
 
 def get_block(filename, line_number):
     import linecache
     current_line_number = 0
-    indent = 0
-    lines = []
+    lines, indent = [], None
     with open(filename, 'r') as f:
         while True:
             line = f.readline()
+            if line is "":  # this is the end of lines
+                break
             current_line_number += 1
             if current_line_number < line_number:
                 continue
-            new_indent = get_indent(line)
+            current_indent = get_indent(line)
             if line == "\n":
                 lines.append(line)
-            elif new_indent < indent:
-                break
             else:
-                indent = new_indent
+                if indent is None:
+                    indent = current_indent
+                elif current_indent < indent:
+                    break
+                    # print(lines, sep="\n")
+                    # print(current_indent, indent)
                 lines.append(line)
 
     return lines
