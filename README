@@ -1,7 +1,17 @@
-None
+Introducing CMX
+===============
+
+   REPL with Python Scripts via live documents.
+
+See CMX In Action
+-----------------
+
+-  ☐ insert a screencast gif here
 
 this works just like a standard jupyter notebook. Only code-block you include
-in a ``with doc:`` block would be shown.
+in a ``with doc:`` block would be shown. The row context arranges the
+result side ways (via html) but it shows as a list on GitHub due to css
+restrictions.
 
 .. code-block:: python
 
@@ -9,70 +19,8 @@ in a ``with doc:`` block would be shown.
        for i in range(10):
            r.print(i, end=' ')
 
-.. container::
-
-   .. raw:: html
-
-      <pre>
-      0 
-      </pre>
-
-   .. raw:: html
-
-      <pre>
-      1 
-      </pre>
-
-   .. raw:: html
-
-      <pre>
-      2 
-      </pre>
-
-   .. raw:: html
-
-      <pre>
-      3 
-      </pre>
-
-   .. raw:: html
-
-      <pre>
-      4 
-      </pre>
-
-   .. raw:: html
-
-      <pre>
-      5 
-      </pre>
-
-   .. raw:: html
-
-      <pre>
-      6 
-      </pre>
-
-   .. raw:: html
-
-      <pre>
-      7 
-      </pre>
-
-   .. raw:: html
-
-      <pre>
-      8 
-      </pre>
-
-   .. raw:: html
-
-      <pre>
-      9 
-      </pre>
-
 Installation
-============
+------------
 
 You can install this package from PyPI under the ``cmx`` package name.
 
@@ -81,26 +29,26 @@ You can install this package from PyPI under the ``cmx`` package name.
    pip install mdx
 
 Developing Plugins
-==================
+------------------
 
 You can develop plug-ins under the ``cmx-<>`` prefix
 
 Discussion
-==========
+----------
 
 Can we have a ``travel-back-in-time`` debugger that saves the stack at
 each frame?
 
 To-dos
-======
+------
 
 -  ☐ scope inspection component
 
 Tomorrow
---------
+~~~~~~~~
 
 Done
-----
+~~~~
 
 -  ☒ simple text output
 -  ☒ layout row
