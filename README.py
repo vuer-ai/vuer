@@ -1,5 +1,3 @@
-from cmx import doc
-
 """
 # Introducing CMX
 
@@ -7,13 +5,16 @@ from cmx import doc
 
 ## See CMX In Action
 
-- [ ] gif overlay with link to youtube video (with music)
+- [ ] insert a screencast gif here
 """
+from cmx import doc
 
 doc @ __doc__
 doc @ """
 this works just like a standard jupyter notebook. Only code you include in 
-a `with doc:` block would be shown.
+a `with doc:` block would be shown. The row context arranges the result
+side ways (via html) but it shows as a list on GitHub due to css 
+restrictions.
 """
 with doc:
     with doc.row() as r:

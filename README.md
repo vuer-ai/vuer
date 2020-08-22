@@ -1,7 +1,17 @@
-None
+
+# Introducing CMX
+
+> REPL with Python Scripts via live documents.
+
+## See CMX In Action
+
+- [ ] insert a screencast gif here
+
 
 this works just like a standard jupyter notebook. Only code you include in 
-a `with doc:` block would be shown.
+a `with doc:` block would be shown. The row context arranges the result
+side ways (via html) but it shows as a list on GitHub due to css 
+restrictions.
 
 
 ```python
