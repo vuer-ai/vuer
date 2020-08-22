@@ -1,30 +1,78 @@
-Introducing CMX
-===============
-
-   REPL with Python Scripts via live documents.
-
-See CMX In Action
------------------
-
--  ☐ gif overlay with link to youtube video (with music)
+None
 
 this works just like a standard jupyter notebook. Only code-block you include
-in an ``cm`` block would be shown.
+in a ``with doc:`` block would be shown.
 
 .. code-block:: python
 
-   from cmx import doc
+   with doc.row() as r:
+       for i in range(10):
+           r.print(i, end=' ')
 
-   for i in range(10):
-       doc.print(i, end=' ')
+.. container::
 
-::
+   .. raw:: html
 
-   Out[0]:
-   0 1 2 3 4 5 6 7 8 9 
+      <pre>
+      0 
+      </pre>
+
+   .. raw:: html
+
+      <pre>
+      1 
+      </pre>
+
+   .. raw:: html
+
+      <pre>
+      2 
+      </pre>
+
+   .. raw:: html
+
+      <pre>
+      3 
+      </pre>
+
+   .. raw:: html
+
+      <pre>
+      4 
+      </pre>
+
+   .. raw:: html
+
+      <pre>
+      5 
+      </pre>
+
+   .. raw:: html
+
+      <pre>
+      6 
+      </pre>
+
+   .. raw:: html
+
+      <pre>
+      7 
+      </pre>
+
+   .. raw:: html
+
+      <pre>
+      8 
+      </pre>
+
+   .. raw:: html
+
+      <pre>
+      9 
+      </pre>
 
 Installation
-------------
+============
 
 You can install this package from PyPI under the ``cmx`` package name.
 
@@ -33,30 +81,32 @@ You can install this package from PyPI under the ``cmx`` package name.
    pip install mdx
 
 Developing Plugins
-------------------
+==================
 
 You can develop plug-ins under the ``cmx-<>`` prefix
 
 Discussion
-----------
+==========
 
 Can we have a ``travel-back-in-time`` debugger that saves the stack at
 each frame?
 
 To-dos
-------
+======
 
--  ☐ advanced layout
--  ☐ saving matplotlib figures
--  ☐ video component ``python     cm.video(url="https://")``
--  ☐ image component
--  ☐ table component
 -  ☐ scope inspection component
 
 Tomorrow
-~~~~~~~~
+--------
 
 Done
-~~~~
+----
 
 -  ☒ simple text output
+-  ☒ layout row
+-  ☒ saving matplotlib figures
+-  ☒ video component
+   ``python     doc.video(frames, f"videos/cats.gif?raw=true")``
+-  ☒ image component
+-  ☒ table component
+-  ☒ yaml component

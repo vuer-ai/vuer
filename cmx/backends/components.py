@@ -85,7 +85,7 @@ class Pre(Component):
                 '</pre>'
             ]
         else:
-            seg = [
+            segs = [
                 '<pre>',
                 f'{self.text}',
                 '</pre>'

@@ -16,8 +16,9 @@ this works just like a standard jupyter notebook. Only code you include in
 a `with doc:` block would be shown.
 """
 with doc:
-    for i in range(10):
-        doc.print(i, end=' ')
+    with doc.row() as r:
+        for i in range(10):
+            r.print(i, end=' ')
 
 doc @ """
 ## Installation
