@@ -56,9 +56,9 @@ class CommonMark:
     def filename(self):
         if self.__filename is None:
             import inspect
-            filename = "cmx"
+            filename = "cmx/"
             frame = inspect.currentframe()
-            while "cmx" in filename or "importlib" in filename or "contextlib" in filename:
+            while "cmx/" in filename or "importlib" in filename or "contextlib" in filename:
                 frame = frame.f_back
                 filename, line_number, function_name, lines, index = inspect.getframeinfo(frame)
 
@@ -103,8 +103,8 @@ class CommonMark:
 
     @property
     def pre(self, ):
-        def _pre(*args, sep=" ", end="\n", lang=None):
-            p = Pre(sep.join([str(a) for a in args]) + end, lang=lang)
+        def _pre(*args, sep=" ", lang=None):
+            p = Pre(sep.join([str(a) for a in args]), lang=lang)
             self.buffer.append(p)
 
         return _F(_pre, name="Pre")
@@ -113,7 +113,8 @@ class CommonMark:
     def yaml(self, data=None, **kwargs):
         def _yaml(data, **kwargs):
             import yaml
-            return self.pre(yaml.dump(data).rstrip(), lang="yaml")
+            s = yaml.dump(data).rstrip()
+            return self.pre(s, lang="yaml")
 
         return _F(_yaml, name="yaml")
 

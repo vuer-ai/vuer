@@ -70,7 +70,7 @@ class Pre(Component):
     @property
     def _md(self):
         return f"```{self.lang if self.lang else ''}\n" \
-               f"{self.text}" \
+               f"{self.text}\n" \
                "```\n"
 
     @property

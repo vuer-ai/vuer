@@ -1,3 +1,5 @@
+from cmx import doc
+
 """
 # Introducing CMX
 
@@ -7,23 +9,17 @@
 
 - [ ] gif overlay with link to youtube video (with music)
 """
-from cmx import doc
 
-doc.config("README.md")
-doc(__doc__)
-
-doc("""
+doc @ __doc__
+doc @ """
 this works just like a standard jupyter notebook. Only code you include in 
-an `cm` block would be shown.
-""")
-
+a `with doc:` block would be shown.
+"""
 with doc:
-    from cmx import doc
-
     for i in range(10):
         doc.print(i, end=' ')
 
-doc("""
+doc @ """
 ## Installation
 
 You can install this package from PyPI under the `cmx` package name.
@@ -42,14 +38,6 @@ at each frame?
 
 ## To-dos
 
-- [ ] advanced layout
-- [ ] saving matplotlib figures
-- [ ] video component
-    ``` python
-    cm.video(url="https://")
-    ```
-- [ ] image component
-- [ ] table component
 - [ ] scope inspection component
 
 ### Tomorrow
@@ -57,4 +45,15 @@ at each frame?
 ### Done
 
 - [x] simple text output
-""")
+- [x] layout row
+- [x] saving matplotlib figures
+- [x] video component
+    ``` python
+    doc.video(frames, f"videos/cats.gif")
+    ```
+- [x] image component
+- [x] table component
+- [x] yaml component
+"""
+
+doc.flush()

@@ -6,7 +6,7 @@ Introducing CMX
 See CMX In Action
 -----------------
 
--  [ ] gif overlay with link to youtube video (with music)
+-  ☐ gif overlay with link to youtube video (with music)
 
 this works just like a standard jupyter notebook. Only code-block you include
 in an ``cm`` block would be shown.
@@ -46,12 +46,12 @@ each frame?
 To-dos
 ------
 
--  [ ] advanced layout
--  [ ] saving matplotlib figures
--  [ ] video component ``python   cm.video(url="https://")``
--  [ ] image component
--  [ ] table component
--  [ ] scope inspection component
+-  ☐ advanced layout
+-  ☐ saving matplotlib figures
+-  ☐ video component ``python     cm.video(url="https://")``
+-  ☐ image component
+-  ☐ table component
+-  ☐ scope inspection component
 
 Tomorrow
 ~~~~~~~~
@@ -59,4 +59,4 @@ Tomorrow
 Done
 ~~~~
 
--  [x] simple text output
+-  ☒ simple text output
