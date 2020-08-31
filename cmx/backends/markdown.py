@@ -71,7 +71,8 @@ class CommonMark:
             if self.overwrite:
                 self.logger.log_text("", filename=self.filename, overwrite=True)
                 from termcolor import cprint
-                cprint("File output at file://" + self.__filename, "green")
+                from urllib import parse
+                cprint("File output at file://" + parse.quote(self.__filename), "green")
 
         return self.__filename
 
