@@ -7,7 +7,7 @@ from cmx import utils
 import pandas as pd
 from io import StringIO
 
-from cmx.utils import is_subclass
+from cmx.utils import is_subclass, to_snake
 
 
 def attrs(class_name=None, **kwargs):
@@ -33,6 +33,11 @@ class Component(object):
     class_name = None
     window = Bear()
 
+    def now(self, fmt=None):
+        from datetime import datetime
+        now = datetime.now().astimezone()
+        return now.strftime(fmt) if fmt else now
+
     def __init__(self, tag=None, children=None, window=None, **kwargs):
         self.tag = tag or self.tag
         self.kwargs = kwargs
@@ -51,7 +56,7 @@ class Component(object):
             window = _window
         else:
             window = self.window
-        Comp = window[item.lower()]
+        Comp = window[item]
         component = Comp(*args, window=window, **kwargs)
         self.children.append(component)
         return component
@@ -142,9 +147,10 @@ class Pre(Component):
 
     @property
     def _md(self):
-        return f"```{self.lang if self.lang else ''}\n" \
-               f"{self.text}\n" \
-               "```\n"
+        text = self.text + ('' if self.text.endswith('\n') else '\n')
+        if not text.startswith('\n'):
+            text = '\n' + text
+        return f"```{self.lang if self.lang else ''}{text}```\n"
 
     @property
     def _html(self):
@@ -185,6 +191,7 @@ class Link(Component):
 
 class Img(Component):
     tag = "img"
+    zoom = None
 
     def __init__(self, src=None, zoom=None, alt=None, **kwargs):
         super().__init__(**kwargs)
@@ -192,6 +199,7 @@ class Img(Component):
         self.alt = alt
         if zoom is not None:
             self.style = {"zoom": zoom}
+        self.zoom = zoom
 
     @property
     def _md(self):
@@ -252,20 +260,17 @@ class Video(Component):
 class Figure(Component):
     tag = "div"
 
-    def __init__(self, image=None, src=None, caption=None, bottom=False, **kwargs):
+    def __init__(self, image=None, src=None, title=None, caption=None, **kwargs):
         super().__init__(**kwargs)
         self.src = src
-        self.caption = caption
-        self.bottom = bottom
         if isinstance(image, Component):
             self.img = image
         else:
-            self.img = Img(image=image, src=src, styles=dict(margin="0.5em"), **kwargs)
-        self.caption = Div(children=[caption])
+            self.img = self.window.img(image=image, src=src, styles=dict(margin="0.5em"), **kwargs)
+        self.title = self.window.bold(title)
+        self.caption = self.window.div(children=[caption])
 
-        if self.bottom:
-            self.children = [self.img, self.caption]
-        self.children = [self.caption, self.img]
+        self.children = [self.title, self.img, self.caption]
 
     @property
     def _html(self):
@@ -312,9 +317,15 @@ class FigureRow(Container):
 
     def figure(self, image=None, src=None, title=None, caption=None, **kwargs):
         # todo: if image is Image/Video/Component
-        self.titles.append(Bold(title))
-        self.captions.append(Span(caption))
+        self.titles.append(title if title is None else Bold(title))
+        self.captions.append(caption if caption is None else Span(caption))
         self.image(image=image, src=src, **kwargs)
+
+    def video(self, frames=None, src=None, title=None, caption=None, **kwargs):
+        self.titles.append(title if title is None else Bold(title))
+        self.captions.append(caption if caption is None else Span(caption))
+        v = self.window.video(frames=frames, src=src, window=self.window, **kwargs)
+        self.children.append(v)
 
     # def image(self):
     #     raise RuntimeError('please use figure instead of image.')
@@ -342,23 +353,6 @@ class Table(Component):
         if csv_str:
             self.data = pd.read_csv(StringIO(csv_str), sep=sep)
 
-    def figure_row(self, **kwargs):
-        row = FigureRow(window=self.window, **kwargs)
-        self.children.append(row)
-        return row
-
-    # def row(self):
-    #     row = TableRow
-    #     self.children.append(row)
-    #
-    # def column(self):
-    #     column = TableColumn
-    #     self.children.append(column)
-    #
-    # def cell(self):
-    #     cell = TableCell
-    #     self.children.append(cell)
-
     @property
     def _md(self):
         # todo: pad columns (done automatically?)
@@ -374,9 +368,9 @@ class Table(Component):
                 rows.append(child.children)
         _md_str = ""
         for i, r in enumerate(rows):
-            _md_str += " | ".join([c._md for c in r]) + "\n"
+            _md_str += "| " + " | ".join([' ' if c is None else c._md for c in r]) + " |\n"
             if i == 0:
-                _md_str += " | ".join(['-' * len(c._md) for c in r]) + "\n"
+                _md_str += "|:" + ":|:".join(['-' if c is None else '-' * len(c._md) for c in r]) + ":|\n"
         return _md_str
 
     @property
@@ -387,16 +381,14 @@ class Table(Component):
 # todo: should be Body, b/c Html includes body and head
 class Html(Component):
     tag = "body"
-    window = Bear(**{k.lower(): v for k, v in globals().items() if is_subclass(v, Component)})
+    window = Bear(**{to_snake(k): v for k, v in globals().items() if is_subclass(v, Component)})
 
 
 class Article(Html):
     tag = "article"
     class_name = "commonmark"
-    window = Bear(**{k.lower(): v for k, v in globals().items() if is_subclass(v, Component)})
+    window = Bear(**{to_snake(k): v for k, v in globals().items() if is_subclass(v, Component)})
 
     @property
     def _md(self):
-        for c in self.children:
-            print(type(c), c)
         return "\n".join([c._md for c in self.children])

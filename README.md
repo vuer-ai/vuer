@@ -13,44 +13,15 @@ a `with doc:` block would be shown. The row context arranges the result
 side ways (via html) but it shows as a list on GitHub due to css 
 restrictions.
 
-
 ```python
-with doc.row() as r:
-    for i in range(10):
-        r.print(i, end=' ')
+for i in range(10):
+    doc.print(i, end=' ')
+
 ```
 
-<div style="flex-wrap:wrap; display:flex; flex-direction:row; item-align:center;"><pre>
-0 
-</pre>
-<pre>
-1 
-</pre>
-<pre>
-2 
-</pre>
-<pre>
-3 
-</pre>
-<pre>
-4 
-</pre>
-<pre>
-5 
-</pre>
-<pre>
-6 
-</pre>
-<pre>
-7 
-</pre>
-<pre>
-8 
-</pre>
-<pre>
-9 
-</pre>
-</div>
+```
+0 1 2 3 4 5 6 7 8 9 
+```
 
 ## Installation
 
@@ -86,4 +57,3 @@ at each frame?
 - [x] image component
 - [x] table component
 - [x] yaml component
-

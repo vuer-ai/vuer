@@ -50,3 +50,11 @@ def is_subclass(obj, cls):
         return issubclass(obj, cls)
     except TypeError:
         return False
+
+
+import re
+
+
+def to_snake(name):
+    name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()

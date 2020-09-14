@@ -3,8 +3,9 @@ from collections import defaultdict
 from copy import copy, deepcopy
 from functional_notations import _F, prefixmethod
 from waterbear import Bear
+import os
 
-from cmx.utils import get_block, is_subclass
+from cmx.utils import get_block, is_subclass, to_snake
 
 from ..utils import dedent
 from . import components
@@ -14,12 +15,10 @@ from ml_logger import ML_Logger, cprint
 
 class Print(components.Pre):
     def __init__(self, *args, sep=" ", end="\n"):
-        super().__init__(sep.join(args) + end)
-
-    # these are the ones that need to change
+        super().__init__(sep.join([str(a) for a in args]) + end)
 
 
-def video(data=None, *, src, window, **kwargs):
+def video(frames=None, *, src, window, **kwargs):
     """save video at filename.
 
     :param data:
@@ -28,17 +27,18 @@ def video(data=None, *, src, window, **kwargs):
     :return:
     """
     file_path, *query_strs = src.split('?')
-    if data is not None:
-        window.logger.save_video(data, file_path)
+    if frames is not None:
+        window.logger.save_video(frames, file_path)
     if file_path.endswith("gif"):
-        return components.Video(src=src, **kwargs)
-    else:
         return components.Image(src=src, **kwargs)
+    else:
+        return components.Video(src=src, **kwargs)
 
 
 class Figure(components.Figure):
-    def __init__(self, image=None, *, src, title=None, caption=None, window, **kwargs):
-        image = window.image(image, src, **kwargs)
+    def __init__(self, image=None, src=None, title=None, caption=None, *, window, **kwargs):
+        if not isinstance(image, components.Component):
+            image = window.image(image, src, window=window, **kwargs)
         super().__init__(image=image, src=src, title=title, caption=caption, window=window)
 
 
@@ -64,9 +64,6 @@ class CommonMark(components.Article):
     __filename = None
     counter = 0
 
-    def now(self, fmt="%f"):
-        return self.window.logger.now(fmt)
-
     def __init__(self, filename=None, overwrite=True, logger=None):
         """
         Called by the module __init__.py to create a global document object.
@@ -77,22 +74,29 @@ class CommonMark(components.Article):
         :param logger: allow passing in an existing logger to log to a remote server instead.
             this is similar to a figure object as in matplotlib.
         """
-        super().__init__(window={k.lower(): v for k, v in globals().items() if is_subclass(v, components.Component)})
-        self.window.logger = self.logger = logger or ML_Logger()
+        super().__init__(window={to_snake(k): v for k, v in globals().items() if is_subclass(v, components.Component)})
+        self.window['video'] = video
+        self.window.logger = logger = logger or ML_Logger()
 
-        if ML_Logger.root_dir:
-            cprint(f"cmx root directory: {ML_Logger.root_dir}", color="green")
+        # if logger.root_dir:
+        #     cprint(f"cmx root directory: {logger.root_dir}", color="green")
 
         self.config(filename=filename, overwrite=overwrite)
 
-    def config(self, filename=None, overwrite=True, logger=None):
+    def config(self, filename=None, overwrite=True, src_prefix=None, logger=None):
         self.overwrite = overwrite
-        self.logger = logger or self.logger
+        self.window.logger = logger = logger or self.window.logger
+        # todo: for gist, the prefix needs to go into the `src` attribute.
+        # self.window.src_prefix = src_prefix
         if filename:
             self.__filename = filename
 
             if self.overwrite:
-                self.logger.log_text("", filename=self.filename, overwrite=True)
+                self.window.logger.log_text("", filename=self.filename, overwrite=True)
+
+            from termcolor import cprint
+            from urllib import parse
+            cprint("File output at file://" + parse.quote(os.path.realpath(self.__filename)), "green")
         return self
 
     def new(self, filename=None, **kwargs):
@@ -120,10 +124,11 @@ class CommonMark(components.Article):
 
             # on first write:
             if self.overwrite:
-                self.logger.log_text("", filename=self.filename, overwrite=True)
-                from termcolor import cprint
-                from urllib import parse
-                cprint("File output at file://" + parse.quote(self.__filename), "green")
+                self.window.logger.log_text("", filename=self.filename, overwrite=True)
+
+            from termcolor import cprint
+            from urllib import parse
+            cprint("File output at file://" + parse.quote(self.__filename), "green")
 
         return self.__filename
 
@@ -181,14 +186,10 @@ class CommonMark(components.Article):
         return _F(_csv, name="csv")
 
     def print(self, *args, sep=" ", end="\n"):
-        try:
-            last = self.childre[-1]
-            if isinstance(last, Print):
-                last.text += sep.join([str(a) for a in args]) + end
-        except:
+        if self.children and isinstance(self.children[-1], Print):
+            self.children[-1].text += sep.join([str(a) for a in args]) + end
+        else:
             self.children.append(Print(*args, sep=sep, end=end))
-
-        return self
 
     def flush(self, *args):
         self.write(self._md)

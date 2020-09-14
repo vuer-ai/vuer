@@ -16,9 +16,9 @@ a `with doc:` block would be shown. The row context arranges the result
 side ways (via html) but it shows as a list on GitHub due to css 
 restrictions.
 """
-with doc, doc.row() as r:
+with doc:
     for i in range(10):
-        r.print(i, end=' ')
+        doc.print(i, end=' ')
 
 doc @ """
 ## Installation

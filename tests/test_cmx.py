@@ -1,5 +1,6 @@
 from cmx import doc
 
+
 def test_str():
     a = """
     here is a string
@@ -9,6 +10,21 @@ here is a string
 """
     doc @ a
     assert doc._md == b
+    doc.children.clear()
+
+
+def test_print():
+    for i in range(2):
+        doc.print(i, "<")
+
+    target = """
+```
+0 <
+1 <
+```
+"""[1:]
+    print(doc._md)
+    assert doc._md == target
     doc.children.clear()
 
 
@@ -28,14 +44,16 @@ def test_table():
         row.figure(src="some_file.png", title="some title", caption="some text")
 
     target = """
-**some title** | **some title** | **some title** | **some title**
--------------- | -------------- | -------------- | --------------
-<img style="align-self:center;" src="some_file.png" /> | <img style="align-self:center;" src="some_file.png" /> | <img style="align-self:center;" src="some_file.png" /> | <img style="align-self:center;" src="some_file.png" />
-some text | some text | some text | some text
-**some title** | **some title** | **some title** | **some title**
-<img style="align-self:center;" src="some_file.png" /> | <img style="align-self:center;" src="some_file.png" /> | <img style="align-self:center;" src="some_file.png" /> | <img style="align-self:center;" src="some_file.png" />
-some text | some text | some text | some text
+| **some title** | **some title** | **some title** | **some title** |
+|:--------------:|:--------------:|:--------------:|:--------------:|
+| ![some_file.png](some_file.png) | ![some_file.png](some_file.png) | ![some_file.png](some_file.png) | ![some_file.png](some_file.png) |
+| some text | some text | some text | some text |
+| **some title** | **some title** | **some title** | **some title** |
+| ![some_file.png](some_file.png) | ![some_file.png](some_file.png) | ![some_file.png](some_file.png) | ![some_file.png](some_file.png) |
+| some text | some text | some text | some text |
 """[1:]
+
+    print(doc._md)
 
     assert doc._md == target
     doc.children.clear()
@@ -59,6 +77,7 @@ def test_image_src():
     print(doc._md)
     doc.flush()
 
+
 def test_figure_row():
     doc @ """
     ## Test Figure Row
@@ -75,4 +94,3 @@ def test_figure_row():
             row.figure(img, src=f"figures/reach.png?ts={doc.now()}", title="Before Init", caption="this is the details")
             row.figure(img, src=f"figures/reach.png?ts={doc.now()}", title="Before Init", caption="this is the details")
             row.figure(img, src=f"figures/reach.png?ts={doc.now()}", title="Before Init", caption="this is the details")
-
