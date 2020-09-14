@@ -43,3 +43,10 @@ def get_block(filename, line_number):
                 lines.append(line)
 
     return lines
+
+
+def is_subclass(obj, cls):
+    try:
+        return issubclass(obj, cls)
+    except TypeError:
+        return False

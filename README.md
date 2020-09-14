@@ -20,6 +20,37 @@ with doc.row() as r:
         r.print(i, end=' ')
 ```
 
+<div style="flex-wrap:wrap; display:flex; flex-direction:row; item-align:center;"><pre>
+0 
+</pre>
+<pre>
+1 
+</pre>
+<pre>
+2 
+</pre>
+<pre>
+3 
+</pre>
+<pre>
+4 
+</pre>
+<pre>
+5 
+</pre>
+<pre>
+6 
+</pre>
+<pre>
+7 
+</pre>
+<pre>
+8 
+</pre>
+<pre>
+9 
+</pre>
+</div>
 
 ## Installation
 

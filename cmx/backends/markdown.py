@@ -2,19 +2,70 @@ from contextlib import contextmanager
 from collections import defaultdict
 from copy import copy, deepcopy
 from functional_notations import _F, prefixmethod
+from waterbear import Bear
 
-from cmx.utils import get_block
+from cmx.utils import get_block, is_subclass
 
 from ..utils import dedent
-from .components import Text, Pre, Link, Image, Video, Row, Grid, Table
+from . import components
 
-from ml_logger import ML_Logger
+from ml_logger import ML_Logger, cprint
 
 
-class CommonMark:
+class Print(components.Pre):
+    def __init__(self, *args, sep=" ", end="\n"):
+        super().__init__(sep.join(args) + end)
+
+    # these are the ones that need to change
+
+
+def video(data=None, *, src, window, **kwargs):
+    """save video at filename.
+
+    :param data:
+    :param filename:
+    :param kwargs:
+    :return:
+    """
+    file_path, *query_strs = src.split('?')
+    if data is not None:
+        window.logger.save_video(data, file_path)
+    if file_path.endswith("gif"):
+        return components.Video(src=src, **kwargs)
+    else:
+        return components.Image(src=src, **kwargs)
+
+
+class Figure(components.Figure):
+    def __init__(self, image=None, *, src, title=None, caption=None, window, **kwargs):
+        image = window.image(image, src, **kwargs)
+        super().__init__(image=image, src=src, title=title, caption=caption, window=window)
+
+
+class Image(components.Image):
+    def __init__(self, image=None, src=None, *, window, **kwargs):
+        if src is not None:
+            file_path, *query_strs = src.split('?')
+            if image is not None:
+                window.logger.save_image(image, file_path)
+            super().__init__(src=src, **kwargs)
+        else:
+            super().__init__(image, **kwargs)
+
+
+class SaveFigure(components.Figure):
+    def __init__(self, key, caption=None, width=None, height=None, zoom=None, **kwargs):
+        file_path, query_str = key.split('?')
+        super().__init__(src=key, width=width, height=height, caption=caption, zoom=zoom, **kwargs)
+        self.window.logger.savefig(file_path, **kwargs)
+
+
+class CommonMark(components.Article):
     __filename = None
     counter = 0
-    current_buffer = "default"
+
+    def now(self, fmt="%f"):
+        return self.window.logger.now(fmt)
 
     def __init__(self, filename=None, overwrite=True, logger=None):
         """
@@ -26,11 +77,11 @@ class CommonMark:
         :param logger: allow passing in an existing logger to log to a remote server instead.
             this is similar to a figure object as in matplotlib.
         """
-        self.buffers = defaultdict(list)
+        super().__init__(window={k.lower(): v for k, v in globals().items() if is_subclass(v, components.Component)})
+        self.window.logger = self.logger = logger or ML_Logger()
 
-        self.logger = logger or ML_Logger()
         if ML_Logger.root_dir:
-            print(f"cmx root directory: {ML_Logger.root_dir}", color="green")
+            cprint(f"cmx root directory: {ML_Logger.root_dir}", color="green")
 
         self.config(filename=filename, overwrite=overwrite)
 
@@ -76,39 +127,42 @@ class CommonMark:
 
         return self.__filename
 
-    @property
-    def buffer(self):
-        return self.buffers[self.current_buffer]  # .copy()
+    def write(self, text, overwrite=None):
+        self.window.logger.log_text(text, filename=self.filename, overwrite=overwrite)
 
-    def dump(self, text, overwrite=None):
-        self.logger.log_text(text, filename=self.filename, overwrite=overwrite)
+    def clear(self):
+        self.write("", overwrite=True)
 
     def __call__(self, *snippets, dedent=True, **kwargs):
         """output text"""
-        t = Text(*snippets, dedent=dedent, **kwargs)
-        self.buffer.append(t)
+        t = components.Text(*snippets, dedent=dedent, **kwargs)
+        self.children.append(t)
         return self
 
-    def __matmul__(self, string):
-        return self(string)
+    def __matmul__(self, string_or_array):
+        if isinstance(string_or_array, tuple):
+            string, *rest = string_or_array
+            return self(string, *rest)
+
+        return self(string_or_array)
 
     md = __call__
 
-    def text(self, *args, sep=" ", end="\n"):
-        t = Text(*args, sep=sep, end=end)
-        self.buffer.append(t)
+    # def text(self, *args, sep=" ", end="\n"):
+    #     t = components.Text(*args, sep=sep, end=end)
+    #     self.children.append(t)
+    #
+    # def link(self, url=None):
+    #     l = components.Link(url=url)
+    #     self.children.append(l)
 
-    def link(self, url=None):
-        l = Link(url=url)
-        self.buffer.append(l)
-
-    @property
-    def pre(self, ):
-        def _pre(*args, sep=" ", lang=None):
-            p = Pre(sep.join([str(a) for a in args]), lang=lang)
-            self.buffer.append(p)
-
-        return _F(_pre, name="Pre")
+    # @property
+    # def pre(self, ):
+    #     def _pre(*args, sep=" ", lang=None):
+    #         p = components.Pre(sep.join([str(a) for a in args]), lang=lang)
+    #         self.children.append(p)
+    #
+    #     return _F(_pre, name="Pre")
 
     @property
     def yaml(self, data=None, **kwargs):
@@ -122,58 +176,23 @@ class CommonMark:
     @property
     def csv(self, ):
         def _csv(csv, **kwargs):
-            return self.buffer.append(Table(csv_str=csv, show_index=False, **kwargs))
+            return self.children.append(components.Table(csv_str=csv, show_index=False, **kwargs))
 
         return _F(_csv, name="csv")
 
     def print(self, *args, sep=" ", end="\n"):
-        text = sep.join([str(a) for a in args]) + end
-        self.buffer.append(Pre(text))
+        try:
+            last = self.childre[-1]
+            if isinstance(last, Print):
+                last.text += sep.join([str(a) for a in args]) + end
+        except:
+            self.children.append(Print(*args, sep=sep, end=end))
+
         return self
 
-    def video(self, data=None, filename=None, **kwargs):
-        if data is not None:
-            self.logger.save_video(data, filename)
-        if filename.endswith("gif"):
-            v = Image(src=filename, **kwargs)
-        else:
-            v = Video(src=filename, **kwargs)
-        self.buffer.append(v)
-
-    def image(self, image=None, src=None, **kwargs):
-        """save image if both image and src (as in file string) are specified."""
-        if src is not None:
-            self.logger.save_image(image, src)
-            img = Image(src=src, **kwargs)
-        else:
-            img = Image(image, **kwargs)
-        self.buffer.append(img)
-
-    def savefig(self, file, caption=None, width=None, height=None, zoom=None, **kwargs):
-        self.logger.savefig(file, **kwargs)
-        img = Image(src=file, width=width, height=height, caption=caption, zoom=zoom)
-        self.buffer.append(img)
-
-    @contextmanager
-    def pipe(self, buffer_name):
-        self.current_buffer = buffer_name
-        yield self
-
-    @contextmanager
-    def row(self, wrap=True, **kwargs):
-        self.flush()
-        new_doc = self.new()
-        yield new_doc
-        r = Row(wrap=wrap, children=copy(new_doc.buffer), **kwargs)
-        self.buffer.append(r)
-
-    @property
-    def _md(self):
-        return "".join([b._md for b in self.buffer])
-
     def flush(self, *args):
-        self.dump(self._md)
-        self.buffer.clear()
+        self.write(self._md)
+        self.children.clear()
 
     def __enter__(self):
         import inspect
@@ -184,23 +203,20 @@ class CommonMark:
         try:
             lines_in_block = get_block(filename, line_number + 1)
             text = "".join(lines_in_block)
-            self.buffer.append(Text('\n```python',
-                                    dedent(text).rstrip(),
-                                    "```\n", sep="\n"))
+            # todo: change to self.code(, lang="python", ...)
+            self.children.append(components.Pre(dedent(text).rstrip(), lang="python"))
         except FileNotFoundError:
             print('in iPython session')
         return self
 
     __exit__ = flush
 
-    # def __del__(self):
-    #     self.flush()
 
-    def clear(self):
-        self.dump("", overwrite=True)
+class Github(CommonMark):
+    """uses tables for the layout"""
+    pass
 
-    # @decorator
-    def wraps_functions(self, fn):
-        """wraps a potable function to declare in global."""
-        # inspect.getsource(f)
-        pass
+
+class Gist(CommonMark):
+    """saves everything inside a folder"""
+    pass
