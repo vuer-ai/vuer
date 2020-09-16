@@ -313,19 +313,24 @@ class FigureRow(Container):
         self.n_cols = n_cols
         self.titles = []
         self.images = []
-        self.captions = []
+        self.footers = []
 
     def figure(self, image=None, src=None, title=None, caption=None, **kwargs):
         # todo: if image is Image/Video/Component
         self.titles.append(title if title is None else Bold(title))
-        self.captions.append(caption if caption is None else Span(caption))
+        self.footers.append(caption if caption is None else Span(caption))
         self.image(image=image, src=src, **kwargs)
 
     def video(self, frames=None, src=None, title=None, caption=None, **kwargs):
         self.titles.append(title if title is None else Bold(title))
-        self.captions.append(caption if caption is None else Span(caption))
+        self.footers.append(caption if caption is None else Span(caption))
         v = self.window.video(frames=frames, src=src, window=self.window, **kwargs)
         self.children.append(v)
+
+    def column(self, title=None, text=None, footer=None):
+        self.titles.append(title if title is None else Bold(title))
+        self.footers.append(footer if footer is None else Span(footer))
+        self.children.append(Text(text))
 
     # def image(self):
     #     raise RuntimeError('please use figure instead of image.')
@@ -333,7 +338,7 @@ class FigureRow(Container):
     @property
     def rows(self):
         non_empty_rows = []
-        for r in [self.titles, self.children, self.captions]:
+        for r in [self.titles, self.children, self.footers]:
             for item in r:
                 if item is not None:
                     non_empty_rows.append(r)
