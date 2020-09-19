@@ -53,7 +53,7 @@ class Image(components.Image):
             super().__init__(image, **kwargs)
 
 
-class SaveFigure(components.Figure):
+class Savefig(components.Figure):
     def __init__(self, key, caption=None, width=None, height=None, zoom=None, **kwargs):
         file_path, query_str = key.split('?')
         super().__init__(src=key, width=width, height=height, caption=caption, zoom=zoom, **kwargs)
