@@ -83,7 +83,7 @@ class Component(object):
     @property
     def _html(self):
         # todo: add styles to this.
-        return f"<{self.tag} {self._attrs}>{''.join([b._html for b in self.children])}</{self.tag}>"
+        return f"<{self.tag} {self._attrs}>{''.join([b._html for b in self.children if b is not None])}</{self.tag}>"
 
     def __enter__(self):
         return self
@@ -267,14 +267,20 @@ class Figure(Component):
             self.img = image
         else:
             self.img = self.window.img(image=image, src=src, styles=dict(margin="0.5em"), **kwargs)
-        self.title = self.window.bold(title)
-        self.caption = self.window.div(children=[caption])
+        self.title = title
+        self.caption = caption
 
         self.children = [self.title, self.img, self.caption]
 
     @property
     def _html(self):
-        return "<div>\n" + "\n".join([c._html for c in self.children]) + "\n</div>\n"
+        if self.title and self.caption:
+            return f"""<table><tr><td rowspan="2">{self.img._html}</td><td>{self.title}</td></tr><tr><td>{self.caption}</td></tr></table>"""
+        elif self.caption:
+            return f"""<table><tr><td rowspan="2">{self.img._html}</td><td>{self.caption}</td></tr></table>"""
+        elif self.title:
+            return f"""<table><tr><th>{self.title}</th></tr><tr><td>{self.img._html}</td></tr></table>"""
+        return self.img._html
 
 
 class Row(Component):
@@ -332,8 +338,10 @@ class FigureRow(Container):
         self.footers.append(footer if footer is None else Span(footer))
         self.children.append(Text(text))
 
-    # def image(self):
-    #     raise RuntimeError('please use figure instead of image.')
+    def savefig(self, key, title=None, caption=None):
+        self.titles.append(title if title is None else Bold(title))
+        self.footers.append(caption if caption is None else Span(caption))
+        self.children.append(self.window.savefig(key, window=self.window))
 
     @property
     def rows(self):
@@ -373,9 +381,9 @@ class Table(Component):
                 rows.append(child.children)
         _md_str = ""
         for i, r in enumerate(rows):
-            _md_str += "| " + " | ".join([' ' if c is None else c._md for c in r]) + " |\n"
+            _md_str += "| " + " | ".join([' ' if c is None else c._md.strip() for c in r]) + " |\n"
             if i == 0:
-                _md_str += "|:" + ":|:".join(['-' if c is None else '-' * len(c._md) for c in r]) + ":|\n"
+                _md_str += "|:" + ":|:".join(['-' if c is None else '-' * len(c._md.strip()) for c in r]) + ":|\n"
         return _md_str
 
     @property

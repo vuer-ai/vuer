@@ -55,7 +55,7 @@ class Image(components.Image):
 
 class Savefig(components.Figure):
     def __init__(self, key, caption=None, width=None, height=None, zoom=None, **kwargs):
-        file_path, query_str = key.split('?')
+        file_path, *_ = key.split('?')
         super().__init__(src=key, width=width, height=height, caption=caption, zoom=zoom, **kwargs)
         self.window.logger.savefig(file_path, **kwargs)
 
