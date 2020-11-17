@@ -12,6 +12,8 @@ from . import components
 
 from ml_logger import ML_Logger, cprint
 
+from ..with_hack import SkipContextManager
+
 
 class Print(components.Pre):
     def __init__(self, *args, sep=" ", end="\n"):
@@ -63,6 +65,10 @@ class Savefig(components.Figure):
 class CommonMark(components.Article):
     __filename = None
     counter = 0
+
+    @property
+    def skip(self):
+        return SkipContextManager(True)
 
     def __init__(self, filename=None, overwrite=True, logger=None):
         """

@@ -338,10 +338,10 @@ class FigureRow(Container):
         self.footers.append(footer if footer is None else Span(footer))
         self.children.append(Text(text))
 
-    def savefig(self, key, title=None, caption=None):
+    def savefig(self, key, title=None, caption=None, **kwargs):
         self.titles.append(title if title is None else Bold(title))
         self.footers.append(caption if caption is None else Span(caption))
-        self.children.append(self.window.savefig(key, window=self.window))
+        self.children.append(self.window.savefig(key, window=self.window, **kwargs))
 
     @property
     def rows(self):
