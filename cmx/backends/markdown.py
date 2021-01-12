@@ -123,14 +123,15 @@ class CommonMark(components.Article):
                 frame = frame.f_back
                 filename, line_number, function_name, lines, index = inspect.getframeinfo(frame)
 
+            # todo: '/__init__.py' instead?
             if filename.endswith('__init__.py'):
                 self.__filename = filename[:-11] + "README.md"
             else:
                 self.__filename = filename.replace(".py", ".md")
 
-            # on first write:
+            # # on first write:
             if self.overwrite:
-                self.window.logger.log_text("", filename=self.filename, overwrite=True)
+                self.clear()
 
             from termcolor import cprint
             from urllib import parse
@@ -139,7 +140,10 @@ class CommonMark(components.Article):
         return self.__filename
 
     def write(self, text, overwrite=None):
-        self.window.logger.log_text(text, filename=self.filename, overwrite=overwrite)
+        filename = self.filename
+        if filename.startswith("/"):
+            filename = "/" + filename
+        self.window.logger.log_text(text, filename=filename, overwrite=overwrite)
 
     def clear(self):
         self.write("", overwrite=True)
