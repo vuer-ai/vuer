@@ -1,17 +1,12 @@
-from contextlib import contextmanager
-from collections import defaultdict
-from copy import copy, deepcopy
-from functional_notations import _F, prefixmethod
-from waterbear import Bear
 import os
+from copy import deepcopy
 
 from cmx.utils import get_block, is_subclass, to_snake
+from functional_notations import _F
+from ml_logger import ML_Logger
 
-from ..utils import dedent
 from . import components
-
-from ml_logger import ML_Logger, cprint
-
+from ..utils import dedent
 from ..with_hack import SkipContextManager
 
 
@@ -56,10 +51,14 @@ class Image(components.Image):
 
 
 class Savefig(components.Figure):
-    def __init__(self, key, caption=None, width=None, height=None, zoom=None, **kwargs):
+    def __init__(self, key, caption=None, width=None, height=None, zoom=None, window=None, **kwargs):
         file_path, *_ = key.split('?')
-        super().__init__(src=key, width=width, height=height, caption=caption, zoom=zoom, **kwargs)
+        super().__init__(src=key, width=width, height=height, caption=caption, zoom=zoom, window=window, **kwargs)
         self.window.logger.savefig(file_path, **kwargs)
+
+
+USER = os.environ.get('USER', None)
+PWD = os.environ.get('PWD', None)
 
 
 class CommonMark(components.Article):
@@ -67,10 +66,29 @@ class CommonMark(components.Article):
     counter = 0
 
     @property
+    def hide(self):
+        """This is an amazing shortcut that alllows you to skip execution
+        of a section during writing!
+
+        But this currently interference with pydev, the debugging utility
+        used in pyCharm. I have not tested this on dgp yet, but I expect
+        similar issues.
+        """
+        from contextlib import ExitStack
+        return ExitStack()
+
+    @property
     def skip(self):
+        """This is an amazing shortcut that alllows you to skip execution
+        of a section during writing!
+
+        But this currently interference with pydev, the debugging utility
+        used in pyCharm. I have not tested this on dgp yet, but I expect
+        similar issues.
+        """
         return SkipContextManager(True)
 
-    def __init__(self, filename=None, overwrite=True, logger=None):
+    def __init__(self, filename=None, overwrite=True, root=None, prefix=None, logger=None):
         """
         Called by the module __init__.py to create a global document object.
 
@@ -82,7 +100,7 @@ class CommonMark(components.Article):
         """
         super().__init__(window={to_snake(k): v for k, v in globals().items() if is_subclass(v, components.Component)})
         self.window['video'] = video
-        self.window.logger = logger = logger or ML_Logger()
+        self.window.logger = logger = logger or ML_Logger(root=root, prefix=prefix)
 
         # if logger.root_dir:
         #     cprint(f"cmx root directory: {logger.root_dir}", color="green")
@@ -200,6 +218,7 @@ class CommonMark(components.Article):
             self.children[-1].text += sep.join([str(a) for a in args]) + end
         else:
             self.children.append(Print(*args, sep=sep, end=end))
+        print(*args, sep=sep, end=end)
 
     def flush(self, *args):
         self.write(self._md)
