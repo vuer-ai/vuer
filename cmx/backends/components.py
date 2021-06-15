@@ -3,7 +3,7 @@ from functional_notations import F
 
 from waterbear import Bear
 
-from cmx import utils
+from .. import utils
 import pandas as pd
 from io import StringIO
 
@@ -371,7 +371,7 @@ class Table(Component):
         # todo: pad columns (done automatically?)
         # we organize by rows. Columns has to be contained in a row.
         if not self.children:
-            return self.data.to_markdown(showindex=self.show_index,
+            return self.data.to_markdown(index=self.show_index,
                                          tablefmt=self.format, **self.kwargs) + "\n"
         rows = []
         for child in self.children:
@@ -405,3 +405,8 @@ class Article(Html):
     @property
     def _md(self):
         return "\n".join([c._md for c in self.children])
+
+
+class Print(Pre):
+    def __init__(self, *args, sep=" ", end="\n"):
+        super().__init__(sep.join([str(a) for a in args]) + end)

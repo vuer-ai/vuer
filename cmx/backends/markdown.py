@@ -1,18 +1,13 @@
 import os
 from copy import deepcopy
 
-from cmx.utils import get_block, is_subclass, to_snake
+from ..utils import get_block, is_subclass, to_snake
 from functional_notations import _F
 from ml_logger import ML_Logger
 
 from . import components
 from ..utils import dedent
 from ..with_hack import SkipContextManager
-
-
-class Print(components.Pre):
-    def __init__(self, *args, sep=" ", end="\n"):
-        super().__init__(sep.join([str(a) for a in args]) + end)
 
 
 def video(frames=None, *, src, window, **kwargs):
@@ -208,16 +203,16 @@ class CommonMark(components.Article):
 
     @property
     def csv(self, ):
-        def _csv(csv, **kwargs):
-            return self.children.append(components.Table(csv_str=csv, show_index=False, **kwargs))
+        def _csv(csv, show_index, **kwargs):
+            return self.children.append(components.Table(csv_str=csv, show_index=show_index, **kwargs))
 
         return _F(_csv, name="csv")
 
     def print(self, *args, sep=" ", end="\n"):
-        if self.children and isinstance(self.children[-1], Print):
+        if self.children and isinstance(self.children[-1], components.Print):
             self.children[-1].text += sep.join([str(a) for a in args]) + end
         else:
-            self.children.append(Print(*args, sep=sep, end=end))
+            self.children.append(components.Print(*args, sep=sep, end=end))
         print(*args, sep=sep, end=end)
 
     def flush(self, *args):
