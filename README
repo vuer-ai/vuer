@@ -6,7 +6,7 @@ Introducing CMX
 See CMX In Action
 -----------------
 
--  [ ] insert a screencast gif here
+-  ☐ insert a screencast gif here
 
 this works just like a standard jupyter notebook. Only code-block you include
 in a ``with doc:`` block would be shown. The row context arranges the
@@ -45,7 +45,7 @@ each frame?
 To-dos
 ------
 
--  [ ] scope inspection component
+-  ☐ scope inspection component
 
 Tomorrow
 ~~~~~~~~
@@ -53,11 +53,11 @@ Tomorrow
 Done
 ~~~~
 
--  [x] simple text output
--  [x] layout row
--  [x] saving matplotlib figures
--  [x] video component
-   ``python   doc.video(frames, f"videos/cats.gif?raw=true")``
--  [x] image component
--  [x] table component
--  [x] yaml component
+-  ☒ simple text output
+-  ☒ layout row
+-  ☒ saving matplotlib figures
+-  ☒ video component
+   ``python     doc.video(frames, f"videos/cats.gif?raw=true")``
+-  ☒ image component
+-  ☒ table component
+-  ☒ yaml component

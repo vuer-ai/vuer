@@ -358,13 +358,19 @@ class FigureRow(Container):
 class Table(Component):
     data = None
 
-    def __init__(self, csv_str=None, show_index=None, format="github", sep=",*", **kwargs):
+    def __init__(self, table=None, show_index=None, format="github", sep=",*", **kwargs):
         super().__init__(**kwargs)
         self.show_index = show_index
         self.kwargs = kwargs
         self.format = format
-        if csv_str:
-            self.data = pd.read_csv(StringIO(csv_str), sep=sep)
+        if table is None:
+            pass
+        elif isinstance(table, str):
+            self.data = pd.read_csv(StringIO(table), sep=sep)
+        elif isinstance(table, pd.DataFrame):
+            self.data = table
+        else:
+            self.data = pd.DataFrame(table)
 
     @property
     def _md(self):

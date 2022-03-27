@@ -203,8 +203,8 @@ class CommonMark(components.Article):
 
     @property
     def csv(self, ):
-        def _csv(csv, show_index, **kwargs):
-            return self.children.append(components.Table(csv_str=csv, show_index=show_index, **kwargs))
+        def _csv(csv, show_index=False, **kwargs):
+            return self.children.append(components.Table(csv, show_index=show_index, **kwargs))
 
         return _F(_csv, name="csv")
 
