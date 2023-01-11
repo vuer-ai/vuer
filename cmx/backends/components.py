@@ -218,7 +218,7 @@ class Image(Img):
     """Avanced Image with Data handling"""
     data = None
 
-    def __init__(self, image=None, src=None, **kwargs):
+    def __init__(self, image=None, src=None, normalize=False, **kwargs):
         if image is None:
             super().__init__(src=src, **kwargs)
         else:

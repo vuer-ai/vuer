@@ -10,8 +10,7 @@ with open(path.join(path.abspath(path.dirname(__file__)), 'README'), encoding='u
 setup(name='cmx',
       packages=find_packages(),
       install_requires=[
-          "gym",
-          "numpy",
+          "sanic==20.9.0",
       ],
       description='long_description',
       long_description=long_description,

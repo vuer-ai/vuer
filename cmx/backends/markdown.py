@@ -35,11 +35,11 @@ class Figure(components.Figure):
 
 
 class Image(components.Image):
-    def __init__(self, image=None, src=None, *, window, **kwargs):
+    def __init__(self, image=None, src=None, *, window, normalize=False, **kwargs):
         if src is not None:
             file_path, *query_strs = src.split('?')
             if image is not None:
-                window.logger.save_image(image, file_path)
+                window.logger.save_image(image, file_path, normalize=normalize)
             super().__init__(src=src, **kwargs)
         else:
             super().__init__(image, **kwargs)
@@ -95,7 +95,7 @@ class CommonMark(components.Article):
         """
         super().__init__(window={to_snake(k): v for k, v in globals().items() if is_subclass(v, components.Component)})
         self.window['video'] = video
-        self.window.logger = logger = logger or ML_Logger(root=root, prefix=prefix)
+        self.window.logger = logger or ML_Logger(root=root, prefix=prefix)
 
         # if logger.root_dir:
         #     cprint(f"cmx root directory: {logger.root_dir}", color="green")
@@ -104,7 +104,7 @@ class CommonMark(components.Article):
 
     def config(self, filename=None, overwrite=True, src_prefix=None, logger=None):
         self.overwrite = overwrite
-        self.window.logger = logger = logger or self.window.logger
+        self.window.logger = logger or self.window.logger
         # todo: for gist, the prefix needs to go into the `src` attribute.
         # self.window.src_prefix = src_prefix
         if filename:
