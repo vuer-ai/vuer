@@ -115,7 +115,12 @@ class CommonMark(components.Article):
 
             from termcolor import cprint
             from urllib import parse
-            cprint("File output at file://" + parse.quote(os.path.realpath(self.__filename)), "green")
+            if logger.root.startswith("http"):
+                # cprint("File output at " + os.path.join(self.window.logger.get_dash_url(), self.__filename), "green")
+                # just print the path, README.md should just show.
+                cprint("File output at " + self.window.logger.get_dash_url(), "green")
+            else:
+                cprint("File output at file://" + parse.quote(os.path.realpath(self.__filename)), "green")
         return self
 
     def new(self, filename=None, **kwargs):
