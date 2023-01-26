@@ -1,2 +1,2 @@
 include VERSION
-recursive-include gym_cmx/cmx/ *.*
+recursive-include cmx/cmx/ *.*
