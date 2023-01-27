@@ -130,6 +130,13 @@ class Slider(Element):
     tag = "Slider"
 
     def __init__(self, **kwargs):
+        """
+        :param min: Minimum value of the slider
+        :param max: Maximum value of the slider
+        :param step: Step size of the slider
+        :param value: Initial value of the slider
+        :param kwargs:
+        """
         super().__init__(**kwargs)
 
 
@@ -160,3 +167,23 @@ class ImageCls(Element):
         data = {**super().serialize(), 'src': self.data_repr()}
         del data['_data']
         return data
+
+class ImageUpload(Element):
+    """
+    A ImageUpload element is an element that allows the user to upload a file.
+    It is represented by a file upload element in the DOM.
+    """
+    tag = "ImageUpload"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+class PointCloud(Element):
+    """
+    A PointCloud element is an element that displays a point cloud.
+    It is represented by a point cloud element in the DOM.
+    """
+    tag = "PointCloud"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
