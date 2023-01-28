@@ -2,7 +2,7 @@ import uuid
 
 from tassa import Tassa
 from tassa.events import Set, Update
-from tassa.schemas import Page, Header1, Paragraph, ImageCls, Text, InputBox, Slider, ImageUpload, PointCloud
+from tassa.schemas import Page, Header1, Paragraph, ImageCls, Text, InputBox, Slider, ImageUpload, PointCloud, Button
 
 doc = Tassa("ws://localhost:8012")
 
@@ -15,6 +15,7 @@ def show_heatmap():
 
     page = Page(
         Header1("Alan's Example"),
+        Button(value="Hello!", style='''{"width":"100%", "height":"100px"}'''),
         InputBox(value="Hello World!"),
         Text("hello Jansen?", key="ge_demo"),
         Header1("Alan's Example"),
@@ -22,7 +23,7 @@ def show_heatmap():
         Paragraph("Timur is sitting on the right"),
         ImageUpload(label="Upload an image: "),
         # ImageCls(data=image, key="alan_img"),
-        PointCloud(path="https://escher.ge.ngrok.io/files/will_scene.pcd")
+        # PointCloud(path="https://escher.ge.ngrok.io/files/will_scene.pcd")
 
     )
     event = yield Set(page)
