@@ -178,11 +178,31 @@ class ImageUpload(Element):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-class PointCloud(Element):
-    """
-    A PointCloud element is an element that displays a point cloud.
-    It is represented by a point cloud element in the DOM.
-    """
+class Scene(BlockElement):
+    tag = "Scene"
+
+class SceneElement(Element):
+    pass
+
+class Pcd(SceneElement):
+    tag = "Pcd"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+class Ply(SceneElement):
+    tag = "Ply"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+class Glb(SceneElement):
+    tag = "Glb"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+class PointCloud(SceneElement):
     tag = "PointCloud"
 
     def __init__(self, **kwargs):

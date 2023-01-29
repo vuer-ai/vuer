@@ -42,8 +42,8 @@ class Tassa(Sanic):
         Get the URL for the Tassa.
         :return: The URL for the Tassa.
         """
-        # return f"http://localhost:8000/demos/vqn-dash/tassa?ws={self.uri}/feed"
-        return f"http://dash.ml/demos/vqn-dash/tassa?ws={self.uri}/feed"
+        return f"http://localhost:8000/demos/vqn-dash/tassa?ws={self.uri}/feed&reconnect=true"
+        # return f"http://dash.ml/demos/vqn-dash/tassa?ws={self.uri}/feed"
 
     async def feed(self, request, ws):
         """
