@@ -28,8 +28,10 @@ def show_heatmap():
         # PointCloud(path="https://escher.ge.ngrok.io/files/will_scene.pcd")
         Scene(
             # Pcd(url="https://escher.ge.ngrok.io/files/will_scene.pcd", translation=[0, 0, 0], rotation=[0, 0, 0]),
-            Ply(url="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/orange/mask_in.ply", position=[5, 0, 0], rotation=[0, 0, 0]),
-            Ply(url="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/fork/mask_in.ply"),
+            Ply(url="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/orange/mask_in.ply", position=[0.2, 0, 0], rotation=[0, 0, 0]),
+            Ply(url="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/fork/mask_in.ply", position=[0, .2, 0], rotation=[0, 0, 0]),
+            Ply(url="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/pink/mask_in_features_pca.ply", position=[0, 0, .2], rotation=[0, 0, 0]),
+            Ply(url="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/spoon/mask_in.ply", position=[0, 0, 0], rotation=[0, 0, 0]),
         )
     )
     event = yield Set(page)
