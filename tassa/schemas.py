@@ -130,6 +130,13 @@ class Slider(Element):
     tag = "Slider"
 
     def __init__(self, **kwargs):
+        """
+        :param min: Minimum value of the slider
+        :param max: Maximum value of the slider
+        :param step: Step size of the slider
+        :param value: Initial value of the slider
+        :param kwargs:
+        """
         super().__init__(**kwargs)
 
 
@@ -160,3 +167,43 @@ class ImageCls(Element):
         data = {**super().serialize(), 'src': self.data_repr()}
         del data['_data']
         return data
+
+class ImageUpload(Element):
+    """
+    A ImageUpload element is an element that allows the user to upload a file.
+    It is represented by a file upload element in the DOM.
+    """
+    tag = "ImageUpload"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+class Scene(BlockElement):
+    tag = "Scene"
+
+class SceneElement(Element):
+    pass
+
+class Pcd(SceneElement):
+    tag = "Pcd"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+class Ply(SceneElement):
+    tag = "Ply"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+class Glb(SceneElement):
+    tag = "Glb"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+class PointCloud(SceneElement):
+    tag = "PointCloud"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)

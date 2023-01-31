@@ -3,6 +3,13 @@ class ClientEvent:
         self.etype = etype
         self.__dict__.update(kwargs)
 
+        if self @ "UPLOAD":
+            import base64
+            import io
+            from PIL import Image
+            image = Image.open(io.BytesIO(base64.b64decode(self.value)))
+            self.value = image
+
     def __matmul__(self, etype):
         """
         Check if the event is of a certain type.
