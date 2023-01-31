@@ -3,7 +3,7 @@ import uuid
 from tassa import Tassa
 from tassa.events import Set, Update
 from tassa.schemas import Page, Header1, Paragraph, ImageCls, Text, InputBox, Slider, ImageUpload, Button, \
-    Scene, Pcd, Ply, Glb, PointCloud, div
+    Scene, Pcd, Ply, Glb, PointCloud, div, Gripper
 
 doc = Tassa("ws://localhost:8012")
 
@@ -16,7 +16,8 @@ def show_heatmap():
         Scene(
             Ply(url="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/orange/mask_in.ply", position=[0.2, 0, 0], rotation=[0, 0, 0]),
             Ply(url="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/pink/mask_in_features_pca.ply", position=[0, 0, .2], rotation=[0, 0, 0]),
-            Ply(url="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/spoon/mask_in.ply", position=[0, 0, 0], rotation=[0, 0, 0]),
+            Ply(url="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/spoon/mask_in.ply", position=[0, 0, 0], rotation=[0, 0, 0], movable=True),
+            Gripper(movable=True, handleOffset=[0, .2, 0]),
         )
     )
     event = yield Set(page)
