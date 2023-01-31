@@ -3,7 +3,7 @@ import uuid
 from tassa import Tassa
 from tassa.events import Set, Update
 from tassa.schemas import Page, Header1, Paragraph, ImageCls, Text, InputBox, Slider, ImageUpload, Button, \
-    Scene, Pcd, Ply, Glb, PointCloud
+    Scene, Pcd, Ply, Glb, PointCloud, div
 
 doc = Tassa("ws://localhost:8012")
 
@@ -21,7 +21,7 @@ def show_heatmap():
         Text("hello Jansen?", key="ge_demo"),
         Header1("Alan's Example"),
         Slider(min=20, max=50, step=2, value=40),
-        Paragraph("Timur is sitting on the right"),
+        div(Paragraph("Timur is sitting on the right"), style='{"border":"1px solid black", "width":"100px", "height":"100px"}'),
         ImageUpload(label="Upload an image: "),
         # ImageCls(data=image, key="alan_img"),
         # PointCloud(urls=["https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/orange/mask_in.ply", "https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/fork/mask_in.ply"]),
