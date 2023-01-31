@@ -207,3 +207,9 @@ class PointCloud(SceneElement):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+class Gripper(SceneElement):
+    tag = "Gripper"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
