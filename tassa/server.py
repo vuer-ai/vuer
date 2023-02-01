@@ -12,11 +12,13 @@ class Tassa(Sanic):
     A Tassa is a document that can be rendered in a browser.
     """
 
-    def __init__(self, uri, name="tassa"):
+    def __init__(self, uri, name="tassa", debug=False, **queries):
         super().__init__(name)
         self.page = Page()
         self.uri = uri
         self.bound_fn = None
+        self.queries = queries
+        self.is_debug = debug
 
     def bind(self, fn=None, start=False):
         """
@@ -42,8 +44,11 @@ class Tassa(Sanic):
         Get the URL for the Tassa.
         :return: The URL for the Tassa.
         """
-        return f"http://localhost:8000/demos/vqn-dash/tassa?ws={self.uri}/feed&reconnect=true"
-        # return f"http://dash.ml/demos/vqn-dash/tassa?ws={self.uri}/feed"
+        query_str = "&".join([f"{k}={v}" for k, v in self.queries.items()])
+        if self.debug:
+            return f"http://localhost:8000/demos/vqn-dash/tassa?ws={self.uri}/feed&" + query_str
+        else:
+            return f"http://dash.ml/demos/vqn-dash/tassa?ws={self.uri}/feed&" + query_str
 
     async def feed(self, request, ws):
         """
