@@ -21,8 +21,8 @@ def show_heatmap():
         )
     )
     event = yield Set(page)
-    while not event @ "TERMINAL":
-        if event @ "UPLOAD":
+    while not event == "TERMINAL":
+        if event == "UPLOAD":
             event = yield Update(ImageCls(data=event.value, key="alan_img"))
         else:
             print(vars(event))
