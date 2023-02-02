@@ -1,9 +1,8 @@
 import json
+from asyncio import sleep
 from functools import partial
-
 from sanic import Sanic
-
-from tassa.events import Event, ClientEvent
+from tassa.events import Event, ClientEvent, NullEvent, ServerEvent
 from tassa.schemas import Page
 
 
@@ -12,11 +11,13 @@ class Tassa(Sanic):
     A Tassa is a document that can be rendered in a browser.
     """
 
-    def __init__(self, uri, name="tassa"):
+    def __init__(self, uri, name="tassa", debug=False, **queries):
         super().__init__(name)
         self.page = Page()
         self.uri = uri
         self.bound_fn = None
+        self.queries = queries
+        self.is_debug = debug
 
     def bind(self, fn=None, start=False):
         """
@@ -42,8 +43,16 @@ class Tassa(Sanic):
         Get the URL for the Tassa.
         :return: The URL for the Tassa.
         """
-        return f"http://localhost:8000/demos/vqn-dash/tassa?ws={self.uri}/feed&reconnect=true"
-        # return f"http://dash.ml/demos/vqn-dash/tassa?ws={self.uri}/feed"
+        query_str = "&".join([f"{k}={v}" for k, v in self.queries.items()])
+        if self.is_debug:
+            return f"http://localhost:8000/demos/vqn-dash/tassa?ws={self.uri}/feed&" + query_str
+        else:
+            return f"http://dash.ml/demos/vqn-dash/tassa?ws={self.uri}/feed&" + query_str
+
+    def send(self, ws, event: ServerEvent):
+        res_str = event.serialize()
+        res_json = json.dumps(res_str)
+        return ws.send(res_json)
 
     async def feed(self, request, ws):
         """
@@ -54,15 +63,20 @@ class Tassa(Sanic):
         """
         generator = self.bound_fn()
         async for msg in ws:
-            event = ClientEvent(**json.loads(msg))
-            if event @ "INIT":
-                res = next(generator)
-            else:
-                res = generator.send(event)
+            clientEvent = ClientEvent(**json.loads(msg))
 
-            res_str = res.serialize()
-            res_json = json.dumps(res_str)
-            await ws.send(res_json)
+            if clientEvent == "INIT":
+                serverEvent = next(generator)
+            else:
+                serverEvent = generator.send(clientEvent)
+
+            while serverEvent == "FRAME":
+                await self.send(ws, serverEvent.data)
+                await sleep(0.001)
+
+                serverEvent = generator.send(NullEvent())
+
+            await self.send(ws, serverEvent)
 
     def run(self, *args, **kwargs):
         print("App running at: " + self.get_url())
