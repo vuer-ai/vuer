@@ -18,6 +18,7 @@ def show_heatmap():
             Ply(url="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/pink/mask_in_features_pca.ply", position=[0, 0, .2], rotation=[0, 0, 0]),
             Ply(url="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/spoon/mask_in.ply", position=[0, 0, 0], rotation=[0, 0, 0], movable=True),
             Gripper(movable=True, handleOffset=[0, .2, 0], pinchWidth=1),
+            style='''{"width":"100vw", "height":"900px"}'''
         )
     )
     event = yield Set(page)
