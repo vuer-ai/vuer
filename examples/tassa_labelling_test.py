@@ -19,8 +19,7 @@ doc = Tassa("ws://localhost:8012")
 def show_heatmap():
     page = Page(
         Scene(
-            Ply(url="https://escher.ge.ngrok.io/files/william/debug/jansen/label.ply", rotation=[-.5 * np.pi, 0, 0], position=[-.5, 0, 0],
-                movable=True, key="orange"),
+            Ply(url="https://escher.ge.ngrok.io/files/william/debug/jansen/label.ply", rotation=[-.5 * np.pi, 0, -.5 * np.pi], position=[-.0, 1.8, 0], key="orange"),
             Gripper(movable=True, handleOffset=[0, .2, 0], pinchWidth=1, skeleton=False, key="gripper", axes=True),
             style={"width": "100vw", "height": "900px"}
         )
