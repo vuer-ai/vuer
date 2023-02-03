@@ -26,3 +26,5 @@ MUJOCO_LOG.txt
 *.npy
 *.pyc
 *.py~
+
+output
