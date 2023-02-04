@@ -11,12 +11,9 @@ from tassa.schemas import Page, Paragraph, Scene, Pcd, Ply, Glb, PointCloud, div
 
 doc = Tassa("ws://localhost:8013", debug=True, reconnect=True)
 
-label_file = "/Users/jansenwong/workspace/ei-csail/cmx-python/examples/output/2023-02-03_20-27-51/default.jsonl"
+label_file = "/Users/jansenwong/workspace/ei-csail/cmx-python/examples/output/2023-02-03_22-04-56/default.jsonl"
 
 labels = []
-
-
-
 
 @doc.bind(start=True)
 def show_labels():
@@ -28,8 +25,8 @@ def show_labels():
         labels = [json.loads(line) for line in lines]
 
     # construct a skeleton gripper for each label
-    grippers = [Gripper(skeleton=True, movable=False, pinchWidth=1, handleOffset=[0, .2, 0], position=label["position"],
-                        rotation=label["rotation"],
+    grippers = [Gripper(skeleton=True, movable=False, pinchWidth=1, handleOffset=[0, .2, 0], position=(label["position"]),
+                        rotation=(np.array(label["rotation"])).tolist(),
                         key=str(uuid.uuid4())[-10:]) for label in labels]
 
     page = Page(

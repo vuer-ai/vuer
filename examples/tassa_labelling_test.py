@@ -22,9 +22,12 @@ def show_heatmap():
 
     page = Page(
         Scene(
-            Ply(url="https://escher.ge.ngrok.io/files/william/debug/jansen/label.ply",
-                rotation=[-.5 * np.pi, 0, -.5 * np.pi], position=[-.0, 1.8, 0], key="orange"),
-            Gripper(movable=True, handleOffset=[0, .2, 0], pinchWidth=1, skeleton=False, key="gripper", axes=True),
+            # Ply(url="https://escher.ge.ngrok.io/files/william/debug/jansen/label.ply",
+            #     rotation=[-.5 * np.pi, 0, -.5 * np.pi], position=[-.0, 1.8, 0], key="orange"),
+            Ply(url="https://escher.ge.ngrok.io/files/instant-feature/instant-feature/rss_2023/train_and_distill/view_invariant/2023/02-04/03.49.42/panda/open_ended/caterpillar/train/2023/02-02/18.48.16/distill/analysis/rgb.ply",
+                rotation=[-np.pi/2, 0, -np.pi/2], position=[0, 1.8, 0], key="orange"),
+            # Ply(url="https://escher.ge.ngrok.io/files/jcw/scratch/2023/02-03/181757/files/gripper.ply", key="red"),
+            Gripper(movable=True, rotation=[-np.pi/2, 0, -np.pi/2], position=[0, 1.5, 0], handleOffset=[0, .2, 0], pinchWidth=1, skeleton=False, key="gripper", axes=True),
             style={"width": "100vw", "height": "900px"}
         )
     )
@@ -38,9 +41,11 @@ def show_heatmap():
             res = Paragraph(str(vars(event)), key=str(uuid.uuid4())[-10:])
             event = yield Update(res)
         else:
-            print(vars(event))
+            res = vars(event)
+            res['rotation'] = (np.array(res['rotation']) + np.array([0, 0, np.pi])).tolist()
+            print(res)
             # append the results to a jsonl file
             with open(parent_dir + current_filename, "a") as f:
-                f.write(json.dumps(vars(event)) + '\n')
+                f.write(json.dumps(res) + '\n')
             res = Paragraph(str(vars(event)), key=str(uuid.uuid4())[-10:])
             event = yield Update(res)
