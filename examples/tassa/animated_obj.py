@@ -8,12 +8,13 @@ from tassa.events import Set, Update, Frame
 from tassa.schemas import Page, Header1, Paragraph, ImageCls, Text, InputBox, Slider, ImageUpload, Button, \
     Scene, Pcd, Ply, Glb, PointCloud, div, Gripper, Pivot, Movable
 
-doc = Tassa(
-    "ws://localhost:8012",
-    uri="http://localhost:8000/demos/vqn-dash/tassa",
-    reconnect=True,
-    debug=True,
-)
+# doc = Tassa(
+#     "ws://localhost:8012",
+#     uri="http://localhost:8000/demos/vqn-dash/tassa",
+#     reconnect=True,
+#     debug=True,
+# )
+doc = Tassa(reconnect=True)
 
 
 # this is blocking because it autostarts.
@@ -43,15 +44,3 @@ def show_heatmap():
             style={"width": "100vw", "height": "900px"},
         ))
         sleep(0.0166)
-
-"""
-{
- "etype": "OBJECT_MOVE",
- "key": "pointcloud-mover",
- "position": [0.1240201599871046, 0.0654767739634874, 0],
- "quaternion": [0, 0, 0, 1],
- "rotation": [0, 0, 0, "XYZ"],
- "world": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 
-           0, 0.1240201599871046, 0.0654767739634874, 0, 1]
-}
-"""
