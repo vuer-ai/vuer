@@ -53,6 +53,16 @@ class ServerEvent(Event):  # , metaclass=Meta):
         return {**self.__dict__, "data": self.data.serialize()}
 
 
+class Noop(ServerEvent):
+    etype = "NOOP"
+
+    def __init__(self, **kwargs):
+        super().__init__(data=None, **kwargs)
+
+
+NOOP = Noop()
+
+
 class Set(ServerEvent):
     """
     A Set ServerEvent is sent to the client when the client first connects to the server.
@@ -87,7 +97,6 @@ class Frame(ServerEvent):
 
     def __init__(self, data: ServerEvent, **kwargs):
         super().__init__(data, **kwargs)
-
 
 # if __name__ == "__main__":
 #     e = Frame @ {"hey": "yo"}

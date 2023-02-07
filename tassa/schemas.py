@@ -168,6 +168,7 @@ class ImageCls(Element):
         del data['_data']
         return data
 
+
 class ImageUpload(Element):
     """
     A ImageUpload element is an element that allows the user to upload a file.
@@ -178,38 +179,42 @@ class ImageUpload(Element):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+
 class Scene(BlockElement):
     tag = "Scene"
 
-class SceneElement(Element):
+
+class SceneElement(BlockElement):
     pass
+
+
+class group(SceneElement):
+    tag = "group"
+
 
 class Pcd(SceneElement):
     tag = "Pcd"
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
 
 class Ply(SceneElement):
     tag = "Ply"
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+
+class Pivot(SceneElement):
+    tag = "Pivot"
+
+
+class Movable(SceneElement):
+    tag = "Movable"
+
 
 class Glb(SceneElement):
     tag = "Glb"
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
 
 class PointCloud(SceneElement):
     tag = "PointCloud"
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
 
 class Gripper(SceneElement):
     tag = "Gripper"
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)

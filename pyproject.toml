@@ -1,0 +1,81 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cmx"
+version = "0.0.23"
+description = ""
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.8.6"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python",
+]
+dependencies = [
+]
+
+[project.optional-dependencies]
+# Development packages
+dev = [
+    "black==22.3.0",
+    "pylint==2.13.4",
+    "pytest==7.1.2",
+]
+
+[project.scripts]
+# Note, add entrypoint name to scripts/completions/install.py to include CLI completion
+tassa = "tassa:entrypoint"
+
+[tool.setuptools.packages.find]
+include = ["cmx*", "tassa*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.json"]
+
+# black
+[tool.black]
+line-length = 120
+
+# pylint
+[tool.pylint.messages_control]
+max-line-length = 120
+generated-members = ["numpy.*", "torch.*", "cv2.*", "cv.*"]
+good-names-rgxs = "^[_a-zA-Z][_a-z0-9]?$"
+ignore-paths = ["scripts/colmap2nerf.py"]
+jobs = 0
+ignored-classes = ["TensorDataclass"]
+
+disable = [
+    "duplicate-code",
+    "fixme",
+    "logging-fstring-interpolation",
+    "too-many-arguments",
+    "too-many-branches",
+    "too-many-instance-attributes",
+    "too-many-locals",
+    "unnecessary-ellipsis",
+]
+
+#pytest
+[tool.pytest.ini_options]
+addopts = "-n=4 --typeguard-packages=nerfstudio --torchtyping-patch-typeguard --disable-warnings"
+testpaths = [
+    "tests",
+]
+
+# pyright
+[tool.pyright]
+include = ["cmx"]
+exclude = ["**/node_modules", "**/__pycache__", ]
+ignore = ["cmx/viewer"]
+defineConstant = { DEBUG = true }
+
+reportMissingImports = true
+reportMissingTypeStubs = false
+reportPrivateImportUsage = false
+reportUndefinedVariable = false
+
+pythonVersion = "3.8"
+pythonPlatform = "Linux"
