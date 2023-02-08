@@ -84,9 +84,10 @@ class Tassa(Sanic):
         port = int(_)
 
         if kill or self.free_port:
+            import time
             from killport import kill_ports
             kill_ports(ports=[port])
-            sleep(0.01)
+            time.sleep(0.01)
 
         host = host[2:]
         super().run(host=host, port=port, *args, **kwargs)
