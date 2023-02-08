@@ -2,6 +2,7 @@ import base64
 from io import BytesIO
 from typing import Union
 
+import numpy as np
 import PIL.Image as pil_image
 
 element_count = 0
@@ -147,7 +148,7 @@ class Image(Element):
     """
     tag = "Img"
 
-    def __init__(self, data: Union[str, pil_image.Image] = None, src: str = None, **kwargs):
+    def __init__(self, data: Union[str, np.ndarray, pil_image.Image] = None, src: str = None, **kwargs):
         if src:
             assert data is None, "data and src can not be truful at the same time"
         else:
