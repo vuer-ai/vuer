@@ -223,6 +223,7 @@ class Image(Img):
             super().__init__(src=src, **kwargs)
         else:
             import numpy as np
+            # todo: need to support 16 and 32 bit images, especially depth images.
             self.data = np.array(image).astype(np.uint8)
             super().__init__(src=self.base64, **kwargs)
 

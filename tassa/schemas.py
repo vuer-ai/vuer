@@ -2,7 +2,7 @@ import base64
 from io import BytesIO
 from typing import Union
 
-from PIL import Image
+import PIL.Image as pil_image
 
 element_count = 0
 
@@ -140,33 +140,43 @@ class Slider(Element):
         super().__init__(**kwargs)
 
 
-class ImageCls(Element):
+class Image(Element):
     """
     An Image element is an element that displays an image.
     It is represented by an img element in the DOM.
     """
     tag = "Img"
 
-    def __init__(self, data: Union[str, Image.Image], **kwargs):
-        if isinstance(data, str):
-            # convert back to image first from base64
-            self._data = Image.open(BytesIO(base64.b64decode(data)))
-        self._data = data
-        super().__init__(**kwargs)
+    def __init__(self, data: Union[str, pil_image.Image] = None, src: str = None, **kwargs):
+        if src:
+            assert data is None, "data and src can not be truful at the same time"
+        else:
+            if isinstance(data, str):
+                # convert back to image first from base64
+                image_data = pil_image.open(data)
+            else:
+                image_data = data
 
-    def data_repr(self):
+            src = self.base64(image_data)
+
+        super().__init__(src=src, **kwargs)
+
+    @staticmethod
+    def base64(image_data):
+        # if self.data is not None:
         from io import BytesIO
+        import numpy as np
+        import base64
 
-        im_file = BytesIO()
-        self._data.save(im_file, format="PNG")
-        im_bytes = im_file.getvalue()
-        im_b64 = base64.b64encode(im_bytes)
-        return "data:image/png;base64," + im_b64.decode("utf-8")
+        with BytesIO() as buf:
+            # todo: specify PNG vs JPG
+            if isinstance(image_data, np.ndarray):
+                pil_image.fromarray(image_data).save(buf, "png")
+            else:
+                assert isinstance(image_data, pil_image.Image)
+                image_data.save(buf, "png")
 
-    def serialize(self):
-        data = {**super().serialize(), 'src': self.data_repr()}
-        del data['_data']
-        return data
+            return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode('utf-8')
 
 
 class ImageUpload(Element):

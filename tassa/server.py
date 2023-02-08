@@ -11,13 +11,12 @@ class Tassa(Sanic):
     A Tassa is a document that can be rendered in a browser.
     """
 
-    def __init__(self, ws="ws://localhost:8012", name="tassa", debug=False, uri=None, free_port=True, **queries):
+    def __init__(self, ws="ws://localhost:8012", name="tassa", uri=None, free_port=True, **queries):
         super().__init__(name)
         self.page = Page()
         self.uri = ws
         self.bound_fn = None
         self.queries = queries
-        self.is_debug = debug
         self.free_port = free_port
         self.domain = uri or "https://dash.ml/demos/vqn-dash/tassa"
 
