@@ -155,7 +155,7 @@ class Image(Element):
                 # convert back to image first from base64
                 image_data = pil_image.open(data)
             else:
-                image_data = data
+                image_data = (data * 255).astype(np.uint8)
 
             src = self.base64(image_data)
 
