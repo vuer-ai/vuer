@@ -29,7 +29,7 @@ class Tassa(Sanic):
 
         def wrap_fn(fn, start=False):
             self.bound_fn = fn
-            self.add_websocket_route(self.feed, "/feed")
+            self.add_websocket_route(self.feed, '')
             if start:
                 self.run()
 
@@ -45,7 +45,7 @@ class Tassa(Sanic):
         :return: The URL for the Tassa.
         """
         query_str = "&".join([f"{k}={v}" for k, v in self.queries.items()])
-        return f"{self.domain}?ws={self.uri}/feed&" + query_str
+        return f"{self.domain}?ws={self.uri}&" + query_str
 
     def send(self, ws, event: ServerEvent):
         res_str = event.serialize()
