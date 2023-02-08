@@ -11,6 +11,7 @@ setup(name='cmx',
       packages=find_packages(),
       install_requires=[
           "sanic==20.9.0",
+          "killport",
       ],
       description='long_description',
       long_description=long_description,
