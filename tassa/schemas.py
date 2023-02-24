@@ -229,3 +229,7 @@ class PointCloud(SceneElement):
 
 class Gripper(SceneElement):
     tag = "Gripper"
+
+
+class SkeletalGripper(SceneElement):
+    tag = "SkeletalGripper"
