@@ -215,7 +215,7 @@ class Img(Component):
 
 
 class Image(Img):
-    """Avanced Image with Data handling"""
+    """Advanced Image with Data handling"""
     data = None
 
     def __init__(self, image=None, src=None, normalize=False, **kwargs):
