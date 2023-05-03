@@ -18,7 +18,7 @@ class Tassa(Sanic):
         self.bound_fn = None
         self.queries = queries
         self.free_port = free_port
-        self.domain = uri or "https://dash.ml/demos/vqn-dash/tassa"
+        self.domain = uri or "https://dash.ml/tassa"
 
     def bind(self, fn=None, start=False):
         """

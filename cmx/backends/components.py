@@ -175,10 +175,10 @@ class Pre(Component):
 class Link(Component):
     tag = "span"
 
-    def __init__(self, url="", text="", **kwargs):
+    def __init__(self,href="", text="", **kwargs):
         super().__init__(**kwargs)
         self.text = text
-        self.href = url
+        self.href = href
 
     @property
     def _md(self):

@@ -6,7 +6,8 @@
 """
 from cmx import doc
 
-doc.video(url="https://")
+# todo: replace url with something else
+doc.video(href="https://")
 
 
 if __name__ == '__main__':

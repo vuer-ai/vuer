@@ -184,8 +184,8 @@ class CommonMark(components.Article):
     #     t = components.Text(*args, sep=sep, end=end)
     #     self.children.append(t)
     #
-    # def link(self, url=None):
-    #     l = components.Link(url=url)
+    # def link(self, href=None):
+    #     l = components.Link(href=href)
     #     self.children.append(l)
 
     # @property

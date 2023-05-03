@@ -17,7 +17,7 @@ def show_heatmap():
     page = Page(
         Scene(
             Movable(
-                Ply(url="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/orange/mask_in.ply",
+                Ply(src="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/orange/mask_in.ply",
                     position=[0, 0.4, 0], rotation=[-0.5 * np.pi, 0, -0.5 * np.pi]),
                 offset=[0, -0.2, 0]
             ),
