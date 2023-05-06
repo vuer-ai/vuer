@@ -22,7 +22,7 @@ def main():
     )
 
     print('====')
-    # event = yield Set(page)
+    event = yield Set(page)
     event = yield Frame(NOOP)
     print('^^^^')
     from pprint import pprint

@@ -5,7 +5,7 @@ import numpy as np
 
 from tassa import Tassa
 from tassa.events import Set, Update, Frame, NOOP
-from tassa.schemas import Page, Header1, Paragraph, ImageCls, Text, InputBox, Slider, ImageUpload, Button, \
+from tassa.schemas import Page, Header1, Paragraph, Image, Text, InputBox, Slider, ImageUpload, Button, \
     Scene, Pcd, Ply, Glb, PointCloud, div, Gripper, Pivot, Movable
 
 doc = Tassa(

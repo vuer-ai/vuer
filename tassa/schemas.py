@@ -159,7 +159,7 @@ class Image(Element):
     tag = "Img"
 
     def __init__(self, data: Union[str, np.ndarray, pil_image.Image] = None, src: str = None, **kwargs):
-        if src:
+        if src is not None:
             assert data is None, "data and src can not be truful at the same time"
         else:
             if isinstance(data, str):
@@ -205,6 +205,19 @@ class ImageUpload(Element):
 class Scene(BlockElement):
     tag = "Scene"
 
+    def __init__(self, *children, rawChildren=None, htmlChildren=None, **kwargs):
+        super().__init__(*children, **kwargs)
+        self.rawChildren = rawChildren or []
+        self.htmlChildren = htmlChildren or []
+
+    def serialize(self):
+        return {
+            **super().serialize(),
+            "children": [e.serialize() for e in self.children],
+            "rawChildren": [e.serialize() for e in self.rawChildren],
+            "htmlChildren": [e.serialize() for e in self.htmlChildren],
+        }
+
 
 class SceneElement(BlockElement):
     pass
@@ -214,8 +227,13 @@ class Camera(SceneElement):
     tag = "Camera"
 
 
+class CameraHelper(SceneElement):
+    tag = "CameraHelper"
+
+
 class group(SceneElement):
     tag = "group"
+    children = []
 
 
 class Pcd(SceneElement):

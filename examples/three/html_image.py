@@ -1,19 +1,54 @@
+import json
+import math
+from functools import lru_cache
 from time import sleep
 
 import numpy as np
+import yaml
 
 from tassa import Tassa
-from tassa.events import Set, Update, Frame
-from tassa.schemas import Scene, Ply, Gripper, SkeletalGripper, Camera, Html, Text, Image
+from tassa.events import Set, Update, Frame, END
+from tassa.schemas import (
+    Scene,
+    Ply,
+    Gripper,
+    SkeletalGripper,
+    CameraHelper,
+    Html,
+    Text,
+    Image,
+    group,
+    Glb,
+    Pivot,
+    div,
+    Paragraph,
+)
+
+from tqdm import tqdm
+
+
+def colmap_to_three(m):
+    """Converts a 3x4 colmap camera matrix to a 4x4 three.js camera matrix."""
+    matrix = np.array(m).reshape(4, 4)
+    return matrix.T.flatten().tolist()
+
 
 doc = Tassa(
-    "ws://localhost:8013",
-    "https://debug.ge.ngrok.io/tassa",
-    uri="http://localhost:8000/tassa",
-    # uri="https://debug.ge.ngrok.io/tassa",
+    ws="ws://localhost:8013",
+    # uri="http://localhost:8000/tassa",
+    # uri="http://localhost:8000/demos/vqn-dash/three",
+    uri="http://dash.ml/demos/vqn-dash/three",
     reconnect=True,
     debug=True,
 )
+
+dataset = f"/Users/ge/datasets/rooms/ei_stairway_v1"
+# from ml_logger import logger
+
+with open(dataset + "/transforms.json", "r") as f:
+    transforms = json.load(f)
+    # print(transforms)
+poses = sorted(transforms["frames"], key=lambda x: x["file_path"])
 
 
 # doc = Tassa(reconnect=True)
@@ -21,73 +56,76 @@ doc = Tassa(
 @doc.bind(start=True)
 def show_heatmap():
     scene = Scene(
-        # Camera(fov=75, far=20, aspect=1.6, position=[0, 1, 1], rotation=[0, 0, 0], helper=True, default=False),
-        Html(
-            Text("Hello World!", key="some text"),
-            Image(
-                f"/Users/ge/datasets/rooms/ei_stairway_v1/images/frame_{1:05d}.png",
-                key="video",
-            ),
-            key="Ziqi",
-        ),
+        # CameraHelper(fov=75, far=20, aspect=1.6, position=[0, 1, 1], rotation=[0, 0, 0], helper=True, default=False),
         Ply(
-            src="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences"
-            "/2023-01-20_23-08-27/orange/mask_in.ply",
+            src="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/orange/mask_in.ply",
             position=[0, 0.4, 0],
             rotation=[-0.5 * np.pi, 0, -0.5 * np.pi],
         ),
         Gripper(pinchWidth=0.04, skeleton=False, axes=True, position=[0, 0.2, 0], key="gripper"),
         SkeletalGripper(movable=True, pinchWidth=0.04, position=[0, 0.2, 0], key="skeleton"),
-        # Camera(fov=75, far=20, aspect=1.6),
-        style={"width": "100vw", "height": "900px"},
-    )
-
-    i = 1
-    event = yield Frame(Set(scene))
-    print(vars(event))
-    while event != "TERMINAL":
-        # print(vars(event))
-        if event == "CAMERA_MOVE":
-            print(vars(event))
-
-        # image starts at 1
-        # while True:
-        # update the image
-        file_path = f"/Users/ge/datasets/rooms/ei_stairway_v1/images_8/frame_{i:05d}.png"
-        print(file_path)
-
-        yield Frame(
-            Update(
-                Html(
-                    Image(
-                        file_path,
-                        width=640 * 2,
-                        height=480 * 2,
-                        # style={
-                        #     "position": "absolute",
-                        #     "top": "-480px",
-                        #     "left": "-640px",
-                        #     "width": 640 * 2,
-                        #     "height": 480 * 2,
-                        # },
-                        key="video",
-                    ),
-                    style={
-                        "position": "absolute",
-                        "top": "-480px",
-                        "left": "-640px",
-                        "width": 640 * 2,
-                        "height": 480 * 2,
-                    },
-                    key="Ziqi",
+        group(key="cameras"),
+        htmlChildren=[
+            div(
+                Image(src="", key="video", width=100, height=100, style={"left": 0, "top": 0}),
+                key="HUD",
+                style=dict(
+                    position="absolute",
+                    left=0,
+                    top=0,
+                    minWidth="200px",
+                    minHeight="150px",
+                    backgroundColor="white",
+                    zIndex=10000000,
                 ),
             )
-        )
-        # fix the error below
-        if i == 203:
-            i = 1
-        else:
-            i += 1
+        ],
+        style={"width": "100vw", "height": "900px"},
+        cameras=[],
+    )
 
-        sleep(0.0166)
-        # sleep(0.0001)
+    event = yield Frame(Set(scene))
+
+    sleep(2.0)
+
+    cameras = []
+    for i, pose in enumerate(tqdm(poses)):
+        matrix = colmap_to_three(pose["transform_matrix"])
+        camera = CameraHelper(
+            # Html(Image(fp, width=640, height=480, key=f"view_{i}")),
+            # type="PerspectiveCamera",
+            # scale=0.1,
+            # label=f"camera {i}",
+            matrix=matrix,
+            showFrustum=False,
+            showFocalPlane=False,
+            showImagePlane=True,
+            scale=10,
+            near=0.08,
+            far=0.2,
+            fov=75,
+            key=f"camera_{i}",
+        )
+        cameras.append(camera)
+
+    while True:
+        for i, pose in enumerate(poses):
+            fp = f"{dataset}/{pose['file_path'].replace('images', 'images_8')}"
+
+            event = yield Frame(
+                Update(
+                    # Text(f"hahahha   {i}", key="debug-prompt"),
+                    Image(fp, width=320, height=240, key="video", style={"left": 0, "top": 0}),
+                    group(*list(cameras)[: i + 1 : 1], key="cameras"),
+                )
+            )
+            # print(len(cameras[:i]))
+            sleep(0.005)
+            # sleep(1)
+            # if i == 1:
+            #     sleep(100000)
+            # yield END
+            # return
+            # sleep(1)
+        if event == "TERMINAL":
+            break

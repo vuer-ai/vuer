@@ -39,6 +39,27 @@ class NullEvent(ClientEvent):
 #         instance = cls.__new__(cls)
 #         return cls.__init__(instance, data)
 
+from typing import Sequence
+
+
+def serializer(data):
+    if hasattr(data, "serialize"):
+        return data.serialize()
+
+    if isinstance(data, str):
+        # return Text(data)
+        return data
+
+    # this could be dangerous.
+    if isinstance(data, Sequence):
+        return [serializer(d) for d in data]
+
+    # this could be dangerous
+    if isinstance(data, dict):
+        return {k: serializer(v) for k, v in data.items()}
+
+    NotImplementedError(f"Cannot serialize {data}")
+
 
 class ServerEvent(Event):  # , metaclass=Meta):
     def __init__(self, data, **kwargs):
@@ -50,7 +71,8 @@ class ServerEvent(Event):  # , metaclass=Meta):
         Serialize the event to a dictionary for sending over the websocket.
         :return: A dictionary representing the event.
         """
-        return {**self.__dict__, "data": self.data.serialize()}
+        # Sequence includes text
+        return {**self.__dict__, "data": serializer(self.data)}
 
 
 class Noop(ServerEvent):
@@ -83,8 +105,10 @@ class Update(ServerEvent):
 
     etype = "UPDATE"
 
-    def __init__(self, data: Element, **kwargs):
-        super().__init__(data, **kwargs)
+    def __init__(self, *elements, data: Element = None, **kwargs):
+        # tuple is not serializable
+        elements = [*elements, data] if data else list(elements)
+        super().__init__(elements, **kwargs)
 
 
 class Frame(ServerEvent):
@@ -97,6 +121,20 @@ class Frame(ServerEvent):
 
     def __init__(self, data: ServerEvent, **kwargs):
         super().__init__(data, **kwargs)
+
+
+class End(ServerEvent):
+    """
+    A higher-level ServerEvent that wraps other ServerEvents
+    """
+
+    etype = "TERMINATE"
+
+    def __init__(self, **kwargs):
+        super().__init__(None, **kwargs)
+
+
+END = End()
 
 # if __name__ == "__main__":
 #     e = Frame @ {"hey": "yo"}
