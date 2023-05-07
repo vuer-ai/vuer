@@ -115,7 +115,7 @@ class CommonMark(components.Article):
 
             from termcolor import cprint
             from urllib import parse
-            if logger.root.startswith("http"):
+            if self.window.logger.root.startswith("http"):
                 # just print the path, README.md should just show.
                 cprint("File output at " + self.window.logger.get_dash_url() + " " + self.__filename, "green")
             else:
