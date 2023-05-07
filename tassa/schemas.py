@@ -163,14 +163,14 @@ class Image(Element):
             assert data is None, "data and src can not be truful at the same time"
         else:
             if isinstance(data, pil_image.Image):
-                pass
+                data = data
             elif isinstance(data, str):
                 # convert back to image first from base64
-                image_data = pil_image.open(data)
+                data = pil_image.open(data)
             elif isinstance(data, np.ndarray):
-                image_data = (data * 255).astype(np.uint8)
+                data = (data * 255).astype(np.uint8)
 
-            src = self.base64(image_data)
+            src = self.base64(data)
 
         super().__init__(src=src, **kwargs)
 
