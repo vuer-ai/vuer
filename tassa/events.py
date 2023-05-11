@@ -16,6 +16,9 @@ class Event:
 
 
 class ClientEvent(Event):
+
+    value = None
+
     def __init__(self, etype=None, **kwargs):
         self.etype = etype
         self.__dict__.update(kwargs)

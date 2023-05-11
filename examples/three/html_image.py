@@ -42,13 +42,28 @@ doc = Tassa(
     debug=True,
 )
 
-dataset = f"/Users/ge/datasets/rooms/ei_stairway_v1"
+# dataset = f"/Users/ge/datasets/rooms/ei_stairway_v1"
+dataset = f"/instant-feature/datasets/rooms_dpvo/davis_lab_v1"
+# dataset = f"/instant-feature/datasets/rooms_dpvo/ei_stairway_v1"
+# dataset = f"/instant-feature/datasets/rooms_dpvo/shelf_in_room_v5"
+# dataset = f"/instant-feature/datasets/rooms_dpvo/whiteboard_v1"
+# dataset = f"/instant-feature/datasets/slam/experiments/ycb_v0_small"
 # from ml_logger import logger
 
-with open(dataset + "/transforms.json", "r") as f:
-    transforms = json.load(f)
-    # print(transforms)
+# with open(dataset + "/transforms.json", "r") as f:
+#     transforms = json.load(f)
+# print(transforms)
+from ml_logger import logger
+
+transforms = logger.load_json(dataset + "/transforms.json")
 poses = sorted(transforms["frames"], key=lambda x: x["file_path"])
+
+
+# for pose in poses:
+#     pose["file_path"] = pose["file_path"].replace("source", "images")
+#
+# logger.duplicate(dataset + "/transforms.json", dataset + "/transforms.json.bk")
+# logger.save_json(transforms, dataset + "/transforms.json")
 
 
 # doc = Tassa(reconnect=True)
@@ -62,8 +77,8 @@ def show_heatmap():
             position=[0, 0.4, 0],
             rotation=[-0.5 * np.pi, 0, -0.5 * np.pi],
         ),
-        Gripper(pinchWidth=0.04, skeleton=False, axes=True, position=[0, 0.2, 0], key="gripper"),
-        SkeletalGripper(movable=True, pinchWidth=0.04, position=[0, 0.2, 0], key="skeleton"),
+        # Gripper(pinchWidth=0.04, skeleton=False, axes=True, position=[0, 0.2, 0], key="gripper"),
+        # SkeletalGripper(movable=True, pinchWidth=0.04, position=[0, 0.2, 0], key="skeleton"),
         group(key="cameras"),
         htmlChildren=[
             div(
@@ -110,22 +125,32 @@ def show_heatmap():
 
     while True:
         for i, pose in enumerate(poses):
-            fp = f"{dataset}/{pose['file_path'].replace('images', 'images_8')}"
+            # fp = f"{dataset}/{pose['file_path'].replace('images', 'images_8')}"
+            try:
+                path = dataset + "/" + pose["file_path"]
+                # print(path)
+                image_blob = logger.load_file(path)
+                import PIL.Image
 
-            event = yield Frame(
-                Update(
-                    # Text(f"hahahha   {i}", key="debug-prompt"),
-                    Image(fp, width=320, height=240, key="video", style={"left": 0, "top": 0}),
-                    group(*list(cameras)[: i + 1 : 1], key="cameras"),
+                image = PIL.Image.open(image_blob)
+
+                event = yield Frame(
+                    Update(
+                        # Text(f"hahahha   {i}", key="debug-prompt"),
+                        Image(image, width=320, height=240, key="video", style={"left": 0, "top": 0}),
+                        group(*list(cameras)[: i + 1 : 1], key="cameras"),
+                    )
                 )
-            )
-            # print(len(cameras[:i]))
-            sleep(0.005)
+                # print(len(cameras[:i]))
+                sleep(0.005)
+            except:
+                pass
             # sleep(1)
             # if i == 1:
             #     sleep(100000)
             # yield END
             # return
             # sleep(1)
+        sleep(1000)
         if event == "TERMINAL":
             break
