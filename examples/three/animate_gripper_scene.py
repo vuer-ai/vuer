@@ -4,7 +4,7 @@ import numpy as np
 
 from tassa import Tassa
 from tassa.events import Set, Update, Frame
-from tassa.schemas import Page, Scene, Ply, Gripper, SkeletalGripper
+from tassa.schemas import Scene, Ply, Gripper, SkeletalGripper, Movable
 
 doc = Tassa(
     "ws://localhost:8012",
@@ -12,7 +12,6 @@ doc = Tassa(
     reconnect=True,
     debug=True,
 )
-
 
 @doc.bind(start=True)
 async def show_heatmap():
@@ -22,7 +21,9 @@ async def show_heatmap():
                 "/2023-01-20_23-08-27/orange/mask_in.ply",
             position=[0, 0.4, 0], rotation=[-0.5 * np.pi, 0, -0.5 * np.pi]
         ),
-        Gripper(pinchWidth=0.04, skeleton=False, axes=True, position=[0, .2, 0], key='gripper'),
+        Movable(
+            Gripper(pinchWidth=0.04, skeleton=False, axes=True, position=[0, .2, 0], key='gripper'),
+        ),
         SkeletalGripper(movable=True, pinchWidth=0.04, position=[0, .2, 0], key='skeleton'),
         style={"width": "100vw", "height": "900px"},
     )
