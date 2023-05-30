@@ -1,8 +1,10 @@
 import json
-from asyncio import sleep
+from asyncio import sleep, iscoroutinefunction
 from functools import partial
+
 from sanic import Sanic
-from tassa.events import Event, ClientEvent, NullEvent, ServerEvent
+
+from tassa.events import ClientEvent, NullEvent, ServerEvent
 from tassa.schemas import Page
 
 
@@ -60,19 +62,29 @@ class Tassa(Sanic):
         :return: None
         """
         generator = self.bound_fn()
+
         async for msg in ws:
             clientEvent = ClientEvent(**json.loads(msg))
 
             if clientEvent == "INIT":
-                serverEvent = next(generator)
+                if hasattr(generator, "__anext__"):
+                    serverEvent = await generator.__anext__()
+                else:
+                    serverEvent = next(generator)
             else:
-                serverEvent = generator.send(clientEvent)
+                if hasattr(generator, "__anext__"):
+                    serverEvent = await generator.asend(clientEvent)
+                else:
+                    serverEvent = generator.send(clientEvent)
 
             while serverEvent == "FRAME":
                 await self.send(ws, serverEvent.data)
                 await sleep(0.001)
 
-                serverEvent = generator.send(NullEvent())
+                if hasattr(generator, "__anext__"):
+                    serverEvent = await generator.asend(NullEvent())
+                else:
+                    serverEvent = generator.send(NullEvent())
 
             if serverEvent != "NOOP":
                 await self.send(ws, serverEvent)
