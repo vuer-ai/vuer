@@ -14,7 +14,7 @@ from tassa.schemas import Page, Header1, Paragraph, Image, Text, InputBox, Slide
 #     reconnect=True,
 #     debug=True,
 # )
-doc = Tassa(reconnect=True)
+doc = Tassa("ws://localhost:8013", reconnect=True, free_port=True)
 
 
 # this is blocking because it autostarts.

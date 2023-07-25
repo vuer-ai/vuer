@@ -10,7 +10,7 @@ from tassa.schemas import Page, Header1, Paragraph, Image, Text, InputBox, Slide
 
 doc = Tassa(
     "ws://localhost:8012",
-    uri="http://localhost:8000/tassa",
+    # uri="http://localhost:8000/tassa",
     reconnect=True,
     debug=True,
 )

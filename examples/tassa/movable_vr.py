@@ -15,9 +15,6 @@ doc = Tassa(
     debug=True,
 )
 
-# print(f"https://1c3580631849.ngrok.io/tassa?ws=wss://a75892611d04.ngrok.io/feed?reconnect=true")
-
-
 # this is blocking because it autostarts.
 @doc.bind(start=True)
 def show_heatmap():
