@@ -26,16 +26,9 @@ doc = Tassa(
     debug=True,
 )
 
-dataset = f"/instant-feature/datasets/rooms_dpvo/davis_lab_v1"
-from ml_logger import logger
-
-transforms = logger.load_json(dataset + "/transforms.json")
-poses = sorted(transforms["frames"], key=lambda x: x["file_path"])
-
 
 @doc.bind(start=True)
 def show_heatmap():
-
     print("reading stuff")
     frames = list(iio.imread("fisheye.mp4"))
 
