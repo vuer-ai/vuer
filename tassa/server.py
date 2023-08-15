@@ -7,6 +7,8 @@ from sanic import Sanic
 from tassa.events import ClientEvent, NullEvent, ServerEvent
 from tassa.schemas import Page
 
+from sanic_cors import CORS, cross_origin
+
 
 class Tassa(Sanic):
     """
@@ -21,6 +23,10 @@ class Tassa(Sanic):
         self.queries = queries
         self.free_port = free_port
         self.domain = uri or "https://dash.ml/tassa"
+
+        CORS(self, resources={r"/local/*": {"origins": "*"}})
+        # serve local files via /local endpoint
+        self.static('/local', '.')
 
     def bind(self, fn=None, start=False):
         """
