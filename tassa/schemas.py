@@ -1,5 +1,3 @@
-import base64
-from io import BytesIO
 from typing import Union
 
 import numpy as np
@@ -279,6 +277,10 @@ class Movable(SceneElement):
 
 class Glb(SceneElement):
     tag = "Glb"
+
+
+class Urdf(SceneElement):
+    tag = "Urdf"
 
 
 class PointCloud(SceneElement):
