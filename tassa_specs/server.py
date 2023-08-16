@@ -2,6 +2,7 @@ from asyncio import sleep
 from datetime import datetime
 
 import numpy as np
+from pandas import DataFrame
 
 from tassa import Tassa
 from tassa.events import Set, Update, Frame
@@ -15,6 +16,31 @@ doc = Tassa(
     static_root="/Users/ge/mit/cmx-python/examples/three/gabe_go1/"
 )
 
+joint_mapping = {
+    0: "FL_hip",
+    1: "FL_thigh",
+    2: "FL_calf",
+    3: "FR_hip",
+    4: "FR_thigh",
+    5: "FR_calf",
+    6: "RL_hip",
+    7: "RL_thigh",
+    8: "RL_calf",
+    9: "RR_hip",
+    10: "RR_thigh",
+    11: "RR_calf",
+}
+
+def row2dict(row):
+    return {joint_mapping[i] + "_joint": float(row[i]) for i in range(12) if i is not None}
+
+import pickle
+
+with open("log.pkl", "rb") as f:
+    cfg, traj = pickle.load(f)['hardware_closed_loop']
+    df = DataFrame(traj[:-1])
+
+    df_joint = np.concatenate(df['joint_pos_target'].values)
 
 @doc.bind(start=True)
 async def show_heatmap():
@@ -24,18 +50,18 @@ async def show_heatmap():
             src=f"http://localhost:8012/local/urdf/go1.urdf?ts={datetime.now()}",
             auto_redraw=True,
             jointValues={
-                "FL_calf_joint": -1.5,
-                "FL_hip_joint": 0.1,
-                "FL_thigh_joint": 0.8,
-                "FR_calf_joint": -1.5,
-                "FR_hip_joint": -0.1,
-                "FR_thigh_joint": 0.8,
-                "RL_calf_joint": -1.5,
-                "RL_hip_joint": 0.1,
-                "RL_thigh_joint": 1.0,
-                "RR_calf_joint": -1.5,
-                "RR_hip_joint": -0.1,
-                "RR_thigh_joint": 1.0
+                "FL_calf_joint": -1.5707963268,
+                "FL_hip_joint": 0.0,
+                "FL_thigh_joint": 0.7853981634,
+                "FR_calf_joint": -1.5707963268,
+                "FR_hip_joint": -0.0,
+                "FR_thigh_joint": 0.7853981634,
+                "RL_calf_joint": -1.5707963268,
+                "RL_hip_joint": 0.0,
+                "RL_thigh_joint": 0.7853981634,
+                "RR_calf_joint": -1.5707963268,
+                "RR_hip_joint": -0.0,
+                "RR_thigh_joint": 0.7853981634
             },
             position=[0, 0.4, 0],
             rotation=[-0.5 * np.pi, 0, -0.5 * np.pi],
@@ -45,26 +71,24 @@ async def show_heatmap():
 
     i = 0
     event = yield Frame(Set(scene))
-    print(vars(event))
+    # print(vars(event))
     while event != "TERMINAL":
         i += 1
         phase = 0.1 * np.pi * i / 50
         pinch = 0.033 * (i % 30)
         position = [0.2 * np.sin(phase), .2, 0.2 * np.cos(phase)]
+        jointValues = row2dict(df_joint[i % len(df_joint)])
+        print(jointValues)
+
         event = yield Frame(
             Update(
-                # Urdf(
-                #     key="go1",
-                #     src="http://localhost:8012/local/gabe_go1/urdf/go1.urdf",
-                #     auto_redraw=True,
-                #     jointValues={
-                #         "FR_calf_joint": -1.5 * np.sin(phase),
-                #         "FL_calf_joint": -1.5 * np.sin(phase + 0.5 * np.pi),
-                #         "RR_calf_joint": -1.5 + 1 * np.sin(phase),
-                #         "RL_calf_joint": -1.5 + 1 * np.sin(phase + 0.5 * np.pi),
-                #     },
-                # ),
+                Urdf(
+                    key="go1",
+                    src="http://localhost:8012/local/gabe_go1/urdf/go1.urdf",
+                    auto_redraw=True,
+                    jointValues=jointValues,
+                ),
             )
         )
 
-        await sleep(0.0166)
+        await sleep(0.02)

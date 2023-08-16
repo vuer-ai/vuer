@@ -532,7 +532,7 @@
     <child link="RL_calf"/>
     <axis xyz="0 1 0"/>
     <dynamics damping="0" friction="0"/>
-    <limit effort="33.5" lower="-2.69653369433" upper="-0.916297857297" velocity="28"/>
+    <limit effort="33.5" lower="-2.8" upper="-0.916297857297" velocity="28"/>
   </joint>
   <link name="RL_calf">
     <visual>
