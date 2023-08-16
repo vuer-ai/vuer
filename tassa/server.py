@@ -15,18 +15,25 @@ class Tassa(Sanic):
     A Tassa is a document that can be rendered in a browser.
     """
 
-    def __init__(self, ws="ws://localhost:8012", name="tassa", uri=None, free_port=True, **queries):
+    def __init__(self, ws="ws://localhost:8012", name="tassa", uri=None, free_port=True, static_root=".", **queries):
         super().__init__(name)
         self.page = Page()
         self.uri = ws
         self.bound_fn = None
         self.queries = queries
         self.free_port = free_port
+        self.static_root = static_root
         self.domain = uri or "https://dash.ml/tassa"
 
         CORS(self, resources={r"/local/*": {"origins": "*"}})
         # serve local files via /local endpoint
-        self.static('/local', '.')
+        self.static("/local", self.static_root or ".")
+        self.add_route(self.relay, "/relay", methods=['POST'])
+
+    def relay(self, request):
+        data = request.json
+        remoteClientEvent = ClientEvent(**data)
+        return self.send(self.ws, remoteClientEvent)
 
     def bind(self, fn=None, start=False):
         """

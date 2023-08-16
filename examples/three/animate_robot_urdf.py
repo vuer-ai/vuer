@@ -1,4 +1,5 @@
 from asyncio import sleep
+from datetime import datetime
 
 import numpy as np
 
@@ -13,17 +14,23 @@ doc = Tassa(
     debug=True,
 )
 
+
 @doc.bind(start=True)
 async def show_heatmap():
     scene = Scene(
         Urdf(
-            src="http://localhost:8012/local/anymal/urdf/anymal.urdf",
-            position=[0, 0.4, 0], rotation=[-0.5 * np.pi, 0, -0.5 * np.pi]
+            key="go1",
+            src=f"http://localhost:8012/local/gabe_go1/urdf/go1.urdf?ts={datetime.now()}",
+            auto_redraw=True,
+            jointValues={
+                "FR_calf_joint": 0,
+                "FL_calf_joint": 0,
+                "RR_calf_joint": 0,
+                "RL_calf_joint": 0,
+            },
+            position=[0, 0.4, 0],
+            rotation=[-0.5 * np.pi, 0, -0.5 * np.pi],
         ),
-        Movable(
-            Gripper(pinchWidth=0.04, skeleton=False, axes=True, position=[0, .2, 0], key='gripper'),
-        ),
-        SkeletalGripper(movable=True, pinchWidth=0.04, position=[0, .2, 0], key='skeleton'),
         style={"width": "100vw", "height": "900px"},
     )
 
@@ -32,14 +39,23 @@ async def show_heatmap():
     print(vars(event))
     while event != "TERMINAL":
         i += 1
-        phase = 2 * np.pi * i / 50
+        phase = 0.1 * np.pi * i / 50
         pinch = 0.033 * (i % 30)
-        # position = [0.2 * np.sin(phase), .2, 0.2 * np.cos(phase)]
-        event = yield Frame(Update(
-            Gripper(pinchWidth=0.04 * (1 - pinch), axes=True, position=[0, 0.2, 0], key="gripper"),
-        ))
-        event = yield Frame(Update(
-            SkeletalGripper(pinchWidth=0.04 * (1 - pinch), axes=True, position=[-0.2, 0.2, 0], key="skeleton"),
-        ))
+        position = [0.2 * np.sin(phase), .2, 0.2 * np.cos(phase)]
+        event = yield Frame(
+            Update(
+                Urdf(
+                    key="go1",
+                    src="http://localhost:8012/local/gabe_go1/urdf/go1.urdf",
+                    auto_redraw=True,
+                    jointValues={
+                        "FR_calf_joint": -1.5 * np.sin(phase),
+                        "FL_calf_joint": -1.5 * np.sin(phase + 0.5 * np.pi),
+                        "RR_calf_joint": -1.5 + 1 * np.sin(phase),
+                        "RL_calf_joint": -1.5 + 1 * np.sin(phase + 0.5 * np.pi),
+                    },
+                ),
+            )
+        )
 
         await sleep(0.0166)
