@@ -1,5 +1,6 @@
 from asyncio import sleep
 from datetime import datetime
+from requests_futures import requests
 
 import numpy as np
 from pandas import DataFrame
@@ -8,13 +9,8 @@ from tassa import Tassa
 from tassa.events import Set, Update, Frame
 from tassa.schemas import Scene, Ply, Gripper, SkeletalGripper, Movable, Urdf
 
-doc = Tassa(
-    "ws://localhost:8012",
-    uri="https://dash.ml/demos/vqn-dash/three",
-    reconnect=True,
-    debug=True,
-    static_root="/Users/ge/mit/cmx-python/examples/three/gabe_go1/"
-)
+
+requests.post("localhost:8012/relay", )
 
 joint_mapping = {
     0: "FL_hip",
@@ -45,34 +41,9 @@ with open("log.pkl", "rb") as f:
     df_joint = np.concatenate(df['joint_pos_target'].values)
 
 
-@doc.bind(start=True)
-async def show_heatmap():
-    scene = Scene(
-        Urdf(
-            key="go1",
-            src=f"http://localhost:8012/local/urdf/go1.urdf?ts={datetime.now()}",
-            auto_redraw=True,
-            jointValues={
-                "FL_calf_joint": -1.5707963268,
-                "FL_hip_joint": 0.0,
-                "FL_thigh_joint": 0.7853981634,
-                "FR_calf_joint": -1.5707963268,
-                "FR_hip_joint": -0.0,
-                "FR_thigh_joint": 0.7853981634,
-                "RL_calf_joint": -1.5707963268,
-                "RL_hip_joint": 0.0,
-                "RL_thigh_joint": 0.7853981634,
-                "RR_calf_joint": -1.5707963268,
-                "RR_hip_joint": -0.0,
-                "RR_thigh_joint": 0.7853981634
-            },
-            position=[0, 0.4, 0],
-            rotation=[-0.5 * np.pi, 0, -0.5 * np.pi],
-        ),
-        style={"width": "100vw", "height": "900px"},
-    )
-
+if __name__ == '__main__':
     i = 0
+
     event = yield Frame(Set(scene))
     # print(vars(event))
     while event != "TERMINAL":
