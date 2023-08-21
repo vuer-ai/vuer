@@ -1,66 +1,75 @@
+import json
 from asyncio import sleep
-from datetime import datetime
-from requests_futures import requests
 
 import numpy as np
-from pandas import DataFrame
+from pandas import DataFrame, read_json
 
 from tassa import Tassa
 from tassa.events import Set, Update, Frame
-from tassa.schemas import Scene, Ply, Gripper, SkeletalGripper, Movable, Urdf
+from tassa.schemas import Scene, Ply, Gripper, SkeletalGripper, Movable, Urdf, Page
+
+doc = Tassa(
+    "ws://localhost:8012",
+    uri="https://dash.ml/demos/vqn-dash/three",
+    reconnect=True,
+    debug=True,
+)
 
 
-requests.post("localhost:8012/relay", )
+df = read_json("trajectory_log_info.json")
+print(df)
 
-joint_mapping = {
-    0: "FL_hip",
-    1: "FL_thigh",
-    2: "FL_calf",
-    3: "FR_hip",
-    4: "FR_thigh",
-    5: "FR_calf",
-    6: "RL_hip",
-    7: "RL_thigh",
-    8: "RL_calf",
-    9: "RR_hip",
-    10: "RR_thigh",
-    11: "RR_calf",
-}
+DEFAULT_POS = {
+                "FL_hip_joint": 0,
+                "RL_hip_joint": 0,
+                "FR_hip_joint": 0,
+                "RR_hip_joint": 0,
+                "FL_thigh_joint": np.pi * 0.25,
+                "RL_thigh_joint": np.pi * 0.25,
+                "FR_thigh_joint": np.pi * 0.25,
+                "RR_thigh_joint": np.pi * 0.25,
+                "FL_calf_joint": -np.pi/2,
+                "RL_calf_joint": -np.pi/2,
+                "FR_calf_joint": -np.pi/2,
+                "RR_calf_joint": -np.pi/2,
+            }
 
-
-def row2dict(row):
-    return {joint_mapping[i] + "_joint": float(row[i]) for i in range(12) if i is not None}
-
-
-import pickle
-
-with open("log.pkl", "rb") as f:
-    cfg, traj = pickle.load(f)['hardware_closed_loop']
-    df = DataFrame(traj[:-1])
-
-    df_joint = np.concatenate(df['joint_pos_target'].values)
-
-
-if __name__ == '__main__':
+@doc.bind(start=True)
+async def go1_running():
     i = 0
 
+    scene = Scene(
+        # Ply(src="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/orange/mask_in.ply",
+        # position=[0.2, 0, -2], rotation=[0, 0, 0]),
+        Urdf(
+            key="go1",
+            src="http://localhost:8012/local/gabe_go1/urdf/go1.urdf",
+            auto_redraw=True,
+            jointValues=DEFAULT_POS
+        ),
+
+    )
+
     event = yield Frame(Set(scene))
-    # print(vars(event))
+    print(vars(event))
     while event != "TERMINAL":
         i += 1
-        phase = 0.1 * np.pi * i / 50
-        pinch = 0.033 * (i % 30)
-        position = [0.2 * np.sin(phase), .2, 0.2 * np.cos(phase)]
-        jointValues = row2dict(df_joint[i % len(df_joint)])
-        print(jointValues)
+
+        jointValues = df.iloc[i % len(df)].to_dict()
+        position = jointValues.pop('base_position')
+        rotation = jointValues.pop('base_rotation')
+
+        # jointValues = {k: jointValues[k] + DEFAULT_POS[k] for k in DEFAULT_POS}
 
         event = yield Frame(
             Update(
                 Urdf(
                     key="go1",
                     src="http://localhost:8012/local/gabe_go1/urdf/go1.urdf",
+                    position=position,
+                    rotation=rotation,
                     auto_redraw=True,
-                    jointValues=jointValues,
+                    jointValues=jointValues
                 ),
             )
         )
