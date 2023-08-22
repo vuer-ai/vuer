@@ -6,7 +6,8 @@ from pandas import DataFrame, read_json
 
 from tassa import Tassa
 from tassa.events import Set, Update, Frame
-from tassa.schemas import Scene, Ply, Gripper, SkeletalGripper, Movable, Urdf, Page
+from tassa.schemas import Scene, Ply, Gripper, SkeletalGripper, Movable, Urdf, Page, \
+    group, Box, Capsule, Cylinder, Plane, Sphere
 
 doc = Tassa(
     "ws://localhost:8012",
@@ -47,7 +48,7 @@ async def go1_running():
             auto_redraw=True,
             jointValues=DEFAULT_POS
         ),
-
+        group(key="playground")
     )
 
     event = yield Frame(Set(scene))
@@ -71,6 +72,27 @@ async def go1_running():
                     auto_redraw=True,
                     jointValues=jointValues
                 ),
+                group(Sphere(
+                            hide=False,
+                            color="#ffff00",
+                            args=[0.1, 16, 16]
+                        ),
+                        Plane(
+                            hide=False,
+                            color="#808080",
+                            args=[10, 10]
+                        ),
+                        Capsule(
+                                hide=False,
+                                color="#ff0000",
+                                args=[0.2, 0.4]
+                            ),
+                        Box(
+                            hide=False,
+                            color="#ff0000",
+                            args=[0.2, 0.2, 1]
+                        ),
+                        key="playground")
             )
         )
 
