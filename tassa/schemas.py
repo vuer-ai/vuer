@@ -235,6 +235,20 @@ class group(SceneElement):
     tag = "group"
     children = []
 
+class Box(SceneElement):
+    tag = "Box"
+
+class Capsule(SceneElement):
+    tag = "Capsule"
+
+class Cylinder(SceneElement):
+    tag = "Cylinder"
+
+class Plane(SceneElement):
+    tag = "Plane"
+
+class Sphere(SceneElement):
+    tag = "Sphere"
 
 class Pcd(SceneElement):
     tag = "Pcd"
