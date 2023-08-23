@@ -39,7 +39,7 @@ class Tassa(Sanic):
         assert isinstance(msg, ServerEvent), "msg must be a ServerEvent type object."
         assert not isinstance(msg, Frame), "Frame event is only used in tassa.bind method."
         self.uplink_queue.append(msg)
-        return self.popleft()
+        return None
 
     @property
     def set(self) -> At:

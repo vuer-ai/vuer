@@ -58,8 +58,6 @@ async def go1_running():
     i = 0
 
     scene = Scene(
-        # Ply(src="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/orange/mask_in.ply",
-        # position=[0.2, 0, -2], rotation=[0, 0, 0]),
         Urdf(
             key="go1",
             src="http://localhost:8012/local/gabe_go1/urdf/go1.urdf",
@@ -69,7 +67,7 @@ async def go1_running():
         group(key="playground"),
     )
 
-    event = doc.set @ scene
+    doc.set @ scene
     while event != "TERMINAL":
         i += 1
 
@@ -81,7 +79,7 @@ async def go1_running():
         # jointValues = {k: jointValues[k] + DEFAULT_POS[k] for k in DEFAULT_POS}
 
         # add and example of adding remote control to the mix
-        event = doc @ Update(
+        doc @ Update(
             Urdf(
                 key="go1",
                 src="http://localhost:8012/local/gabe_go1/urdf/go1.urdf",
@@ -95,6 +93,7 @@ async def go1_running():
                 key="playground",
             ),
         )
+
         event = doc.pop() or event
         print(a, event, len(doc.downlink_queue))
         doc.clear()
