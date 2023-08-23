@@ -19,6 +19,9 @@ class ClientEvent(Event):
 
     value = None
 
+    def __repr__(self):
+        return f"client<{self.etype}>({self.value})"
+
     def __init__(self, etype=None, **kwargs):
         self.etype = etype
         self.__dict__.update(kwargs)
