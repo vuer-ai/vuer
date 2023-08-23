@@ -19,7 +19,7 @@ class At:
         self.fn = fn
 
     def __matmul__(self, arg):
-        self.fn(arg)
+        return self.fn(arg)
 
 
 class Tassa(Sanic):
