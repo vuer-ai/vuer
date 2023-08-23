@@ -35,9 +35,17 @@ class ClientEvent(Event):
             self.value = image
 
 
+class InitEvent(ClientEvent):
+    def __init__(self, **kwargs):
+        super().__init__(etype="Init", **kwargs)
+
+INIT = InitEvent()
+
 class NullEvent(ClientEvent):
     def __init__(self, **kwargs):
         super().__init__(etype="NULL", **kwargs)
+        
+NULL = NullEvent()
 
 
 # class Meta(type):

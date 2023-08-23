@@ -27,6 +27,7 @@ doc = Tassa(
     uri="https://dash.ml/demos/vqn-dash/three",
     reconnect=True,
     debug=True,
+    cors_origin="*"
 )
 
 
@@ -62,8 +63,8 @@ async def go1_running():
         group(key="playground"),
     )
 
-    event = yield Frame(Set(scene))
-    assert event == "NULL", "Frame event returns NULL under sync mode"
+    event = yield Set(scene)
+    assert event == "INIT", "Frame event returns INIT under sync mode"
 
     i = 0
     while event != "TERMINAL":

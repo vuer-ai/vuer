@@ -8,7 +8,7 @@ from sanic import Sanic
 from sanic.websocket import WebSocketProtocol, WebSocketConnection
 from websockets import ConnectionClosedOK, ConnectionClosedError
 
-from tassa.events import ClientEvent, NullEvent, ServerEvent, NOOP, Frame, Set, Update
+from tassa.events import ClientEvent, NullEvent, ServerEvent, NOOP, Frame, Set, Update, InitEvent, INIT
 from tassa.schemas import Page
 
 from sanic_cors import CORS, cross_origin
@@ -57,7 +57,7 @@ class Tassa(Sanic):
         free_port=True,
         static_root=".",
         queue_len=None,
-        cors_origin="https://dash.ml",
+        cors_origin=["https://dash.ml", "*"],
         **queries,
     ):
         super().__init__(name)
@@ -88,6 +88,8 @@ class Tassa(Sanic):
     async def on_socket(self):
         """This is the default socket connection handler"""
         print("default socket worker is up, adding clientEvents ")
+        self.downlink_queue.append(INIT)
+
         while True:
             clientEvent = yield NOOP
             self.downlink_queue.append(clientEvent)
@@ -194,21 +196,25 @@ class Tassa(Sanic):
         print("websocket is now connected")
         generator = self.on_socket()
 
+        if hasattr(generator, "__anext__"):
+            serverEvent = await generator.__anext__()
+        else:
+            serverEvent = next(generator)
+
+        assert serverEvent != "FRAME", "The first event can not be a FRAME event."
+
+        if serverEvent != "NOOP":
+            await self.send(ws, serverEvent)
+
         self.ws = ws
 
         async for msg in ws:
             clientEvent = ClientEvent(**json.loads(msg))
 
-            if clientEvent == "INIT":
-                if hasattr(generator, "__anext__"):
-                    serverEvent = await generator.__anext__()
-                else:
-                    serverEvent = next(generator)
+            if hasattr(generator, "__anext__"):
+                serverEvent = await generator.asend(clientEvent)
             else:
-                if hasattr(generator, "__anext__"):
-                    serverEvent = await generator.asend(clientEvent)
-                else:
-                    serverEvent = generator.send(clientEvent)
+                serverEvent = generator.send(clientEvent)
 
             while serverEvent == "FRAME":
                 serverEvent = cast(Frame, serverEvent)
