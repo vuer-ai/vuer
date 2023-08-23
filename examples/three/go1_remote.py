@@ -51,8 +51,7 @@ DEFAULT_POS = {
 
 
 @doc.spawn(start=True)
-async def go1_running(*a, **kw):
-    print(a, kw)
+async def go1_running():
     i = 0
 
     scene = Scene(
@@ -78,6 +77,7 @@ async def go1_running(*a, **kw):
 
         # jointValues = {k: jointValues[k] + DEFAULT_POS[k] for k in DEFAULT_POS}
 
+        # add and example of adding remote control to the mix
         event = doc @ Update(
             Urdf(
                 key="go1",

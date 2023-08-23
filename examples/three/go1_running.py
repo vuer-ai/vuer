@@ -51,11 +51,8 @@ DEFAULT_POS = {
 
 @doc.bind(start=True)
 async def go1_running():
-    i = 0
 
     scene = Scene(
-        # Ply(src="https://escher.ge.ngrok.io/files/william/nerfstudio/correspondences/2023-01-20_23-08-27/orange/mask_in.ply",
-        # position=[0.2, 0, -2], rotation=[0, 0, 0]),
         Urdf(
             key="go1",
             src="http://localhost:8012/local/gabe_go1/urdf/go1.urdf",
@@ -67,6 +64,8 @@ async def go1_running():
 
     event = yield Frame(Set(scene))
     assert event == "NULL", "Frame event returns NULL under sync mode"
+
+    i = 0
     while event != "TERMINAL":
         i += 1
 
