@@ -1,11 +1,11 @@
 import json
-from asyncio import sleep, iscoroutinefunction
+from asyncio import sleep, iscoroutinefunction, create_task
 from collections import deque
 from functools import partial
+from random import random
 from typing import cast
 
 from sanic import Sanic
-from sanic.websocket import WebSocketProtocol, WebSocketConnection
 from websockets import ConnectionClosedOK, ConnectionClosedError
 
 from tassa.events import ClientEvent, NullEvent, ServerEvent, NOOP, Frame, Set, Update, InitEvent, INIT
@@ -85,7 +85,7 @@ class Tassa(Sanic):
         self @ ServerEvent(**data)
 
     # ** downlink message queue methods**
-    async def on_socket(self):
+    async def bound_fn(self):
         """This is the default socket connection handler"""
         print("default socket worker is up, adding clientEvents ")
         self.downlink_queue.append(INIT)
@@ -112,6 +112,10 @@ class Tassa(Sanic):
     def stream(self):
         yield from self.downlink_queue
 
+    spawned_fn = None
+
+    spawned_coroutines = []
+
     def spawn(self, fn=None, start=False):
         """
         Spawn a function as a task. This is useful in the following scenario:
@@ -125,7 +129,7 @@ class Tassa(Sanic):
         """
 
         def wrap_fn(fn):
-            self.add_task(fn)
+            self.spawned_fn = fn
             if start:
                 self.run()
 
@@ -143,7 +147,7 @@ class Tassa(Sanic):
         """
 
         def wrap_fn(fn):
-            self.on_socket = fn
+            self.bound_fn = fn
             if start:
                 self.run()
 
@@ -186,7 +190,7 @@ class Tassa(Sanic):
             else:
                 await sleep(0.0)
 
-    async def downlink(self, request, ws: WebSocketConnection):
+    async def downlink(self, request, ws):
         """
         The websocket handler for the Tassa.
         :param ws: The websocket.
@@ -194,7 +198,16 @@ class Tassa(Sanic):
         :return: None
         """
         print("websocket is now connected")
-        generator = self.on_socket()
+        generator = self.bound_fn()
+
+        key = random()
+
+        if self.spawned_fn is not None:
+            task = self.add_task(self.spawned_fn)
+            # need to add logic to clean up.
+            # for task in self.spawned_coroutines:
+            #     task.cancel()
+            # self.spawned_coroutines.append(task)
 
         if hasattr(generator, "__anext__"):
             serverEvent = await generator.__anext__()

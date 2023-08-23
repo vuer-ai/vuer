@@ -24,11 +24,10 @@ from tassa.schemas import (
 
 doc = Tassa(
     "ws://localhost:8012",
-    # uri="https://dash.ml/demos/vqn-dash/three",
-    uri="http://localhost:8000/demos/vqn-dash/three",
+    uri="https://dash.ml/demos/vqn-dash/three",
     reconnect=True,
     debug=True,
-    cors_origin="*"
+    cors_origin="*",
 )
 
 df = read_json("trajectory_log_info.json")
@@ -49,9 +48,13 @@ DEFAULT_POS = {
     "RR_calf_joint": -np.pi / 2,
 }
 
+a = 0
 
 @doc.spawn(start=True)
 async def go1_running():
+    global a
+
+    a += 1
     i = 0
 
     scene = Scene(
@@ -70,7 +73,7 @@ async def go1_running():
     while event != "TERMINAL":
         i += 1
 
-        jointValues = df.iloc[i % len(df)].to_dict()
+        jointValues = df.iloc[i % 100].to_dict()
 
         position = jointValues.pop("base_position")
         rotation = jointValues.pop("base_rotation")
@@ -92,5 +95,8 @@ async def go1_running():
                 key="playground",
             ),
         )
+        event = doc.pop() or event
+        print(a, event, len(doc.downlink_queue))
+        doc.clear()
 
         await sleep(1/50.)

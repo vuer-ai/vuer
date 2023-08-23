@@ -1,25 +1,12 @@
-import json
-from asyncio import sleep
-
 import numpy as np
-from pandas import DataFrame, read_json
+from pandas import read_json
 
 from tassa import Tassa
 from tassa.events import Set, Update, Frame
 from tassa.schemas import (
     Scene,
-    Ply,
-    Gripper,
-    SkeletalGripper,
-    Movable,
     Urdf,
-    Page,
     group,
-    Box,
-    Capsule,
-    Cylinder,
-    Plane,
-    Sphere,
 )
 
 doc = Tassa(
@@ -49,14 +36,13 @@ DEFAULT_POS = {
     "RR_calf_joint": -np.pi / 2,
 }
 
-
 @doc.bind(start=True)
 async def go1_running():
 
     scene = Scene(
         Urdf(
             key="go1",
-            src="http://localhost:8012/local/gabe_go1/urdf/go1.urdf",
+            src="https://dash.ml/local/gabe_go1/urdf/go1.urdf",
             auto_redraw=True,
             jointValues=DEFAULT_POS,
         ),
