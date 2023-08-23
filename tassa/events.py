@@ -122,8 +122,16 @@ class Frame(ServerEvent):
     ServerEvent: ServerEvent
     etype = "FRAME"
 
-    def __init__(self, data: ServerEvent, **kwargs):
+    def __init__(self, data: ServerEvent, frame_rate=60.0, **kwargs):
+        """Frame object returns a NOOP client event, to keep the on_socket generator
+        running at a constant rate.
+
+        :param data:
+        :param frame_rate: default to 60, set this for wait time between frames
+        :param kwargs:
+        """
         super().__init__(data, **kwargs)
+        self.frame_rate = frame_rate
 
 
 class End(ServerEvent):
