@@ -7,14 +7,11 @@ from tassa.schemas import (
     Scene,
     Urdf,
     group,
+    CameraView,
 )
 
 doc = Tassa(
-    "ws://localhost:8012",
-    uri="https://dash.ml/demos/vqn-dash/three",
-    reconnect=True,
-    debug=True,
-    cors_origin="*"
+    "ws://localhost:8012", uri="https://dash.ml/demos/vqn-dash/three", reconnect=True, debug=True, cors_origin="*"
 )
 
 
@@ -36,6 +33,7 @@ DEFAULT_POS = {
     "RR_calf_joint": -np.pi / 2,
 }
 
+
 @doc.bind(start=True)
 async def go1_running():
 
@@ -47,6 +45,15 @@ async def go1_running():
             jointValues=DEFAULT_POS,
         ),
         group(key="playground"),
+        rawChildren=[
+            CameraView(
+                fov=80,
+                width=640,
+                height=480,
+                key="ego",
+            ),
+        ],
+        grid=True,
     )
 
     event = yield Set(scene)
@@ -68,10 +75,17 @@ async def go1_running():
                     key="go1",
                     src="http://localhost:8012/local/gabe_go1/urdf/go1.urdf",
                     position=position,
-                    rotation=rotation,
+                    rotation=[*rotation, "ZXY"],
                     auto_redraw=True,
                     jointValues=jointValues,
                 ),
-                group(key="playground"),
+                CameraView(
+                    position=position,
+                    rotation=[*rotation, "ZXY"],
+                    fov=80,
+                    width=640,
+                    height=480,
+                    key="ego",
+                ),
             )
         )

@@ -68,7 +68,8 @@ async def go1_running():
     )
 
     doc.set @ scene
-    while event != "TERMINAL":
+
+    while True:
         i += 1
 
         jointValues = df.iloc[i % 100].to_dict()
@@ -94,8 +95,9 @@ async def go1_running():
             ),
         )
 
-        event = doc.pop() or event
-        print(a, event, len(doc.downlink_queue))
+        event = doc.pop()
+        if event:
+            print(a, event, len(doc.downlink_queue))
         doc.clear()
 
         await sleep(1/50.)
