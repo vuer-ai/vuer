@@ -244,16 +244,80 @@ class Capsule(SceneElement):
     tag = "Capsule"
 
 
+class Cone(SceneElement):
+    tag = "Cone"
+
+
+class Circle(SceneElement):
+    tag = "Circle"
+
+
 class Cylinder(SceneElement):
     tag = "Cylinder"
+
+
+class Dodecahedron(SceneElement):
+    tag = "Dodecahedron"
+
+
+class Edges(SceneElement):
+    tag = "Edges"
+
+
+class Extrude(SceneElement):
+    tag = "Extrude"
+
+
+class Icosahedron(SceneElement):
+    tag = "Icosahedron"
+
+
+class Lathe(SceneElement):
+    tag = "Lathe"
+
+
+class Octahedron(SceneElement):
+    tag = "Octahedron"
 
 
 class Plane(SceneElement):
     tag = "Plane"
 
 
+class Polyhedron(SceneElement):
+    tag = "Polyhedron"
+
+
+class Ring(SceneElement):
+    tag = "Ring"
+
+
+class Shape(SceneElement):
+    tag = "Shape"
+
+
 class Sphere(SceneElement):
     tag = "Sphere"
+
+
+class Tetrahedron(SceneElement):
+    tag = "Tetrahedron"
+
+
+class Torus(SceneElement):
+    tag = "Torus"
+
+
+class TorusKnot(SceneElement):
+    tag = "TorusKnot"
+
+
+class Tube(SceneElement):
+    tag = "Tube"
+
+
+class Wireframe(SceneElement):
+    tag = "Wireframe"
 
 
 class Pcd(SceneElement):
@@ -266,6 +330,22 @@ class CameraView(SceneElement):
 
 class Gamepads(SceneElement):
     tag = "Gamepads"
+
+
+class DirectionalLight(SceneElement):
+    tag = "DirectionalLight"
+
+
+class PointLight(SceneElement):
+    tag = "PointLight"
+
+
+class SpotLight(SceneElement):
+    tag = "SpotLight"
+
+
+class AmbientLight(SceneElement):
+    tag = "AmbientLight"
 
 
 # todo: Need to decide if we want to rename this, to avoid conflict
