@@ -6,9 +6,9 @@ from time import sleep
 import numpy as np
 import yaml
 
-from tassa import Tassa
-from tassa.events import Set, Update, Frame, END
-from tassa.schemas import (
+from vuer import Vuer
+from vuer.events import Set, Update, Frame, END
+from vuer.schemas import (
     Scene,
     Ply,
     Gripper,
@@ -34,11 +34,11 @@ def colmap_to_three(m):
     return matrix.T.flatten().tolist()
 
 
-doc = Tassa(
+doc = Vuer(
     ws="ws://localhost:8013",
-    # uri="http://localhost:8000/tassa",
-    # uri="http://localhost:8000/demos/vqn-dash/three",
-    uri="http://dash.ml/demos/vqn-dash/three",
+    # domain="http://localhost:8000/tassa",
+    # domain="http://localhost:8000/demos/vqn-dash/three",
+    domain="http://dash.ml/demos/vqn-dash/three",
     reconnect=True,
     debug=True,
 )

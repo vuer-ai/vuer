@@ -4,13 +4,13 @@ from datetime import datetime
 import numpy as np
 from pandas import DataFrame
 
-from tassa import Tassa
-from tassa.events import Set, Update, Frame
-from tassa.schemas import Scene, Ply, Gripper, SkeletalGripper, Movable, Urdf
+from vuer import Vuer
+from vuer.events import Set, Update, Frame
+from vuer.schemas import Scene, Ply, Gripper, SkeletalGripper, Movable, Urdf
 
-doc = Tassa(
+doc = Vuer(
     "ws://localhost:8012",
-    uri="https://dash.ml/demos/vqn-dash/three",
+    domain="https://dash.ml/demos/vqn-dash/three",
     reconnect=True,
     debug=True,
     static_root="/Users/ge/mit/cmx-python/examples/three/gabe_go1/"
@@ -73,7 +73,7 @@ async def show_heatmap():
     )
 
     i = 0
-    event = yield Frame(Set(scene))
+    event = yield Set(scene)
     # print(vars(event))
     while event != "TERMINAL":
         i += 1

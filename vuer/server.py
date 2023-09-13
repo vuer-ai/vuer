@@ -1,17 +1,17 @@
 import json
-from asyncio import sleep, iscoroutinefunction, create_task
-from collections import deque
+from asyncio import sleep
+from collections import deque, defaultdict
 from functools import partial
 from random import random
 from typing import cast
+from uuid import uuid4
 
-from sanic import Sanic
+from params_proto import ParamsProto, Proto
 from websockets import ConnectionClosedOK, ConnectionClosedError
 
-from tassa.events import ClientEvent, NullEvent, ServerEvent, NOOP, Frame, Set, Update, InitEvent, INIT
-from tassa.schemas import Page
-
-from sanic_cors import CORS, cross_origin
+from vuer.base import Server
+from vuer.events import ClientEvent, NullEvent, ServerEvent, NOOP, Frame, Set, Update, INIT
+from vuer.schemas import Page
 
 
 class At:
@@ -22,12 +22,20 @@ class At:
         return self.fn(arg)
 
 
-class Tassa(Sanic):
+class Vuer(ParamsProto, Server):
     """
-    A Tassa is a document that can be rendered in a browser.
+    A Vuer is a document that can be rendered in a browser.
     """
-
-    ws = None
+    name = "vuer"
+    uri = "ws://localhost:8012"
+    # change to vuer.dash.ml
+    domain = "https://dash.ml/demos/vqn-dash/three"
+    port = 8012
+    free_port = True
+    static_root = "."
+    queue_len = None
+    cors_origin = "https://dash.ml,*"
+    queries = Proto({}, help="query parameters to pass")
 
     # need to be awaited
     def __matmul__(self, msg: ServerEvent):
@@ -37,8 +45,10 @@ class Tassa(Sanic):
         :return: dqueue
         """
         assert isinstance(msg, ServerEvent), "msg must be a ServerEvent type object."
-        assert not isinstance(msg, Frame), "Frame event is only used in tassa.bind method."
-        self.uplink_queue.append(msg)
+        assert not isinstance(msg, Frame), "Frame event is only used in vuer.bind method."
+        # print(f'only supports 1 socket connection atm. n={len(self.ws)}')
+        last_key = list(self.ws.keys())[-1]
+        self.uplink_queue[last_key].append(msg)
         return None
 
     @property
@@ -49,36 +59,20 @@ class Tassa(Sanic):
     def update(self) -> At:
         return At(lambda element: self @ Update(element))
 
-    def __init__(
-        self,
-        ws="ws://localhost:8012",
-        name="tassa",
-        uri=None,
-        free_port=True,
-        static_root=".",
-        queue_len=None,
-        cors_origin=["https://dash.ml", "*"],
-        **queries,
-    ):
-        super().__init__(name)
+    def __post_init__(self):
+        # todo: what is this?
+        Server.__post_init__(self)
+
+        # todo: can remove
         self.page = Page()
-        self.uri = ws
-        self.queries = queries
-        self.free_port = free_port
-        self.static_root = static_root
-        self.domain = uri or "https://dash.ml/tassa"
 
-        self.downlink_queue = deque(maxlen=queue_len)
-        self.uplink_queue = deque(maxlen=queue_len)
+        que_maker = partial(deque, maxlen=self.queue_len)
+        self.downlink_queue = que_maker()
+        self.uplink_queue = defaultdict(que_maker)
 
-        if cors_origin:
-            CORS(self, resources={r"/local/*": {"origins": cors_origin}})
-
-        self.add_websocket_route(self.downlink, "")
-        # serve local files via /local endpoint
-        self.static("/local", self.static_root or ".")
-        self.add_route(self.relay, "/relay", methods=["POST"])
-        self.add_task(self.uplink)
+        self.ws = {}
+        self.spawned_fn = None
+        self.spawned_coroutines = []
 
     async def relay(self, request):
         data = request.json
@@ -107,14 +101,11 @@ class Tassa(Sanic):
             return None
 
     def clear(self):
+        "clears all client messages"
         self.downlink_queue.clear()
 
     def stream(self):
         yield from self.downlink_queue
-
-    spawned_fn = None
-
-    spawned_coroutines = []
 
     def spawn(self, fn=None, start=False):
         """
@@ -162,31 +153,46 @@ class Tassa(Sanic):
         Get the URL for the Tassa.
         :return: The URL for the Tassa.
         """
-        query_str = "&".join([f"{k}={v}" for k, v in self.queries.items()])
-        return f"{self.domain}?ws={self.uri}&" + query_str
+        if self.queries:
+            query_str = "&".join([f"{k}={v}" for k, v in self.queries.items()])
+            return f"{self.domain}?ws={self.uri}&" + query_str
 
-    async def send(self, ws, event: ServerEvent):
+        return f"{self.domain}?ws={self.uri}"
+
+    async def send(self, ws_id, event: ServerEvent):
+        ws = self.ws[ws_id]
         assert isinstance(event, ServerEvent), "event must be a ServerEvent type object."
         res_str = event.serialize()
-        res_json = json.dumps(res_str)
-        try:
-            return await ws.send(res_json)
-        except ConnectionClosedOK:
-            self.ws = None
-            print("Connection closed")
-        except ConnectionClosedError:
-            self.ws = None
-            print("Connection error, closed")
+        res_json_str = json.dumps(res_str)
+        return await ws.send_str(res_json_str)
 
-    async def uplink(self):
+    async def close_ws(self, ws_id):
+        self.uplink_queue.pop(ws_id)
+        ws = self.ws.pop(ws_id)
+        await ws.close()
+
+    async def uplink(self, ws_id):
         print("\rUplink handler waiting for socket connection")
 
         while True:
-            while self.ws is None:
-                await sleep(0.2)
-            if self.uplink_queue:
-                msg = self.uplink_queue.popleft()
-                await self.send(self.ws, msg)
+            if ws_id not in self.ws:
+                return
+
+            queue = self.uplink_queue[ws_id]
+
+            if queue:
+                msg = queue.popleft()
+                try:
+                    # todo: spawn new uplink everytime connections happen
+                    await self.send(ws_id, msg)
+                except ConnectionResetError:
+                    await self.close_ws(ws_id)
+                    print("Connection closed")
+                    break
+                except ConnectionClosedError:
+                    await self.close_ws(ws_id)
+                    print("Connection error, closed")
+                    break
             else:
                 await sleep(0.0)
 
@@ -200,10 +206,13 @@ class Tassa(Sanic):
         print("websocket is now connected")
         generator = self.bound_fn()
 
-        key = random()
+        # key = random()
+        ws_id = uuid4()
+        self.ws[ws_id] = ws
+        self._add_task(self.uplink(ws_id))
 
         if self.spawned_fn is not None:
-            task = self.add_task(self.spawned_fn)
+            task = self._add_task(self.spawned_fn)
             # need to add logic to clean up.
             # for task in self.spawned_coroutines:
             #     task.cancel()
@@ -217,22 +226,25 @@ class Tassa(Sanic):
         assert serverEvent != "FRAME", "The first event can not be a FRAME event."
 
         if serverEvent != "NOOP":
-            await self.send(ws, serverEvent)
+            # todo: use the uplink stream instead of sending out directly
+            self @ serverEvent
+            await sleep(0.0)
 
-        self.ws = ws
-
+        # do everything here
         async for msg in ws:
-            clientEvent = ClientEvent(**json.loads(msg))
+
+            clientEvent = ClientEvent(**json.loads(msg.data))
 
             if hasattr(generator, "__anext__"):
                 serverEvent = await generator.asend(clientEvent)
+
             else:
                 serverEvent = generator.send(clientEvent)
 
             while serverEvent == "FRAME":
                 serverEvent = cast(Frame, serverEvent)
                 # Frame object is a macro, only send the payload.
-                await self.send(ws, serverEvent.data)
+                self @ serverEvent.data
                 await sleep(1 / serverEvent.frame_rate)
                 if hasattr(generator, "__anext__"):
                     serverEvent = await generator.asend(NullEvent())
@@ -240,23 +252,30 @@ class Tassa(Sanic):
                     serverEvent = generator.send(NullEvent())
 
             if serverEvent != "NOOP":
-                await self.send(ws, serverEvent)
+                self @ serverEvent
+                # await self.send(ws, serverEvent)
 
         print("websocket is now disconnected. Removing the socket.")
         self.ws = None
 
     def run(self, kill=None, *args, **kwargs):
-        print("Tassa running at: " + self.get_url())
+        print("Vuer running at: " + self.get_url())
 
-        protocol, host, _ = self.uri.split(":")
-        port = int(_)
+        # protocol, host, _ = self.uri.split(":")
+        # port = int(_)
 
         if kill or self.free_port:
             import time
             from killport import kill_ports
 
-            kill_ports(ports=[port])
+            kill_ports(ports=[self.port])
             time.sleep(0.01)
 
-        host = host[2:]
-        super().run(host=host, port=port, *args, **kwargs)
+        # host = host[2:]
+
+        self._socket("", self.downlink)
+        # serve local files via /local endpoint
+        self._static("/local", self.static_root)
+        self._route("/relay", self.relay, method="POST")
+        # self._socket()
+        super().run()

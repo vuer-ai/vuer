@@ -1,4 +1,4 @@
-from tassa.schemas import Element
+from vuer.schemas import Element
 
 
 class Event:

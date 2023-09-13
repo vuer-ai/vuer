@@ -1,17 +1,17 @@
 import numpy as np
 from pandas import read_json
 
-from tassa import Tassa
-from tassa.events import Set, Update, Frame
-from tassa.schemas import (
+from vuer import Vuer
+from vuer.events import Set, Update, Frame
+from vuer.schemas import (
     Scene,
     Urdf,
     group,
     CameraView,
 )
 
-doc = Tassa(
-    "ws://localhost:8012", uri="https://dash.ml/demos/vqn-dash/three", reconnect=True, debug=True, cors_origin="*"
+doc = Vuer(
+    "ws://localhost:8012", domain="https://dash.ml/demos/vqn-dash/three", reconnect=True, debug=True, cors_origin="*"
 )
 
 

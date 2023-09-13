@@ -7,7 +7,7 @@ with open(path.join(path.abspath(path.dirname(__file__)), 'VERSION'), encoding='
 with open(path.join(path.abspath(path.dirname(__file__)), 'README'), encoding='utf-8') as f:
     long_description = f.read()
 
-setup(name='cmx',
+setup(name='vuer',
       packages=find_packages(),
       install_requires=[
           "sanic==20.9.0",
@@ -16,7 +16,7 @@ setup(name='cmx',
       description='long_description',
       long_description=long_description,
       author='Ge Yang<ge.ike.yang@gmail.com>',
-      url='https://github.com/cmx/cmx-python',
+      url='https://github.com/geyang/vuer',
       author_email='ge.ike.yang@gmail.com',
-      package_data={'cmx': ['cmx/*.*', 'cmx/**/*.*', 'tassa', 'tassa/*.*']},
+      package_data={'vuer': ['vuer', 'vuer/*.*']},
       version=version)

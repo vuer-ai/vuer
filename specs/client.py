@@ -5,9 +5,9 @@ from requests_futures import requests
 import numpy as np
 from pandas import DataFrame
 
-from tassa import Tassa
-from tassa.events import Set, Update, Frame
-from tassa.schemas import Scene, Ply, Gripper, SkeletalGripper, Movable, Urdf
+from vuer import Vuer
+from vuer.events import Set, Update, Frame
+from vuer.schemas import Scene, Ply, Gripper, SkeletalGripper, Movable, Urdf
 
 
 requests.post("localhost:8012/relay", )
@@ -44,7 +44,7 @@ with open("log.pkl", "rb") as f:
 if __name__ == '__main__':
     i = 0
 
-    event = yield Frame(Set(scene))
+    event = yield Set(scene)
     # print(vars(event))
     while event != "TERMINAL":
         i += 1
