@@ -172,10 +172,10 @@ class Vuer(ParamsProto, Server):
         await ws.close()
 
     async def uplink(self, ws_id):
-        print("\rUplink handler waiting for socket connection")
-
+        print(f"\rUplink task running:{ws_id}")
         while True:
             if ws_id not in self.ws:
+                print(f'uplink:{ws_id} is not in websocket pool')
                 return
 
             queue = self.uplink_queue[ws_id]
@@ -212,7 +212,7 @@ class Vuer(ParamsProto, Server):
         self._add_task(self.uplink(ws_id))
 
         if self.spawned_fn is not None:
-            task = self._add_task(self.spawned_fn)
+            task = self._add_task(self.spawned_fn(ws_id))
             # need to add logic to clean up.
             # for task in self.spawned_coroutines:
             #     task.cancel()
@@ -256,7 +256,7 @@ class Vuer(ParamsProto, Server):
                 # await self.send(ws, serverEvent)
 
         print("websocket is now disconnected. Removing the socket.")
-        self.ws = None
+        self.ws.pop(ws_id, None)
 
     def run(self, kill=None, *args, **kwargs):
         print("Vuer running at: " + self.get_url())

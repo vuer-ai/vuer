@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vuer"
-version = "0.0.0"
+version = "0.0.2"
 description = ""
 readme = "README.md"
 license = { text = "MIT" }
@@ -14,6 +14,9 @@ classifiers = [
     "Programming Language :: Python",
 ]
 dependencies = [
+    "tqdm",
+    "termcolor",
+    "params-proto",
 ]
 
 [project.optional-dependencies]

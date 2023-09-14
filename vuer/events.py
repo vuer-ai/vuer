@@ -16,7 +16,6 @@ class Event:
 
 
 class ClientEvent(Event):
-
     value = None
 
     def __repr__(self):
@@ -39,14 +38,16 @@ class InitEvent(ClientEvent):
     def __init__(self, **kwargs):
         super().__init__(etype="Init", **kwargs)
 
+
 INIT = InitEvent()
+
 
 class NullEvent(ClientEvent):
     def __init__(self, **kwargs):
         super().__init__(etype="NULL", **kwargs)
-        
-NULL = NullEvent()
 
+
+NULL = NullEvent()
 
 # class Meta(type):
 #     def __matmul__(cls, data):
@@ -76,8 +77,12 @@ def serializer(data):
 
 
 class ServerEvent(Event):  # , metaclass=Meta):
-    def __init__(self, data, **kwargs):
+    def __init__(self, data, etype=None, **kwargs):
         self.data = data
+
+        if etype is not None:
+            self.etype = etype
+
         self.__dict__.update(etype=self.etype, **kwargs)
 
     def serialize(self):
