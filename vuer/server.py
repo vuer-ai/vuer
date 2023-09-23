@@ -193,6 +193,10 @@ class Vuer(ParamsProto, Server):
                     await self.close_ws(ws_id)
                     print("Connection error, closed")
                     break
+                except e:
+                    await self.close_ws(ws_id)
+                    print("Connection error, closed")
+                    break
             else:
                 await sleep(0.0)
 
@@ -213,10 +217,6 @@ class Vuer(ParamsProto, Server):
 
         if self.spawned_fn is not None:
             task = self._add_task(self.spawned_fn(ws_id))
-            # need to add logic to clean up.
-            # for task in self.spawned_coroutines:
-            #     task.cancel()
-            # self.spawned_coroutines.append(task)
 
         if hasattr(generator, "__anext__"):
             serverEvent = await generator.__anext__()
@@ -230,33 +230,38 @@ class Vuer(ParamsProto, Server):
             self @ serverEvent
             await sleep(0.0)
 
-        # do everything here
-        async for msg in ws:
+        try:
+            # do everything here
+            async for msg in ws:
 
-            clientEvent = ClientEvent(**json.loads(msg.data))
+                clientEvent = ClientEvent(**json.loads(msg.data))
 
-            if hasattr(generator, "__anext__"):
-                serverEvent = await generator.asend(clientEvent)
-
-            else:
-                serverEvent = generator.send(clientEvent)
-
-            while serverEvent == "FRAME":
-                serverEvent = cast(Frame, serverEvent)
-                # Frame object is a macro, only send the payload.
-                self @ serverEvent.data
-                await sleep(1 / serverEvent.frame_rate)
                 if hasattr(generator, "__anext__"):
-                    serverEvent = await generator.asend(NullEvent())
+                    serverEvent = await generator.asend(clientEvent)
+
                 else:
-                    serverEvent = generator.send(NullEvent())
+                    serverEvent = generator.send(clientEvent)
 
-            if serverEvent != "NOOP":
-                self @ serverEvent
-                # await self.send(ws, serverEvent)
+                while serverEvent == "FRAME":
+                    serverEvent = cast(Frame, serverEvent)
+                    # Frame object is a macro, only send the payload.
+                    self @ serverEvent.data
+                    await sleep(1 / serverEvent.frame_rate)
+                    if hasattr(generator, "__anext__"):
+                        serverEvent = await generator.asend(NullEvent())
+                    else:
+                        serverEvent = generator.send(NullEvent())
 
-        print("websocket is now disconnected. Removing the socket.")
-        self.ws.pop(ws_id, None)
+                if serverEvent != "NOOP":
+                    self @ serverEvent
+                    # await self.send(ws, serverEvent)
+
+            print("websocket is now disconnected. Removing the socket.")
+            self.ws.pop(ws_id, None)
+        except:
+            print("websocket is now disconnected. Removing the socket.")
+            self.ws.pop(ws_id, None)
+
 
     def run(self, kill=None, *args, **kwargs):
         print("Vuer running at: " + self.get_url())
