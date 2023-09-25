@@ -2,12 +2,11 @@ import json
 from asyncio import sleep
 from collections import deque, defaultdict
 from functools import partial
-from random import random
 from typing import cast
 from uuid import uuid4
 
-from params_proto import ParamsProto, Proto
-from websockets import ConnectionClosedOK, ConnectionClosedError
+from params_proto import Proto, PrefixProto
+from websockets import ConnectionClosedError
 
 from vuer.base import Server
 from vuer.events import ClientEvent, NullEvent, ServerEvent, NOOP, Frame, Set, Update, INIT
@@ -22,10 +21,11 @@ class At:
         return self.fn(arg)
 
 
-class Vuer(ParamsProto, Server):
+class Vuer(PrefixProto, Server):
     """
     A Vuer is a document that can be rendered in a browser.
     """
+
     name = "vuer"
     uri = "ws://localhost:8012"
     # change to vuer.dash.ml
@@ -36,6 +36,8 @@ class Vuer(ParamsProto, Server):
     queue_len = None
     cors_origin = "https://dash.ml,*"
     queries = Proto({}, help="query parameters to pass")
+
+    device = "cuda"
 
     # need to be awaited
     def __matmul__(self, msg: ServerEvent):
@@ -175,7 +177,7 @@ class Vuer(ParamsProto, Server):
         print(f"\rUplink task running:{ws_id}")
         while True:
             if ws_id not in self.ws:
-                print(f'uplink:{ws_id} is not in websocket pool')
+                print(f"uplink:{ws_id} is not in websocket pool")
                 return
 
             queue = self.uplink_queue[ws_id]
@@ -193,9 +195,10 @@ class Vuer(ParamsProto, Server):
                     await self.close_ws(ws_id)
                     print("Connection error, closed")
                     break
-                except e:
+                except Exception as e:
                     await self.close_ws(ws_id)
-                    print("Connection error, closed")
+                    print(f"Connection error, closed.\nError: [{e}]")
+                    raise e
                     break
             else:
                 await sleep(0.0)
@@ -261,7 +264,6 @@ class Vuer(ParamsProto, Server):
         except:
             print("websocket is now disconnected. Removing the socket.")
             self.ws.pop(ws_id, None)
-
 
     def run(self, kill=None, *args, **kwargs):
         print("Vuer running at: " + self.get_url())

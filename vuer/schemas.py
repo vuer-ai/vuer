@@ -13,6 +13,9 @@ class Element:
 
     tag: str = "div"
 
+    def __post_init__(self, **kwargs):
+        pass
+
     def __init__(self, key=None, **kwargs):
         global element_count
         if key is None:
@@ -20,13 +23,15 @@ class Element:
             element_count += 1
 
         self.__dict__.update(tag=self.tag, key=key, **kwargs)
+        self.__post_init__(**{k: v for k, v in kwargs.items() if k.startswith("_")})
 
     def serialize(self):
         """
         Serialize the element to a dictionary for sending over the websocket.
         :return: Dictionary representing the element.
         """
-        return {**self.__dict__}
+        # note: only return the non-private attributes, allow bypass.
+        return {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
 
 
 class BlockElement(Element):
@@ -205,10 +210,18 @@ class ImageUpload(Element):
 class Scene(BlockElement):
     tag = "Scene"
 
-    def __init__(self, *children, rawChildren=None, htmlChildren=None, **kwargs):
+    def __init__(
+        self,
+        *children,
+        rawChildren=None,
+        htmlChildren=None,
+        backgroundChildren=None,
+        **kwargs,
+    ):
         super().__init__(*children, **kwargs)
         self.rawChildren = rawChildren or []
         self.htmlChildren = htmlChildren or []
+        self.backgroundChildren = backgroundChildren or []
 
     def serialize(self):
         return {
@@ -216,6 +229,7 @@ class Scene(BlockElement):
             "children": [e.serialize() for e in self.children],
             "rawChildren": [e.serialize() for e in self.rawChildren],
             "htmlChildren": [e.serialize() for e in self.htmlChildren],
+            "backgroundChildren": [e.serialize() for e in self.backgroundChildren],
         }
 
 
