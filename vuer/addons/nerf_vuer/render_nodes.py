@@ -8,6 +8,7 @@ from io import BytesIO
 import numpy as np
 import png
 import torch
+from einops import rearrange
 from PIL import Image
 from torch import Tensor
 from torchtyping import TensorType
@@ -17,6 +18,17 @@ from instant_feature.viewer.render_utils import get_camera_from_three
 
 class Chainer:
     def __init__(self, *fns):
+        """Chainer is a function that chains multiple functions together
+
+        Example:
+
+            I have functions fn_1 and fn_2, both are "render nodes" for processing the rendered output from the nerf.
+            I can use Chainer to chain them together:
+
+            chained = Chainer(fn_1, fn_2)
+            chained(**pipeline) gives fn_1(fn_2(**pipeline))
+
+        """
         self.fns = fns
 
     def thunk(self, **pipe):
@@ -32,15 +44,17 @@ class Chainer:
         return self.thunk(**pipe)
 
 
-def pose(height, width, **pipeline):
-    camera_poses = get_camera_from_three([camera], width, height)
-    return {"camera_poses": camera_poses, **pipeline}
+# def pose(height, width, **pipeline):
+#     camera_poses = get_camera_from_three([camera], width, height)
+#     return {"camera_poses": camera_poses, **pipeline}
 
 
-def rgb(raw_rgb: TensorType["hwc"], raw_accumulation, **pipeline):
-    image_c = torch.cat([raw_rgb, raw_accumulation], dim=-1)
-    encoded = b64jpg(image_c)
-    return {"rgb": encoded, "raw_rgb": raw_rgb, "raw_accumulation": raw_accumulation, **pipeline}
+def rgb(raw_rgb: TensorType["hwc"], **pipeline):
+    # only needed for PNG images
+    # image_c = torch.cat([raw_rgb, raw_accumulation], dim=-1)
+    # encoded = b64jpg(image_c)
+    encoded = b64jpg(raw_rgb)
+    return {"rgb": encoded, "raw_rgb": raw_rgb, **pipeline}
 
 
 def alpha(raw_accumulation: Tensor, alpha_threshold=None, **pipeline):
@@ -50,6 +64,52 @@ def alpha(raw_accumulation: Tensor, alpha_threshold=None, **pipeline):
     return {
         "alpha": b64jpg(raw_accumulation),
         "raw_accumulation": raw_accumulation,
+        **pipeline,
+    }
+
+
+def _get_colormap(colormap, invert, clip=None, gain=1.0, normalize=False, **_):
+    """
+    https://matplotlib.org/3.1.0/tutorials/colors/colormaps.html
+    get color map from matplotlib
+    returns color_map function with signature (x, mask=None),
+    where mask is the mask-in for the colormap.
+
+    """
+    import matplotlib.cm as cm
+
+    cmap = cm.get_cmap(colormap + "_r" if invert else colormap)
+
+    def map_color(x, mask=None):
+        if clip is not None:
+            x = x.clip(*clip)
+
+        if gain is not None:
+            x *= gain
+
+        if normalize:
+            if mask is None or mask.sum() == 0:
+                min, max = x.min(), x.max()
+            else:
+                min, max = x[mask].min(), x[mask].max()
+
+            x -= min
+            x /= max - min + 1e-6
+            x[x < 0] = 0
+
+        return cmap(x)
+
+    return map_color
+
+
+def depth(raw_depth: TensorType["hwc"], render, settings, **pipeline):
+    # con
+    cmap = _get_colormap(**settings)
+    heatmap = cmap(raw_depth.cpu().numpy())[:, :, :3]
+    encoded = b64png(heatmap)
+    return {
+        "depth": encoded,
+        "raw_depth": raw_depth,
         **pipeline,
     }
 
@@ -69,17 +129,62 @@ def monochrome(image, colormap, normalize, clip, gain, alpha_np, **pipeline):
     pass
 
 
-def features(raw_rgb, raw_accumulation, **pipeline):
-    # Apply PCA projection to non-nan features
-    # not_nan = ~torch.isnan(image).any(dim=-1)
-    # rgb = torch.zeros((*image.shape[:2], 3)).to(Worker.device)
-    # rgb[not_nan], info["pca_proj"], info["pca_min"], info["pca_max"] = apply_pca_colormap_return_proj(
-    #     image[not_nan], proj_V=info["pca_proj"], low_rank_min=info["pca_min"], low_rank_max=info["pca_max"]
-    # )
-    # image = torch.cat([rgb, alpha], dim=-1)
-    # image = image.cpu().numpy()
-    # return image
-    return {"raw_rgb": raw_rgb, "raw_accumulation": raw_accumulation, **pipeline}
+def nan_prune(t):
+    """Drop all rows containing any nan:"""
+    t = t[~torch.any(t.isnan(), dim=-1)]
+    return t
+
+
+class PCA:
+    proj = None
+
+    def clear(self):
+        self.proj = None
+
+    def __call__(self, raw_features, dim=3, center=True):
+        """no batch dimension."""
+        *shape, c = raw_features.shape
+        feat_flat = raw_features.reshape(-1, c)
+
+        if self.proj is None:
+            print("Computing the PCA")
+            feat_nan_free = nan_prune(feat_flat)
+            # we can not use this u because it is potentially has the nans removed.
+            u, diag, self.proj = torch.pca_lowrank(feat_nan_free, q=dim, center=center)
+        else:
+            print("Using cached PCA")
+
+        u = raw_features @ self.proj
+        return u
+
+
+get_pca = PCA()
+
+
+def features_pca(raw_features, raw_accumulation, **pipeline):
+    # print("feat_pca.shape:", raw_features.shape)
+    feat_pca = get_pca(raw_features, dim=3)
+    feat_pca_flat = feat_pca.reshape(-1, 3)
+
+    # these should be configurations
+    low = torch.nanquantile(feat_pca_flat, 0.02, dim=0)
+    top = torch.nanquantile(feat_pca_flat, 0.98, dim=0)
+
+    feat_pca_normalized = 0.02 + 0.96 * (feat_pca - low) / (top - low)
+    feat_pca_normalized.clip_(0, 1)
+
+    return {
+        "features": b64jpg(feat_pca_normalized),
+        "features_pca": feat_pca_normalized,
+        "raw_features": raw_features,
+        "raw_accumulation": raw_accumulation,
+        **pipeline,
+    }
+
+
+async def pca_reset_handler(event: "ClientEvent", send):
+    print("clearing the pca cache")
+    get_pca.clear()
 
 
 def b64jpg(image: Tensor, quality: int = 90):
@@ -93,8 +198,11 @@ def b64jpg(image: Tensor, quality: int = 90):
         image = image[:, :, :3]
 
     image *= 255
-    image_np = image.cpu().numpy().astype(np.uint8)
-    image_np.max()
+
+    if isinstance(image, np.ndarray):
+        image_np = image.astype(np.uint8)
+    else:
+        image_np = image.cpu().numpy().astype(np.uint8)
 
     C = image_np.shape[-1]
     if C == 1:
@@ -119,7 +227,7 @@ def b64png(image: Tensor):
     rgb_pil = Image.fromarray(image_np)
     rgb_pil.save(buff, format="PNG")
     img64 = base64.b64encode(buff.getbuffer().tobytes()).decode("utf-8")
-    return img64
+    return "data:image/png;base64," + img64
 
 
 def b64png_depth(depth):

@@ -40,7 +40,22 @@ class BlockElement(Element):
         super().__init__(**kwargs)
 
     def serialize(self):
-        return {**super().serialize(), "children": [e.serialize() for e in self.children]}
+        # writ this as multiple lines
+        children = []
+        for e in self.children:
+            if isinstance(e, str):
+                children.append(e)
+            else:
+                children.append(e.serialize())
+        return {**super().serialize(), "children": children}
+
+
+class AutoScroll(BlockElement):
+    tag = "AutoScroll"
+
+
+class Markdown(BlockElement):
+    tag = "Markdown"
 
 
 class Page(BlockElement):
@@ -53,7 +68,7 @@ class Page(BlockElement):
 
 
 class div(BlockElement):
-    tag = "div"
+    tag = "Div"
 
 
 class InputBox(Element):
@@ -120,6 +135,27 @@ class Text(Element):
     def __init__(self, *text, sep=" ", **kwargs):
         self.text = sep.join(text)
         super().__init__(**kwargs)
+
+
+class Bold(Text):
+    def __init__(self, text, style=None, **kwargs):
+        _style = {"fontWeight": "bold"}
+        _style.update(style or {})
+        super().__init__(text, style=_style, **kwargs)
+
+
+class Italic(Text):
+    def __init__(self, text, style=None, **kwargs):
+        _style = {"fontStyle": "italic"}
+        _style.update(style or {})
+        super().__init__(text, style=_style, **kwargs)
+
+
+class Link(Text):
+    tag = "a"
+
+    def __init__(self, text, src, **kwargs):
+        super().__init__(text, src=src, **kwargs)
 
 
 class Button(Element):
@@ -224,13 +260,14 @@ class Scene(BlockElement):
         self.backgroundChildren = backgroundChildren or []
 
     def serialize(self):
-        return {
-            **super().serialize(),
-            "children": [e.serialize() for e in self.children],
-            "rawChildren": [e.serialize() for e in self.rawChildren],
-            "htmlChildren": [e.serialize() for e in self.htmlChildren],
-            "backgroundChildren": [e.serialize() for e in self.backgroundChildren],
-        }
+        obj = super().serialize()
+        if self.rawChildren:
+            obj["rawChildren"] = [e.serialize() for e in self.rawChildren if e]
+        if self.htmlChildren:
+            obj["htmlChildren"] = [e.serialize() for e in self.htmlChildren if e]
+        if self.backgroundChildren:
+            obj["backgroundChildren"] = [e.serialize() for e in self.backgroundChildren if e]
+        return obj
 
 
 class SceneElement(BlockElement):

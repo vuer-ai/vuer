@@ -1,7 +1,7 @@
 from typing import List, Generator
 
 from vuer.addons.nerf_vuer.mixins import collector, process_aabb, process_world, collect_rays, chunk_rays
-from vuer.addons.nerf_vuer.render_nodes import rgb, Chainer, alpha
+from vuer.addons.nerf_vuer.render_nodes import rgb, Chainer, alpha, depth
 from vuer.addons.nerf_vuer.control_components import Controls
 from vuer.events import ServerEvent
 from vuer.schemas import SceneElement
@@ -120,10 +120,7 @@ class RenderLayer(SceneElement):
     @collect_rays
     @chunk_rays
     def render(self, ray_bundle, **kwargs) -> Generator[ServerEvent, None, None]:
-        import torch
-
-        with torch.no_grad():
-            return self._render(ray_bundle=ray_bundle, **kwargs)
+        return self._render(ray_bundle=ray_bundle, **kwargs)
 
 
 class Heatmap(RenderLayer):

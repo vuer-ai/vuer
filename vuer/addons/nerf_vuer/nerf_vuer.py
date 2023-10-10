@@ -1,4 +1,5 @@
 from asyncio import sleep
+from collections import defaultdict
 from copy import deepcopy
 
 import numpy as np
@@ -17,13 +18,17 @@ from vuer.schemas import (
 class RenderVuer(Vuer):
     device = "cuda:0"
 
-    def __init__(self, render: Render = None, scene: Scene = None, **args):
-        super().__init__()
+    WEBSOCKET_MAX_SIZE = 2 ** 28
+
+    def __init__(self, render: Render = None, scene: Scene = None, **kwargs):
+        super().__init__(**kwargs)
 
         self.scene = scene
         self.render = render
 
-        self.spawn(self.on_connect, start=True)
+        self.handlers = defaultdict(dict)
+
+        self.spawn(self.on_connect)
 
     async def on_connect(self, ws_id):
         # from ml_logger import logger
@@ -40,8 +45,6 @@ class RenderVuer(Vuer):
 
             self.set @ scene
 
-        cprint("Need to allow for mulitple event handlers", color="yellow")
-
         # need to explicitly terminate the coroutine
         while ws_id in self.ws:
             await sleep(0)
@@ -50,6 +53,15 @@ class RenderVuer(Vuer):
 
             if not event:
                 continue
+
+            if event.etype in self.handlers:
+                handlers = self.handlers[event.etype]
+                for fn_factory in handlers.values():
+                    # todo: see if we want to add throttling here.
+                    # also pass in an event handler.
+                    # Use an arrow function to avoid exposing the server instance.
+                    my_task = self.spawn_task(fn_factory(event, lambda e: self @ e))
+                    await sleep(0.0)
 
             if event == "CAMERA_MOVE":
                 value = event.value
@@ -86,13 +98,13 @@ class RenderVuer(Vuer):
 
                     logger.start("low-res-render")
                     async for render_response in self.render.render(
-                        camera=quick_cam,
-                        world=world,
-                        render=render_params,
-                        # other params
-                        chunk_size=8096,
-                        to_cpu="features",
-                        **render_params,
+                            camera=quick_cam,
+                            world=world,
+                            render=render_params,
+                            # other params
+                            chunk_size=8096,
+                            to_cpu="features",
+                            **render_params,
                     ):
                         if isinstance(render_response, ServerEvent):
                             print("Sendinging low-def", logger.since("low-res-render"))
@@ -105,13 +117,13 @@ class RenderVuer(Vuer):
 
                 logger.start("long-render")
                 async for render_response in self.render.render(
-                    camera=camera,
-                    world=world,
-                    render=render_params,
-                    # other params
-                    chunk_size=8096,
-                    to_cpu="features",
-                    **render_params,
+                        camera=camera,
+                        world=world,
+                        render=render_params,
+                        # other params
+                        chunk_size=8096,
+                        to_cpu="features",
+                        **render_params,
                 ):
                     # print("high-res rendering.")
                     if isinstance(render_response, ServerEvent):

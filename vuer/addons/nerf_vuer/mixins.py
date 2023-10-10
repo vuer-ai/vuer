@@ -204,6 +204,12 @@ def _lie_action(ray_bundle, position: Vector3, rotation: Euler, scale: float, **
         # note: non-scaler scale is not supported. Need to transform ray bundles as well.
         ray_bundle.origins /= scale
 
+def _transformation(rotation: Euler, position: Vector3, **_) -> torch.Tensor:
+    rot_mat = torch.from_numpy(rotation_matrix(*rotation))
+    transform = torch.eye(4)
+    transform[:3, :3] = rot_mat
+    transform[:3, 3] = torch.FloatTensor(position)
+    return transform
 
 def collect_rays(render_bundle):
     # @wraps(render_bundle)
@@ -221,15 +227,19 @@ def collect_rays(render_bundle):
         **kwargs,
     ) -> Dict[str, torch.Tensor]:
         assert len(camera) == 1
-        # todo: to correctly handle things, we need to transform the camera instead.
+
+        parent2world = _transformation(**parent)
+        settings2parent = _transformation(**settings)
+        settings2world = parent2world @ settings2parent
+        world2setting = torch.linalg.inv(settings2world)
+
+        camera2world = torch.eye(4)
+        camera2world[:3, :] = camera.camera_to_worlds[0]
+        camera2setting = world2setting @ camera2world
+
+        camera.camera_to_worlds[0] = camera2setting[:3]
         ray_bundle = camera.generate_rays(camera_indices=0, aabb_box=aabb)
-
         ray_bundle = ray_bundle.to(camera.device)
-
-        # note: Ge: this needs to be moved up the stack.
-        _lie_action(ray_bundle, **parent)
-        # apply render specific transformations
-        _lie_action(ray_bundle, **settings)
 
         # timing is not accurate
         # with torch.no_grad(), logger.time("rendering", fmt=lambda s: f"{1000 * s:.1f}ms"):
@@ -249,7 +259,6 @@ def collect_rays(render_bundle):
 def collector(
     pipe: Chainer = None,
     channels: List[str] = None,
-    # nodes=List[RenderNode],  # tuple(rgb, alpha),
 ):
     """
     Decorator for processing the rendered images.
@@ -268,9 +277,6 @@ def collector(
 
             async for output_chunk in async_render(*args, channels=channels, camera=camera, **kwargs):
                 signal = yield None
-                # not needed. Outer can simply delete.
-                # if signal == "TERMINATE":
-                #     return
 
                 # collect the results
                 for key, value in output_chunk.items():
@@ -283,9 +289,12 @@ def collector(
                 height=camera.height,
                 prefix="raw_",
             )
-
             # pipe = chainer(*nodes)
-            flow = pipe(**flow)
+            flow = pipe(
+                **flow,
+                render=kwargs["render"],
+                settings=kwargs["settings"],
+            )
             # filter out the non-requested channels
             flow = {k: v for k, v in flow.items() if k in channels}
 

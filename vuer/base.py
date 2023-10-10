@@ -15,13 +15,13 @@ async def default_handler(request, ws):
         print(msg)
 
 
-async def websocket_handler(request, handler):
-    print('New connection!!!')
+async def websocket_handler(request, handler, **ws_kwargs):
+    print("New connection!!!")
 
-    ws = web.WebSocketResponse()
+    ws = web.WebSocketResponse(**ws_kwargs)
     await ws.prepare(request)
 
-    print('Socket stored')
+    print("Socket stored")
 
     try:
         await handler(request, ws)
@@ -30,18 +30,18 @@ async def websocket_handler(request, handler):
         print("Connection reset")
 
     except CancelledError as exp:
-        print(f'WebSocket Canceled')
+        print(f"WebSocket Canceled")
 
     except Exception as exp:
-        print(f'Error:\n{exp}\n{traceback.print_exc()}')
+        print(f"Error:\n{exp}\n{traceback.print_exc()}")
 
     finally:
         await ws.close()
-        print('WebSocket connection closed')
+        print("WebSocket connection closed")
 
 
 async def handle_file_request(request, root):
-    filename = request.match_info['filename']
+    filename = request.match_info["filename"]
     filepath = Path(root) / filename
 
     if not filepath.is_file():
@@ -64,18 +64,24 @@ class Server:
 
         default = aiohttp_cors.ResourceOptions(
             allow_credentials=True,
-            expose_headers="*", allow_methods="*",
+            expose_headers="*",
+            allow_methods="*",
         )
-        cors_config = {k: default for k in self.cors.split(',')}
+        cors_config = {k: default for k in self.cors.split(",")}
 
         self.cors_context = aiohttp_cors.setup(self.app, defaults=cors_config)
 
-    def _route(self, path: str, handler: callable, method: str = "GET", ):
+    def _route(
+        self,
+        path: str,
+        handler: callable,
+        method: str = "GET",
+    ):
         route = self.app.router.add_resource(path).add_route(method, handler)
         self.cors_context.add(route)
 
     def _socket(self, path: str, handler: callable):
-        ws_handler = partial(websocket_handler, handler=handler)
+        ws_handler = partial(websocket_handler, handler=handler, max_msg_size=self.WEBSOCKET_MAX_SIZE)
         route = self.app.router.add_resource(path).add_route("GET", ws_handler)
         self.cors_context.add(route)
 
@@ -85,7 +91,7 @@ class Server:
 
     def _static(self, path, root):
         _fn = partial(handle_file_request, root=root)
-        self.app.add_routes([web.get(f'/{path}/{{filename}}', _fn)])
+        self.app.add_routes([web.get(f"/{path}/{{filename}}", _fn)])
 
     def run(self):
         async def init_server():
@@ -94,7 +100,7 @@ class Server:
             site = web.TCPSite(runner, self.host, self.port)
             await site.start()
 
-            print(f'Serving on http://{self.host}:{self.port}')
+            print(f"Serving on http://{self.host}:{self.port}")
 
         event_loop = asyncio.get_event_loop()
 
@@ -102,8 +108,8 @@ class Server:
         event_loop.run_forever()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = Server()
-    app._route('', websocket_handler)
-    app._static('static', handle_file_request, root='.')
+    app._route("", websocket_handler)
+    app._static("static", handle_file_request, root=".")
     app.run()

@@ -1,3 +1,4 @@
+import asyncio
 import json
 from asyncio import sleep
 from collections import deque, defaultdict
@@ -36,6 +37,8 @@ class Vuer(PrefixProto, Server):
     queue_len = None
     cors_origin = "https://dash.ml,*"
     queries = Proto({}, help="query parameters to pass")
+
+    WEBSOCKET_MAX_SIZE = 2 ** 28
 
     device = "cuda"
 
@@ -108,6 +111,10 @@ class Vuer(PrefixProto, Server):
 
     def stream(self):
         yield from self.downlink_queue
+
+    def spawn_task(self, task):
+        loop = asyncio.get_running_loop()
+        return loop.create_task(task)
 
     def spawn(self, fn=None, start=False):
         """
@@ -264,6 +271,15 @@ class Vuer(PrefixProto, Server):
         except:
             print("websocket is now disconnected. Removing the socket.")
             self.ws.pop(ws_id, None)
+
+    def add_handler(self, event_type, fn):
+        handler_id = uuid4()
+        self.handlers[event_type][handler_id] = fn
+
+        def cleanup():
+            del self.handlers[event_type][handler_id]
+
+        return cleanup
 
     def run(self, kill=None, *args, **kwargs):
         print("Vuer running at: " + self.get_url())
