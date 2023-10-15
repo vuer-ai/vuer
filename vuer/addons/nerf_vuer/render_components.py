@@ -1,12 +1,11 @@
 from typing import List, Generator
 
 from vuer.addons.nerf_vuer.mixins import collector, process_aabb, process_world, collect_rays, chunk_rays
-from vuer.addons.nerf_vuer.render_nodes import rgb, Chainer, alpha, depth
-from vuer.addons.nerf_vuer.control_components import Controls
+from vuer.addons.nerf_vuer.render_nodes import Chainer, RGBA
 from vuer.events import ServerEvent
 from vuer.schemas import SceneElement
 
-from instant_feature.viewer.neko.constants.default_settings import RENDER_DEFAULT, RGB_DEFAULT
+from instant_feature.viewer.nerf_vuer.constants.default_settings import RENDER_DEFAULT, RGB_DEFAULT
 
 
 # =============== Leva Components ===============
@@ -55,12 +54,6 @@ class Render(SceneElement):
             **kwargs,
         )
 
-    # def serialize(self):
-    #     obj = super().serialize()
-    #     # if self.settings:
-    #     #     obj["settings"] = self.settings
-    #     return obj
-
     def __post_init__(self):
         self._fields = {}
         for child in self.children:
@@ -90,21 +83,30 @@ class Render(SceneElement):
 class RenderLayer(SceneElement):
     tag = "RenderLayer"
 
+    channel = "rgb"
+    alphaChannel = "alpha"
+    displacementMap = None
+    distance = 10.1
+
+    settings = RGB_DEFAULT
+
     def __init__(
         self,
-        channel="rgb",
-        alphaChannel="alpha",
+        channel=None,
+        alphaChannel=None,
         displacementMap=None,
         geometry="plane",
-        settings=RGB_DEFAULT,
+        settings=None,
+        distance=None,
         **kwargs,
     ):
         super().__init__(
-            channel=channel,
-            alphaChannel=alphaChannel,
-            displacementMap=displacementMap,
+            channel=channel or self.channel,
+            alphaChannel=alphaChannel or self.alphaChannel,
+            displacementMap=displacementMap or self.displacementMap,
             geometry=geometry,
-            settings=settings,
+            settings=settings or self.settings,
+            distance=distance or self.distance,
             **kwargs,
         )
 
@@ -112,7 +114,7 @@ class RenderLayer(SceneElement):
         self._render = _render
 
     @collector(
-        pipe=Chainer(rgb, alpha),
+        pipe=Chainer(RGBA.rgb, RGBA.alpha),
         channels=["rgb", "alpha"],
     )
     @process_aabb

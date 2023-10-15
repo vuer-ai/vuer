@@ -1,4 +1,5 @@
 from collections import defaultdict
+from copy import deepcopy
 from dataclasses import dataclass
 from functools import wraps
 from typing import Dict, Union, List, DefaultDict, Optional, Generator
@@ -138,15 +139,11 @@ def _se3(position, rotation, scale, **rest) -> Dict[str, Union[Vector3, EulerDeg
 def process_world(render_gen):
     # @wraps(render_gen)
     async def wrap_gen(*args, camera, world, settings, **kwargs):
-        # position = Vector3(**world["position"])
-        # # sets the unit to "deg" internally.
-        # rotation = EulerDeg(**world["rotation"])
-        # scale = world["scale"]
 
         async for event in render_gen(
             *args,
             parent=_se3(**world),
-            settings=_se3(**settings),
+            # settings=_se3(**settings),
             # background=background,
             camera=camera,
             world=world,
@@ -204,12 +201,14 @@ def _lie_action(ray_bundle, position: Vector3, rotation: Euler, scale: float, **
         # note: non-scaler scale is not supported. Need to transform ray bundles as well.
         ray_bundle.origins /= scale
 
+
 def _transformation(rotation: Euler, position: Vector3, **_) -> torch.Tensor:
     rot_mat = torch.from_numpy(rotation_matrix(*rotation))
     transform = torch.eye(4)
     transform[:3, :3] = rot_mat
     transform[:3, 3] = torch.FloatTensor(position)
     return transform
+
 
 def collect_rays(render_bundle):
     # @wraps(render_bundle)
@@ -218,26 +217,28 @@ def collect_rays(render_bundle):
         camera: Cameras,
         parent: Dict = None,
         settings: Dict = None,
-        # position: Vector3 = None,
-        # # use degree convention on the front end
-        # rotation: EulerDeg = None,
-        # # Non-scalar scale is current not supported.
-        # scale: Union[Vector3, float] = None,
         aabb: Optional[AABB] = None,
         **kwargs,
     ) -> Dict[str, torch.Tensor]:
         assert len(camera) == 1
 
         parent2world = _transformation(**parent)
-        settings2parent = _transformation(**settings)
-        settings2world = parent2world @ settings2parent
-        world2setting = torch.linalg.inv(settings2world)
+
+        if settings and "rotation" in settings:
+            settings2parent = _transformation(**settings)
+            settings2world = parent2world @ settings2parent
+            world2setting = torch.linalg.inv(settings2world)
+
+        else:
+            world2setting = torch.linalg.inv(parent2world)
 
         camera2world = torch.eye(4)
         camera2world[:3, :] = camera.camera_to_worlds[0]
         camera2setting = world2setting @ camera2world
 
+        camera = deepcopy(camera)
         camera.camera_to_worlds[0] = camera2setting[:3]
+
         ray_bundle = camera.generate_rays(camera_indices=0, aabb_box=aabb)
         ray_bundle = ray_bundle.to(camera.device)
 

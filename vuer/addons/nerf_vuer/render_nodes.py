@@ -3,17 +3,17 @@ RenderComponents are view components that respond to camera movements in the fro
 that returns rendered images
 """
 import base64
+from abc import abstractmethod
+from collections import deque
+from copy import deepcopy
 from io import BytesIO
 
 import numpy as np
 import png
 import torch
-from einops import rearrange
 from PIL import Image
 from torch import Tensor
 from torchtyping import TensorType
-
-from instant_feature.viewer.render_utils import get_camera_from_three
 
 
 class Chainer:
@@ -44,31 +44,70 @@ class Chainer:
         return self.thunk(**pipe)
 
 
-# def pose(height, width, **pipeline):
-#     camera_poses = get_camera_from_three([camera], width, height)
-#     return {"camera_poses": camera_poses, **pipeline}
+class Singleton(deque):
+    def __init__(self, sequence=None):
+        super().__init__(sequence or [], maxlen=1)
+        self.__post_init__()
+
+    @abstractmethod
+    def __post_init__(self):
+        pass
 
 
-def rgb(raw_rgb: TensorType["hwc"], **pipeline):
-    # only needed for PNG images
-    # image_c = torch.cat([raw_rgb, raw_accumulation], dim=-1)
-    # encoded = b64jpg(image_c)
-    encoded = b64jpg(raw_rgb)
-    return {"rgb": encoded, "raw_rgb": raw_rgb, **pipeline}
+class RGBA(Singleton):
+    @staticmethod
+    def rgb(raw_rgb: TensorType["hwc"], **pipeline):
+        # only needed for PNG images
+        # image_c = torch.cat([raw_rgb, raw_accumulation], dim=-1)
+        # encoded = b64jpg(image_c)
+        encoded = b64jpg(raw_rgb)
+        return {"rgb": encoded, "raw_rgb": raw_rgb, **pipeline}
+
+    @staticmethod
+    def alpha(raw_accumulation: Tensor, alpha_threshold=None, **pipeline):
+        if alpha_threshold is not None:
+            raw_accumulation[raw_accumulation < alpha_threshold] = 0
+
+        return {
+            "alpha": b64jpg(raw_accumulation),
+            "raw_accumulation": raw_accumulation,
+            **pipeline,
+        }
+
+    @staticmethod
+    def depth(raw_depth: TensorType["hwc"], raw_accumulation, settings, **pipeline):
+        # con
+        cmap = _get_colormap(**settings)
+
+        alphaThreshold = settings.get("alphaThreshold", None)
+
+        if alphaThreshold is None:
+            mask = None
+        else:
+            mask = (raw_accumulation > alphaThreshold).squeeze().cpu()
+
+        depthmap = cmap(raw_depth.squeeze().cpu().numpy(), mask)[:, :, :3]
+        depthmap = torch.Tensor(depthmap).to(raw_depth.device)
+
+        return {
+            "depth": b64png(depthmap),
+            "raw_depth": raw_depth,
+            "raw_accumulation": raw_accumulation,
+            **pipeline,
+        }
+
+    def cache(self, raw_rgb, raw_accumulation, **pipeline):
+        rgba = torch.cat([raw_rgb, 255 * raw_accumulation], dim=-1).clip(0, 255).cpu().numpy().astype(np.uint8)
+        self.append(rgba)
+
+        return {
+            "raw_rgb": raw_rgb,
+            "raw_accumulation": raw_accumulation,
+            **pipeline,
+        }
 
 
-def alpha(raw_accumulation: Tensor, alpha_threshold=None, **pipeline):
-    if alpha_threshold is not None:
-        raw_accumulation[raw_accumulation < alpha_threshold] = 0
-
-    return {
-        "alpha": b64jpg(raw_accumulation),
-        "raw_accumulation": raw_accumulation,
-        **pipeline,
-    }
-
-
-def _get_colormap(colormap, invert, clip=None, gain=1.0, normalize=False, **_):
+def _get_colormap(colormap, invert=False, useClip=True, clip: tuple = None, gain=1.0, normalize=False, **_):
     """
     https://matplotlib.org/3.1.0/tutorials/colors/colormaps.html
     get color map from matplotlib
@@ -81,7 +120,7 @@ def _get_colormap(colormap, invert, clip=None, gain=1.0, normalize=False, **_):
     cmap = cm.get_cmap(colormap + "_r" if invert else colormap)
 
     def map_color(x, mask=None):
-        if clip is not None:
+        if useClip and clip is not None:
             x = x.clip(*clip)
 
         if gain is not None:
@@ -100,33 +139,6 @@ def _get_colormap(colormap, invert, clip=None, gain=1.0, normalize=False, **_):
         return cmap(x)
 
     return map_color
-
-
-def depth(raw_depth: TensorType["hwc"], render, settings, **pipeline):
-    # con
-    cmap = _get_colormap(**settings)
-    heatmap = cmap(raw_depth.cpu().numpy())[:, :, :3]
-    encoded = b64png(heatmap)
-    return {
-        "depth": encoded,
-        "raw_depth": raw_depth,
-        **pipeline,
-    }
-
-
-def monochrome(image, colormap, normalize, clip, gain, alpha_np, **pipeline):
-    # assert image.shape[-1] == 1 and colormap is not None, "Invalid colormap for depth"
-    # cmap = get_colormap(colormap, normalize=normalize, clip=clip, gain=gain)
-    # # Need to ignore nans and infs
-    # mask = ~torch.isnan(image) & ~torch.isinf(image)
-    # mask = mask.squeeze().cpu().numpy()
-    # image_c = cmap(image.cpu().numpy(), mask=mask)[:, :, 0, :]
-    # # Set alphas
-    # image_c[:, :, 3] = alpha_np.squeeze()
-    # # Set unmasked pixels to 0 RGBA
-    # image_c[~mask] = 0
-    # return image_c
-    pass
 
 
 def nan_prune(t):
@@ -158,33 +170,131 @@ class PCA:
         return u
 
 
-get_pca = PCA()
+class FeatA(Singleton):
+    """Cache for Feature and Alpha Channel. Contains two caches, self, and low_res_cache.
+    The low-res cache is for the low-res feature map.
+
+    Self is the flat cache.
+    """
+
+    def __post_init__(self):
+        self.pca = PCA()
+        self.low_res_cache = deque(maxlen=1)
+
+    def features_pca(self, raw_features, raw_accumulation, alpha=None, **pipeline):
+        # print("feat_pca.shape:", raw_features.shape)
+        feat_pca = self.pca(raw_features, dim=3)
+        feat_pca_flat = feat_pca.reshape(-1, 3)
+
+        # these should be configurations
+        low = torch.nanquantile(feat_pca_flat, 0.02, dim=0)
+        top = torch.nanquantile(feat_pca_flat, 0.98, dim=0)
+
+        feat_pca_normalized = 0.02 + 0.96 * (feat_pca - low) / (top - low)
+        feat_pca_normalized.clip_(0, 1)
+
+        if alpha is None:
+            alpha = b64jpg(raw_accumulation)
+
+        return {
+            "features": b64jpg(feat_pca_normalized),
+            "features_pca": feat_pca_normalized,
+            "alpha": alpha,
+            "raw_features": raw_features,
+            "raw_accumulation": raw_accumulation,
+            **pipeline,
+        }
+
+    def cache(self, features_pca, raw_accumulation, **pipeline):
+        fpca_cuda = features_pca.to(raw_accumulation.device)
+        feat_alpha = torch.cat([fpca_cuda, 255 * raw_accumulation], dim=-1).clip(0, 255).cpu().numpy().astype(np.uint8)
+        self.append(feat_alpha)
+        return {**pipeline}
+
+    def cache_low_res(self, raw_features, **pipeline):
+        from einops import rearrange
+
+        h, w = raw_features.shape[:2]
+        size = h * w - torch.isnan(raw_features).any(dim=-1).sum()
+        ratio = float(120 / size) ** 0.5
+        feat = rearrange(raw_features, "h w c -> 1 c h w")
+        try:
+            feat = torch.nn.functional.upsample(feat, scale_factor=ratio, mode="bilinear")
+            feat = rearrange(feat, "1 c h w -> h w c")
+            feat_flat = feat[~torch.isnan(feat).any(dim=-1)]
+            self.low_res_cache.append(feat_flat)
+            return {
+                # note: remove [ raw_features, and features_pca ] from the flow to conserve memory
+                **pipeline,
+            }
+        except Exception as e:
+            print("upsample failed", e)
+            return pipeline
+
+    def reset_pca(self):
+        self.pca.clear()
 
 
-def features_pca(raw_features, raw_accumulation, **pipeline):
-    # print("feat_pca.shape:", raw_features.shape)
-    feat_pca = get_pca(raw_features, dim=3)
-    feat_pca_flat = feat_pca.reshape(-1, 3)
+class HeatmapA(Singleton):
+    """Cache for Feature and Alpha Channel. Contains two caches, self, and low_res_cache.
+    The low-res cache is for the low-res feature map.
 
-    # these should be configurations
-    low = torch.nanquantile(feat_pca_flat, 0.02, dim=0)
-    top = torch.nanquantile(feat_pca_flat, 0.98, dim=0)
+    Self is the flat cache.
+    """
 
-    feat_pca_normalized = 0.02 + 0.96 * (feat_pca - low) / (top - low)
-    feat_pca_normalized.clip_(0, 1)
+    def heatmap(self, raw_features, raw_accumulation, settings, **pipeline):
+        from instant_feature.viewer.nerf_vuer.clip.clip_heatmap import get_lerf_text_map
 
-    return {
-        "features": b64jpg(feat_pca_normalized),
-        "features_pca": feat_pca_normalized,
-        "raw_features": raw_features,
-        "raw_accumulation": raw_accumulation,
-        **pipeline,
-    }
+        print("raw_features.shape:", raw_features.shape)
+        print(settings)
+
+        # case clip to tuple for hashability in the lru_cache.
+        clip = settings.pop("clip", None)
+        if clip is not None:
+            clip = tuple(clip)
+
+        text_map = get_lerf_text_map(
+            **settings,
+            device=raw_accumulation.device,
+        )
+
+        raw_features_cuda = raw_features.to(raw_accumulation.device)
+        heatmap, mask = text_map(raw_features_cuda)
+        del raw_features_cuda
+
+        heatmap_normalized = heatmap
+        # heatmap_normalized = deepcopy(raw_features)
+        # heatmap_normalized.clip_(0, 1)
+        print("heatmap_normalized.shape:", heatmap_normalized.shape)
+
+        # final_mask = raw_accumulation * mask.float()[..., None]
+
+        cmap = _get_colormap(clip=clip, **settings)
+        heatmap_rgb = cmap(heatmap_normalized.cpu(), mask.cpu())[:, :, :3]
+        heatmap_rgb = torch.FloatTensor(heatmap_rgb).to(raw_accumulation.device)
+
+        mask_float = mask.float()[..., None]
+
+        return {
+            "heatmap": b64jpg(heatmap_rgb),
+            "heatmap_mask": b64jpg(mask_float),
+            "raw_heatmap": heatmap_rgb,
+            "raw_heatmap_mask": mask_float,
+            "raw_accumulation": raw_accumulation,
+            **pipeline,
+        }
+
+    def cache(self, raw_heatmap, raw_heatmap_mask, **pipeline):
+        print("cache")
+        feat_alpha = torch.cat([raw_heatmap, 255 * raw_heatmap_mask], dim=-1).clip(0, 255).cpu().numpy().astype(np.uint8)
+        print("done caching")
+        self.append(feat_alpha)
+        return {**pipeline}
 
 
-async def pca_reset_handler(event: "ClientEvent", send):
-    print("clearing the pca cache")
-    get_pca.clear()
+# async def pca_reset_handler(event: "ClientEvent", send):
+#     print("clearing the pca cache")
+#     get_pca.clear()
 
 
 def b64jpg(image: Tensor, quality: int = 90):
