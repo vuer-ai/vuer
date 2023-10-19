@@ -18,7 +18,7 @@ from vuer.schemas import (
 class RenderVuer(Vuer):
     device = "cuda:0"
 
-    WEBSOCKET_MAX_SIZE = 2 ** 28
+    WEBSOCKET_MAX_SIZE = 2**28
 
     def __init__(self, render: Render = None, scene: Scene = None, **kwargs):
         super().__init__(**kwargs)
@@ -67,7 +67,11 @@ class RenderVuer(Vuer):
                 value = event.value
                 self.clear()
 
-                world = value.pop("world")
+                world = value.pop("world", None)
+                if world is None:
+                    print("initial camera movement does not contain world params.")
+                    continue
+
                 camera = value.pop("camera")
                 render_params = value.pop("render", {})
                 # initially the values are non.
@@ -98,13 +102,13 @@ class RenderVuer(Vuer):
 
                     logger.start("low-res-render")
                     async for render_response in self.render.render(
-                            camera=quick_cam,
-                            world=world,
-                            render=render_params,
-                            # other params
-                            chunk_size=8096,
-                            to_cpu="features",
-                            **render_params,
+                        camera=quick_cam,
+                        world=world,
+                        render=deepcopy(render_params),
+                        # other params
+                        chunk_size=8096,
+                        to_cpu="features",
+                        **render_params,
                     ):
                         if isinstance(render_response, ServerEvent):
                             print("Sendinging low-def", logger.since("low-res-render"))
@@ -117,13 +121,13 @@ class RenderVuer(Vuer):
 
                 logger.start("long-render")
                 async for render_response in self.render.render(
-                        camera=camera,
-                        world=world,
-                        render=render_params,
-                        # other params
-                        chunk_size=8096,
-                        to_cpu="features",
-                        **render_params,
+                    camera=camera,
+                    world=world,
+                    render=deepcopy(render_params),
+                    # other params
+                    chunk_size=8096,
+                    to_cpu="features",
+                    **render_params,
                 ):
                     # print("high-res rendering.")
                     if isinstance(render_response, ServerEvent):

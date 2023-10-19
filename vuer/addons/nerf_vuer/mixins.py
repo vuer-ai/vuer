@@ -2,7 +2,7 @@ from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass
 from functools import wraps
-from typing import Dict, Union, List, DefaultDict, Optional, Generator
+from typing import Dict, Union, List, DefaultDict, Optional, Generator, Callable, Sequence
 
 from instant_feature.cameras.cameras import Cameras
 from instant_feature.viewer.se3 import rotation_matrix
@@ -107,7 +107,16 @@ def process_aabb(render_gen):
         render,
         **kwargs,
     ):
-        if render.get("use_aabb", None):
+
+        if settings.get("use_aabb", None):
+            # use_aabb = settings.get("use_aabb", None)
+            # aabb_min = settings.get("aabb_min", None)
+            # aabb_max = settings.get("aabb_max", None)
+            scene_box = AABB(
+                aabb_min=Vector3(**settings.get("aabb_min", None)),
+                aabb_max=Vector3(**settings.get("aabb_max", None)),
+            )
+        elif render.get("use_aabb", None):
             scene_box = AABB(
                 aabb_min=Vector3(**render.get("aabb_min", None)),
                 aabb_max=Vector3(**render.get("aabb_max", None)),
@@ -115,35 +124,36 @@ def process_aabb(render_gen):
         else:
             scene_box = None
 
-        # if settings.get("use_aabb", None):
-        #     use_aabb = settings.get("use_aabb", None)
-        #     aabb_min = settings.get("aabb_min", None)
-        #     aabb_max = settings.get("aabb_max", None)
-
         async for event in render_gen(*args, aabb=scene_box, settings=settings, **kwargs):
             yield event
 
     return wrap_gen
 
 
-def _se3(position, rotation, scale, **rest) -> Dict[str, Union[Vector3, EulerDeg, float]]:
-    return dict(
-        position=Vector3(**position),
-        rotation=EulerDeg(**rotation).to_rad(),
-        scale=scale,
-        **rest,
-    )
+def _se3(position=None, rotation=None, scale=None, **rest) -> Dict[str, Union[Vector3, EulerDeg, float]]:
+    """
+    Add handling of undefined parameters.
+    """
+    output = rest
+    if position:
+        output["position"] = Vector3(**position)
+    if rotation:
+        output["rotation"] = EulerDeg(**rotation).to_rad()
+    if isinstance(scale, dict):
+        output["scale"] = Vector3(**scale)
+    elif scale:
+        output["scale"] = scale
+    return output
 
 
 # Need more encapsulated handling. Transformations should be propagated down.
 def process_world(render_gen):
     # @wraps(render_gen)
     async def wrap_gen(*args, camera, world, settings, **kwargs):
-
         async for event in render_gen(
             *args,
             parent=_se3(**world),
-            # settings=_se3(**settings),
+            settings=_se3(**settings),
             # background=background,
             camera=camera,
             world=world,
@@ -202,10 +212,13 @@ def _lie_action(ray_bundle, position: Vector3, rotation: Euler, scale: float, **
         ray_bundle.origins /= scale
 
 
-def _transformation(rotation: Euler, position: Vector3, **_) -> torch.Tensor:
+def _transformation(rotation: Euler, position: Vector3, scale: Union[float, Vector3], **_) -> torch.Tensor:
     rot_mat = torch.from_numpy(rotation_matrix(*rotation))
     transform = torch.eye(4)
-    transform[:3, :3] = rot_mat
+    if isinstance(scale, Vector3):
+        transform[:3, :3] = rot_mat @ torch.DoubleTensor(scale).diag()
+    else:
+        transform[:3, :3] = rot_mat * scale
     transform[:3, 3] = torch.FloatTensor(position)
     return transform
 
@@ -253,21 +266,27 @@ def collect_rays(render_bundle):
     return ray_gen
 
 
-# from .render_nodes import rgb, alpha, chainer
-# this is not a mix-in
-
-
 def collector(
     pipe: Chainer = None,
     channels: List[str] = None,
+    channel_prefix: Union[str, Callable] = None,
 ):
     """
     Decorator for processing the rendered images.
+
+    Params:
+    pipe: this is the chain of operations that forms the processing flow.
+    channels: keys sent over the wire to the client. We use whitelisting to recude bandwidth.
+    layer_prefix: when this is set, the output channels are attached a prefix, to accommodate
+            conflicting keys in the pipeline.
+            Also takes in a function, to allow more dynamics generation of prefixes
     """
 
     def decorator(async_render):
         # @wraps(async_render)
+        # adding self argument to allow passing into the prefix function
         async def render_event(
+            self,
             *args,
             camera,
             pipe=pipe,
@@ -276,7 +295,7 @@ def collector(
 
             outputs = defaultdict(list)
 
-            async for output_chunk in async_render(*args, channels=channels, camera=camera, **kwargs):
+            async for output_chunk in async_render(self, *args, channels=channels, camera=camera, **kwargs):
                 signal = yield None
 
                 # collect the results
@@ -296,8 +315,18 @@ def collector(
                 render=kwargs["render"],
                 settings=kwargs["settings"],
             )
-            # filter out the non-requested channels
-            flow = {k: v for k, v in flow.items() if k in channels}
+
+            # info: do NOT mutate channel_prefix. This is inside the closure and is shared between function calls.
+            prefix = channel_prefix
+            if callable(channel_prefix):
+                prefix = channel_prefix(self)
+
+            if prefix:
+                # select channels, and prefix with
+                flow = {prefix + k: v for k, v in flow.items() if k in channels}
+            else:
+                # filter out the non-requested channels
+                flow = {k: v for k, v in flow.items() if k in channels}
 
             yield ServerEvent(
                 etype="RENDER",

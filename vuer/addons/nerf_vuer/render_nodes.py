@@ -3,6 +3,7 @@ RenderComponents are view components that respond to camera movements in the fro
 that returns rendered images
 """
 import base64
+import json
 from abc import abstractmethod
 from collections import deque
 from copy import deepcopy
@@ -15,8 +16,10 @@ from PIL import Image
 from torch import Tensor
 from torchtyping import TensorType
 
+from vuer.events import ClientEvent
 
-class Chainer:
+
+class Chainer(list):
     def __init__(self, *fns):
         """Chainer is a function that chains multiple functions together
 
@@ -29,10 +32,10 @@ class Chainer:
             chained(**pipeline) gives fn_1(fn_2(**pipeline))
 
         """
-        self.fns = fns
+        super().__init__(fns)
 
     def thunk(self, **pipe):
-        for fn in self.fns:
+        for fn in self:
             try:
                 pipe = fn(**pipe)
             except Exception as e:
@@ -42,6 +45,26 @@ class Chainer:
 
     def __call__(self, **pipe):
         return self.thunk(**pipe)
+
+
+class TrajectoryCache(deque):
+    """
+    A cache to capture the camera trajectories.
+    """
+
+    def __init__(self, **kwargs):
+        self.selections = deque(**kwargs)
+        super().__init__(**kwargs)
+
+    async def click_handler(self, event: ClientEvent, _):
+        camera_pose = deepcopy(self[-1])
+        self.selections.append(camera_pose)
+        print(camera_pose)
+
+    async def cache_camera(self, event: ClientEvent, _):
+        # do NOT mutate this object
+        camera_pose = deepcopy(event.value["camera"])
+        self.append(camera_pose)
 
 
 class Singleton(deque):
@@ -107,7 +130,7 @@ class RGBA(Singleton):
         }
 
 
-def _get_colormap(colormap, invert=False, useClip=True, clip: tuple = None, gain=1.0, normalize=False, **_):
+def _get_colormap(colormap, invert=False, useClip=True, clip: tuple = None, gain=1.0, offset=0.0, normalize=False, **_):
     """
     https://matplotlib.org/3.1.0/tutorials/colors/colormaps.html
     get color map from matplotlib
@@ -120,11 +143,6 @@ def _get_colormap(colormap, invert=False, useClip=True, clip: tuple = None, gain
     cmap = cm.get_cmap(colormap + "_r" if invert else colormap)
 
     def map_color(x, mask=None):
-        if useClip and clip is not None:
-            x = x.clip(*clip)
-
-        if gain is not None:
-            x *= gain
 
         if normalize:
             if mask is None or mask.sum() == 0:
@@ -135,6 +153,15 @@ def _get_colormap(colormap, invert=False, useClip=True, clip: tuple = None, gain
             x -= min
             x /= max - min + 1e-6
             x[x < 0] = 0
+
+        if useClip and clip is not None:
+            x = x.clip(*clip)
+
+        if offset is not None:
+            x -= offset
+
+        if gain is not None:
+            x *= gain
 
         return cmap(x)
 
@@ -180,6 +207,7 @@ class FeatA(Singleton):
     def __post_init__(self):
         self.pca = PCA()
         self.low_res_cache = deque(maxlen=1)
+        self.features_cache = deque(maxlen=1)
 
     def features_pca(self, raw_features, raw_accumulation, alpha=None, **pipeline):
         # print("feat_pca.shape:", raw_features.shape)
@@ -205,11 +233,65 @@ class FeatA(Singleton):
             **pipeline,
         }
 
-    def cache(self, features_pca, raw_accumulation, **pipeline):
+    def features_heatmap(self, raw_features, raw_accumulation, settings, **pipeline):
+
+        print("raw_features.shape:", raw_features.shape)
+        print(settings)
+
+        x, y = settings.pop("xy", [None, None])
+        size = settings.pop("size", None)
+        n = max(1, int(size))
+
+        # remove clip so that lerf_text_map does not complain about hashability in the lru_cache.
+        clip = settings.pop("clip", None)
+
+        h, w = raw_features.shape[:2]
+        i, j = int(x * h), int(y * h)
+        feat_probe = raw_features[i : i + n, j : j + n, :].to(raw_accumulation.device)
+        feat_probe = feat_probe.mean(dim=[0, 1])
+        feat_probe /= feat_probe.norm(dim=-1, keepdim=True)
+
+        raw_features_cuda = raw_features.to(raw_accumulation.device)
+        raw_features_cuda /= raw_features_cuda.norm(dim=-1, keepdim=True)
+        raw_features_cuda.shape
+        # heatmap
+        heatmap = raw_features_cuda @ feat_probe
+        del raw_features_cuda
+        mask = ~torch.isnan(heatmap)
+
+        cmap = _get_colormap(clip=clip, **settings)
+        heatmap_rgb = cmap(heatmap.cpu(), mask.cpu())[:, :, :3]
+        heatmap_rgb = torch.FloatTensor(heatmap_rgb).to(raw_accumulation.device)
+
+        # mask_float = mask.float()[..., None] * raw_accumulation
+        mask_float = raw_accumulation
+        print("raw_accumulation", raw_accumulation.shape)
+
+        return {
+            "heatmap": b64jpg(heatmap_rgb),
+            "heatmap_mask": b64jpg(mask_float),
+            "heatmap_rgb": heatmap_rgb,
+            "raw_heatmap_mask": mask_float,
+            "raw_accumulation": raw_accumulation,
+            **pipeline,
+        }
+
+    def cache_heatmap(self, heatmap_rgb, raw_heatmap_mask, **pipeline):
+        heat_alpha = torch.cat([heatmap_rgb, 255 * raw_heatmap_mask], dim=-1).clip(0, 255).cpu().numpy().astype(np.uint8)
+        self.append(heat_alpha)
+        # remove those from the pipeline
+        return {**pipeline}
+
+    def cache_pca(self, features_pca, raw_accumulation, **pipeline):
         fpca_cuda = features_pca.to(raw_accumulation.device)
         feat_alpha = torch.cat([fpca_cuda, 255 * raw_accumulation], dim=-1).clip(0, 255).cpu().numpy().astype(np.uint8)
         self.append(feat_alpha)
-        return {**pipeline}
+        return {"raw_accumulation": raw_accumulation, **pipeline}
+
+    def cache_features(self, raw_features, **pipeline):
+        """this cache is very expensive."""
+        self.features_cache.append(raw_features)
+        return {"raw_features": raw_features, **pipeline}
 
     def cache_low_res(self, raw_features, **pipeline):
         from einops import rearrange
@@ -235,23 +317,23 @@ class FeatA(Singleton):
         self.pca.clear()
 
 
-class HeatmapA(Singleton):
+class CLIPQueryMap(Singleton):
     """Cache for Feature and Alpha Channel. Contains two caches, self, and low_res_cache.
     The low-res cache is for the low-res feature map.
 
-    Self is the flat cache.
-    """
+    Self is the flat cache."""
 
-    def heatmap(self, raw_features, raw_accumulation, settings, **pipeline):
+    def set_query_vector(self, query_vector):
+        self.query_vector = query_vector
+
+    def text_heatmap(self, raw_features, raw_accumulation, settings, **pipeline):
         from instant_feature.viewer.nerf_vuer.clip.clip_heatmap import get_lerf_text_map
 
         print("raw_features.shape:", raw_features.shape)
         print(settings)
 
-        # case clip to tuple for hashability in the lru_cache.
+        # remove clip so that lerf_text_map does not complain about hashability in the lru_cache.
         clip = settings.pop("clip", None)
-        if clip is not None:
-            clip = tuple(clip)
 
         text_map = get_lerf_text_map(
             **settings,
@@ -290,11 +372,6 @@ class HeatmapA(Singleton):
         print("done caching")
         self.append(feat_alpha)
         return {**pipeline}
-
-
-# async def pca_reset_handler(event: "ClientEvent", send):
-#     print("clearing the pca cache")
-#     get_pca.clear()
 
 
 def b64jpg(image: Tensor, quality: int = 90):

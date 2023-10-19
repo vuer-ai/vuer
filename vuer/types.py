@@ -5,8 +5,6 @@ from math import pi
 Vector3 = namedtuple("Vector3", ["x", "y", "z"])
 
 
-# Euler = namedtuple("Euler", ["x", "y", "z", "order"])
-# refactor with default values for "order"
 class Euler(NamedTuple):
     x: int
     y: int
