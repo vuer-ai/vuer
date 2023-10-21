@@ -58,7 +58,7 @@ if __name__ == '__main__':
             Update(
                 Urdf(
                     key="go1",
-                    src="http://localhost:8012/local/gabe_go1/urdf/go1.urdf",
+                    src="http://localhost:8012/static/gabe_go1/urdf/go1.urdf",
                     auto_redraw=True,
                     jointValues=jointValues,
                 ),

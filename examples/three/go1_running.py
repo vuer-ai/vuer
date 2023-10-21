@@ -40,7 +40,7 @@ async def go1_running():
     scene = Scene(
         Urdf(
             key="go1",
-            src="https://dash.ml/local/gabe_go1/urdf/go1.urdf",
+            src="https://dash.ml/static/gabe_go1/urdf/go1.urdf",
             auto_redraw=True,
             jointValues=DEFAULT_POS,
         ),
@@ -73,7 +73,7 @@ async def go1_running():
             Update(
                 Urdf(
                     key="go1",
-                    src="http://localhost:8012/local/gabe_go1/urdf/go1.urdf",
+                    src="http://localhost:8012/static/gabe_go1/urdf/go1.urdf",
                     position=position,
                     rotation=[*rotation, "ZXY"],
                     auto_redraw=True,

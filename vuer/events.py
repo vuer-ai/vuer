@@ -1,4 +1,5 @@
 from vuer.schemas import Element
+from vuer.serdes import serializer
 
 
 class Event:
@@ -53,27 +54,6 @@ NULL = NullEvent()
 #     def __matmul__(cls, data):
 #         instance = cls.__new__(cls)
 #         return cls.__init__(instance, data)
-
-from typing import Sequence
-
-
-def serializer(data):
-    if hasattr(data, "serialize"):
-        return data.serialize()
-
-    if isinstance(data, str):
-        # return Text(data)
-        return data
-
-    # this could be dangerous.
-    if isinstance(data, Sequence):
-        return [serializer(d) for d in data]
-
-    # this could be dangerous
-    if isinstance(data, dict):
-        return {k: serializer(v) for k, v in data.items()}
-
-    NotImplementedError(f"Cannot serialize {data}")
 
 
 class ServerEvent(Event):  # , metaclass=Meta):

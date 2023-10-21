@@ -12,6 +12,8 @@ setup(name='vuer',
       install_requires=[
           "sanic==20.9.0",
           "killport",
+          "msgpack",
+          # "msgpack-numpy",
       ],
       description='long_description',
       long_description=long_description,

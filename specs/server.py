@@ -50,7 +50,7 @@ async def show_heatmap():
     scene = Scene(
         Urdf(
             key="go1",
-            src=f"http://localhost:8012/local/urdf/go1.urdf?ts={datetime.now()}",
+            src=f"http://localhost:8012/static/urdf/go1.urdf?ts={datetime.now()}",
             auto_redraw=True,
             jointValues={
                 "FL_calf_joint": -1.5707963268,
@@ -87,7 +87,7 @@ async def show_heatmap():
             Update(
                 Urdf(
                     key="go1",
-                    src="http://localhost:8012/local/gabe_go1/urdf/go1.urdf",
+                    src="http://localhost:8012/static/gabe_go1/urdf/go1.urdf",
                     auto_redraw=True,
                     jointValues=jointValues,
                 ),

@@ -6,6 +6,7 @@ from functools import partial
 from typing import cast
 from uuid import uuid4
 
+from msgpack import packb
 from params_proto import Proto, PrefixProto
 from websockets import ConnectionClosedError
 
@@ -30,12 +31,12 @@ class Vuer(PrefixProto, Server):
     name = "vuer"
     uri = "ws://localhost:8012"
     # change to vuer.dash.ml
-    domain = "https://dash.ml/demos/vqn-dash/three"
+    domain = "https://dash.ml/vuer"
     port = 8012
     free_port = True
     static_root = "."
     queue_len = None
-    cors_origin = "https://dash.ml,*"
+    # cors = "https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
     queries = Proto({}, help="query parameters to pass")
 
     WEBSOCKET_MAX_SIZE = 2 ** 28
@@ -171,9 +172,11 @@ class Vuer(PrefixProto, Server):
     async def send(self, ws_id, event: ServerEvent):
         ws = self.ws[ws_id]
         assert isinstance(event, ServerEvent), "event must be a ServerEvent type object."
-        res_str = event.serialize()
-        res_json_str = json.dumps(res_str)
-        return await ws.send_str(res_json_str)
+        res_obj = event.serialize()
+        res_bytes = packb(res_obj, use_bin_type=True)
+        return await ws.send_bytes(res_bytes)
+        # res_json_str = json.dumps(res_str)
+        # return await ws.send_str(res_json_str)
 
     async def close_ws(self, ws_id):
         self.uplink_queue.pop(ws_id)
@@ -297,8 +300,9 @@ class Vuer(PrefixProto, Server):
         # host = host[2:]
 
         self._socket("", self.downlink)
-        # serve local files via /local endpoint
-        self._static("/local", self.static_root)
+        # serve local files via /static endpoint
+        self._static("/static", self.static_root)
+        print("serving static files from", self.static_root, "at", "/static")
         self._route("/relay", self.relay, method="POST")
         # self._socket()
         super().run()

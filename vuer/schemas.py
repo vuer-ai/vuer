@@ -3,6 +3,8 @@ from typing import Union
 import numpy as np
 import PIL.Image as pil_image
 
+# from msgpack_numpy import pack, packb
+
 element_count = 0
 
 
@@ -31,7 +33,16 @@ class Element:
         :return: Dictionary representing the element.
         """
         # note: only return the non-private attributes, allow bypass.
-        return {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
+        output = {}
+        for k, v in self.__dict__.items():
+            if k.startswith('_'):
+                continue
+            if hasattr(v, "tolist"):
+                output[k] = v.tolist()
+            else:
+                output[k] = v
+
+        return output
 
 
 class BlockElement(Element):
@@ -247,12 +258,12 @@ class Scene(BlockElement):
     tag = "Scene"
 
     def __init__(
-        self,
-        *children,
-        rawChildren=None,
-        htmlChildren=None,
-        backgroundChildren=None,
-        **kwargs,
+            self,
+            *children,
+            rawChildren=None,
+            htmlChildren=None,
+            backgroundChildren=None,
+            **kwargs,
     ):
         super().__init__(*children, **kwargs)
         self.rawChildren = rawChildren or []
@@ -270,6 +281,21 @@ class Scene(BlockElement):
         return obj
 
 
+class DefaultScene(Scene):
+    def __init__(
+            self,
+            *children,
+            rawChildren=None,
+            htmlChildren=None,
+            backgroundChildren=None,
+            **kwargs,
+    ):
+        super().__init__(
+            AmbientLight(intensity=0.5, key="default_ambient_light"),
+            DirectionalLight(intensity=1, key="default_directional_light"),
+            *children, **kwargs)
+
+
 class SceneElement(BlockElement):
     pass
 
@@ -285,6 +311,46 @@ class CameraHelper(SceneElement):
 class group(SceneElement):
     tag = "group"
     children = []
+
+
+class mesh(SceneElement):
+    tag = "mesh"
+    children = []
+
+
+class TriMesh(SceneElement):
+    tag = "TriMesh"
+    children = []
+    vertices = None
+    faces = None
+    colors = None
+
+    def __post_init__(self, **kwargs):
+        self.vertices = self.vertices.flatten()
+        if hasattr(self.faces, "flatten"):
+            self.faces = self.faces.flatten()
+        if hasattr(self.colors, "flatten"):
+            if self.colors.shape[-1] == 4:
+                self.colors = self.colors[:, :3]
+            if self.colors.dtype == np.uint8:
+                self.colors = self.colors.astype(np.float32) / 255.
+            self.colors = self.colors.flatten().astype(np.float32)
+
+
+class PointCloud(SceneElement):
+    tag = "PointCloud"
+    children = []
+    vertices = None
+    colors = None
+
+    def __post_init__(self, **kwargs):
+        self.vertices = self.vertices.flatten()
+        if hasattr(self.colors, "flatten"):
+            if self.colors.shape[-1] == 4:
+                self.colors = self.colors[:, :3]
+            if self.colors.dtype == np.uint8:
+                self.colors = self.colors.astype(np.float32) / 255.
+            self.colors = self.colors.flatten()
 
 
 class Box(SceneElement):
@@ -422,10 +488,6 @@ class Html(SceneElement):
     tag = "Html"
 
 
-class Ply(SceneElement):
-    tag = "Ply"
-
-
 class Pivot(SceneElement):
     tag = "Pivot"
 
@@ -434,16 +496,20 @@ class Movable(SceneElement):
     tag = "Movable"
 
 
+class Obj(SceneElement):
+    tag = "Obj"
+
+
+class Ply(SceneElement):
+    tag = "Ply"
+
+
 class Glb(SceneElement):
     tag = "Glb"
 
 
 class Urdf(SceneElement):
     tag = "Urdf"
-
-
-class PointCloud(SceneElement):
-    tag = "PointCloud"
 
 
 class Gripper(SceneElement):
