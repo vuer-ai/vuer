@@ -10,7 +10,6 @@ with open(path.join(path.abspath(path.dirname(__file__)), 'README'), encoding='u
 setup(name='vuer',
       packages=find_packages(),
       install_requires=[
-          "sanic==20.9.0",
           "killport",
           "msgpack",
           # "msgpack-numpy",

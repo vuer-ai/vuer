@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vuer"
-version = "0.0.4"
+version = "0.0.5"
 description = ""
 readme = "README.md"
 license = { text = "MIT" }
@@ -17,6 +17,8 @@ dependencies = [
     "tqdm",
     "termcolor",
     "params-proto",
+    "killport",
+    "msgpack",
 ]
 
 [project.optional-dependencies]
