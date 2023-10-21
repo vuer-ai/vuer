@@ -129,6 +129,16 @@ class RGBA(Singleton):
             **pipeline,
         }
 
+    def cache_depth(self, raw_depth, raw_accumulation, **pipeline):
+        depth_a = torch.cat([raw_depth, 255 * raw_accumulation], dim=-1).clip(0, 255).cpu().numpy().astype(np.uint8)
+        self.append(depth_a)
+
+        return {
+            "raw_depth": raw_depth,
+            "raw_accumulation": raw_accumulation,
+            **pipeline,
+        }
+
 
 def _get_colormap(colormap, invert=False, useClip=True, clip: tuple = None, gain=1.0, offset=0.0, normalize=False, **_):
     """
@@ -232,6 +242,9 @@ class FeatA(Singleton):
             "raw_accumulation": raw_accumulation,
             **pipeline,
         }
+
+    def probe_feature(self, raw_features, **pipeline):
+        return {"raw_features": raw_features, **pipeline}
 
     def features_heatmap(self, raw_features, raw_accumulation, settings, **pipeline):
 

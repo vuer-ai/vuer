@@ -335,6 +335,10 @@ def collector(
                 data={**flow},
             )
 
+        # holds the current pipe.
+        render_event._pipeline = pipe
+        render_event._channels = channels
+
         return render_event
 
     return decorator
