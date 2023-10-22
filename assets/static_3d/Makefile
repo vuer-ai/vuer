@@ -1,11 +1,11 @@
 # Description: Makefile for downloading assets
-default: engine porche dungeon dragon diamond armadillo bunny dragon-mesh sphere
+default: engine porsche dungeon dragon diamond armadillo bunny dragon-mesh sphere
 
 #Source: three-mesh-bvh
 engine:
 	wget -O engine.gltf https://github.com/gkjohnson/three-mesh-bvh/raw/master/example/models/internal_combustion_engine/model.gltf
-porche:
-	wget -O porche.ply https://github.com/gkjohnson/three-mesh-bvh/raw/master/example/models/point_cloud_porsche_911_1.7M_vertices/scene.ply
+porsche:
+	wget -O porsche.ply https://github.com/gkjohnson/three-mesh-bvh/raw/master/example/models/point_cloud_porsche_911_1.7M_vertices/scene.ply
 dungeon:
 	wget -O dungeon.gltf https://github.com/gkjohnson/three-mesh-bvh/raw/master/example/models/dungeon_low_poly_game_level_challenge/scene.gltf
 dragon:

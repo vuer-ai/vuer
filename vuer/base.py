@@ -91,7 +91,7 @@ class Server:
 
     def _static(self, path, root):
         _fn = partial(handle_file_request, root=root)
-        self._route(f"{path}/{{filename}}", _fn, method="GET")
+        self._route(f"{path}/{{filename:.*}}", _fn, method="GET")
 
     def run(self):
         async def init_server():

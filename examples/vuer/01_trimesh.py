@@ -9,7 +9,7 @@ from vuer.schemas import Obj, DefaultScene, TriMesh
 
 if __name__ == '__main__':
     assets_folder = Path(__file__).parent / "../../assets"
-    test_file = "armadillo_midres.obj"
+    test_file = "static_3d/armadillo_midres.obj"
 
     mesh = trimesh.load_mesh(assets_folder / test_file)
     assert isinstance(mesh, trimesh.Trimesh)
