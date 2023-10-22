@@ -29,3 +29,5 @@ MUJOCO_LOG.txt
 
 output
 pcds
+
+.pytest_cache
