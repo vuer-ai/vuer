@@ -7,7 +7,7 @@ from termcolor import cprint
 
 from instant_feature.viewer.render_utils import get_camera_from_three
 from vuer import Vuer
-from vuer.addons.nerf_vuer.render_components import Render
+from nerf_vuer.render_components import Render
 from vuer.events import ServerEvent
 from vuer.schemas import (
     Scene,
