@@ -333,6 +333,7 @@ class TriMesh(SceneElement):
             if self.colors.shape[-1] == 4:
                 self.colors = self.colors[:, :3]
             if self.colors.dtype == np.uint8:
+                # todo: use this and send only integers: https://stackoverflow.com/questions/34669537/javascript-uint8array-to-float32array?noredirect=1&lq=1
                 self.colors = self.colors.astype(np.float32) / 255.
             self.colors = self.colors.flatten().astype(np.float32)
 
@@ -349,6 +350,7 @@ class PointCloud(SceneElement):
             if self.colors.shape[-1] == 4:
                 self.colors = self.colors[:, :3]
             if self.colors.dtype == np.uint8:
+                # todo: use this and send only integers: https://stackoverflow.com/questions/34669537/javascript-uint8array-to-float32array?noredirect=1&lq=1
                 self.colors = self.colors.astype(np.float32) / 255.
             self.colors = self.colors.flatten()
 
