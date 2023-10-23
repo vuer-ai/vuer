@@ -44,17 +44,20 @@ class Vuer(PrefixProto, Server):
     device = "cuda"
 
     # need to be awaited
-    def __matmul__(self, msg: ServerEvent):
+    def __matmul__(self, event: ServerEvent):
         """
         Send a message to the client. Need to be awaited
-        :param msg:
+        :param event:
         :return: dqueue
         """
-        assert isinstance(msg, ServerEvent), "msg must be a ServerEvent type object."
-        assert not isinstance(msg, Frame), "Frame event is only used in vuer.bind method."
-        # print(f'only supports 1 socket connection atm. n={len(self.ws)}')
+        assert isinstance(event, ServerEvent), "msg must be a ServerEvent type object."
+        assert not isinstance(event, Frame), "Frame event is only used in vuer.bind method."
+
+        event_obj = event.serialize()
+        event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
+        # note: print(f'only supports 1 socket connection atm. n={len(self.ws)}')
         last_key = list(self.ws.keys())[-1]
-        self.uplink_queue[last_key].append(msg)
+        self.uplink_queue[last_key].append(event_bytes)
         return None
 
     @property
@@ -169,14 +172,17 @@ class Vuer(PrefixProto, Server):
 
         return f"{self.domain}?ws={self.uri}"
 
-    async def send(self, ws_id, event: ServerEvent):
+    async def send(self, ws_id, event: ServerEvent = None, event_bytes=None):
         ws = self.ws[ws_id]
-        assert isinstance(event, ServerEvent), "event must be a ServerEvent type object."
-        res_obj = event.serialize()
-        res_bytes = packb(res_obj, use_bin_type=True)
-        return await ws.send_bytes(res_bytes)
-        # res_json_str = json.dumps(res_str)
-        # return await ws.send_str(res_json_str)
+
+        if event_bytes is None:
+            assert isinstance(event, ServerEvent), "event must be a ServerEvent type object."
+            event_obj = event.serialize()
+            event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
+        else:
+            assert event is None, "Can not pass in both at the same time."
+
+        return await ws.send_bytes(event_bytes)
 
     async def close_ws(self, ws_id):
         self.uplink_queue.pop(ws_id)
@@ -193,10 +199,10 @@ class Vuer(PrefixProto, Server):
             queue = self.uplink_queue[ws_id]
 
             if queue:
-                msg = queue.popleft()
+                msg_bytes = queue.popleft()
                 try:
                     # todo: spawn new uplink everytime connections happen
-                    await self.send(ws_id, msg)
+                    await self.send(ws_id, event_bytes=msg_bytes)
                 except ConnectionResetError:
                     await self.close_ws(ws_id)
                     print("Connection closed")

@@ -1,7 +1,7 @@
 from typing import List, Generator
 
-from vuer.addons.nerf_vuer.mixins import collector, process_aabb, process_world, collect_rays, chunk_rays
-from vuer.addons.nerf_vuer.render_nodes import Chainer, RGBA
+from nerf_vuer.mixins import collector, process_aabb, process_world, collect_rays, chunk_rays
+from nerf_vuer.render_nodes import Chainer, RGBA
 from vuer.events import ServerEvent
 from vuer.schemas import SceneElement
 

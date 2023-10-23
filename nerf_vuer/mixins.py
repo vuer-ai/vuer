@@ -1,14 +1,13 @@
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass
-from functools import wraps
-from typing import Dict, Union, List, DefaultDict, Optional, Generator, Callable, Sequence
+from typing import Dict, Union, List, DefaultDict, Optional, Generator, Callable
 
 from instant_feature.cameras.cameras import Cameras
 from instant_feature.viewer.se3 import rotation_matrix
-from vuer.addons.nerf_vuer.render_nodes import Chainer
+from nerf_vuer.render_nodes import Chainer
 from vuer.events import ServerEvent
-from vuer.types import Vector3, Euler, EulerDeg, Body
+from vuer.types import Vector3, Euler, EulerDeg
 
 import torch
 from torchtyping import TensorType

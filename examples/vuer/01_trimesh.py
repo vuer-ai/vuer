@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import numpy as np
 # import numpy as np
 import trimesh
 
@@ -22,6 +23,8 @@ if __name__ == '__main__':
 
     app = Vuer(static_root=assets_folder)
 
+    print("Loaded mesh with ", mesh.vertices.shape, "vertices and", mesh.faces.shape, "faces")
+
 
     @app.spawn
     async def main(ws):
@@ -30,7 +33,12 @@ if __name__ == '__main__':
                 Obj(key="src-loader", src="http://localhost:8012/static/" + test_file, position=[3, 0, 0]),
                 Obj(key="buff-loader", buff=data, position=[1, 0, 0], scale=0.3),
                 Obj(key="text-loader", text=text, position=[1, 0, 1], scale=0.3),
-                TriMesh(key="trimesh", vertices=mesh.vertices, faces=mesh.faces, position=[0, 0, 0]),
+
+                TriMesh(key="trimesh", vertices=np.array(mesh.vertices), faces=np.array(mesh.faces), position=[0, 0, 0],
+                        color="#23aaff"),
+
+                TriMesh(key="trimesh", vertices=np.array(mesh.vertices), faces=np.array(mesh.faces), wireframe=True,
+                        position=[-0.3, 0, 0], color="yellow"),
             ),
 
         )
