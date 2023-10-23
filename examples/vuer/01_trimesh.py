@@ -30,12 +30,15 @@ if __name__ == '__main__':
     async def main(ws):
         app @ Set(
             DefaultScene(
-                # Obj(key="src-loader", src="http://localhost:8012/static/" + test_file, position=[3, 0, 0]),
-                # Obj(key="buff-loader", buff=data, position=[1, 0, 0], scale=0.3),
-                # Obj(key="text-loader", text=text, position=[1, 0, 1], scale=0.3),
-                TriMesh(key="trimesh", vertices=np.array(mesh.vertices), faces=np.array(mesh.faces), position=[0, 0, 0], color="red"),
+                Obj(key="src-loader", src="http://localhost:8012/static/" + test_file, position=[3, 0, 0]),
+                Obj(key="buff-loader", buff=data, position=[1, 0, 0], scale=0.3),
+                Obj(key="text-loader", text=text, position=[1, 0, 1], scale=0.3),
+
+                TriMesh(key="trimesh", vertices=np.array(mesh.vertices), faces=np.array(mesh.faces), position=[0, 0, 0],
+                        color="#23aaff"),
+
                 TriMesh(key="trimesh", vertices=np.array(mesh.vertices), faces=np.array(mesh.faces), wireframe=True,
-                        position=[-2, 0, 0], color="red"),
+                        position=[-0.3, 0, 0], color="yellow"),
             ),
 
         )
