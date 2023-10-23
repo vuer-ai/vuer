@@ -329,8 +329,11 @@ class TriMesh(SceneElement):
     colors: NDArray[np.uint8] = None
 
     def __post_init__(self, **kwargs):
+
         self.vertices = self.vertices.astype(np.float16).flatten().tobytes()
-        self.faces = self.faces.astype(np.float16).flatten().tobytes()
+
+        # uinit16 is too few at 65536. Have to use uint32.
+        self.faces = self.faces.astype(np.uint32).flatten().tobytes()
 
         if self.colors is None:
             return

@@ -21,12 +21,18 @@ async def main(ws):
     app @ Set(
         DefaultScene(
             Ply(src="http://localhost:8012/static/" + test_file, size=0.008, position=[0, 0, 5]),
-            # rotation=[-0.5 * np.pi, 0, -0.5 * np.pi]),
             PointCloud(key="pointcloud", vertices=np.array(pcd.points), colors=np.array(pcd.colors), position=[0, 0, 0], size=0.008),
         ),
 
     )
-    print("object is sent")
+    print("""
+    object is sent.
+    
+    The second pointcloud should load significantly 
+    faster than the first one, due to its smaller size.
+    We use half-precision for the vertices, and Uint8
+    for the colors. This cuts the overall size by half.
+    """)
 
 
 app.run()
