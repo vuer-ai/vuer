@@ -2,6 +2,7 @@ from typing import Union
 
 import numpy as np
 import PIL.Image as pil_image
+from numpy._typing import NDArray
 
 # from msgpack_numpy import pack, packb
 
@@ -321,38 +322,51 @@ class mesh(SceneElement):
 class TriMesh(SceneElement):
     tag = "TriMesh"
     children = []
-    vertices = None
-    faces = None
-    colors = None
+
+    vertices: NDArray[np.float16] = None
+    # Uint16 is too few.
+    faces: NDArray[np.uint32] = None
+    colors: NDArray[np.uint8] = None
 
     def __post_init__(self, **kwargs):
-        self.vertices = self.vertices.flatten()
-        if hasattr(self.faces, "flatten"):
-            self.faces = self.faces.flatten()
-        if hasattr(self.colors, "flatten"):
-            if self.colors.shape[-1] == 4:
-                self.colors = self.colors[:, :3]
-            if self.colors.dtype == np.uint8:
-                # todo: use this and send only integers: https://stackoverflow.com/questions/34669537/javascript-uint8array-to-float32array?noredirect=1&lq=1
-                self.colors = self.colors.astype(np.float32) / 255.
-            self.colors = self.colors.flatten().astype(np.float32)
+        self.vertices = self.vertices.astype(np.float16).flatten().tobytes()
+        self.faces = self.faces.astype(np.float16).flatten().tobytes()
+
+        if self.colors is None:
+            return
+
+        if self.colors.shape[-1] == 4:
+            self.colors = self.colors[:, :3]
+
+        # send only integers: https://stackoverflow.com/questions/34669537
+        if self.colors.dtype != np.uint8:
+            self.colors *= 255
+            self.colors = self.colors.astype(np.uint8)
+
+        self.colors = self.colors.flatten().tobytes()
 
 
 class PointCloud(SceneElement):
     tag = "PointCloud"
     children = []
-    vertices = None
-    colors = None
+    vertices: NDArray[np.float16] = None
+    colors: NDArray[np.uint8] = None
 
     def __post_init__(self, **kwargs):
-        self.vertices = self.vertices.flatten()
-        if hasattr(self.colors, "flatten"):
-            if self.colors.shape[-1] == 4:
-                self.colors = self.colors[:, :3]
-            if self.colors.dtype == np.uint8:
-                # todo: use this and send only integers: https://stackoverflow.com/questions/34669537/javascript-uint8array-to-float32array?noredirect=1&lq=1
-                self.colors = self.colors.astype(np.float32) / 255.
-            self.colors = self.colors.flatten()
+        self.vertices = self.vertices.astype(np.float16).flatten().tobytes()
+
+        if self.colors is None:
+            return
+
+        if self.colors.shape[-1] == 4:
+            self.colors = self.colors[:, :3]
+
+        if self.colors.dtype != np.uint8:
+            # todo: use this and send only integers: https://stackoverflow.com/questions/34669537
+            self.colors *= 255
+            self.colors = self.colors.astype(np.uint8)
+
+        self.colors = self.colors.flatten().tobytes()
 
 
 class Box(SceneElement):

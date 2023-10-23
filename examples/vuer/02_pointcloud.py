@@ -22,7 +22,7 @@ async def main(ws):
         DefaultScene(
             Ply(src="http://localhost:8012/static/" + test_file, size=0.008, position=[0, 0, 5]),
             # rotation=[-0.5 * np.pi, 0, -0.5 * np.pi]),
-            PointCloud(key="pointcloud", vertices=np.array(pcd.points), colors=np.array(pcd.colors), position=[-2, 0, 0], size=0.008),
+            PointCloud(key="pointcloud", vertices=np.array(pcd.points), colors=np.array(pcd.colors), position=[0, 0, 0], size=0.008),
         ),
 
     )
