@@ -5,6 +5,14 @@ def serializer(data):
     if hasattr(data, "serialize"):
         return data.serialize()
 
+    if isinstance(data, str):
+        # return Text(data)
+        return data
+
+    # this could be dangerous.
+    if isinstance(data, list):
+        return [serializer(d) for d in data]
+
     return data
 
     # note: we do not need the custom serializer anymore

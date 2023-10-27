@@ -5,7 +5,7 @@ from nerf_vuer.render_nodes import Chainer, RGBA
 from vuer.events import ServerEvent
 from vuer.schemas import SceneElement
 
-from instant_feature.viewer.nerf_vuer.constants.default_settings import RENDER_DEFAULT, RGB_DEFAULT
+from nerf_vuer.default_settings import RENDER_DEFAULT, RGB_DEFAULT
 
 
 # =============== Leva Components ===============
