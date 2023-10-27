@@ -5,7 +5,7 @@ from copy import deepcopy
 import numpy as np
 from termcolor import cprint
 
-from instant_feature.viewer.render_utils import get_camera_from_three
+from nerf_vuer.utils.camera import get_camera_from_three
 from vuer import Vuer
 from nerf_vuer.render_components import Render
 from vuer.events import ServerEvent
