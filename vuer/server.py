@@ -11,16 +11,23 @@ from params_proto import Proto, PrefixProto
 from websockets import ConnectionClosedError
 
 from vuer.base import Server
-from vuer.events import ClientEvent, NullEvent, ServerEvent, NOOP, Frame, Set, Update, INIT
+from vuer.events import ClientEvent, NullEvent, ServerEvent, NOOP, Frame, Set, Update, INIT, Remove, Add
 from vuer.schemas import Page
 
 
 class At:
+    """Proxy Object for using the @ notation. Also
+    supports being called direction, which supports
+    more complex arguments."""
+
     def __init__(self, fn):
         self.fn = fn
 
     def __matmul__(self, arg):
         return self.fn(arg)
+
+    def __call__(self, *args, **kwargs):
+        return self.fn(*args, **kwargs)
 
 
 class Vuer(PrefixProto, Server):
@@ -62,11 +69,27 @@ class Vuer(PrefixProto, Server):
 
     @property
     def set(self) -> At:
+        """Used exclusively to set the scene."""
         return At(lambda element: self @ Set(element))
 
     @property
     def update(self) -> At:
-        return At(lambda element: self @ Update(element))
+        """Used to update existing elements. NOOP if an element does not exist."""
+
+        def update(element):
+            if isinstance(element, list):
+                self @ Update(*element)
+            else:
+                self @ Update(element)
+
+        return At(update)
+
+    @property
+    def add(self) -> At:
+        return At(lambda *elements, to=None: self @ Add(*elements, to=to))
+
+    def add(self) -> At:
+        return At(lambda *keys: self @ Remove(*keys))
 
     def __post_init__(self):
         # todo: what is this?

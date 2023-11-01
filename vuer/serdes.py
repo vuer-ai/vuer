@@ -13,6 +13,10 @@ def serializer(data):
     if isinstance(data, list):
         return [serializer(d) for d in data]
 
+    # this could be dangerous.
+    if isinstance(data, tuple):
+        return [serializer(d) for d in data]
+
     return data
 
     # note: we do not need the custom serializer anymore

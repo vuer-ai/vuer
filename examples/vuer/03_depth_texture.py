@@ -6,7 +6,7 @@ from vuer import Vuer
 from vuer.events import Set, Update, Frame
 from vuer.schemas import Scene, Ply, Gripper, SkeletalGripper, Movable, Box, Sphere, group
 
-doc = Vuer(
+app = Vuer(
     # domain="ws://localhost:8012",
     domain="https://dash.ml/vuer",
     queries=dict(
@@ -18,8 +18,8 @@ doc = Vuer(
 )
 
 
-@doc.bind(start=True)
-async def show_heatmap():
+@app.spawn
+async def show_heatmap(ws):
     scene = Scene(
         group(
             Box(
@@ -42,20 +42,18 @@ async def show_heatmap():
         )
     )
 
-    i = 0
-    event = yield Set(scene)
-    print(vars(event))
-    while event != "TERMINAL":
-        i += 1
-        phase = 2 * np.pi * i / 240
-        # # position = [0.1 + 0.5 * np.sin(phase), 0, 0.5 * np.cos(phase)]
-        # # h = 1 - ((t % 120 + 60) / 60) ** 2
-        # h = 0.6
-        position = [0.2, 0.1, 0]
-        event = yield Frame(
-            Update(
-                Sphere(key="sphere", args=[0.1, 20, 20], position=position, rotation=[0, 0, 0], materialType="depth", ),
-            )
-        )
+    app @ Set(scene)
 
-        await sleep(0.006)
+    i = 0
+    while True:
+        i += 1
+        h = 1 - (0.0166 * (i % 120 - 60)) ** 2
+        position = [0.2, 0.1 + h, 0]
+        # phase = 2 * np.pi * i / 240
+        # position = [0.15 + 0.25 * np.sin(phase), 0.1, 0.2 * np.cos(phase)]
+        app @ Update(
+            Sphere(key="sphere", args=[0.1, 20, 20], position=position, rotation=[0, 0, 0], materialType="depth", ),
+        )
+        await sleep(0.016)
+
+app.run()
