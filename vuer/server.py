@@ -88,7 +88,8 @@ class Vuer(PrefixProto, Server):
     def add(self) -> At:
         return At(lambda *elements, to=None: self @ Add(*elements, to=to))
 
-    def add(self) -> At:
+    @property
+    def remove(self) -> At:
         return At(lambda *keys: self @ Remove(*keys))
 
     def __post_init__(self):

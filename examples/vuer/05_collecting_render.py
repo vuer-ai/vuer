@@ -3,7 +3,7 @@ from asyncio import sleep
 import numpy as np
 
 from vuer import Vuer
-from vuer.events import Set, Update, Frame
+from vuer.events import Set, Update, Frame, ClientEvent
 from vuer.schemas import (
     Scene,
     Ply,
@@ -14,6 +14,7 @@ from vuer.schemas import (
     Sphere,
     group,
     DefaultScene,
+    CameraView,
 )
 
 app = Vuer(
@@ -30,7 +31,19 @@ app = Vuer(
 
 @app.spawn
 async def show_heatmap(ws):
-    app.set @ DefaultScene()
+    app.set @ DefaultScene(
+        rawChildren=[
+            CameraView(
+                fov=50,
+                width=320,
+                height=240,
+                key="ego",
+                position=[-0.5, 1.25, 0.5],
+                rotation=[-0.35 * np.pi, -0.1 * np.pi, -0.1 * np.pi],
+                # stream="frame",
+            ),
+        ]
+    )
 
     app.add @ Box(
         key="box",
@@ -65,7 +78,19 @@ async def show_heatmap(ws):
             rotation=[0, 0, 0],
             materialType="standard",
         ),
+        # for event in app.downlink_queue.pop():
+        #     if event == "RENDER":
+        #         print(event)
+
         await sleep(0.014)
 
 
+counter = 0
+
+
+# async def collect_render(event: ClientEvent, _):
+#     global counter
+#     print(event)
+#
+# app.add_handler("RENDER", collect_render)
 app.run()

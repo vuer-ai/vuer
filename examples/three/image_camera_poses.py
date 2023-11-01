@@ -35,6 +35,7 @@ def colmap_to_three(m):
 
 doc = Vuer(
     ws="ws://localhost:8013",
+    port=8013,
     # domain="http://localhost:8000/tassa",
     # domain="http://localhost:8000/demos/vqn-dash/three",
     domain="http://dash.ml/demos/vqn-dash/three",
