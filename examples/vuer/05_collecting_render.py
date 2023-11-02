@@ -42,7 +42,9 @@ async def show_heatmap(ws):
                 rotation=[-0.35 * np.pi, -0.1 * np.pi, -0.1 * np.pi],
                 # stream="frame",
             ),
-        ]
+        ],
+        # hide the helper to only render the objects.
+        show_helper=False,
     )
 
     app.add @ Box(
@@ -88,9 +90,12 @@ async def show_heatmap(ws):
 counter = 0
 
 
-# async def collect_render(event: ClientEvent, _):
-#     global counter
-#     print(event)
-#
-# app.add_handler("RENDER", collect_render)
+async def collect_render(event: ClientEvent, _):
+    global counter
+    print(event)
+    # add you render saving logic here.
+    counter += 1
+
+
+app.add_handler("RENDER", collect_render)
 app.run()

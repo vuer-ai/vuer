@@ -11,7 +11,18 @@ from params_proto import Proto, PrefixProto
 from websockets import ConnectionClosedError
 
 from vuer.base import Server
-from vuer.events import ClientEvent, NullEvent, ServerEvent, NOOP, Frame, Set, Update, INIT, Remove, Add
+from vuer.events import (
+    ClientEvent,
+    NullEvent,
+    ServerEvent,
+    NOOP,
+    Frame,
+    Set,
+    Update,
+    INIT,
+    Remove,
+    Add,
+)
 from vuer.schemas import Page
 
 
@@ -46,7 +57,7 @@ class Vuer(PrefixProto, Server):
     # cors = "https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
     queries = Proto({}, help="query parameters to pass")
 
-    WEBSOCKET_MAX_SIZE = 2 ** 28
+    WEBSOCKET_MAX_SIZE = 2**28
 
     device = "cuda"
 
@@ -58,7 +69,9 @@ class Vuer(PrefixProto, Server):
         :return: dqueue
         """
         assert isinstance(event, ServerEvent), "msg must be a ServerEvent type object."
-        assert not isinstance(event, Frame), "Frame event is only used in vuer.bind method."
+        assert not isinstance(
+            event, Frame
+        ), "Frame event is only used in vuer.bind method."
 
         event_obj = event.serialize()
         event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
@@ -96,6 +109,8 @@ class Vuer(PrefixProto, Server):
         # todo: what is this?
         Server.__post_init__(self)
 
+        self.handlers = defaultdict(dict)
+
         # todo: can remove
         self.page = Page()
 
@@ -119,6 +134,18 @@ class Vuer(PrefixProto, Server):
 
         while True:
             clientEvent = yield NOOP
+
+            if clientEvent.etype in self.handlers:
+                handlers = self.handlers[clientEvent.etype]
+                for fn_factory in handlers.values():
+                    # todo: see if we want to add throttling here.
+                    # note: also pass in an event handler. Use an arrow function to avoid exposing the
+                    #   server instance.
+                    my_task = self.spawn_task(
+                        fn_factory(clientEvent, lambda e: self @ e)
+                    )
+                    await sleep(0.0)
+
             self.downlink_queue.append(clientEvent)
 
     def popleft(self):
@@ -200,7 +227,9 @@ class Vuer(PrefixProto, Server):
         ws = self.ws[ws_id]
 
         if event_bytes is None:
-            assert isinstance(event, ServerEvent), "event must be a ServerEvent type object."
+            assert isinstance(
+                event, ServerEvent
+            ), "event must be a ServerEvent type object."
             event_obj = event.serialize()
             event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
         else:

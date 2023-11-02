@@ -25,9 +25,6 @@ class RenderVuer(Vuer):
 
         self.scene = scene
         self.render = render
-
-        self.handlers = defaultdict(dict)
-
         self.spawn(self.on_connect)
 
     async def on_connect(self, ws_id):
