@@ -42,7 +42,7 @@ async def show_heatmap(ws):
                 rotation=[-0.35 * np.pi, -0.1 * np.pi, -0.1 * np.pi],
                 stream="frame",
                 showFrustum=True,
-                dpr=1,
+                # dpr=1,
             ),
         ],
         # hide the helper to only render the objects.
