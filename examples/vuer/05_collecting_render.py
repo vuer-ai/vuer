@@ -42,6 +42,7 @@ async def show_heatmap(ws):
                 rotation=[-0.35 * np.pi, -0.1 * np.pi, -0.1 * np.pi],
                 stream="frame",
                 showFrustum=True,
+                dpr=1,
             ),
         ],
         # hide the helper to only render the objects.
@@ -81,9 +82,6 @@ async def show_heatmap(ws):
             rotation=[0, 0, 0],
             materialType="standard",
         ),
-        # for event in app.downlink_queue.pop():
-        #     if event == "RENDER":
-        #         print(event)
 
         await sleep(0.014)
 
@@ -96,7 +94,6 @@ async def collect_render(event: ClientEvent, _):
     # import matplotlib.pyplot as plt
     import cv2
 
-
     # add you render saving logic here.
     counter += 1
     if counter % 1 == 0:
@@ -107,16 +104,13 @@ async def collect_render(event: ClientEvent, _):
 
         img = value['frame']
         img = np.frombuffer(img, np.uint8).reshape(height * dpr, width * dpr, 4)
-        # origin is on the lower left corner.
-        img = img[::-1]
+        # todo: test out the locations of these entries, implement on js side.
+        img = img[::-dpr][:, ::dpr]
 
         img_bgr = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         cv2.imshow('frame', img_bgr)
         if cv2.waitKey(1) == ord('q'):
             exit()
-
-        # plt.imshow(img, origin='lower')
-        # plt.show()
 
 
 app.add_handler("RENDER", collect_render)
