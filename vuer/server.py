@@ -6,7 +6,7 @@ from functools import partial
 from typing import cast
 from uuid import uuid4
 
-from msgpack import packb
+from msgpack import packb, unpackb
 from params_proto import Proto, PrefixProto
 from websockets import ConnectionClosedError
 
@@ -306,7 +306,8 @@ class Vuer(PrefixProto, Server):
             # do everything here
             async for msg in ws:
 
-                clientEvent = ClientEvent(**json.loads(msg.data))
+                payload = unpackb(msg.data, raw=False)
+                clientEvent = ClientEvent(**payload)
 
                 if hasattr(generator, "__anext__"):
                     serverEvent = await generator.asend(clientEvent)

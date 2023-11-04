@@ -40,7 +40,8 @@ async def show_heatmap(ws):
                 key="ego",
                 position=[-0.5, 1.25, 0.5],
                 rotation=[-0.35 * np.pi, -0.1 * np.pi, -0.1 * np.pi],
-                # stream="frame",
+                stream="frame",
+                showFrustum=True,
             ),
         ],
         # hide the helper to only render the objects.
@@ -92,9 +93,24 @@ counter = 0
 
 async def collect_render(event: ClientEvent, _):
     global counter
-    print(event)
+    import matplotlib.pyplot as plt
+
     # add you render saving logic here.
     counter += 1
+    if counter % 10 == 0:
+        value = event.value
+        width = value['width']
+        height = value['height']
+        dpr = value['dpr']
+
+        img = value['frame']
+        img = np.frombuffer(img, np.uint8).reshape(height * dpr, width * dpr, 4)
+
+        plt.imshow(img, origin='lower')
+        plt.show()
+
+    if counter > 100:
+        exit()
 
 
 app.add_handler("RENDER", collect_render)
