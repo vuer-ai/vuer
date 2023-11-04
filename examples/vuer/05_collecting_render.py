@@ -93,11 +93,13 @@ counter = 0
 
 async def collect_render(event: ClientEvent, _):
     global counter
-    import matplotlib.pyplot as plt
+    # import matplotlib.pyplot as plt
+    import cv2
+
 
     # add you render saving logic here.
     counter += 1
-    if counter % 10 == 0:
+    if counter % 1 == 0:
         value = event.value
         width = value['width']
         height = value['height']
@@ -105,12 +107,16 @@ async def collect_render(event: ClientEvent, _):
 
         img = value['frame']
         img = np.frombuffer(img, np.uint8).reshape(height * dpr, width * dpr, 4)
+        # origin is on the lower left corner.
+        img = img[::-1]
 
-        plt.imshow(img, origin='lower')
-        plt.show()
+        img_bgr = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        cv2.imshow('frame', img_bgr)
+        if cv2.waitKey(1) == ord('q'):
+            exit()
 
-    if counter > 100:
-        exit()
+        # plt.imshow(img, origin='lower')
+        # plt.show()
 
 
 app.add_handler("RENDER", collect_render)
