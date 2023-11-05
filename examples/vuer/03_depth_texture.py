@@ -27,7 +27,7 @@ async def show_heatmap(ws):
                 args=[0.2, 0.2, 0.2],
                 position=[0, 0.1, 0],
                 rotation=[0, 0, 0],
-                materialType="depth",
+                materialType="normal",
                 outlines=dict(angle=0, thickness=0.005, color="white"),
             ),
             Sphere(
@@ -48,12 +48,13 @@ async def show_heatmap(ws):
     while True:
         i += 1
         h = 1 - (0.0166 * (i % 120 - 60)) ** 2
-        position = [0.2, 0.1 + h, 0]
+        position = [0.2, 0.1 + h / 5, 0]
         # phase = 2 * np.pi * i / 240
         # position = [0.15 + 0.25 * np.sin(phase), 0.1, 0.2 * np.cos(phase)]
         app @ Update(
             Sphere(key="sphere", args=[0.1, 20, 20], position=position, rotation=[0, 0, 0], materialType="depth", ),
         )
         await sleep(0.016)
+
 
 app.run()
