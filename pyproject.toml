@@ -16,9 +16,15 @@ classifiers = [
 dependencies = [
     "tqdm",
     "termcolor",
+    "trimesh",
+    "numpy",
     "params-proto",
     "killport",
     "msgpack",
+    "websockets",
+    "aiohttp",
+    "aiohttp-cors",
+    "pillow",
 ]
 
 [project.optional-dependencies]
