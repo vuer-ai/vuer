@@ -24,4 +24,10 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'furo'
+html_theme_options = {
+    "light_css_variables": {
+        "color-brand-content": "blue",
+        "color-admonition-background": "blue",
+    },
+}
 html_static_path = ['_static']
