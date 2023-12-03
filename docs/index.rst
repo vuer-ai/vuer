@@ -8,6 +8,7 @@ Guide:
    :maxdepth: 2
 
    setup
+   modules
 
 Examples:
 =========
