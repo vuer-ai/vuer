@@ -1,3 +1,5 @@
+from typing import List
+
 from vuer.schemas import Element
 from vuer.serdes import serializer
 
@@ -49,6 +51,7 @@ class NullEvent(ClientEvent):
 
 
 NULL = NullEvent()
+
 
 # class Meta(type):
 #     def __matmul__(cls, data):
@@ -104,10 +107,56 @@ class Update(ServerEvent):
 
     etype = "UPDATE"
 
-    def __init__(self, *elements, data: Element = None, **kwargs):
+    def __init__(self, *elements: List[Element], **kwargs):
         # tuple is not serializable
-        elements = [*elements, data] if data else list(elements)
-        super().__init__(elements, **kwargs)
+        super().__init__({"nodes": elements}, **kwargs)
+
+    def serialize(self):
+        return {
+            **self.__dict__,
+            "data": {
+                "nodes": [serializer(node) for node in self.data["nodes"]],
+            }
+        }
+
+
+class Add(ServerEvent):
+    """
+    An Update ServerEvent is sent to the client when the server wants to update the client's state.
+    It appends the data sent in the Update ServerEvent to the client's current state.
+    """
+
+    etype = "ADD"
+
+    def __init__(self, *elements: List[Element], to: str = None, **kwargs):
+        # tuple is not serializable
+        event_data = dict(
+            nodes=elements,
+            to=to,
+        )
+        super().__init__(data=event_data, **kwargs)
+
+    def serialize(self):
+        return {
+            **self.__dict__,
+            "data": {
+                "nodes": [serializer(node) for node in self.data["nodes"]],
+                "to": self.data["to"],
+            }
+        }
+
+
+class Remove(ServerEvent):
+    """
+    An Update ServerEvent is sent to the client when the server wants to update the client's state.
+    It appends the data sent in the Update ServerEvent to the client's current state.
+    """
+
+    etype = "REMOVE"
+
+    def __init__(self, *keys: List[str], **kwargs):
+        # tuple is not serializable
+        super().__init__(data={"keys": keys}, **kwargs)
 
 
 class Frame(ServerEvent):

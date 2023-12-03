@@ -6,21 +6,39 @@ from functools import partial
 from typing import cast
 from uuid import uuid4
 
-from msgpack import packb
+from msgpack import packb, unpackb
 from params_proto import Proto, PrefixProto
 from websockets import ConnectionClosedError
 
 from vuer.base import Server
-from vuer.events import ClientEvent, NullEvent, ServerEvent, NOOP, Frame, Set, Update, INIT
+from vuer.events import (
+    ClientEvent,
+    NullEvent,
+    ServerEvent,
+    NOOP,
+    Frame,
+    Set,
+    Update,
+    INIT,
+    Remove,
+    Add,
+)
 from vuer.schemas import Page
 
 
 class At:
+    """Proxy Object for using the @ notation. Also
+    supports being called direction, which supports
+    more complex arguments."""
+
     def __init__(self, fn):
         self.fn = fn
 
     def __matmul__(self, arg):
         return self.fn(arg)
+
+    def __call__(self, *args, **kwargs):
+        return self.fn(*args, **kwargs)
 
 
 class Vuer(PrefixProto, Server):
@@ -39,7 +57,7 @@ class Vuer(PrefixProto, Server):
     # cors = "https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
     queries = Proto({}, help="query parameters to pass")
 
-    WEBSOCKET_MAX_SIZE = 2 ** 28
+    WEBSOCKET_MAX_SIZE = 2**28
 
     device = "cuda"
 
@@ -51,7 +69,9 @@ class Vuer(PrefixProto, Server):
         :return: dqueue
         """
         assert isinstance(event, ServerEvent), "msg must be a ServerEvent type object."
-        assert not isinstance(event, Frame), "Frame event is only used in vuer.bind method."
+        assert not isinstance(
+            event, Frame
+        ), "Frame event is only used in vuer.bind method."
 
         event_obj = event.serialize()
         event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
@@ -62,15 +82,34 @@ class Vuer(PrefixProto, Server):
 
     @property
     def set(self) -> At:
+        """Used exclusively to set the scene."""
         return At(lambda element: self @ Set(element))
 
     @property
     def update(self) -> At:
-        return At(lambda element: self @ Update(element))
+        """Used to update existing elements. NOOP if an element does not exist."""
+
+        def update(element):
+            if isinstance(element, list):
+                self @ Update(*element)
+            else:
+                self @ Update(element)
+
+        return At(update)
+
+    @property
+    def add(self) -> At:
+        return At(lambda *elements, to=None: self @ Add(*elements, to=to))
+
+    @property
+    def remove(self) -> At:
+        return At(lambda *keys: self @ Remove(*keys))
 
     def __post_init__(self):
         # todo: what is this?
         Server.__post_init__(self)
+
+        self.handlers = defaultdict(dict)
 
         # todo: can remove
         self.page = Page()
@@ -95,6 +134,18 @@ class Vuer(PrefixProto, Server):
 
         while True:
             clientEvent = yield NOOP
+
+            if clientEvent.etype in self.handlers:
+                handlers = self.handlers[clientEvent.etype]
+                for fn_factory in handlers.values():
+                    # todo: see if we want to add throttling here.
+                    # note: also pass in an event handler. Use an arrow function to avoid exposing the
+                    #   server instance.
+                    my_task = self.spawn_task(
+                        fn_factory(clientEvent, lambda e: self @ e)
+                    )
+                    await sleep(0.0)
+
             self.downlink_queue.append(clientEvent)
 
     def popleft(self):
@@ -176,7 +227,9 @@ class Vuer(PrefixProto, Server):
         ws = self.ws[ws_id]
 
         if event_bytes is None:
-            assert isinstance(event, ServerEvent), "event must be a ServerEvent type object."
+            assert isinstance(
+                event, ServerEvent
+            ), "event must be a ServerEvent type object."
             event_obj = event.serialize()
             event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
         else:
@@ -253,7 +306,8 @@ class Vuer(PrefixProto, Server):
             # do everything here
             async for msg in ws:
 
-                clientEvent = ClientEvent(**json.loads(msg.data))
+                payload = unpackb(msg.data, raw=False)
+                clientEvent = ClientEvent(**payload)
 
                 if hasattr(generator, "__anext__"):
                     serverEvent = await generator.asend(clientEvent)

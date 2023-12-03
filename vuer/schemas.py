@@ -36,7 +36,7 @@ class Element:
         # note: only return the non-private attributes, allow bypass.
         output = {}
         for k, v in self.__dict__.items():
-            if k.startswith('_'):
+            if k.startswith("_"):
                 continue
             if hasattr(v, "tolist"):
                 output[k] = v.tolist()
@@ -209,7 +209,12 @@ class Image(Element):
 
     tag = "Img"
 
-    def __init__(self, data: Union[str, np.ndarray, pil_image.Image] = None, src: str = None, **kwargs):
+    def __init__(
+        self,
+        data: Union[str, np.ndarray, pil_image.Image] = None,
+        src: str = None,
+        **kwargs,
+    ):
         if src is not None:
             assert data is None, "data and src can not be truful at the same time"
         else:
@@ -240,7 +245,9 @@ class Image(Element):
                 assert isinstance(image_data, pil_image.Image)
                 image_data.save(buf, "png")
 
-            return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode("utf-8")
+            return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode(
+                "utf-8"
+            )
 
 
 class ImageUpload(Element):
@@ -259,12 +266,12 @@ class Scene(BlockElement):
     tag = "Scene"
 
     def __init__(
-            self,
-            *children,
-            rawChildren=None,
-            htmlChildren=None,
-            backgroundChildren=None,
-            **kwargs,
+        self,
+        *children,
+        rawChildren=None,
+        htmlChildren=None,
+        backgroundChildren=None,
+        **kwargs,
     ):
         super().__init__(*children, **kwargs)
         self.rawChildren = rawChildren or []
@@ -278,23 +285,34 @@ class Scene(BlockElement):
         if self.htmlChildren:
             obj["htmlChildren"] = [e.serialize() for e in self.htmlChildren if e]
         if self.backgroundChildren:
-            obj["backgroundChildren"] = [e.serialize() for e in self.backgroundChildren if e]
+            obj["backgroundChildren"] = [
+                e.serialize() for e in self.backgroundChildren if e
+            ]
         return obj
 
 
 class DefaultScene(Scene):
     def __init__(
-            self,
-            *children,
-            rawChildren=None,
-            htmlChildren=None,
-            backgroundChildren=None,
-            **kwargs,
+        self,
+        *children,
+        rawChildren=None,
+        htmlChildren=None,
+        backgroundChildren=None,
+        show_helper=True,
+        **kwargs,
     ):
         super().__init__(
+            # Ambient Light does not have helper because it is ambient.
             AmbientLight(intensity=0.5, key="default_ambient_light"),
-            DirectionalLight(intensity=1, key="default_directional_light"),
-            *children, **kwargs)
+            DirectionalLight(
+                intensity=1, key="default_directional_light", helper=show_helper
+            ),
+            *children,
+            rawChildren=rawChildren,
+            htmlChildren=htmlChildren,
+            backgroundChildren=backgroundChildren,
+            **kwargs,
+        )
 
 
 class SceneElement(BlockElement):
