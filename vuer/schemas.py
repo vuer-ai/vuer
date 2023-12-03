@@ -1,10 +1,57 @@
+import base64
+from io import BytesIO
 from typing import Union
 
 import numpy as np
 import PIL.Image as pil_image
 from numpy._typing import NDArray
 
-# from msgpack_numpy import pack, packb
+
+def jpg(image, quality: int = 90):
+    """
+    base64 encode the image into a string, using JPEG encoding
+
+    Does not support transparency.
+    """
+    with BytesIO() as buff:
+        rgb_pil = pil_image.fromarray(image)
+        rgb_pil.save(buff, format="JPEG", quality=quality)
+        return buff.getbuffer().tobytes()
+
+
+def png(image):
+    """
+    base64 encode the image into a string, using PNG encoding
+    """
+    with BytesIO() as buff:
+        rgb_pil = pil_image.fromarray(image)
+        rgb_pil.save(buff, format="PNG")
+        return buff.getbuffer().tobytes()
+
+
+def b64jpg(image, quality: int = 90):
+    """
+    base64 encode the image into a string, using JPEG encoding
+
+    Does not support transparency.
+    """
+    buff = BytesIO()
+    rgb_pil = pil_image.fromarray(image)
+    rgb_pil.save(buff, format="JPEG", quality=quality)
+    img64 = base64.b64encode(buff.getbuffer().tobytes()).decode("utf-8")
+    return "data:image/jpeg;base64," + img64
+
+
+def b64png(image):
+    """
+    base64 encode the image into a string, using PNG encoding
+    """
+    with BytesIO() as buff:
+        rgb_pil = pil_image.fromarray(image)
+        rgb_pil.save(buff, format="PNG")
+        img64 = base64.b64encode(buff.getbuffer().tobytes()).decode("utf-8")
+        return "data:image/png;base64," + img64
+
 
 element_count = 0
 
@@ -212,11 +259,17 @@ class Image(Element):
     def __init__(
         self,
         data: Union[str, np.ndarray, pil_image.Image] = None,
+        *,
         src: str = None,
+        format="png",
         **kwargs,
     ):
         if src is not None:
             assert data is None, "data and src can not be truful at the same time"
+        if data is None:
+            pass
+        elif isinstance(data, list) and len(data) == 0:
+            pass
         else:
             if isinstance(data, pil_image.Image):
                 data = data
@@ -224,30 +277,14 @@ class Image(Element):
                 # convert back to image first from base64
                 data = pil_image.open(data)
             elif isinstance(data, np.ndarray):
-                data = (data * 255).astype(np.uint8)
+                if data.dtype == np.uint8:
+                    pass
+                else:
+                    data = (data * 255).astype(np.uint8)
 
-            src = self.base64(data)
+            src = eval(format)(data)
 
         super().__init__(src=src, **kwargs)
-
-    @staticmethod
-    def base64(image_data):
-        # if self.data is not None:
-        from io import BytesIO
-        import numpy as np
-        import base64
-
-        with BytesIO() as buf:
-            # todo: specify PNG vs JPG
-            if isinstance(image_data, np.ndarray):
-                pil_image.fromarray(image_data).save(buf, "png")
-            else:
-                assert isinstance(image_data, pil_image.Image)
-                image_data.save(buf, "png")
-
-            return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode(
-                "utf-8"
-            )
 
 
 class ImageUpload(Element):
@@ -480,6 +517,23 @@ class Pcd(SceneElement):
 
 class CameraView(SceneElement):
     tag = "CameraView"
+
+
+class SceneBackground(Image, SceneElement):
+    """Sets the background of the scene to a static image. Does not work well
+    with high frame rates. For displaying movies, use the ImageBackground element.
+    """
+
+    tag = "SceneBackground"
+
+
+class ImageBackground(Image, SceneElement):
+    """Sets the background of the scene to an image, Supports high frame rates.
+
+    We use a plane that is always facing the camera to display the image.
+    """
+
+    tag = "ImageBackground"
 
 
 class Gamepads(SceneElement):

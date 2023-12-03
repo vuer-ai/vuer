@@ -1,4 +1,4 @@
-from typing import List, Generator
+from typing import List, Generator, Dict, Any
 
 from nerf_vuer.mixins import collector, process_aabb, process_world, collect_rays, chunk_rays
 from nerf_vuer.render_nodes import Chainer, RGBA
@@ -8,29 +8,9 @@ from vuer.schemas import SceneElement
 from nerf_vuer.default_settings import RENDER_DEFAULT, RGB_DEFAULT
 
 
-# =============== Leva Components ===============
-# class ActiveElements(SceneElement):
-#     def on_connect(self, vuer: Vuer, client_id):
-#         yield from self.set_scene(vuer)
-#         yield from self.render(vuer)
-#
-#         while ws_id in self.ws:
-#             await sleep(0)
-#             event = self.pop()
-#
-#             if not event:
-#                 continue
-#
-#             for handler in self.eventHandlers:
-#                 for signal in handler(event):
-#                     if isinstance(event, ServerEvent):
-#                         # control-flow signals
-#                         if event == "TERMINATE":
-#                             break
-#                         vuer @ event
-
-
 class Render(SceneElement):
+    _fields: Dict[Any, "RenderLayer"]
+
     tag = "Render"
     key = ""
     # these are the extra options

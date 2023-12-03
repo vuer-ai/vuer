@@ -74,7 +74,7 @@ disable = [
 [tool.pyright]
 include = ["vuer"]
 exclude = ["**/node_modules", "**/__pycache__", ]
-ignore = ["vuer/viewer"]
+#ignore = ["nerf_vuer"]
 defineConstant = { DEBUG = true }
 
 reportMissingImports = true
