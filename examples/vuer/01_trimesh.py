@@ -7,6 +7,7 @@ import trimesh
 from vuer import Vuer
 from vuer.events import Set
 from vuer.schemas import Obj, DefaultScene, TriMesh
+from asyncio import sleep
 
 if __name__ == '__main__':
     assets_folder = Path(__file__).parent / "../../assets"
@@ -43,6 +44,14 @@ if __name__ == '__main__':
 
         )
         print("object is sent")
+
+        i = 0
+        while True:
+            i += 1
+            x, z = 0.3 * np.sin(i / 5), 0.3 * np.cos(i / 5)
+            app.update @ TriMesh(key="trimesh", vertices=np.array(mesh.vertices), faces=np.array(mesh.faces),
+                                 position=[x, 0, z], color="#23aaff")
+            await sleep(0.016)
 
 
     app.run()

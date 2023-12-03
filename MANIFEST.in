@@ -1,2 +1,2 @@
 include VERSION
-recursive-include cmx/cmx/ *.*
+recursive-include vuer/ *.*

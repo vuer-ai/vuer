@@ -3,10 +3,10 @@ RenderComponents are view components that respond to camera movements in the fro
 that returns rendered images
 """
 import base64
-import json
 from abc import abstractmethod
 from collections import deque
 from copy import deepcopy
+from functools import lru_cache
 from io import BytesIO
 
 import numpy as np
@@ -15,7 +15,6 @@ import torch
 from PIL import Image
 from torch import Tensor
 from torchtyping import TensorType
-
 from vuer.events import ClientEvent
 
 
@@ -79,30 +78,37 @@ class Singleton(deque):
 
 class RGBA(Singleton):
     @staticmethod
-    def rgb(raw_rgb: TensorType["hwc"], **pipeline):
+    def rgb(raw_rgb: TensorType["hwc"], settings, **pipeline):
         # only needed for PNG images
         # image_c = torch.cat([raw_rgb, raw_accumulation], dim=-1)
         # encoded = b64jpg(image_c)
-        encoded = b64jpg(raw_rgb)
-        return {"rgb": encoded, "raw_rgb": raw_rgb, **pipeline}
+
+        format = settings.get("format", "png")
+        # note: 90: 13/100k, 95: 20/140k, png: 40/300k, same for 99/jpg
+        encoded = eval(format)(raw_rgb)
+        return {"rgb": encoded, "raw_rgb": raw_rgb, "settings": settings, **pipeline}
 
     @staticmethod
-    def alpha(raw_accumulation: Tensor, alpha_threshold=None, **pipeline):
-        if alpha_threshold is not None:
-            raw_accumulation[raw_accumulation < alpha_threshold] = 0
-
+    def alpha(raw_accumulation: Tensor, settings, **pipeline):
+        format = settings.get("format", "png")
         return {
-            "alpha": b64jpg(raw_accumulation),
+            "alpha": eval(format)(raw_accumulation),
             "raw_accumulation": raw_accumulation,
+            "settings": settings,
             **pipeline,
         }
 
     @staticmethod
     def depth(raw_depth: TensorType["hwc"], raw_accumulation, settings, **pipeline):
         # con
+        clip = settings.pop("clip", None)
+        if clip:
+            settings["clip"] = tuple(clip)
+
         cmap = _get_colormap(**settings)
 
         alphaThreshold = settings.get("alphaThreshold", None)
+        print("alphaThreshold", alphaThreshold)
 
         if alphaThreshold is None:
             mask = None
@@ -113,9 +119,11 @@ class RGBA(Singleton):
         depthmap = torch.Tensor(depthmap).to(raw_depth.device)
 
         return {
-            "depth": b64png(depthmap),
+            # note: 90: 13/100k, 95: 20/140k, png: 40/300k, same for 99/jpg
+            "depth": png(depthmap),
             "raw_depth": raw_depth,
             "raw_accumulation": raw_accumulation,
+            "settings": settings,
             **pipeline,
         }
 
@@ -140,6 +148,7 @@ class RGBA(Singleton):
         }
 
 
+@lru_cache(maxsize=1)
 def _get_colormap(colormap, invert=False, useClip=True, clip: tuple = None, gain=1.0, offset=0.0, normalize=False, **_):
     """
     https://matplotlib.org/3.1.0/tutorials/colors/colormaps.html
@@ -219,7 +228,7 @@ class FeatA(Singleton):
         self.low_res_cache = deque(maxlen=1)
         self.features_cache = deque(maxlen=1)
 
-    def features_pca(self, raw_features, raw_accumulation, alpha=None, **pipeline):
+    def features_pca(self, raw_features, raw_accumulation, alpha=None, settings={}, **pipeline):
         # print("feat_pca.shape:", raw_features.shape)
         feat_pca = self.pca(raw_features, dim=3)
         feat_pca_flat = feat_pca.reshape(-1, 3)
@@ -231,15 +240,18 @@ class FeatA(Singleton):
         feat_pca_normalized = 0.02 + 0.96 * (feat_pca - low) / (top - low)
         feat_pca_normalized.clip_(0, 1)
 
+        format = settings.get("format", "png")
+
         if alpha is None:
-            alpha = b64jpg(raw_accumulation)
+            alpha = eval(format)(raw_accumulation)
 
         return {
-            "features": b64jpg(feat_pca_normalized),
+            "features": eval(format)(feat_pca_normalized),
             "features_pca": feat_pca_normalized,
             "alpha": alpha,
             "raw_features": raw_features,
             "raw_accumulation": raw_accumulation,
+            "settings": settings,
             **pipeline,
         }
 
@@ -251,22 +263,28 @@ class FeatA(Singleton):
         print("raw_features.shape:", raw_features.shape)
         print(settings)
 
+        plt.imshow(raw_features[:, :, :3].cpu())
+        plt.show()
+
+        settings = {"colormap": "viridis", "invert": False}
+
         x, y = settings.pop("xy", [None, None])
         size = settings.pop("size", None)
+
+        h, w, c = raw_features.shape
+        x, y = w // 2, h // 2
+        size = h // 10.0
         n = max(1, int(size))
 
         # remove clip so that lerf_text_map does not complain about hashability in the lru_cache.
         clip = settings.pop("clip", None)
 
-        h, w = raw_features.shape[:2]
-        i, j = int(x * h), int(y * h)
-        feat_probe = raw_features[i : i + n, j : j + n, :].to(raw_accumulation.device)
+        feat_probe = raw_features[y : y + n, x : x + n, :].to(raw_accumulation.device)
         feat_probe = feat_probe.mean(dim=[0, 1])
         feat_probe /= feat_probe.norm(dim=-1, keepdim=True)
 
         raw_features_cuda = raw_features.to(raw_accumulation.device)
         raw_features_cuda /= raw_features_cuda.norm(dim=-1, keepdim=True)
-        raw_features_cuda.shape
         # heatmap
         heatmap = raw_features_cuda @ feat_probe
         del raw_features_cuda
@@ -276,13 +294,21 @@ class FeatA(Singleton):
         heatmap_rgb = cmap(heatmap.cpu(), mask.cpu())[:, :, :3]
         heatmap_rgb = torch.FloatTensor(heatmap_rgb).to(raw_accumulation.device)
 
+        import matplotlib.pyplot as plt
+
+        plt.imshow(heatmap_rgb.cpu())
+        plt.show()
+
         # mask_float = mask.float()[..., None] * raw_accumulation
         mask_float = raw_accumulation
         print("raw_accumulation", raw_accumulation.shape)
 
+        format = settings.get("format", "jpg")
+
         return {
-            "heatmap": b64jpg(heatmap_rgb),
-            "heatmap_mask": b64jpg(mask_float),
+            "heatmap": eval(format)(heatmap_rgb),
+            "heatmap_mask": eval(format)(mask_float),
+            "settings": settings,
             "heatmap_rgb": heatmap_rgb,
             "raw_heatmap_mask": mask_float,
             "raw_accumulation": raw_accumulation,
@@ -370,10 +396,13 @@ class CLIPQueryMap(Singleton):
 
         mask_float = mask.float()[..., None]
 
+        format = settings.get("format", "jpg")
+
         return {
-            "heatmap": b64jpg(heatmap_rgb),
-            "heatmap_mask": b64jpg(mask_float),
+            "heatmap": eval(format)(heatmap_rgb),
+            "heatmap_mask": eval(format)(mask_float),
             "raw_heatmap": heatmap_rgb,
+            "settings": settings,
             "raw_heatmap_mask": mask_float,
             "raw_accumulation": raw_accumulation,
             **pipeline,
@@ -385,6 +414,55 @@ class CLIPQueryMap(Singleton):
         print("done caching")
         self.append(feat_alpha)
         return {**pipeline}
+
+
+def jpg(image: Tensor, quality: int = 90):
+    """
+    base64 encode the image into a string, using JPEG encoding
+
+    Does not support transparency.
+    """
+    # remove alpha channel
+    if len(image.shape) == 3:
+        image = image[:, :, :3]
+
+    image *= 255
+
+    if isinstance(image, np.ndarray):
+        image_np = image.astype(np.uint8)
+    else:
+        image_np = image.cpu().numpy().astype(np.uint8)
+
+    C = image_np.shape[-1]
+    if C == 1:
+        image_np = image_np[:, :, 0]
+
+    with BytesIO() as buff:
+        rgb_pil = Image.fromarray(image_np)
+        rgb_pil.save(buff, format="JPEG", quality=quality)
+        buff.seek(0)
+        bytes = buff.read()
+        return bytes
+
+
+def png(image: Tensor):
+    """
+    base64 encode the image into a string, using PNG encoding
+    """
+    # supports alpha channel
+    image *= 255
+    image_np = image.cpu().numpy().astype(np.uint8)
+
+    C = image_np.shape[-1]
+    if C == 1:
+        image_np = image_np[:, :, 0]
+
+    with BytesIO() as buff:
+        rgb_pil = Image.fromarray(image_np)
+        rgb_pil.save(buff, format="PNG")
+        buff.seek(0)
+        bytes = buff.read()
+        return bytes
 
 
 def b64jpg(image: Tensor, quality: int = 90):
@@ -422,6 +500,10 @@ def b64png(image: Tensor):
     # supports alpha channel
     image *= 255
     image_np = image.cpu().numpy().astype(np.uint8)
+
+    C = image_np.shape[-1]
+    if C == 1:
+        image_np = image_np[:, :, 0]
 
     buff = BytesIO()
     rgb_pil = Image.fromarray(image_np)

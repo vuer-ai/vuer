@@ -1,10 +1,10 @@
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Dict, Union, List, DefaultDict, Optional, Generator, Callable
+from typing import Dict, Union, List, DefaultDict, Optional, Generator, Callable, AsyncIterator
 
 from instant_feature.cameras.cameras import Cameras
-from instant_feature.viewer.se3 import rotation_matrix
+from nerf_vuer.utils.se3 import rotation_matrix
 from nerf_vuer.render_nodes import Chainer
 from vuer.events import ServerEvent
 from vuer.types import Vector3, Euler, EulerDeg
@@ -259,7 +259,13 @@ def collect_rays(render_bundle):
         # with torch.no_grad():
         # synchronous.
         # this is not kosher. Parent is not mixed in.
-        for chunk in render_bundle(*args, ray_bundle=ray_bundle, parent=parent, **kwargs):  # (field, chunk_size=chunk_size, to_cpu=to_cpu):
+        for chunk in render_bundle(
+            *args,
+            ray_bundle=ray_bundle,
+            parent=parent,
+            settings=settings,
+            **kwargs,
+        ):  # (field, chunk_size=chunk_size, to_cpu=to_cpu):
             yield chunk
 
     return ray_gen
@@ -290,7 +296,7 @@ def collector(
             camera,
             pipe=pipe,
             **kwargs,
-        ) -> Generator:
+        ) -> AsyncIterator:
 
             outputs = defaultdict(list)
 
