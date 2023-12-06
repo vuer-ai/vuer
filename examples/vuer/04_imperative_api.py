@@ -17,8 +17,6 @@ from vuer.schemas import (
 )
 
 app = Vuer(
-    # domain="ws://localhost:8012",
-    domain="https://dash.ml/vuer",
     queries=dict(
         reconnect=True,
         grid=False,

@@ -511,6 +511,10 @@ class Wireframe(SceneElement):
     tag = "Wireframe"
 
 
+class Splat(SceneElement):
+    tag = "Splat"
+
+
 class Pcd(SceneElement):
     tag = "Pcd"
 

@@ -16,8 +16,6 @@ reader = iio.get_reader("../../assets/movies/disney.webm")
 
 assets_folder = Path(__file__).parent / "../../assets"
 app = Vuer(
-    # domain="ws://localhost:8012",
-    domain="https://dash.ml/vuer",
     queries=dict(
         reconnect=True,
         grid=False,

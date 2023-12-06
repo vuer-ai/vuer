@@ -7,8 +7,6 @@ from vuer.events import Set, Update, Frame
 from vuer.schemas import Scene, Ply, Gripper, SkeletalGripper, Movable, Box, Sphere, group
 
 app = Vuer(
-    # domain="ws://localhost:8012",
-    domain="https://dash.ml/vuer",
     queries=dict(
         reconnect=True,
         grid=False,
