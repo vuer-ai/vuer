@@ -15,9 +15,7 @@ Examples:
 .. toctree::
    :maxdepth: 3
 
-   example1
-   example2
-   example3
+   examples
 
 Indices and tables
 ==================
