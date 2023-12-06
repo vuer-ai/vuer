@@ -1,18 +1,3 @@
-from vuer.schemas import Splat
-
-# // https://twitter.com/alexcarliera
-cakewalk = "https://huggingface.co/cakewalk/splat-data/resolve/main"
-# // https://twitter.com/dylan_ebert_
-dylanebert = "https://huggingface.co/datasets/dylanebert/3dgs/resolve/main/kitchen"
-
-"""
-<Splat alphaTest={0.1} src={`${cakewalk}/nike.splat`} scale={0.5} position={[ 0, 1.6, 2 ]}/>
-<Splat alphaTest={0.1} src={`${cakewalk}/nike.splat`} scale={0.5} position={[ 0, 1.6, -1.5 ]}
-     rotation={[ Math.PI, 0, Math.PI ]}/>
-<Splat alphaTest={0.1} src={`${cakewalk}/plush.splat`} scale={0.5} position={[ -1.5, 1.6, 1 ]}/>
-<Splat src={`${dylanebert}/kitchen-7k.splat`} position={[ 0, 0.25, 0 ]}/>
-"""
-
 from pathlib import Path
 
 import numpy as np
@@ -22,8 +7,14 @@ import trimesh
 
 from vuer import Vuer
 from vuer.events import Set
-from vuer.schemas import DefaultScene
+from vuer.schemas import DefaultScene, Splat
 from asyncio import sleep
+
+
+# // https://twitter.com/alexcarliera
+cakewalk = "https://huggingface.co/cakewalk/splat-data/resolve/main"
+# // https://twitter.com/dylan_ebert_
+dylanebert = "https://huggingface.co/datasets/dylanebert/3dgs/resolve/main/kitchen"
 
 if __name__ == "__main__":
     assets_folder = Path(__file__).parent / "../../assets"

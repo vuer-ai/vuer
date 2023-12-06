@@ -3,9 +3,38 @@ Vuer: A modern 3D Visualizer for Robotics and VR
 
 Vuer is a 3D visualization tool for robotics and VR applications.
 
-Installation
-------------
+Installation In A Fresh Conda Environment
+-----------------------------------------
 
-.. code-block:: python
+Setup the conda environment
 
-   pip install vuer
+.. code-block:: bash
+
+   conda create -n vuer python=3.8
+   conda activate vuer
+
+Install vuer
+
+.. code-block:: bash
+
+   pip install vuer==0.0.7rc2
+
+   pip install numpy
+   pip install trimesh
+   pip install websockets
+   pip install aiohttp-cors
+   pip install pillow
+
+Now, to run the examples, first download the example datasets
+
+.. code-block:: bash
+
+   cd assets/static_3d
+   make
+
+Then run the examples
+
+.. code-block:: bash
+
+   cd vuer/examples/vuer
+   python 01_trimesh.py
