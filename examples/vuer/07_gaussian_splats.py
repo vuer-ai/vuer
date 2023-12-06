@@ -1,15 +1,11 @@
+from asyncio import sleep
 from pathlib import Path
 
 import numpy as np
 
-# import numpy as np
-import trimesh
-
 from vuer import Vuer
 from vuer.events import Set
 from vuer.schemas import DefaultScene, Splat
-from asyncio import sleep
-
 
 # // https://twitter.com/alexcarliera
 cakewalk = "https://huggingface.co/cakewalk/splat-data/resolve/main"
@@ -18,28 +14,10 @@ dylanebert = "https://huggingface.co/datasets/dylanebert/3dgs/resolve/main/kitch
 
 if __name__ == "__main__":
     assets_folder = Path(__file__).parent / "../../assets"
-    test_file = "static_3d/armadillo_midres.obj"
-
-    mesh = trimesh.load_mesh(assets_folder / test_file)
-    assert isinstance(mesh, trimesh.Trimesh)
-    mesh.apply_scale(0.1)
-
-    # from trimesh import util
-    with open(assets_folder / test_file, "rb") as f:
-        data = f.read()
-        text = trimesh.util.decode_text(data)
 
     app = Vuer(static_root=assets_folder)
 
-    print(
-        "Loaded mesh with ",
-        mesh.vertices.shape,
-        "vertices and",
-        mesh.faces.shape,
-        "faces",
-    )
-
-    @app.spawn
+    @app.spawn(start=True)
     async def main(ws):
         app @ Set(
             DefaultScene(
@@ -71,7 +49,6 @@ if __name__ == "__main__":
                 ),
             ),
         )
-        print("object is sent")
 
         i = 0
         while True:
@@ -82,8 +59,6 @@ if __name__ == "__main__":
                 src=f"{cakewalk}/nike.splat",
                 scale=0.5,
                 key="moving",
-                position=[x, 0, z],
+                position=[x, 1.5, z],
             )
             await sleep(0.016)
-
-    app.run()
