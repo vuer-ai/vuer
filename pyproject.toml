@@ -14,17 +14,17 @@ classifiers = [
     "Programming Language :: Python",
 ]
 dependencies = [
-    "tqdm",
-    "termcolor",
-    "trimesh",
-    "numpy",
-    "params-proto",
-    "killport",
-    "msgpack",
-    "websockets",
     "aiohttp",
     "aiohttp-cors",
+    "killport",
+    "params-proto>=2.11.16",
     "pillow",
+    "tqdm",
+    "msgpack",
+    "numpy",
+    "termcolor",
+    "trimesh",
+    "websockets",
 ]
 
 [project.optional-dependencies]
@@ -52,9 +52,9 @@ line-length = 120
 # pylint
 [tool.pylint.messages_control]
 max-line-length = 120
-generated-members = ["numpy.*", "torch.*", "cv2.*", "cv.*"]
+generated-members = []
 good-names-rgxs = "^[_a-zA-Z][_a-z0-9]?$"
-ignore-paths = ["scripts/colmap2nerf.py"]
+ignore-paths = []
 jobs = 0
 ignored-classes = ["TensorDataclass"]
 
