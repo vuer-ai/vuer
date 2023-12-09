@@ -3,16 +3,10 @@ from asyncio import sleep
 import numpy as np
 
 from vuer import Vuer
-from vuer.events import Set, Update, Frame, ClientEvent
+from vuer.events import ClientEvent
 from vuer.schemas import (
-    Scene,
-    Ply,
-    Gripper,
-    SkeletalGripper,
-    Movable,
     Box,
     Sphere,
-    group,
     DefaultScene,
     CameraView,
 )

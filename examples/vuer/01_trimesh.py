@@ -1,13 +1,12 @@
+from asyncio import sleep
 from pathlib import Path
 
 import numpy as np
-# import numpy as np
 import trimesh
 
 from vuer import Vuer
 from vuer.events import Set
 from vuer.schemas import Obj, DefaultScene, TriMesh
-from asyncio import sleep
 
 if __name__ == '__main__':
     assets_folder = Path(__file__).parent / "../../assets"

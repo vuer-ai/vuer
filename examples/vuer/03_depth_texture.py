@@ -1,10 +1,8 @@
 from asyncio import sleep
 
-import numpy as np
-
 from vuer import Vuer
-from vuer.events import Set, Update, Frame
-from vuer.schemas import Scene, Ply, Gripper, SkeletalGripper, Movable, Box, Sphere, group
+from vuer.events import Set, Update
+from vuer.schemas import Scene, Box, Sphere, group
 
 app = Vuer(
     queries=dict(

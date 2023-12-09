@@ -1,4 +1,8 @@
+import base64
+from io import BytesIO
 from typing import Sequence
+
+from PIL import Image as pil_image
 
 
 def serializer(data):
@@ -35,3 +39,49 @@ def serializer(data):
     #
     # return data
     # # raise NotImplementedError(f"Cannot serialize {data}")
+
+
+def jpg(image, quality: int = 90):
+    """
+    base64 encode the image into a string, using JPEG encoding
+
+    Does not support transparency.
+    """
+    with BytesIO() as buff:
+        rgb_pil = pil_image.fromarray(image)
+        rgb_pil.save(buff, format="JPEG", quality=quality)
+        return buff.getbuffer().tobytes()
+
+
+def png(image):
+    """
+    base64 encode the image into a string, using PNG encoding
+    """
+    with BytesIO() as buff:
+        rgb_pil = pil_image.fromarray(image)
+        rgb_pil.save(buff, format="PNG")
+        return buff.getbuffer().tobytes()
+
+
+def b64jpg(image, quality: int = 90):
+    """
+    base64 encode the image into a string, using JPEG encoding
+
+    Does not support transparency.
+    """
+    buff = BytesIO()
+    rgb_pil = pil_image.fromarray(image)
+    rgb_pil.save(buff, format="JPEG", quality=quality)
+    img64 = base64.b64encode(buff.getbuffer().tobytes()).decode("utf-8")
+    return "data:image/jpeg;base64," + img64
+
+
+def b64png(image):
+    """
+    base64 encode the image into a string, using PNG encoding
+    """
+    with BytesIO() as buff:
+        rgb_pil = pil_image.fromarray(image)
+        rgb_pil.save(buff, format="PNG")
+        img64 = base64.b64encode(buff.getbuffer().tobytes()).decode("utf-8")
+        return "data:image/png;base64," + img64
