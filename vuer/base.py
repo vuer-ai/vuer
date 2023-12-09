@@ -55,10 +55,6 @@ class Server:
     cors = Proto(help="Enable CORS", default="*")
     port = Proto(env="PORT", default=8012)
 
-    # @abstractmethod
-    # def __init__(self):
-    #     self.__post_init__()
-
     def __post_init__(self):
         self.app = web.Application()
 
@@ -73,10 +69,10 @@ class Server:
         self.cors_context = aiohttp_cors.setup(self.app, defaults=cors_config)
 
     def _route(
-        self,
-        path: str,
-        handler: callable,
-        method: str = "GET",
+            self,
+            path: str,
+            handler: callable,
+            method: str = "GET",
     ):
         route = self.app.router.add_resource(path).add_route(method, handler)
         self.cors_context.add(route)

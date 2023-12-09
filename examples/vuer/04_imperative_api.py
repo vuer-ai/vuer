@@ -1,18 +1,9 @@
 from asyncio import sleep
 
-import numpy as np
-
 from vuer import Vuer
-from vuer.events import Set, Update, Frame
 from vuer.schemas import (
-    Scene,
-    Ply,
-    Gripper,
-    SkeletalGripper,
-    Movable,
     Box,
     Sphere,
-    group,
     DefaultScene,
 )
 
@@ -22,7 +13,6 @@ app = Vuer(
         grid=False,
         backgroundColor="black",
     ),
-    # debug=True,
 )
 
 

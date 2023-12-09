@@ -54,7 +54,7 @@ class Vuer(PrefixProto, Server):
     free_port = True
     static_root = "."
     queue_len = None
-    # cors = "https://vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
+    cors = "https://vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
     queries = Proto({}, help="query parameters to pass")
 
     WEBSOCKET_MAX_SIZE = 2**28
