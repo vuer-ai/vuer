@@ -1,16 +1,21 @@
-.. Vuer documentation master file, created by
-   sphinx-quickstart on Sun Nov 26 11:30:32 2023.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+=====================
+Vuer's Documentation!
+=====================
 
-Welcome to Vuer's documentation!
-================================
-
+Guide:
+======
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
+   setup
+   modules
 
+Examples:
+=========
+.. toctree::
+   :maxdepth: 3
+
+   examples
 
 Indices and tables
 ==================

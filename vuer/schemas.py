@@ -4,6 +4,8 @@ import numpy as np
 import PIL.Image as pil_image
 from numpy._typing import NDArray
 
+from vuer.serdes import IMAGE_FORMATS
+
 element_count = 0
 
 
@@ -31,6 +33,7 @@ class Element:
         Serialize the element to a dictionary for sending over the websocket.
         :return: Dictionary representing the element.
         """
+
         # note: only return the non-private attributes, allow bypass.
         output = {}
         for k, v in self.__dict__.items():
@@ -233,7 +236,7 @@ class Image(Element):
                 else:
                     data = (data * 255).astype(np.uint8)
 
-            src = eval(format)(data)
+            src = IMAGE_FORMATS[format](data)
 
         super().__init__(src=src, **kwargs)
 

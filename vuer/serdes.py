@@ -85,3 +85,11 @@ def b64png(image):
         rgb_pil.save(buff, format="PNG")
         img64 = base64.b64encode(buff.getbuffer().tobytes()).decode("utf-8")
         return "data:image/png;base64," + img64
+
+
+IMAGE_FORMATS = {
+    "jpg": jpg,
+    "png": png,
+    "b64jpg": b64jpg,
+    "b64png": b64png,
+}

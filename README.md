@@ -35,5 +35,16 @@ cd vuer/examples/vuer
 python 01_trimesh.py
 ```
 
+## To Develop
+
+### Setting up the Document Site
+
+https://www.docslikecode.com/learn/05-cd-for-docs/
+
+    ```bash
+    cd docs
+    pip install -r requirements.txt
+    ```
+
 
 
