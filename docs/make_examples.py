@@ -17,11 +17,12 @@ if __name__ == "__main__":
     example_list = []
 
     # go through every example in the folder
-    for filename in os.listdir(SOURCE_DIR):
-        filename_no_extension = os.path.splitext(os.path.basename(filename))[0]  # file path without extension
-        example_list.append(filename_no_extension)
-        create_rst(SOURCE_DIR, os.path.join(WRITE_DIR, filename_no_extension + ext), filename_no_extension)
-        print(f"Created {filename_no_extension}{ext}")
+    for filename in sorted(os.listdir(SOURCE_DIR)):
+        if filename.endswith(".py"):
+            filename_no_extension = os.path.splitext(os.path.basename(filename))[0]  # file path without extension
+            example_list.append(filename_no_extension)
+            create_rst(SOURCE_DIR, os.path.join(WRITE_DIR, filename_no_extension + ext), filename_no_extension)
+            print(f"Created {filename_no_extension}{ext}")
 
     # update examples.rst
     with open("examples.rst", 'w') as file:

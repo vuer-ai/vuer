@@ -2,7 +2,7 @@ Examples
 ========
 
 .. toctree::
-   :maxdepth: 10
+   :maxdepth: 9
 
    01_trimesh
    02_pointcloud
