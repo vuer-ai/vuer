@@ -13,7 +13,7 @@ Install vuer:
 
 .. code-block:: python
 
-  pip install vuer==0.0.7rc2
+  pip install vuer==0.0.8
 
   pip install numpy
   pip install trimesh
