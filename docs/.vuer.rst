@@ -1,5 +1,0 @@
-=====
-.vuer
-=====
-
-.. literalinclude:: ../examples/vuer/.vuer.py

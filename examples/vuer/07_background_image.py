@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 from vuer import Vuer
 from vuer.events import ClientEvent
-from vuer.schemas import Scene, ImageBackground
+from vuer.schemas import Scene, ImageBackground, SceneBackground
 
 reader = iio.get_reader("../../assets/movies/disney.webm")
 
