@@ -292,12 +292,15 @@ class DefaultScene(Scene):
         show_helper=True,
         **kwargs,
     ):
-        super().__init__(
-            # Ambient Light does not have helper because it is ambient.
+        rawChildren = [
             AmbientLight(intensity=1.0, key="default_ambient_light"),
             DirectionalLight(
                 intensity=1, key="default_directional_light", helper=show_helper
             ),
+            *(rawChildren or []),
+        ]
+        super().__init__(
+            # Ambient Light does not have helper because it is ambient.
             *children,
             rawChildren=rawChildren,
             htmlChildren=htmlChildren,

@@ -12,7 +12,7 @@ conda activate vuer
 
 Install vuer
 ```bash
-pip install vuer==0.0.7rc2
+pip install vuer==0.0.9
 
 pip install numpy
 pip install trimesh
@@ -21,7 +21,9 @@ pip install aiohttp-cors
 pip install pillow
 ```
 
-Now, to run the examples, first download the example datasets
+Now, to run the examples, first download the example datasets. 
+
+Each subdirectory in the `assets` directory contains a `Makefile`. Run the `make` command in each subdirectory to download the datasets. For example:
 
 ```bash
 cd assets/static_3d
@@ -41,10 +43,10 @@ python 01_trimesh.py
 
 https://www.docslikecode.com/learn/05-cd-for-docs/
 
-    ```bash
-    cd docs
-    pip install -r requirements.txt
-    ```
+```bash
+cd docs
+pip install -r requirements.txt
+```
 
 
 
