@@ -1,5 +1,48 @@
 from nerf_vuer.utils.colormaps import COLORMAPS
 
+SE3_DEFAULT = {
+    "rotation": {
+        "value": {"x": 0, "y": 0, "z": 0},
+        "order": 1,
+        "lock": True,
+    },
+    "position": {
+        "value": {"x": 0, "y": 0, "z": 0},
+        "order": -1,
+        "lock": True,
+    },
+    "scale": {
+        "value": 1,
+        "min": 0.0001,
+        "step": 0.01,
+        "label": "Scale",
+        "order": 2,
+        "pad": 4,
+    },
+}
+LOCAL_SE3 = {
+    "Local Transformation.rotation": {
+        "value": {"x": 0, "y": 0, "z": 0},
+        "order": 1,
+        "lock": True,
+        "label": "Rotation"
+    },
+    "Local Transformation.position": {
+        "value": {"x": 0, "y": 0, "z": 0},
+        "order": -1,
+        "lock": True,
+        "label": "Translation"
+    },
+    "Local Transformation.scale": {
+        "value": 1,
+        "min": 0.0001,
+        "step": 0.01,
+        "label": "Scale",
+        "order": 2,
+        "pad": 4,
+    },
+}
+
 LANGUAGE_DEFAULT = {
     "type": "FOLDER",
     "schema": {
@@ -48,9 +91,12 @@ RENDER_DEFAULT = {
         "lock": True,
         "order": 7,
     },
+    **LOCAL_SE3,
 }
 
 RGB_DEFAULT = {
+    **SE3_DEFAULT,
+    # **LOCAL_SE3,
     "channel": {
         "value": "rgb",
         # "options": ["rgb", "depth", "accumulation", "depth-0", "depth-1"],
@@ -60,24 +106,6 @@ RGB_DEFAULT = {
         "value": "alpha",
         "options": ["alpha", None],
     },
-    # "rotation": {
-    #     "value": {"x": 0, "y": 0, "z": 0},
-    #     "order": 1,
-    #     "lock": True,
-    # },
-    # "position": {
-    #     "value": {"x": 0, "y": 0, "z": 0},
-    #     "order": -1,
-    #     "lock": True,
-    # },
-    # "scale": {
-    #     "value": 1,
-    #     "min": 0.0001,
-    #     "step": 0.01,
-    #     "label": "Scale",
-    #     "order": 2,
-    #     "pad": 4,
-    # },
     "useAlpha": {"value": False, "label": "Use Alpha"},
     "alphaThreshold": {"value": 0.0, "min": 0, "max": 1, "step": 0.001, "pad": 4, "label": "ɑ Threshold"},
     "format": {
@@ -87,28 +115,7 @@ RGB_DEFAULT = {
 }
 
 MULTI_RGB_DEFAULT = {
-    "rotation": {
-        "value": {"x": 0, "y": 0, "z": 0},
-        "order": 1,
-        "lock": True,
-    },
-    "position": {
-        "value": {"x": 0, "y": 0, "z": 0},
-        "order": -1,
-        "lock": True,
-    },
-    "scale": {
-        "value": {"x": 1, "y": 1, "z": 1},
-        "order": -1,
-        "lock": True,
-        "locked": True,
-        # "value": 1,
-        "min": 0.0001,
-        # "step": 0.01,
-        # "label": "Scale",
-        # "order": 2,
-        # "pad": 4,
-    },
+    **SE3_DEFAULT,
     "alphaThreshold": {"value": 0.0, "min": 0, "max": 1, "step": 0.001, "pad": 4, "label": "ɑ Threshold"},
     "use_aabb": {"value": False, "label": "Use AABB", "order": 5},
     "aabb_min": {
@@ -143,10 +150,32 @@ DEPTH_DEFAULT = {
 }
 
 FEATURES_DEFAULT = {
+    **SE3_DEFAULT,
+    # **LOCAL_SE3,
+    "use_aabb": {"value": False, "label": "Use AABB", "order": 5},
+    "aabb_min": {
+        "value": {"x": -1, "y": -1, "z": -1},
+        "label": "Min",
+        "step": 0.001,
+        "pad": 4,
+        "lock": True,
+        "order": 6,
+    },
+    "aabb_max": {
+        "value": {"x": 1, "y": 1, "z": 1},
+        "label": "Max",
+        "step": 0.001,
+        "pad": 4,
+        "lock": True,
+        "order": 7,
+    },
+    "useAlpha": {"value": False, "label": "Use Alpha"},
+    "alphaThreshold": {"value": 0.0, "min": 0, "max": 1, "step": 0.001, "pad": 4, "label": "ɑ Threshold"},
     "Reset PCA": {"type": "BUTTON", "etype": "RESET_PCA"},
 }
 HEATMAP_DEFAULT = {
     **DEPTH_DEFAULT,
+    # **LOCAL_SE3,
     "query": {
         "value": "chair",
         "label": "Text Query",

@@ -262,9 +262,11 @@ class Scene(BlockElement):
         rawChildren=None,
         htmlChildren=None,
         backgroundChildren=None,
+        # default to z-up
+        up=[0, 0, 1],
         **kwargs,
     ):
-        super().__init__(*children, **kwargs)
+        super().__init__(*children, up=up, **kwargs)
         self.rawChildren = rawChildren or []
         self.htmlChildren = htmlChildren or []
         self.backgroundChildren = backgroundChildren or []
@@ -290,18 +292,24 @@ class DefaultScene(Scene):
         htmlChildren=None,
         backgroundChildren=None,
         show_helper=True,
+        # default to z-up
+        up=[0, 0, 1],
         **kwargs,
     ):
-        super().__init__(
-            # Ambient Light does not have helper because it is ambient.
+        rawChildren = [
             AmbientLight(intensity=1.0, key="default_ambient_light"),
             DirectionalLight(
                 intensity=1, key="default_directional_light", helper=show_helper
             ),
+            *(rawChildren or []),
+        ]
+        super().__init__(
+            # Ambient Light does not have helper because it is ambient.
             *children,
             rawChildren=rawChildren,
             htmlChildren=htmlChildren,
             backgroundChildren=backgroundChildren,
+            up=up,
             **kwargs,
         )
 
@@ -551,6 +559,10 @@ class Movable(SceneElement):
 
 class Obj(SceneElement):
     tag = "Obj"
+
+
+class CoordsMarker(SceneElement):
+    tag = "CoordsMarker"
 
 
 class Ply(SceneElement):

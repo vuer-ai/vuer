@@ -18,13 +18,14 @@ class AABB:
     """
     AABB Scenebox
 
-    note: in the future we will have the inputs automatically cast into the currect types.
+    note: in the future we will have the inputs automatically cast into the correct types.
     """
 
     aabb_min: Vector3 = None
     aabb_max: Vector3 = None
     position: Vector3 = None
     rotation: Euler = None
+    scale: float = None
 
     def __post_init__(self):
         # If min bounds are greater than max bounds, set min bound to 1cm below max bound
@@ -108,22 +109,25 @@ def process_aabb(render_gen):
     ):
 
         if settings.get("use_aabb", None):
-            # use_aabb = settings.get("use_aabb", None)
-            # aabb_min = settings.get("aabb_min", None)
-            # aabb_max = settings.get("aabb_max", None)
             scene_box = AABB(
                 aabb_min=Vector3(**settings.get("aabb_min", None)),
                 aabb_max=Vector3(**settings.get("aabb_max", None)),
+                position=Vector3(**settings.get("Local Transformation.position", None)),
+                rotation=Euler(**settings.get("Local Transformation.rotation", None)),
+                scale=settings.get("Local Transformation.scale", None),
             )
         elif render.get("use_aabb", None):
             scene_box = AABB(
                 aabb_min=Vector3(**render.get("aabb_min", None)),
                 aabb_max=Vector3(**render.get("aabb_max", None)),
+                position=Vector3(**render.get("Local Transformation.position", None)),
+                rotation=Euler(**render.get("Local Transformation.rotation", None)),
+                scale=render.get("Local Transformation.scale", None),
             )
         else:
             scene_box = None
-
-        async for event in render_gen(*args, aabb=scene_box, settings=settings, **kwargs):
+            
+        async for event in render_gen(*args, aabb=scene_box, settings=settings, render=render, **kwargs):
             yield event
 
     return wrap_gen
@@ -192,7 +196,7 @@ def _collect(cache: DefaultDict[str, List], *, height: int, width: int, prefix=N
     return outputs
 
 
-def _lie_action(ray_bundle, position: Vector3, rotation: Euler, scale: float, **_):
+def _lie_action(ray_bundle, position: Vector3 = None, rotation: Euler = None, scale: float = None, **_):
     if rotation is not None:
         mat = rotation_matrix(*rotation)
         c2w = torch.FloatTensor(mat).to(ray_bundle.origins.device)
@@ -253,6 +257,9 @@ def collect_rays(render_bundle):
 
         ray_bundle = camera.generate_rays(camera_indices=0, aabb_box=aabb)
         ray_bundle = ray_bundle.to(camera.device)
+
+        if aabb is not None:
+            _lie_action(ray_bundle, aabb.position, aabb.rotation, aabb.scale)
 
         # timing is not accurate
         # with torch.no_grad(), logger.time("rendering", fmt=lambda s: f"{1000 * s:.1f}ms"):

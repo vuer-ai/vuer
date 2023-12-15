@@ -17,7 +17,7 @@ Install vuer
 
 .. code-block:: bash
 
-   pip install vuer==0.0.7rc2
+   pip install vuer==0.0.9
 
    pip install numpy
    pip install trimesh
@@ -25,7 +25,11 @@ Install vuer
    pip install aiohttp-cors
    pip install pillow
 
-Now, to run the examples, first download the example datasets
+Now, to run the examples, first download the example datasets.
+
+Each subdirectory in the ``assets`` directory contains a ``Makefile``.
+Run the ``make`` command in each subdirectory to download the datasets.
+For example:
 
 .. code-block:: bash
 
@@ -47,9 +51,7 @@ Setting up the Document Site
 
 https://www.docslikecode-block.com/learn/05-cd-for-docs/
 
-::
+.. code-block:: bash
 
-   ```bash
    cd docs
    pip install -r requirements.txt
-   ```

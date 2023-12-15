@@ -147,7 +147,22 @@ class RGBA(Singleton):
             **pipeline,
         }
 
+def hash_safe(func):
+    def wrap(*args, **kwargs):
+        _args = []
+        for a in args:
+            if type(a) == list:
+                a = tuple(a)
+            _args.append(a)
+        for k, v in kwargs.items():
+            if type(v) == list:
+                kwargs[k] = tuple(v)
 
+        return func(*_args, **kwargs)
+
+    return wrap
+
+@hash_safe
 @lru_cache(maxsize=1)
 def _get_colormap(colormap, invert=False, useClip=True, clip: tuple = None, gain=1.0, offset=0.0, normalize=False, **_):
     """
