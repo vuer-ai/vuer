@@ -7,6 +7,7 @@
    01_trimesh
    02_pointcloud
    03_urdf
+   03_urdf_local
    04_imperative_api
    05_collecting_render
    05_collecting_render_procedural
