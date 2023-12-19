@@ -1,4 +1,10 @@
-# Setup
+# Welcome to `vuer`!
+
+To get a quick overview of what you can do with `vuer`, check out the following:
+
+- take a look at the example gallery [here](https://docs.vuer.ai/en/latest/examples.html)
+- or try to take a look at this demo [here](https://docs.vuer.ai/en/latest/examples.html#demo)
+
 
 Setting up the conda environment:
 
