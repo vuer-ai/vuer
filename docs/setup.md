@@ -10,9 +10,10 @@ conda activate vuer
 Install vuer:
 
 ```python
-pip install vuer==0.0.8
+pip install vuer==0.0.11
 
 pip install numpy
+pip install params-proto
 pip install trimesh
 pip install websockets
 pip install aiohttp-cors

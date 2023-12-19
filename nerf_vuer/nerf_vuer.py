@@ -3,7 +3,6 @@ from collections import defaultdict
 from copy import deepcopy
 
 import numpy as np
-from termcolor import cprint
 
 from nerf_vuer.utils.camera import get_camera_from_three
 from vuer import Vuer
@@ -135,4 +134,4 @@ class RenderVuer(Vuer):
                         break
 
         # need to explicitly terminate the coroutine
-        cprint(f"{ws_id} has left the chat", "red")
+        print(f"\033[93m{ws_id} has left the chat\033[0m")
