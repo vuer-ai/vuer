@@ -29,8 +29,10 @@ update-doc: convert-rst
 doc:
 	cd docs && make html && git add . && git commit -m 'update doc' && git push origin doc
 release:
+	git tag -d latest
 	git tag v$(VERSION) -m '$(msg)'
-	git push origin --tags
+	git tag latest
+	git push origin --tags -f
 publish-no-test: convert-rst
 	make wheel
 	twine upload dist/*
