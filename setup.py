@@ -12,7 +12,6 @@ setup(name='vuer',
       install_requires=[
           "killport",
           "msgpack",
-          # "msgpack-numpy",
       ],
       description='long_description',
       long_description=long_description,
