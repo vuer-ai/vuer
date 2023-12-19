@@ -1,13 +1,13 @@
 import asyncio
 import traceback
-from abc import abstractmethod
+from collections.abc import Coroutine
 from concurrent.futures import CancelledError
 from functools import partial
 from pathlib import Path
 
 import aiohttp_cors
 from aiohttp import web
-from params_proto import ParamsProto, Proto
+from params_proto import Proto
 
 
 async def default_handler(request, ws):
@@ -55,6 +55,8 @@ class Server:
     cors = Proto(help="Enable CORS", default="*")
     port = Proto(env="PORT", default=8012)
 
+    WEBSOCKET_MAX_SIZE = 2**28
+
     def __post_init__(self):
         self.app = web.Application()
 
@@ -69,21 +71,24 @@ class Server:
         self.cors_context = aiohttp_cors.setup(self.app, defaults=cors_config)
 
     def _route(
-            self,
-            path: str,
-            handler: callable,
-            method: str = "GET",
+        self,
+        path: str,
+        handler: callable,
+        method: str = "GET",
     ):
         route = self.app.router.add_resource(path).add_route(method, handler)
         self.cors_context.add(route)
 
     def _socket(self, path: str, handler: callable):
-        ws_handler = partial(websocket_handler, handler=handler, max_msg_size=self.WEBSOCKET_MAX_SIZE)
+        ws_handler = partial(
+            websocket_handler, handler=handler, max_msg_size=self.WEBSOCKET_MAX_SIZE
+        )
         self._route(path, ws_handler, method="GET")
 
-    def _add_task(self, fn):
+    @staticmethod
+    def _add_task(fn: Coroutine, name=None):
         loop = asyncio.get_event_loop()
-        loop.create_task(fn)
+        loop.create_task(fn, name=name)
 
     def _static(self, path, root):
         _fn = partial(handle_file_request, root=root)

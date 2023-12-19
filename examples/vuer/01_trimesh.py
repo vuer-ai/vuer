@@ -37,12 +37,13 @@ if __name__ == '__main__':
                 TriMesh(key="trimesh", vertices=np.array(mesh.vertices), faces=np.array(mesh.faces), position=[0, 0, 0],
                         color="#23aaff"),
 
-                TriMesh(key="trimesh", vertices=np.array(mesh.vertices), faces=np.array(mesh.faces), wireframe=True,
+                TriMesh(key="wireframe", vertices=np.array(mesh.vertices), faces=np.array(mesh.faces), wireframe=True,
                         position=[-0.3, 0, 0], color="yellow"),
+                # y-up
+                up=[0, 1, 0],
             ),
 
         )
-        print("object is sent")
 
         i = 0
         while True:

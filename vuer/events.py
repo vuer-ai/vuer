@@ -1,4 +1,5 @@
 from typing import List
+from uuid import uuid4
 
 from vuer.schemas import Element
 from vuer.serdes import serializer
@@ -116,7 +117,7 @@ class Update(ServerEvent):
             **self.__dict__,
             "data": {
                 "nodes": [serializer(node) for node in self.data["nodes"]],
-            }
+            },
         }
 
 
@@ -142,7 +143,7 @@ class Add(ServerEvent):
             "data": {
                 "nodes": [serializer(node) for node in self.data["nodes"]],
                 "to": self.data["to"],
-            }
+            },
         }
 
 
@@ -191,6 +192,31 @@ class End(ServerEvent):
 
 
 END = End()
+
+
+class ServerRPC(ServerEvent):
+    uuid: str
+    etype = "RPC"
+
+    # we can override this in the constructor to control the behavior on the front end.
+    rtype = "RPC_RESPONSE@{uuid}"
+
+    def __init__(self, data, uuid=None, **kwargs):
+        self.uuid = uuid or str(uuid4())
+        super().__init__(data, **kwargs)
+
+
+class GrabRender(ServerRPC):
+    """
+    A higher-level ServerEvent that wraps other ServerEvents
+    """
+
+    etype = "GRAB_RENDER"
+
+    def __init__(self, key="DEFAULT", **kwargs):
+        super().__init__(data=kwargs, key=key)
+        self.rtype = f"GRAB_RENDER_RESPONSE@{self.uuid}"
+
 
 # if __name__ == "__main__":
 #     e = Frame @ {"hey": "yo"}

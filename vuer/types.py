@@ -1,6 +1,9 @@
 from collections import namedtuple
-from typing import NamedTuple
+from typing import NamedTuple, Callable, Union, Coroutine
 from math import pi
+from uuid import UUID
+
+from vuer.events import Event, ServerEvent, ClientEvent
 
 Vector3 = namedtuple("Vector3", ["x", "y", "z"])
 
@@ -33,6 +36,13 @@ class Body(NamedTuple):
 class RenderNode:
     pass
 
+
+IDType = Union[UUID, str]
+CoroutineFn = Callable[[], Coroutine]
+
+SendProxy = Callable[[ServerEvent], None]
+EventHandler = Callable[[ClientEvent, SendProxy], None]
+Spawnable = Callable[[IDType], Coroutine]
 
 if __name__ == "__main__":
     e = Euler(x=1, y=2, z=3)

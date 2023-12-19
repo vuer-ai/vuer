@@ -1,7 +1,3 @@
-"""
-Demo for rendering a video as the background. Also includes an event handler for
-getting camera movements.
-"""
 from asyncio import sleep
 from pathlib import Path
 

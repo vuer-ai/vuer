@@ -22,7 +22,7 @@ async def main(ws):
                 showFrustum=False,
                 showFocalPlane=False,
                 position=[i % n, (i // n) % n, (i // n**2) % n],
-                rotation=[0.5 * np.pi, 0, 0],
+                rotation=[0.5 * 3.142, 0, 0],
             )
             for i in range(N)
         ]

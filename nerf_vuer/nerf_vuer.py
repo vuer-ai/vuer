@@ -18,8 +18,6 @@ from vuer.schemas import (
 class RenderVuer(Vuer):
     device = "cuda:0"
 
-    WEBSOCKET_MAX_SIZE = 2**28
-
     def __init__(self, render: Render = None, scene: Scene = None, **kwargs):
         super().__init__(**kwargs)
 

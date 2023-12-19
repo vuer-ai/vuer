@@ -18,15 +18,13 @@ if __name__ == "__main__":
 
     @app.spawn
     async def main(ws):
-        app @ Set(
-            DefaultScene(
-                *[
-                    CoordsMarker(
-                        position=[i % n, (i // n) % n, (i // n**2) % n], scale=0.25
-                    )
-                    for i in range(N)
-                ]
-            ),
+        app.set @ DefaultScene(
+            *[
+                CoordsMarker(
+                    position=[i % n, (i // n) % n, (i // n**2) % n], scale=0.25
+                )
+                for i in range(N)
+            ]
         )
 
         i = 0

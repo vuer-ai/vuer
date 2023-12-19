@@ -1,3 +1,4 @@
+import asyncio
 from asyncio import sleep
 from io import BytesIO
 
@@ -5,12 +6,13 @@ import numpy as np
 import PIL.Image as PImage
 
 from vuer import Vuer
-from vuer.events import ClientEvent
+from vuer.events import ClientEvent, GrabRender
 from vuer.schemas import (
     Box,
     Sphere,
     DefaultScene,
-    CameraView, Plane,
+    CameraView,
+    Plane,
 )
 
 app = Vuer(
@@ -24,53 +26,27 @@ app = Vuer(
 
 
 @app.spawn
-async def show_heatmap(ws):
+async def show_heatmap(ws_id):
     app.set @ DefaultScene(
-        rawChildren=[
-            CameraView(
-                fov=50,
-                width=320,
-                height=240,
-                key="ego",
-                position=[-0.5, 1.25, 0.5],
-                rotation=[-0.35 * np.pi, -0.1 * np.pi, np.pi],
-                stream="frame",
-                fps=30,
-                showFrustum=True,
-                # dpr=1,
-            ),
-        ],
+        Plane(
+            key="ground-plane",
+            args=[10, 10, 10],
+            position=[0, 0, 0],
+            rotation=[0, 0, 0],
+            materialType="depth",
+            meterial=dict(color="green", side=2),
+        ),
+        Sphere(
+            key="sphere",
+            args=[0.1, 200, 200],
+            position=[0.2, 0, 0.1],
+            rotation=[0, 0, 0],
+            materialType="depth",
+            outlines=dict(angle=0, thickness=0.002, color="white"),
+        ),
         # hide the helper to only render the objects.
         show_helper=False,
     )
-
-    app.add @ Box(
-        key="box",
-        args=[0.2, 0.2, 0.2],
-        position=[0, 0, 0.1],
-        rotation=[0, 0, 0],
-        materialType="depth",
-        meterial=dict(color="green"),
-        outlines=dict(angle=0, thickness=0.005, color="white"),
-    )
-
-    app.add @ Plane(
-        key="ground-plane",
-        args=[10, 10, 10],
-        position=[0, 0, 0],
-        rotation=[0, 0, 0],
-        materialType="depth",
-        meterial=dict(color="green", side=2),
-    )
-
-    app.add @ Sphere(
-        key="sphere",
-        args=[0.1, 200, 200],
-        position=[0.2, 0, 0.1],
-        rotation=[0, 0, 0],
-        materialType="depth",
-        outlines=dict(angle=0, thickness=0.002, color="white"),
-    ),
 
     i = 0
     while True:
@@ -87,36 +63,56 @@ async def show_heatmap(ws):
             materialType="depth",
         )
 
-        app @ Set()
+        if i == 0:
+            await sleep(1.0)
 
-        await sleep(0.014)
+        try:
+            response = await app.grab_render(quality=0.95, downsample=1)
+
+            import cv2
+
+            # add you render saving logic here.
+            value = response.value
+
+            buff = value['frame']
+            # print(buff)
+            pil_image = PImage.open(BytesIO(buff))
+            img = np.array(pil_image)
+            img_bgr = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            cv2.imshow('frame', img_bgr)
+            if cv2.waitKey(1) == ord('q'):
+                exit()
+
+        except asyncio.TimeoutError as e:
+            print("render grab timed out.")
+
+
 
 
 counter = 0
 
+# async def collect_render(event: ClientEvent, _):
+#     global counter
+#     # import matplotlib.pyplot as plt
+#     import cv2
+#
+#     # add you render saving logic here.
+#     counter += 1
+#     if counter % 1 == 0:
+#         value = event.value
+#         width = value['width']
+#         height = value['height']
+#         dpr = value['dpr']
+#
+#         buff = value['frame']
+#         # print(buff)
+#         pil_image = PImage.open(BytesIO(buff))
+#         img = np.array(pil_image)[::-1]
+#         img_bgr = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+#         cv2.imshow('frame', img_bgr)
+#         if cv2.waitKey(1) == ord('q'):
+#             exit()
 
-async def collect_render(event: ClientEvent, _):
-    global counter
-    # import matplotlib.pyplot as plt
-    import cv2
 
-    # add you render saving logic here.
-    counter += 1
-    if counter % 1 == 0:
-        value = event.value
-        width = value['width']
-        height = value['height']
-        dpr = value['dpr']
-
-        buff = value['frame']
-        # print(buff)
-        pil_image = PImage.open(BytesIO(buff))
-        img = np.array(pil_image)[::-1]
-        img_bgr = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        cv2.imshow('frame', img_bgr)
-        if cv2.waitKey(1) == ord('q'):
-            exit()
-
-
-app.add_handler("RENDER", collect_render)
+# app.add_handler("RENDER", collect_render)
 app.run()

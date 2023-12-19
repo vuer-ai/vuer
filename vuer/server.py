@@ -3,8 +3,10 @@ import json
 from asyncio import sleep
 from collections import deque, defaultdict
 from functools import partial
-from typing import cast
+from io import BytesIO
+from typing import cast, Callable, Coroutine
 from uuid import uuid4
+from warnings import warn
 
 from msgpack import packb, unpackb
 from params_proto import Proto, PrefixProto
@@ -22,8 +24,11 @@ from vuer.events import (
     INIT,
     Remove,
     Add,
+    ServerRPC,
+    GrabRender,
 )
 from vuer.schemas import Page
+from vuer.types import EventHandler, SendProxy, Spawnable
 
 
 class At:
@@ -53,18 +58,23 @@ class Vuer(PrefixProto, Server):
     port = 8012
     free_port = True
     static_root = "."
-    queue_len = None
-    cors = "https://vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
+    queue_len = 100  # use a max lenth to avoid the momor from blowing up.
+    cors = (
+        "https://vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
+    )
     queries = Proto({}, help="query parameters to pass")
-
-    WEBSOCKET_MAX_SIZE = 2**28
 
     device = "cuda"
 
     # need to be awaited
     def __matmul__(self, event: ServerEvent):
         """
-        Send a message to the client. Need to be awaited
+        Send a ServerEvent to the client.
+
+        !!Under construction!!
+
+        Does NOT need to be awaited. this function assumes the ws_id is the last one in the ws pool.
+
         :param event:
         :return: dqueue
         """
@@ -75,10 +85,26 @@ class Vuer(PrefixProto, Server):
 
         event_obj = event.serialize()
         event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
-        # note: print(f'only supports 1 socket connection atm. n={len(self.ws)}')
+
+        # fixme: only supports 1 socket connection atm.
+        if len(self.ws) > 1:
+            warn(f"only supports 1 socket connection atm, but n={len(self.ws)}")
+
         last_key = list(self.ws.keys())[-1]
         self.uplink_queue[last_key].append(event_bytes)
         return None
+
+    async def grab_render(self, ttl=2.0, **kwargs) -> ClientEvent:
+        """
+        Grab a render from the client.
+
+        :param quality: The quality of the render. 0.0 - 1.0
+        :param subsample: The subsample of the render.
+        :param ttl: The time to live for the handler. If the handler is not called within the time it gets removed from the handler list.
+        """
+        event = GrabRender(**kwargs)
+        ws_id = list(self.ws.keys())[-1]
+        return await self.rpc(ws_id, event, ttl=ttl)
 
     @property
     def set(self) -> At:
@@ -119,7 +145,7 @@ class Vuer(PrefixProto, Server):
         self.uplink_queue = defaultdict(que_maker)
 
         self.ws = {}
-        self.spawned_fn = None
+        self.spawned_fn: Spawnable = None
         self.spawned_coroutines = []
 
     async def relay(self, request):
@@ -128,25 +154,37 @@ class Vuer(PrefixProto, Server):
 
     # ** downlink message queue methods**
     async def bound_fn(self):
-        """This is the default socket connection handler"""
+        """This is the default generator function in the socket connection handler"""
         print("default socket worker is up, adding clientEvents ")
         self.downlink_queue.append(INIT)
 
         while True:
-            clientEvent = yield NOOP
+            client_event = yield NOOP
 
-            if clientEvent.etype in self.handlers:
-                handlers = self.handlers[clientEvent.etype]
-                for fn_factory in handlers.values():
+            if client_event.etype in self.handlers:
+                handlers = self.handlers[client_event.etype]
+
+                # make a copy of the keys to avoid dict size change during iteration.
+                handler_keys = list(handlers.keys())
+
+                for key in handler_keys:  # type: EventHandler
                     # todo: see if we want to add throttling here.
-                    # note: also pass in an event handler. Use an arrow function to avoid exposing the
-                    #   server instance.
-                    my_task = self.spawn_task(
-                        fn_factory(clientEvent, lambda e: self @ e)
-                    )
+
+                    fn_factory = handlers.get(key, None)
+                    # the handler dict can change size during iteration, so we need to
+                    #   handle the None case.
+                    if fn_factory is None:
+                        print("this handler is gone")
+                        continue
+
+                    # note: also pass in an event handler. Use an arrow function to avoid
+                    #  exposing the server instance.
+                    send_proxy: SendProxy = lambda e: self @ e
+
+                    my_task = self.spawn_task(fn_factory(client_event, send_proxy))
                     await sleep(0.0)
 
-            self.downlink_queue.append(clientEvent)
+            self.downlink_queue.append(client_event)
 
     def popleft(self):
         try:
@@ -171,7 +209,7 @@ class Vuer(PrefixProto, Server):
         loop = asyncio.get_running_loop()
         return loop.create_task(task)
 
-    def spawn(self, fn=None, start=False):
+    def spawn(self, fn: Spawnable = None, start=False):
         """
         Spawn a function as a task. This is useful in the following scenario:
 
@@ -183,7 +221,7 @@ class Vuer(PrefixProto, Server):
         :return: None
         """
 
-        def wrap_fn(fn):
+        def wrap_fn(fn: Spawnable):
             self.spawned_fn = fn
             if start:
                 self.run()
@@ -237,10 +275,58 @@ class Vuer(PrefixProto, Server):
 
         return await ws.send_bytes(event_bytes)
 
+    async def rpc(self, ws_id, event: ServerRPC, ttl=2.0) -> ClientEvent:
+        """RPC only takes a single response. For multi-response streaming,
+        we need to build a new one
+
+        Question is whether we want to make this RPC an awaitable funciton.
+
+        :param ttl: The time to live for the handler. If the handler is not called within the time it gets removed from the handler list.
+        """
+        ws = self.ws[ws_id]
+
+        etype = event.etype
+
+        # this is the event type for responses
+        rtype = f"{etype}_RESPONSE@{event.uuid}"
+
+        rpc_event = asyncio.Event()
+        response = None
+
+        async def response_handler(
+            response_event: ClientEvent, _: SendProxy
+        ) -> Coroutine:
+            nonlocal response
+
+            response = response_event
+            rpc_event.set()
+
+        # handle timeout
+        clean = self.add_handler(rtype, response_handler, once=True)
+
+        # note: by-pass the uplink message queue entirely, rendering it immune
+        #   to the effects of queue length.
+        await self.send(ws_id, event)
+        await sleep(0.5)
+        try:
+            await asyncio.wait_for(rpc_event.wait(), ttl)
+        except asyncio.TimeoutError as e:
+            clean()
+            raise e
+
+        return response
+
+    async def rpc_stream(self, ws_id, event: ServerEvent = None, event_bytes=None):
+        """This RPC offers multiple responses."""
+        raise NotImplemented("This is not implemented yet.")
+
     async def close_ws(self, ws_id):
         self.uplink_queue.pop(ws_id)
-        ws = self.ws.pop(ws_id)
-        await ws.close()
+        try:
+            ws = self.ws.pop(ws_id)
+            await ws.close()
+        except KeyError:
+            pass
 
     async def uplink(self, ws_id):
         print(f"\rUplink task running:{ws_id}")
@@ -256,13 +342,13 @@ class Vuer(PrefixProto, Server):
                 try:
                     # todo: spawn new uplink everytime connections happen
                     await self.send(ws_id, event_bytes=msg_bytes)
-                except ConnectionResetError:
+                except ConnectionResetError as e:
                     await self.close_ws(ws_id)
-                    print("Connection closed")
+                    print("Connection closed due to", e)
                     break
-                except ConnectionClosedError:
+                except ConnectionClosedError as e:
                     await self.close_ws(ws_id)
-                    print("Connection error, closed")
+                    print("Connection error, closed due to", e)
                     break
                 except Exception as e:
                     await self.close_ws(ws_id)
@@ -282,7 +368,6 @@ class Vuer(PrefixProto, Server):
         print("websocket is now connected")
         generator = self.bound_fn()
 
-        # key = random()
         ws_id = uuid4()
         self.ws[ws_id] = ws
         self._add_task(self.uplink(ws_id))
@@ -311,7 +396,6 @@ class Vuer(PrefixProto, Server):
 
                 if hasattr(generator, "__anext__"):
                     serverEvent = await generator.asend(clientEvent)
-
                 else:
                     serverEvent = generator.send(clientEvent)
 
@@ -331,18 +415,55 @@ class Vuer(PrefixProto, Server):
 
             print("websocket is now disconnected. Removing the socket.")
             self.ws.pop(ws_id, None)
-        except:
+        except Exception as e:
             print("websocket is now disconnected. Removing the socket.")
+            print("Exception: ", e)
+            raise e
             self.ws.pop(ws_id, None)
 
-    def add_handler(self, event_type, fn):
+    def add_handler(
+        self,
+        event_type: str,
+        fn: EventHandler,
+        once: bool = False,
+    ) -> Callable[[], None]:
+        """Adding event handlers to the vuer server.
+
+        :param event_type: The event type to handle.
+        :param fn: The function to handle the event.
+        :param once: Whether to remove the handler after the first call.
+            This is useful for RPC, which cleans up after itself.
+            The issue is for RPC, the `key` also needs to match. So we hack it here to use
+            a call specific event_type to enforce the cleanup.
+        """
         handler_id = uuid4()
-        self.handlers[event_type][handler_id] = fn
 
         def cleanup():
             del self.handlers[event_type][handler_id]
 
+        if once:
+
+            async def fn_once(*args, **kwargs):
+                """This is a wrapper function removes the handler on the first trigger."""
+                cleanup()
+                return await fn(*args, **kwargs)
+
+            self.handlers[event_type][handler_id] = fn_once
+        else:
+            self.handlers[event_type][handler_id] = fn
+
         return cleanup
+
+    def _ttl_handler(self, ttl, cleanup):
+        async def ttl_handler():
+            await sleep(ttl)
+            "remove the handler after ttl"
+            try:
+                cleanup()
+            except:
+                pass
+
+        return ttl_handler()
 
     def run(self, kill=None, *args, **kwargs):
         print("Vuer running at: " + self.get_url())

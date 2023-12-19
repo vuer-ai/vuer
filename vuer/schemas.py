@@ -318,8 +318,8 @@ class SceneElement(BlockElement):
     pass
 
 
-class Camera(SceneElement):
-    tag = "Camera"
+class Frustum(SceneElement):
+    tag = "Frustum"
 
 
 class CameraHelper(SceneElement):

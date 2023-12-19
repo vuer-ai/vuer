@@ -41,8 +41,7 @@ if __name__ == "__main__":
                     position=[0, 0.25, 0],
                     # rotation=[-np.pi, 0, -np.pi],
                 ),
-                # Use the position of the Movable wrapper for position and rotation.
-                # )
+                up=[0, 1, 0],
             )
         )
 
