@@ -1,33 +1,58 @@
-import numpy as np
+from pathlib import Path
+
+from cmx import CommonMark
 from asyncio import sleep
-from cmx import doc
-
-doc.clear()
-
-doc @ """
-### Visualizing Camera Frustums
-
-
-"""
 
 
 async def save_doc():
-    await sleep(2.)
+    await sleep(1.0)
 
     result = await app.grab_render(downsample=2)
-    doc.window.logger.client.log_buffer("figures/frustum.jpg", result.value["frame"])
+
+    filestem = Path(__file__).stem
+    doc.window.logger.client.log_buffer(
+        f"_static/{filestem}.jpg", result.value["frame"]
+    )
+
+    doc @ """"""
+
     print(doc.window.logger)
-    doc.image(src="figures/frustum.jpg", width=400)
     doc.flush()
     print("Example run is complete.")
     exit()
 
 
+filename = Path(__file__).parent.parent.parent / "docs" / Path(__file__).stem
+doc = CommonMark(f"{filename}.md", root=Path.cwd().parent.parent / "docs", prefix=".")
+
+
+async def save_doc():
+    await sleep(10.)
+
+    result = await app.grab_render(downsample=2)
+    doc.window.logger.client.log_buffer(f"../docs/_static/{Path(__file__).stem}.jpg", result.value["frame"])
+    print(doc.window.logger)
+    doc.flush()
+    print("Example run is complete.")
+    exit()
+
+
+doc @ """
+# Visualizing Camera Frustums
+
+You can programmatically insert camera frustums into the scene. Here
+we stress-test vuer by inserting 1728 frustums.
+"""
+doc.image(src=f"_static/{Path(__file__).stem}.jpg", width=400)
+
+doc @ """
+Simply run the following script:
+"""
 with doc:
     from vuer import Vuer
     from vuer.schemas import DefaultScene, Frustum
 
-    n, N = 5, 125
+    n, N = 12, 12 ** 3
 
     app = Vuer()
 
@@ -42,7 +67,7 @@ with doc:
                     showFrustum=False,
                     showFocalPlane=False,
                     position=[i % n, (i // n) % n, (i // n**2) % n],
-                    rotation=[0.5 * np.pi, 0, 0],
+                    rotation=[0.5 * 3.14, 0, 0],
                 )
                 for i in range(N)
             ]

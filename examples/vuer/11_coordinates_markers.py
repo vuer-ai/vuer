@@ -16,7 +16,7 @@ if __name__ == "__main__":
     n = 10
     N = 1000
 
-    @app.spawn
+    @app.spawn(start=True)
     async def main(ws):
         app.set @ DefaultScene(
             *[
@@ -31,5 +31,3 @@ if __name__ == "__main__":
         while True:
             i += 1
             await sleep(16)
-
-    app.run()

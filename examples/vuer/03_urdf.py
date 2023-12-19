@@ -1,57 +1,77 @@
-"""
+from pathlib import Path
 
-Setup: Run the following in the terminal
+from cmx import CommonMark
+from asyncio import sleep
+
+
+async def save_doc():
+    await sleep(10.0)
+
+    result = await app.grab_render(downsample=2)
+
+    filestem = Path(__file__).stem
+    doc.window.logger.client.log_buffer(
+        f"_static/{filestem}.jpg", result.value["frame"]
+    )
+
+    doc @ """
+    <iframe src="https://vuer.ai/?scene=3gAIqGNoaWxkcmVukd4ABKhjaGlsZHJlbpHeAAaoY2hpbGRyZW6Qo3RhZ6RVcmRmo2tleaE3o3NyY9lSaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL25hc2EtanBsL20yMDIwLXVyZGYtbW9kZWxzL21haW4vcm92ZXIvbTIwMjAudXJkZqtqb2ludFZhbHVlc94AAKhyb3RhdGlvbpPLQAkeuGAAAAAAAKN0YWenTW92YWJsZaNrZXmhOKhwb3NpdGlvbpMAAMs%2F0zMzQAAAAKN0YWelU2NlbmWja2V5oTmidXCTAAABpGdyaWTDq3Jhd0NoaWxkcmVukt4ABKhjaGlsZHJlbpCjdGFnrEFtYmllbnRMaWdodKNrZXm1ZGVmYXVsdF9hbWJpZW50X2xpZ2h0qWludGVuc2l0eQHeAAWoY2hpbGRyZW6Qo3RhZ7BEaXJlY3Rpb25hbExpZ2h0o2tleblkZWZhdWx0X2RpcmVjdGlvbmFsX2xpZ2h0qWludGVuc2l0eQGmaGVscGVyw6xodG1sQ2hpbGRyZW6QsmJhY2tncm91bmRDaGlsZHJlbpA%3D" width="100%" height="400px" frameborder="0"></iframe>
+    """
+
+
+    print(doc.window.logger)
+    doc.image(src=f"_static/{filestem}.jpg", width=400)
+    doc.flush()
+    print("Example run is complete.")
+    exit()
+
+
+filename = Path(__file__).parent.parent.parent / "docs" / Path(__file__).stem
+doc = CommonMark(f"{filename}.md", root=Path.cwd().parent.parent / "docs", prefix=".")
+
+doc @ """
+# Loading URDF Files from the Web
+
+"""
+doc.image(src=f"_static/{Path(__file__).stem}.jpg", width=400)
+
+
+doc @ """
+Setup: Fist run the following in the terminal
 ```shell
 cd examples/vuer/assets/robots
 make
 ```
+
+And then run the following in the example folder:
 """
-from asyncio import sleep
-from pathlib import Path
+with doc:
+    from vuer import Vuer
+    from vuer.schemas import Urdf, Movable, DefaultScene
 
-import numpy as np
-import trimesh
+    app = Vuer()
 
-from vuer import Vuer
-from vuer.events import Set
-from vuer.schemas import Obj, DefaultScene, Urdf, Movable
+    pi = 3.14
 
-if __name__ == "__main__":
-    assets_folder = Path(__file__).parent / "../../assets"
-    test_file = "static_3d/armadillo_midres.obj"
-
-    mesh = trimesh.load_mesh(assets_folder / test_file)
-    assert isinstance(mesh, trimesh.Trimesh)
-    mesh.apply_scale(0.1)
-
-    # from trimesh import util
-    with open(assets_folder / test_file, "rb") as f:
-        data = f.read()
-        text = trimesh.util.decode_text(data)
-
-    app = Vuer(static_root=assets_folder)
-
-    @app.spawn
+    @app.spawn(start=True)
     async def main(ws):
-        app @ Set(
-            DefaultScene(
-                Movable(
-                    Urdf(
-                        # src="http://localhost:8012/static/robots/mini_cheetah/mini_cheetah.urdf",
-                        src="https://raw.githubusercontent.com/nasa-jpl/m2020-urdf-models/main/rover/m2020.urdf",
-                        jointValues={
-                            # "FL_hip_joint": -0.2,
-                        },
-                        position=[0, 0.3, 0],
-                        rotation=[np.pi, 0, 0],
-                    ),
+        app.set @ DefaultScene(
+            Movable(
+                Urdf(
+                    src="https://raw.githubusercontent.com/nasa-jpl/m2020-urdf-models/main/rover/m2020.urdf",
+                    jointValues={},
+                    rotation=[pi, 0, 0],
                 ),
+                position=[0, 0, 0.3],
             ),
+            grid=True,
         )
 
-        i = 0
-        while True:
-            i += 1
-            await sleep(16)
+        await save_doc()
 
-    app.run()
+
+doc @ """
+    # keep the session alive.
+    while True:
+        await sleep(16)
+"""

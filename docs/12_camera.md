@@ -1,13 +1,17 @@
-
 # Visualizing Camera Frustums
 
+You can programmatically insert camera frustums into the scene. Here
+we stress-test vuer by inserting 1728 frustums.
 
+![_static/12_camera.jpg](_static/12_camera.jpg)
+
+Simply run the following script:
 
 ```python
 from vuer import Vuer
 from vuer.schemas import DefaultScene, Frustum
 
-n, N = 5, 125
+n, N = 12, 12 ** 3
 
 app = Vuer()
 
@@ -22,11 +26,9 @@ async def main(ws):
                 showFrustum=False,
                 showFocalPlane=False,
                 position=[i % n, (i // n) % n, (i // n**2) % n],
-                rotation=[0.5 * 3.142, 0, 0],
+                rotation=[0.5 * 3.14, 0, 0],
             )
             for i in range(N)
         ]
     )
 ```
-
-![figures/frustum.jpg](figures/frustum.jpg)
