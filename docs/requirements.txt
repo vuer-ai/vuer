@@ -1,2 +1,2 @@
-furo
 myst_parser
+furo
