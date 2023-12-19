@@ -28,10 +28,12 @@ update-doc: convert-rst
 	python setup.py sdist upload
 doc:
 	cd docs && make html && git add . && git commit -m 'update doc' && git push origin doc
+prepare-release:
+	git tag -d latest & \
+	git tag -d v$(VERSION)
 release:
-	git tag -d latest
-	git tag v$(VERSION) -m '$(msg)'
 	git tag latest
+	git tag v$(VERSION) -m '$(msg)'
 	git push origin --tags -f
 publish-no-test: convert-rst
 	make wheel

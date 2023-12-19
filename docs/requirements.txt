@@ -1,5 +1,6 @@
 killport
 msgpack
+params-proto
 
 sphinx==7.1.2
 myst_parser
