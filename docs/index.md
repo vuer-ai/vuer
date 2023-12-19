@@ -1,7 +1,6 @@
-=====================
-Vuer's Documentation!
-=====================
+# Vuer's Documentation!
 
+```{eval-rst}
 Guide:
 ======
 .. toctree::
@@ -23,3 +22,4 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+```

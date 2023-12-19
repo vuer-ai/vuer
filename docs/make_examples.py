@@ -24,11 +24,11 @@ if __name__ == "__main__":
             create_rst(SOURCE_DIR, os.path.join(WRITE_DIR, filename_no_extension + ext), filename_no_extension)
             print(f"Created {filename_no_extension}{ext}")
 
-    # update examples.rst
-    with open("examples.rst", 'w') as file:
+    # update examples.md
+    with open("examples.md", 'w') as file:
         toc = f"Examples\n========\n\n.. toctree::\n   :maxdepth: {len(example_list)}\n"
         for file_name in example_list:
             toc += f"\n   {file_name}"
 
         file.write(toc)
-        print(f"Updated examples.rst")
+        print(f"Updated examples.md")
