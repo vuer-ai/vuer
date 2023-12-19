@@ -6,4 +6,5 @@ termcolor
 sphinx==7.1.2
 myst_parser
 furo
+numpy
 
