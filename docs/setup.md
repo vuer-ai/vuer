@@ -1,4 +1,4 @@
-# Welcome to `vuer`!
+# Getting Started
 
 To get a quick overview of what you can do with `vuer`, check out the following:
 
@@ -26,11 +26,27 @@ pip install aiohttp-cors
 pip install pillow
 ```
 
-To run the examples, download the dataset
+## Running These Examples
+
+To run the examples, first clone the vuer repo:
+```shell
+git clone https://github.com/vuer-ai/vuer.git
+```
+
+**Optional:** If you want to develop vuer, you can install it in editable mode:
+```shell
+cd vuer
+pip install -e .
+```
+
+Now to run the examples, look for the asset you need in the assets folder, and run the
+Makefile to download the dataset.
 
 ```python
 cd assets/static_3d
 make
 ```
 
-and run the examples in `vuer/examples/vuer`
+Then you can run the examples in `vuer/examples/vuer`.
+
+Enjoy!

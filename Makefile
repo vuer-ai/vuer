@@ -27,7 +27,8 @@ resize: # from https://stackoverflow.com/a/28221795/1560241
 update-doc: convert-rst
 	python setup.py sdist upload
 doc:
-	cd docs && make html && git add . && git commit -m 'update doc' && git push origin doc
+	# cd docs && make html && git add . && git commit -m 'update doc' && git push origin doc
+	cd docs && make html
 prepare-release:
 	git tag -d latest & \
 	git tag -d v$(VERSION)
