@@ -12,6 +12,11 @@ setup(name='vuer',
       install_requires=[
           "killport",
           "msgpack",
+          "params-proto",
+          "numpy"
+          "websockets",
+          "aiohttp-cors",
+          "pillow",
       ],
       description='long_description',
       long_description=long_description,

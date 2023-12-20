@@ -16,19 +16,19 @@ conda activate vuer
 Install vuer:
 
 ```python
-pip install vuer==0.0.11
-
-pip install numpy
-pip install params-proto
-pip install trimesh
-pip install websockets
-pip install aiohttp-cors
-pip install pillow
+pip install vuer
 ```
 
 ## Running These Examples
 
-To run the examples, first clone the vuer repo:
+It would also be helpful to install `open3d==0.15.1` and `trimesh` so that you can run some of these 
+examples, but vuer itself does not depend on these libraries. 
+
+```shell
+pip install open3d==0.15.1 trimesh
+```
+Now clone this repo,
+
 ```shell
 git clone https://github.com/vuer-ai/vuer.git
 ```
@@ -38,8 +38,7 @@ git clone https://github.com/vuer-ai/vuer.git
 cd vuer
 pip install -e .
 ```
-
-Now to run the examples, look for the asset you need in the assets folder, and run the
+To run the examples, look for the asset you need in the assets folder, and run the
 Makefile to download the dataset.
 
 ```python
