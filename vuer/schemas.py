@@ -341,7 +341,7 @@ class TriMesh(SceneElement):
     children = []
 
     vertices: NDArray[np.float16] = None
-    # Uint16 is too few.
+    # note: Uint16 is too few. Quickly overflows
     faces: NDArray[np.uint32] = None
     colors: NDArray[np.uint8] = None
 

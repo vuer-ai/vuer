@@ -1,0 +1,34 @@
+<a class="sidebar-brand{% if logo %} centered{% endif %}" href="{{ pathto(master_doc) }}">
+    {% block brand_content %} {%- if logo_url %}
+    <div class="sidebar-logo-container">
+        <img class="sidebar-logo" src="{{ logo_url }}" alt="Logo"/>
+    </div>
+    {%- endif %} {%- if theme_light_logo and theme_dark_logo %}
+    <div class="sidebar-logo-container" style="margin: .5rem auto .5rem auto">
+        <img class="sidebar-logo only-light" src="{{ pathto('_static/' + theme_light_logo, 1) }}" alt="Light Logo"/>
+        <img class="sidebar-logo only-dark" src="{{ pathto('_static/' + theme_dark_logo, 1) }}" alt="Dark Logo"/>
+    </div>
+    {%- endif %} {#- {% if not theme_sidebar_hide_name %}
+    <span class="sidebar-brand-text">{{ docstitle if docstitle else project }}</span>
+    {%- endif %} -#} {% endblock brand_content %}
+    <!--adding this here-->
+    <span class="sidebar-brand-text" style="display: flex; justify-content: space-between; align-items: baseline;">
+        <code style="font-size: 2.19em; font-style: bold;
+        background-clip: text; color: transparent;
+        background-image: linear-gradient(to right, rgb(0,140,220), rgb(226,213,79), rgb(210,0,12))">{{ docstitle }}</code>
+        <code style="font-size: 0.7em">v{{version}}</code>
+    </span>
+    <!--<span class="sidebar-brand-text" style="display: flex">-->
+    <!--    <code style="font-size: 1.1em">Documentation</code>-->
+    <!--</span>-->
+</a>
+
+<div style="padding: 0 18px; display: flex; gap: 0.5em">
+    <a class="github-button" href="https://github.com/vuer-ai/vuer/subscription"
+       data-color-scheme="no-preference: light; light: light; dark: dark;" data-size="large" data-show-count="true"
+       aria-label="Watch vuer-ai/vuer on GitHub">Watch</a>
+    <a class="github-button" href="https://github.com/vuer-ai/vuer" data-color-scheme="no-preference: light; light: light; dark: dark;"
+       data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star vuer-ai/vuer on GitHub">Stars</a>
+</div>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
