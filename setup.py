@@ -13,7 +13,7 @@ setup(name='vuer',
           "killport",
           "msgpack",
           "params-proto",
-          "numpy"
+          "numpy",
           "websockets",
           "aiohttp-cors",
           "pillow",
