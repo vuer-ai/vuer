@@ -578,6 +578,8 @@ class DefaultScene(Scene):
         htmlChildren=None,
         backgroundChildren=None,
         show_helper=True,
+        startStep=0,
+        endStep=None,
         # default to z-up
         up=[0, 0, 1],
         **kwargs,
@@ -591,7 +593,10 @@ class DefaultScene(Scene):
         ]
         backgroundChildren = [
             GrabRender(),
-            TimelineControls(),
+            *[
+                # we use a key here so that we can replace the timeline controls via update
+                TimelineControls(start=startStep, end=endStep, key="timeline") if endStep else None,
+            ],
             PointerControls(),
             Grid(),
             *(backgroundChildren or []),
