@@ -284,36 +284,6 @@ class Scene(BlockElement):
         return obj
 
 
-class DefaultScene(Scene):
-    def __init__(
-        self,
-        *children,
-        rawChildren=None,
-        htmlChildren=None,
-        backgroundChildren=None,
-        show_helper=True,
-        # default to z-up
-        up=[0, 0, 1],
-        **kwargs,
-    ):
-        rawChildren = [
-            AmbientLight(intensity=1.0, key="default_ambient_light"),
-            DirectionalLight(
-                intensity=1, key="default_directional_light", helper=show_helper
-            ),
-            *(rawChildren or []),
-        ]
-        super().__init__(
-            # Ambient Light does not have helper because it is ambient.
-            *children,
-            rawChildren=rawChildren,
-            htmlChildren=htmlChildren,
-            backgroundChildren=backgroundChildren,
-            up=up,
-            **kwargs,
-        )
-
-
 class SceneElement(BlockElement):
     pass
 
@@ -346,7 +316,6 @@ class TriMesh(SceneElement):
     colors: NDArray[np.uint8] = None
 
     def __post_init__(self, **kwargs):
-
         self.vertices = self.vertices.astype(np.float16).flatten().tobytes()
 
         # uinit16 is too few at 65536. Have to use uint32.
@@ -583,3 +552,56 @@ class Gripper(SceneElement):
 
 class SkeletalGripper(SceneElement):
     tag = "SkeletalGripper"
+
+
+class Grid(SceneElement):
+    tag = "Grid"
+
+
+class GrabRender(SceneElement):
+    tag = "GrabRender"
+
+
+class TimelineControls(SceneElement):
+    tag = "TimelineControls"
+
+
+class PointerControls(SceneElement):
+    tag = "PointerControls"
+
+
+class DefaultScene(Scene):
+    def __init__(
+        self,
+        *children,
+        rawChildren=None,
+        htmlChildren=None,
+        backgroundChildren=None,
+        show_helper=True,
+        # default to z-up
+        up=[0, 0, 1],
+        **kwargs,
+    ):
+        rawChildren = [
+            AmbientLight(intensity=1.0, key="default_ambient_light"),
+            DirectionalLight(
+                intensity=1, key="default_directional_light", helper=show_helper
+            ),
+            *(rawChildren or []),
+        ]
+        backgroundChildren = [
+            GrabRender(),
+            TimelineControls(),
+            PointerControls(),
+            Grid(),
+            *(backgroundChildren or []),
+        ]
+        super().__init__(
+            # Ambient Light does not have helper because it is ambient.
+            *children,
+            rawChildren=rawChildren,
+            htmlChildren=htmlChildren,
+            backgroundChildren=backgroundChildren,
+            up=up,
+            **kwargs,
+        )

@@ -113,8 +113,11 @@ class Vuer(PrefixProto, Server):
 
     @property
     def update(self) -> At:
-        """Used to update existing elements. NOOP if an element does not exist."""
+        """Used to update existing elements. NOOP if an element does not exist.
 
+        Supports passing in a list of elements. (Thank God I implemented this...
+        so handy! - Ge)
+        """
         def update(element):
             if isinstance(element, list):
                 self @ Update(*element)
