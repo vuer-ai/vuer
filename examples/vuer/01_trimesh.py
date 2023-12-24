@@ -6,7 +6,7 @@ import trimesh
 
 from vuer import Vuer
 from vuer.events import Set
-from vuer.schemas import Obj, DefaultScene, TriMesh
+from vuer.schemas import Obj, DefaultScene, TriMesh, SceneBackground
 
 if __name__ == '__main__':
     assets_folder = Path(__file__).parent / "../../assets"
@@ -27,15 +27,16 @@ if __name__ == '__main__':
 
 
     @app.spawn
-    async def main(ws):
-        app @ Set(
+    async def main(session):
+        session @ Set(
             DefaultScene(
+                SceneBackground(),
                 Obj(key="src-loader", src="http://localhost:8012/static/" + test_file, position=[3, 0, 0]),
                 Obj(key="buff-loader", buff=data, position=[1, 0, 0], scale=0.3),
-                Obj(key="text-loader", text=text, position=[1, 0, 1], scale=0.3),
+                Obj(key="text-loader", text=text, position=[1, 0, 1], scale=0.3, materialType="depth"),
 
                 TriMesh(key="trimesh", vertices=np.array(mesh.vertices), faces=np.array(mesh.faces), position=[0, 0, 0],
-                        color="#23aaff"),
+                        color="#23aaff", materialType="depth"),
 
                 TriMesh(key="wireframe", vertices=np.array(mesh.vertices), faces=np.array(mesh.faces), wireframe=True,
                         position=[-0.3, 0, 0], color="yellow"),
@@ -48,8 +49,8 @@ if __name__ == '__main__':
         i = 0
         while True:
             i += 1
-            x, z = 0.3 * np.sin(i / 5), 0.3 * np.cos(i / 5)
-            app.update @ TriMesh(key="trimesh", vertices=np.array(mesh.vertices), faces=np.array(mesh.faces),
+            x, z = 0.3 * np.sin(i / 10), 0.3 * np.cos(i / 10)
+            session.update @ TriMesh(key="trimesh", vertices=np.array(mesh.vertices), faces=np.array(mesh.faces),
                                  position=[x, 0, z], color="#23aaff")
             await sleep(0.016)
 

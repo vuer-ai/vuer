@@ -20,8 +20,8 @@ if __name__ == "__main__":
     app = Vuer()
 
     @app.spawn
-    async def main(ws):
-        app @ Set(
+    async def main(proxy):
+        proxy @ Set(
             DefaultScene(
                 LumaSplats(
                     src=src,

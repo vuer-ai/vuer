@@ -1,7 +1,7 @@
-from typing import List
+from typing import List, Type
 from uuid import uuid4
 
-from vuer.schemas import Element
+from vuer.schemas import Element, Scene
 from vuer.serdes import serializer
 
 
@@ -90,27 +90,38 @@ NOOP = Noop()
 
 class Set(ServerEvent):
     """
-    A Set ServerEvent is sent to the client when the client first connects to the server.
-    It replaces the client's current state with the state sent in the Set ServerEvent.
+    SET Operator is used exclusively to set the root Scene node. Throws an error (on the client side)
+    if the data is not a Scene object.
     """
 
     etype = "SET"
 
-    def __init__(self, data: Element, **kwargs):
-        super().__init__(data, **kwargs)
+    def __init__(self, data: Type[Scene]):
+        super().__init__(data)
 
 
 class Update(ServerEvent):
     """
-    An Update ServerEvent is sent to the client when the server wants to update the client's state.
-    It appends the data sent in the Update ServerEvent to the client's current state.
+    UPDATE Operator is used to update a specific node in the scene graph.
+
+    Use "$delete" value for elements you want to remove. Or "$strict" mode to
+    copy the element verbatim.
+
+    Example:
+        app.update @ { "key": "my_key", "value": "$delete" }
+
+        app.update({ "key": "my_key", "value": "$delete" }, strict=True)
+
+        app.update @ [ { "key": "my_key", "value": "$delete" }, ... ]
+
+        app.update({ "key": "my_key", "value": "$delete" }, ...,  strict=True)
     """
 
     etype = "UPDATE"
 
-    def __init__(self, *elements: List[Element], **kwargs):
+    def __init__(self, *elements: List[Element], strict=False):
         # tuple is not serializable
-        super().__init__({"nodes": elements}, **kwargs)
+        super().__init__({"nodes": elements}, strict=strict)
 
     def serialize(self):
         return {
@@ -123,19 +134,71 @@ class Update(ServerEvent):
 
 class Add(ServerEvent):
     """
-    An Update ServerEvent is sent to the client when the server wants to update the client's state.
-    It appends the data sent in the Update ServerEvent to the client's current state.
+    ADD Operator is used to insert new nodes to the scene graph. By default it
+    inserts into the root node, but you can specify a parent node to insert into
+    via the `to` argument.
+
+    Note: only supports a single parent key right now.
+
+    Example:
+        app.add @ Element(...)
+
+        app.add @ [ Element(...), Element(...), ... ]
+
+        app.add(Element, to="my_parent_key")
+
+        app.add([Element, ...], to="my_parent_key")
+
     """
 
     etype = "ADD"
 
-    def __init__(self, *elements: List[Element], to: str = None, **kwargs):
+    def __init__(self, *elements: List[Element], to: str = None):
         # tuple is not serializable
         event_data = dict(
             nodes=elements,
             to=to,
         )
-        super().__init__(data=event_data, **kwargs)
+        super().__init__(data=event_data)
+
+    def serialize(self):
+        return {
+            **self.__dict__,
+            "data": {
+                "nodes": [serializer(node) for node in self.data["nodes"]],
+                "to": self.data["to"],
+            },
+        }
+
+
+class Upsert(ServerEvent):
+    """
+    UPSERT Operator is used to update nodes to new values, when then they do not
+    exist, insert new ones to the scene graph.
+
+    Note: only supports a single parent key right now.
+
+    Example:
+        app.upsert @ Element(...)
+
+        app.upsert @ [ Element(...), Element(...), ... ]
+
+        app.upsert(Element, to="my_parent_key")
+
+        app.upsert([Element, ...], to="my_parent_key")
+
+    """
+
+    etype = "UPSERT"
+
+    def __init__(self, *elements: List[Element], to: str = None, strict=False):
+        # tuple is not serializable
+        event_data = dict(
+            nodes=elements,
+            to=to,
+            strict=strict,
+        )
+        super().__init__(data=event_data)
 
     def serialize(self):
         return {
@@ -216,7 +279,6 @@ class GrabRender(ServerRPC):
     def __init__(self, key="DEFAULT", **kwargs):
         super().__init__(data=kwargs, key=key)
         self.rtype = f"GRAB_RENDER_RESPONSE@{self.uuid}"
-
 
 # if __name__ == "__main__":
 #     e = Frame @ {"hey": "yo"}

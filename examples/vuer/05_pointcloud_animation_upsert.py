@@ -20,13 +20,7 @@ surface_infill = np.load("assets/suzanne_surface_fill_only.npy")
 
 @app.spawn
 async def main(proxy):
-    proxy @ Set(
-        DefaultScene(
-            TriMesh(vertices=vertices, faces=faces, position=[0, 0, 0], wireframe=True),
-            PointCloud(key="surface", vertices=vertices, size=0.001),
-            PointCloud(key="infill", vertices=vertices, size=0.001),
-        ),
-    )
+    app.set @ DefaultScene()
 
     while True:
         await asyncio.sleep(1.0)
@@ -38,8 +32,10 @@ async def frame_handle(e: ClientEvent, _):
     step = e.value["step"]
     step = step % len(infill)
 
-    app.update @ [
-        TimelineControls(end=len(infill), step=step, speed=1.0, paused=False, key="timeline"),
+    app.upsert @ [
+        TimelineControls(
+            end=len(infill), step=step, speed=1.0, paused=False, key="timeline"
+        ),
         PointCloud(
             key="infill", vertices=infill[step], position=[0, 0, 0], color="red"
         ),

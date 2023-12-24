@@ -48,7 +48,7 @@ with doc:
     pi = 3.14
 
     @app.spawn(start=True)
-    async def main(ws):
+    async def main(proxy):
         app.set @ DefaultScene(
             Movable(
                 Urdf(

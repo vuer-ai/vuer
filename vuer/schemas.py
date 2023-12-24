@@ -261,7 +261,7 @@ class Scene(BlockElement):
         *children,
         rawChildren=None,
         htmlChildren=None,
-        backgroundChildren=None,
+        bgChildren=None,
         # default to z-up
         up=[0, 0, 1],
         **kwargs,
@@ -269,7 +269,7 @@ class Scene(BlockElement):
         super().__init__(*children, up=up, **kwargs)
         self.rawChildren = rawChildren or []
         self.htmlChildren = htmlChildren or []
-        self.backgroundChildren = backgroundChildren or []
+        self.bgChildren = bgChildren or []
 
     def serialize(self):
         obj = super().serialize()
@@ -277,10 +277,8 @@ class Scene(BlockElement):
             obj["rawChildren"] = [e.serialize() for e in self.rawChildren if e]
         if self.htmlChildren:
             obj["htmlChildren"] = [e.serialize() for e in self.htmlChildren if e]
-        if self.backgroundChildren:
-            obj["backgroundChildren"] = [
-                e.serialize() for e in self.backgroundChildren if e
-            ]
+        if self.bgChildren:
+            obj["bgChildren"] = [e.serialize() for e in self.bgChildren if e]
         return obj
 
 
@@ -438,6 +436,20 @@ class Tube(SceneElement):
     tag = "Tube"
 
 
+class Fog(SceneElement):
+    """
+    Fog is a scene element that adds fog to the scene. This
+    can be used to approximate depth.
+
+    Arguments:
+        args: color, near, far
+
+    Example Usage:
+        Fog(args=[0xcccccc, 10, 15])
+    """
+    tag = "fog"
+
+
 class Wireframe(SceneElement):
     tag = "Wireframe"
 
@@ -576,7 +588,7 @@ class DefaultScene(Scene):
         *children,
         rawChildren=None,
         htmlChildren=None,
-        backgroundChildren=None,
+        bgChildren=[],
         show_helper=True,
         startStep=0,
         endStep=None,
@@ -591,22 +603,24 @@ class DefaultScene(Scene):
             ),
             *(rawChildren or []),
         ]
-        backgroundChildren = [
-            GrabRender(),
-            *[
-                # we use a key here so that we can replace the timeline controls via update
-                TimelineControls(start=startStep, end=endStep, key="timeline") if endStep else None,
-            ],
-            PointerControls(),
-            Grid(),
-            *(backgroundChildren or []),
-        ]
+
         super().__init__(
             # Ambient Light does not have helper because it is ambient.
             *children,
             rawChildren=rawChildren,
             htmlChildren=htmlChildren,
-            backgroundChildren=backgroundChildren,
+            bgChildren=[
+                GrabRender(),
+                *[
+                    # we use a key here so that we can replace the timeline controls via update
+                    TimelineControls(start=startStep, end=endStep, key="timeline")
+                    if endStep
+                    else None,
+                ],
+                PointerControls(),
+                Grid(),
+                *bgChildren,
+            ],
             up=up,
             **kwargs,
         )

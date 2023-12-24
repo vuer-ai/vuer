@@ -23,8 +23,8 @@ if __name__ == "__main__":
 
 
     @app.spawn(start=True)
-    async def main(ws):
-        app @ Set(
+    async def main(proxy):
+        proxy @ Set(
             DefaultScene(
                 # Splat(
                 #     key="moving",

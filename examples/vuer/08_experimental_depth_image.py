@@ -34,12 +34,12 @@ def get_buffer(file_path):
 
 
 @app.spawn
-async def show_heatmap(ws):
+async def show_heatmap(proxy):
     rgb = get_buffer(assets_folder / "images/cubic_rgb.jpg")
     depth = get_buffer(assets_folder / "images/cubic_depth.jpg")
 
     app.set @ DefaultScene(
-        backgroundChildren=[
+        bgChildren=[
             ImageBackground(
                 src=rgb,
                 depthSrc=depth,

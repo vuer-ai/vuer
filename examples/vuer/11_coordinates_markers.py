@@ -17,7 +17,7 @@ if __name__ == "__main__":
     N = 1000
 
     @app.spawn(start=True)
-    async def main(ws):
+    async def main(proxy):
         app.set @ DefaultScene(
             *[
                 CoordsMarker(

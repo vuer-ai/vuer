@@ -2,7 +2,7 @@ from asyncio import sleep
 
 from vuer import Vuer
 from vuer.events import Set, Update
-from vuer.schemas import Scene, Box, Sphere, group
+from vuer.schemas import Scene, Box, Sphere, group, SceneBackground
 
 app = Vuer(
     queries=dict(
@@ -15,7 +15,7 @@ app = Vuer(
 
 
 @app.spawn
-async def show_heatmap(ws):
+async def show_heatmap(proxy):
     scene = Scene(
         group(
             Box(
@@ -38,7 +38,7 @@ async def show_heatmap(ws):
         )
     )
 
-    app @ Set(scene)
+    proxy @ Set(scene)
 
     i = 0
     while True:
@@ -47,7 +47,7 @@ async def show_heatmap(ws):
         position = [0.2, 0.1 + h / 5, 0]
         # phase = 2 * np.pi * i / 240
         # position = [0.15 + 0.25 * np.sin(phase), 0.1, 0.2 * np.cos(phase)]
-        app @ Update(
+        proxy @ Update(
             Sphere(key="sphere", args=[0.1, 20, 20], position=position, rotation=[0, 0, 0], materialType="depth", ),
         )
         await sleep(0.016)

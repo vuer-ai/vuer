@@ -23,35 +23,36 @@ app = Vuer(
 
 
 @app.spawn
-async def show_heatmap(ws):
-    app.set @ Scene(
-        backgroundChildren=[ImageBackground(key="background")],
-        # hide the helper to only render the objects.
-        show_helper=False,
-    )
+async def show_heatmap(session):
+    session.set @ Scene()
 
     for i, frame in tqdm(enumerate(reader), desc="playing video"):
         # First 25 frames are all black
         if frame.max() == 0:
             continue
+
         # First 100 frames are very static.
         if i < 100:
             continue
-        app.update @ ImageBackground(
-            # Can scale the images down.
-            frame[::1, ::1, :],
-            # One of ['b64png', 'png', 'b64jpg', 'jpg']
-            # 'b64png' does not work for some reason, but works for the nerf demo.
-            # 'jpg' encoding is significantly faster than 'png'.
-            format="jpg",
-            key="background",
-            interpolate=True,
+
+        session.upsert(
+            SceneBackground(
+                # Can scale the images down.
+                frame[::1, ::1, :],
+                # One of ['b64png', 'png', 'b64jpg', 'jpg']
+                # 'b64png' does not work for some reason, but works for the nerf demo.
+                # 'jpg' encoding is significantly faster than 'png'.
+                format="jpg",
+                key="background",
+                interpolate=True,
+            ),
+            to="bgChildren",
         )
         # 'jpg' encoding should give you about 30fps with a 16ms wait in-between.
         await sleep(0.016)
 
 
-async def on_camera(event: ClientEvent, send_fn):
+async def on_camera(event: ClientEvent, session):
     assert event == "CAMERA_MOVE", "the event type should be correct"
     print("camera event", event.etype, event.value)
 

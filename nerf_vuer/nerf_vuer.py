@@ -33,7 +33,7 @@ class RenderVuer(Vuer):
             scene = Scene(
                 group(key="playground"),
                 # set camera position
-                backgroundChildren=[self.render],
+                bgChildren=[self.render],
                 key="scene",
             )
 

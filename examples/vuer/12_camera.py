@@ -57,7 +57,7 @@ with doc:
     app = Vuer()
 
     @app.spawn(start=True)
-    async def main(ws):
+    async def main(proxy):
         app.set @ DefaultScene(
             *[
                 Frustum(

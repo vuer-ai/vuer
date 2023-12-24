@@ -17,7 +17,7 @@ app = Vuer(
 
 
 @app.spawn
-async def show_heatmap(ws):
+async def show_heatmap(proxy):
     app.set @ DefaultScene()
 
     app.add @ Box(

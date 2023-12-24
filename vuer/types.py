@@ -40,9 +40,9 @@ class RenderNode:
 IDType = Union[UUID, str]
 CoroutineFn = Callable[[], Coroutine]
 
-SendProxy = Callable[[ServerEvent], None]
-EventHandler = Callable[[ClientEvent, SendProxy], None]
-Spawnable = Callable[[IDType], Coroutine]
+# SendProxy = Callable[[ServerEvent], None]
+EventHandler = Callable[[ClientEvent, "VuerProxy"], None]
+Spawnable = Callable[["VuerProxy"], Coroutine]
 
 if __name__ == "__main__":
     e = Euler(x=1, y=2, z=3)
