@@ -22,6 +22,8 @@ sys.path.insert(0, os.path.abspath("../"))
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.doctest",
+    "sphinx.ext.mathjax",
+    "sphinx_copybutton",
     "myst_parser",
 ]
 
@@ -44,6 +46,17 @@ autodoc_mock_imports = [
     "aiohttp_cors",
     "websockets",
 ]
+# Pull documentation types from hints
+autodoc_typehints = "both"
+autodoc_class_signature = "separated"
+autodoc_default_options = {
+    "members": True,
+    "member-order": "bysource",
+    "undoc-members": False,
+    "inherited-members": False,
+    "exclude-members": "__init__, __post_init__",
+    "imported-members": False,
+}
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

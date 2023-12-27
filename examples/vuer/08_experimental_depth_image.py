@@ -35,10 +35,10 @@ def get_buffer(file_path):
 
 @app.spawn
 async def show_heatmap(proxy):
-    rgb = get_buffer(assets_folder / "images/cubic_rgb.jpg")
-    depth = get_buffer(assets_folder / "images/cubic_depth.jpg")
+    rgb = get_buffer(assets_folder / "images/marigold/cathedral/cathedral_rgb.jpg")
+    depth = get_buffer(assets_folder / "images/marigold/cathedral/cathedral_depth.png")
 
-    app.set @ DefaultScene(
+    proxy.set @ DefaultScene(
         bgChildren=[
             ImageBackground(
                 src=rgb,
@@ -48,6 +48,7 @@ async def show_heatmap(proxy):
             ),
         ],
         # hide the helper to only render the objects.
+        up=[0, 1, 0],
         show_helper=False,
     )
 

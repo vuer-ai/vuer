@@ -23,7 +23,8 @@ from vuer.events import (
     Remove,
     Add,
     ServerRPC,
-    GrabRender, Upsert,
+    GrabRender,
+    Upsert,
 )
 from vuer.schemas import Page
 from vuer.types import EventHandler, Spawnable
@@ -44,7 +45,7 @@ class At:
         return self.fn(*args, **kwargs)
 
 
-class VuerProxy:
+class VuerSession:
     def __init__(self, vuer: "Vuer", ws_id: int, queue_len=100):
         self.vuer = vuer
         self.CURRENT_WS_ID = ws_id
@@ -85,7 +86,9 @@ class VuerProxy:
         :param subsample: The subsample of the render.
         :param ttl: The time to live for the handler. If the handler is not called within the time it gets removed from the handler list.
         """
-        assert self.CURRENT_WS_ID is not None, "Websocket session is missing. CURRENT_WS_ID is None."
+        assert (
+            self.CURRENT_WS_ID is not None
+        ), "Websocket session is missing. CURRENT_WS_ID is None."
 
         event = GrabRender(**kwargs)
 
@@ -219,10 +222,12 @@ class VuerProxy:
     def stream(self):
         yield from self.downlink_queue
 
+
 class Vuer(PrefixProto, Server):
     """
     A Vuer is a document that can be rendered in a browser.
     """
+
     name = "vuer"
     uri = "ws://localhost:8012"
     # change to vuer.dash.ml
@@ -240,7 +245,7 @@ class Vuer(PrefixProto, Server):
 
     # need to be awaited
 
-    def _proxy(self, ws_id) -> "VuerProxy":
+    def _proxy(self, ws_id) -> "VuerSession":
         """This is a proxy object that allows us to use the @ notation
         to send events to the client.
 
@@ -248,7 +253,7 @@ class Vuer(PrefixProto, Server):
         :return: A proxy object.
         """
         # todo: check if shallow copy suffices
-        proxy = VuerProxy(self, ws_id, queue_len=self.queue_len)
+        proxy = VuerSession(self, ws_id, queue_len=self.queue_len)
 
         return proxy
 
@@ -282,7 +287,7 @@ class Vuer(PrefixProto, Server):
         """
         # todo: need to implement msgpack encoding, interface
         bytes = request.bytes()
-        session_id = request.rel_url.query.get('sid', None)
+        session_id = request.rel_url.query.get("sid", None)
         if session_id is None:
             return Response(400)
         elif session_id in self.ws:
@@ -301,7 +306,7 @@ class Vuer(PrefixProto, Server):
             return Response(status=400)
 
     # ** downlink message queue methods**
-    async def bound_fn(self, session_proxy: VuerProxy):
+    async def bound_fn(self, session_proxy: VuerSession):
         """This is the default generator function in the socket connection handler"""
         print("default socket worker is up, adding clientEvents ")
         session_proxy.downlink_queue.append(INIT)
@@ -329,7 +334,6 @@ class Vuer(PrefixProto, Server):
                     await sleep(0.0)
 
             session_proxy.downlink_queue.append(client_event)
-
 
     def spawn_task(self, task):
         loop = asyncio.get_running_loop()
@@ -419,7 +423,7 @@ class Vuer(PrefixProto, Server):
         response = None
 
         async def response_handler(
-                response_event: ClientEvent, _: "VuerProxy"
+            response_event: ClientEvent, _: "VuerSession"
         ) -> Coroutine:
             nonlocal response
 
@@ -454,8 +458,7 @@ class Vuer(PrefixProto, Server):
         except KeyError:
             pass
 
-    async def uplink(self, proxy: VuerProxy):
-
+    async def uplink(self, proxy: VuerSession):
         ws_id = proxy.CURRENT_WS_ID
         queue = proxy.uplink_queue
 
@@ -522,7 +525,6 @@ class Vuer(PrefixProto, Server):
 
         try:
             async for msg in ws:
-
                 payload = unpackb(msg.data, raw=False)
                 clientEvent = ClientEvent(**payload)
 
@@ -553,10 +555,10 @@ class Vuer(PrefixProto, Server):
             self.ws.pop(ws_id, None)
 
     def add_handler(
-            self,
-            event_type: str,
-            fn: EventHandler,
-            once: bool = False,
+        self,
+        event_type: str,
+        fn: EventHandler,
+        once: bool = False,
     ) -> Callable[[], None]:
         """Adding event handlers to the vuer server.
 
@@ -609,12 +611,10 @@ class Vuer(PrefixProto, Server):
             kill_ports(ports=[self.port])
             time.sleep(0.01)
 
-        # host = host[2:]
-
         self._socket("", self.downlink)
         # serve local files via /static endpoint
         self._static("/static", self.static_root)
         print("serving static files from", self.static_root, "at", "/static")
         self._route("/relay", self.relay, method="POST")
-        # self._socket()
+
         super().run()

@@ -1,1 +1,1 @@
-from vuer.server import Vuer
+from vuer.server import Vuer, VuerSession

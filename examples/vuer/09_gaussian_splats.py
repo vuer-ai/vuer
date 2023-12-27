@@ -35,13 +35,14 @@ if __name__ == "__main__":
                 # ),
                 # Movable(
                 Splat(
-                    src=f"{dylanebert}/kitchen-7k.splat",
+                    src=f"http://localhost:8012/static/splats/garden_table.splat",
                     # src=arial,
                     scale=0.5,
                     position=[0, 0.25, 0],
                     # rotation=[-np.pi, 0, -np.pi],
                 ),
                 up=[0, 1, 0],
+                showGrid=False,
             )
         )
 

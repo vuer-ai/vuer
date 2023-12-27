@@ -1,0 +1,5 @@
+@media all and (min-width: 50px)   {  h1.full-width  { font-size: 22px !important;  } }
+@media all and (min-width: 238px)  {  h1.full-width  { font-size: 9vw !important;  } }
+@media all and (min-width: 440px)  {  h1.full-width  { font-size:10vw !important;  } }
+@media all and (min-width: 737px)  {  h1.full-width  { font-size:71px !important;  } }
+@media all and (min-width: 1073px) {  h1.full-width  { font-size:59px !important;  } }
