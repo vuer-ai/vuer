@@ -1,9 +1,10 @@
 aiohttp
 killport
 msgpack
+numpy
 params-proto
 
 sphinx==7.1.2
-myst_parser
 furo
-numpy
+sphinx_copybutton
+myst_parser

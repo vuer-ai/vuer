@@ -1,9 +1,17 @@
-## Vuer: Modern High-Performance Visualization for Robots in VR&ensp;⬝&ensp;[![pypi](https://img.shields.io/pypi/v/vuer.svg)](https://pypi.org/project/vuer/) ![Production](https://api.netlify.com/api/v1/badges/2df7f3ba-1a26-4047-b76a-d7401f907bb5/deploy-status)
-
+<h2>Vuer: Modern High-Performance Visualization for AI & Robotics in VR 
+<br/>
+<img src="https://api.netlify.com/api/v1/badges/2df7f3ba-1a26-4047-b76a-d7401f907bb5/deploy-status" alt="Production">
+<a href="https://pypi.org/project/vuer/">
+    <img src="https://img.shields.io/pypi/v/vuer.svg" alt="pypi">
+</a>
+<a href="https://docs.vuer.ai">
+    <img src="https://readthedocs.org/projects/vuer-py/badge/?version=latest">
+</a>
+</h2>
 <p>
 <strong><code>pip install vuer</code></strong>
 &nbsp;&nbsp;⬝&nbsp;&nbsp;
-visit &nbsp;<a href="https://docs.vuer.ai">https://docs.vuer.ai</a>&nbsp; for documentation
+visit &ensp;<a href="https://docs.vuer.ai">https://docs.vuer.ai</a>&ensp; for documentation
 </p>
 
 Vuer is a light-weight visualization toolkit for interacting with dynamic 3D and robotics data. It is
