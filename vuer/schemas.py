@@ -447,6 +447,7 @@ class Fog(SceneElement):
     Example Usage:
         Fog(args=[0xcccccc, 10, 15])
     """
+
     tag = "fog"
 
 

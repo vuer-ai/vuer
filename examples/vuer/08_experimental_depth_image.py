@@ -35,8 +35,8 @@ def get_buffer(file_path):
 
 @app.spawn
 async def show_heatmap(proxy):
-    rgb = get_buffer(assets_folder / "images/marigold/cathedral/cathedral_rgb.jpg")
-    depth = get_buffer(assets_folder / "images/marigold/cathedral/cathedral_depth.png")
+    rgb = get_buffer(assets_folder / "images/cubic_rgb.jpg")
+    depth = get_buffer(assets_folder / "images/cubic_depth.jpg")
 
     proxy.set @ DefaultScene(
         bgChildren=[

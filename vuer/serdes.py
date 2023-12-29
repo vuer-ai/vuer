@@ -49,6 +49,8 @@ def jpg(image, quality: int = 90):
     """
     with BytesIO() as buff:
         rgb_pil = pil_image.fromarray(image)
+        if image.shape.__len__() == 2 or image.shape[2] == 1:
+            rgb_pil = rgb_pil.convert("L")
         rgb_pil.save(buff, format="JPEG", quality=quality)
         return buff.getbuffer().tobytes()
 
@@ -71,6 +73,8 @@ def b64jpg(image, quality: int = 90):
     """
     buff = BytesIO()
     rgb_pil = pil_image.fromarray(image)
+    if image.shape.__len__() == 2 or image.shape[2] == 1:
+        rgb_pil = rgb_pil.convert("L")
     rgb_pil.save(buff, format="JPEG", quality=quality)
     img64 = base64.b64encode(buff.getbuffer().tobytes()).decode("utf-8")
     return "data:image/jpeg;base64," + img64
