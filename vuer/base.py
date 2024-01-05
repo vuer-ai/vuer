@@ -16,12 +16,8 @@ async def default_handler(request, ws):
 
 
 async def websocket_handler(request, handler, **ws_kwargs):
-    print("New connection!!!")
-
     ws = web.WebSocketResponse(**ws_kwargs)
     await ws.prepare(request)
-
-    print("Socket stored")
 
     try:
         await handler(request, ws)
@@ -101,7 +97,8 @@ class Server:
             site = web.TCPSite(runner, self.host, self.port)
             await site.start()
 
-            print(f"Serving on http://{self.host}:{self.port}")
+            # This print has been very confusing to the user. Remove. - Ge
+            # print(f"Serving on http://{self.host}:{self.port}")
 
         event_loop = asyncio.get_event_loop()
 

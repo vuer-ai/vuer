@@ -16,7 +16,7 @@ n, N = 12, 12**3
 
 app = Vuer()
 
-@app.spawn
+@app.spawn(start=True)
 async def main(sess: VuerSession):
     sess.set @ DefaultScene(
         *[
@@ -35,7 +35,4 @@ async def main(sess: VuerSession):
 
     # # fmt: off
     # await save_doc()
-```
-```python
-app.run()
 ```

@@ -9,7 +9,9 @@
 project = "Vuer"
 copyright = "2023, Ge Yang"
 author = "Ge Yang"
-version = "0.0.11"
+with open("../VERSION", "r") as f:
+    version = f.read()
+    version = version.strip()
 
 import sys
 import os
@@ -26,6 +28,24 @@ extensions = [
     "sphinx_copybutton",
     "myst_parser",
 ]
+
+rst_epilog = f".. |version| replace:: {version}"
+
+
+def setup(app):
+    """This setup function is called to register the replacement.
+
+    Example from:
+    - [Substitutions-Inside-Sphinx-Code-Blocks-Arent-Replaced](
+        https://stackoverflow.com/questions/8821511 )
+    """
+
+    def versioning(app, docname, source):
+        source[0] = source[0].replace("{VERSION}", version)
+
+    app.add_config_value("REPLACEMENT_LIST", {}, True)
+    app.connect("source-read", versioning)
+
 
 templates_path = ["_templates"]
 source_suffix = [".rst", ".md"]

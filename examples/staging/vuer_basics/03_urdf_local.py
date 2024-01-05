@@ -1,8 +1,3 @@
-
-# URDF (Serving Locally)
-
-
-```python
 import math
 from asyncio import sleep
 from pathlib import Path
@@ -14,9 +9,10 @@ from vuer.schemas import DefaultScene, Urdf, Movable
 
 pi = 3.1415
 
-app = Vuer(static_root=Path(__file__).parent / "../../assets")
+app = Vuer(static_root=Path(__file__).parent / "../../../assets")
 
-@app.spawn
+
+@app.spawn(start=True)
 async def main(proxy):
     app.set @ DefaultScene(
         Movable(
@@ -68,7 +64,3 @@ async def main(proxy):
         )
         await sleep(0.016)
         i += 1
-```
-```python
-app.run()
-```

@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Tuple, List
 
 import numpy as np
 import PIL.Image as pil_image
@@ -334,10 +334,34 @@ class TriMesh(SceneElement):
 
 
 class PointCloud(SceneElement):
-    tag = "PointCloud"
-    children = []
+    """PointCould element, highly optimized for payload size and speed.
+
+    :param vertices: An optional numpy array of shape (N, 3) containing the vertices of the pointcloud.
+    :type  vertices: NDArray[np.float16]
+    :param colors: An optional numpy array of shape (N, 3) containing the colors of the point cloud.
+    :type  color: NDArray[np.uint8]
+    :param size: An optional float that sets the size of the points.
+    :type  size: float
+    :param key: str An optional string that sets the key of the element.
+    :type  key: str
+
+    Usage::
+
+        sess.upsert @ PointCloud(
+            vertices=np.random.rand(1000, 3),
+            colors=np.random.rand(1000, 3),
+            size=0.01,
+            key="pointcloud",
+        )
+
+    """
+
+    tag: str = "PointCloud"
     vertices: NDArray[np.float16] = None
+    """An optional numpy array of shape (N, 3) containing the vertices of the point cloud."""
     colors: NDArray[np.uint8] = None
+    """An optional numpy array of shape (N, 3) containing the colors of the point cloud."""
+    children = []
 
     def __post_init__(self, **kwargs):
         self.vertices = self.vertices.astype(np.float16).flatten().tobytes()
@@ -573,23 +597,70 @@ class Grid(SceneElement):
 
 class GrabRender(SceneElement):
     tag = "GrabRender"
+    key = "DEFAULT"
+    """We do not want the client to set keys automatically since GrabRender is 
+    usually used a singleton component as default."""
 
 
 class TimelineControls(SceneElement):
     tag = "TimelineControls"
+    # todo: consider adding default component keys here.
 
 
 class PointerControls(SceneElement):
     tag = "PointerControls"
+    # todo: consider adding default component keys here.
 
 
 class DefaultScene(Scene):
+    """Default Scene that includes a basic setup of ambient lights.
+
+
+    :param children: list of children elements to be rendered in the scene.
+    :type children: SceneElement, ...
+    :param rawChildren: list of children elements to be rendered in the scene.
+    :param htmlChildren: list of children elements to be rendered in the scene.
+    :param bgChildren: list of children elements to be rendered in the scene.
+    :param show_helper: list of children elements to be rendered in the scene.
+    :param startStep: list of children elements to be rendered in the scene.
+    :param endStep: list of children elements to be rendered in the scene.
+    :param up: list of children elements to be rendered in the scene.
+    :param kwargs: list of children elements to be rendered in the scene.
+
+    Example Usage::
+
+        DefaultScene(
+            # Ambient Light does not have helper because it is ambient.
+            AmbientLight(intensity=1.0, key="default_ambient_light"),
+            DirectionalLight(
+                intensity=1, key="default_directional_light", helper=show_helper
+            ),
+            *children,
+            rawChildren=rawChildren,
+            htmlChildren=htmlChildren,
+            bgChildren=[
+                GrabRender(),
+                *[
+                    # we use a key here so that we can replace the timeline controls via update
+                    TimelineControls(start=startStep, end=endStep, key="timeline")
+                    if endStep
+                    else None,
+                ],
+                PointerControls(),
+                Grid(),
+                *bgChildren,
+            ],
+            up=up,
+            **kwargs,
+        )
+    """
+
     def __init__(
         self,
-        *children,
-        rawChildren=None,
-        htmlChildren=None,
-        bgChildren=[],
+        *children: SceneElement,
+        rawChildren: List[SceneElement] = None,
+        htmlChildren: List[Element] = None,
+        bgChildren: List[SceneElement] = [],
         show_helper=True,
         startStep=0,
         endStep=None,
@@ -599,9 +670,7 @@ class DefaultScene(Scene):
     ):
         rawChildren = [
             AmbientLight(intensity=1.0, key="default_ambient_light"),
-            DirectionalLight(
-                intensity=1, key="default_directional_light", helper=show_helper
-            ),
+            DirectionalLight(intensity=1, key="default_directional_light", helper=show_helper),
             *(rawChildren or []),
         ]
 
@@ -611,7 +680,8 @@ class DefaultScene(Scene):
             rawChildren=rawChildren,
             htmlChildren=htmlChildren,
             bgChildren=[
-                GrabRender(),
+                # skey spec here is a little redundant.
+                GrabRender(key="DEFAULT"),
                 *[
                     # we use a key here so that we can replace the timeline controls via update
                     TimelineControls(start=startStep, end=endStep, key="timeline")

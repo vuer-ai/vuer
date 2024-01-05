@@ -92,7 +92,7 @@ class VuerSession:
 
         event = GrabRender(**kwargs)
 
-        return await self.vuer.rpc(self.vuer.CURRENT_WS_ID, event, ttl=ttl)
+        return await self.vuer.rpc(self.CURRENT_WS_ID, event, ttl=ttl)
 
     @property
     def set(self) -> At:
@@ -116,7 +116,7 @@ class VuerSession:
         Supports passing in a list of elements. (Thank God I implemented this...
         so handy! - Ge)
 
-        Example Usage:
+        Example Usage::
 
             app.update @ [element1, element2, ...]
         """
@@ -136,11 +136,11 @@ class VuerSession:
 
         Requires a parentKey, or treats the Scene root node as the default parent.
 
-        Example Usage:
+        Example Usage::
 
             app.add(element1, element2, ..., to=parentKey.)
 
-            or using the Scene root node as the default parent:
+        or using the Scene root node as the default parent: ::
 
             app.add @ element1
 
@@ -161,11 +161,11 @@ class VuerSession:
 
         Requires a parentKey, or treats the Scene root node as the default parent.
 
-        Example Usage:
+        Example Usage::
 
             app.upsert(element1, element2, ..., to=parentKey.)
 
-            or using the Scene root node as the default parent:
+        or using the Scene root node as the default parent: ::
 
             app.upsert @ element1
 
@@ -184,11 +184,11 @@ class VuerSession:
     def remove(self) -> At:
         """Remove elements by keys.
 
-        Example Usage:
+        Example Usage::
 
             app.remove @ ["key1", "key2", ...]
 
-            or a single key:
+        or a single key: ::
 
             app.remove @ "key1"
 
@@ -269,7 +269,6 @@ class Vuer(PrefixProto, Server):
         self.ws = {}
         self.spawned_fn: Spawnable = None
         self.spawned_coroutines = []
-        self.CURRENT_WS_ID = None
 
     async def relay(self, request):
         """This is the relay object for sending events to the server.
@@ -436,7 +435,7 @@ class Vuer(PrefixProto, Server):
         # note: by-pass the uplink message queue entirely, rendering it immune
         #   to the effects of queue length.
         await self.send(ws_id, event)
-        await sleep(0.5)
+        # await sleep(0.5)
         try:
             await asyncio.wait_for(rpc_event.wait(), ttl)
         except asyncio.TimeoutError as e:
@@ -462,7 +461,7 @@ class Vuer(PrefixProto, Server):
         ws_id = proxy.CURRENT_WS_ID
         queue = proxy.uplink_queue
 
-        print(f"\rUplink task running:{ws_id}")
+        print(f"\rUplink task running. id:{ws_id}")
         while True:
             if ws_id not in self.ws:
                 print(f"uplink:{ws_id} is not in websocket pool")
@@ -599,7 +598,7 @@ class Vuer(PrefixProto, Server):
         return ttl_handler()
 
     def run(self, kill=None, *args, **kwargs):
-        print("Vuer running at: " + self.get_url())
+        import os
 
         # protocol, host, _ = self.uri.split(":")
         # port = int(_)
@@ -614,7 +613,9 @@ class Vuer(PrefixProto, Server):
         self._socket("", self.downlink)
         # serve local files via /static endpoint
         self._static("/static", self.static_root)
-        print("serving static files from", self.static_root, "at", "/static")
+        print("Serving file://" + os.path.abspath(self.static_root), "at", "/static")
         self._route("/relay", self.relay, method="POST")
+
+        print("Visit: " + self.get_url())
 
         super().run()

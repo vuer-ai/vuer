@@ -53,28 +53,51 @@ For a comprehensive list of data types, please refer to the [API documentation o
 
 ```{eval-rst}
 .. toctree::
-   :caption: Getting Started
    :hidden:
    :maxdepth: 1
    :titlesonly:
 
-   setup
-
+   Quick Start <quick_start>
+   Report Issues <https://github.com/vuer-ai/vuer/issues?q=is:issue+is:closed>
+   
+.. toctree::
+   :maxdepth: 3
+   :caption: Tutorials
+   :hidden:
+   
+   tutorials/basics.md
+   tutorials/robotics.md
+   
 .. toctree::
    :maxdepth: 3
    :caption: Examples
    :hidden:
    
-   examples/examples
+   Mesh <examples/01_trimesh.md>
+   Point Cloud <examples/02_pointcloud.md>
+   URDF <examples/03_urdf.md>
+   URDF (local) <examples/03_urdf_local.md>
+   Imperative API <examples/04_imperative_api.md>
+   Virtual Camera <examples/05_collecting_render.md>
+   Render Images <examples/05_collecting_render_procedural.md>
+   Animation <examples/05_pointcloud_animation.md>
+   Upsert <examples/05_pointcloud_animation_upsert.md>
+   Depth Texture <examples/06_depth_texture.md>
+   Background Image <examples/07_background_image.md>
+   Depth Image <examples/08_experimental_depth_image.md>
+   Coordinate Markers <examples/11_coordinates_markers.md>
+   Virtual Camera <examples/12_camera.md>
 
 .. toctree::
    :maxdepth: 3
-   :caption: Programming API
+   :caption: Python API
    :hidden:
    
-   modules
-
-   * :ref:`genindex`
-   * :ref:`modindex`
-   * :ref:`search`
+   vuer <api/vuer.md>
+   vuer.base <api/base.md>
+   vuer.types — Type Interafce <api/types.md>
+   vuer.events — Event Types <api/events.md>
+   vuer.schemas — Components <api/schemas.md>
+   vuer.serdes — Serialization <api/serdes.md>
+    
 ```

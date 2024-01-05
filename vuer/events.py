@@ -89,14 +89,19 @@ NOOP = Noop()
 
 
 class Set(ServerEvent):
-    """
+    """Set Operation (Server Event).
+
     SET Operator is used exclusively to set the root Scene node. Throws an error (on the client side)
     if the data is not a Scene object.
     """
 
     etype = "SET"
+    """The Event Type."""
 
-    def __init__(self, data: Type[Scene]):
+    def __init__(self, data: Scene):
+        """
+        :param data: The data to set.
+        """
         super().__init__(data)
 
 
@@ -276,14 +281,18 @@ class GrabRender(ServerRPC):
 
     etype = "GRAB_RENDER"
 
-    def __init__(self, key="DEFAULT", **kwargs):
-        super().__init__(data=kwargs, key=key)
+    def __init__(self, *, key: str = "DEFAULT", **kwargs):
+        super().__init__(data=kwargs)
+        self.key = key
         self.rtype = f"GRAB_RENDER_RESPONSE@{self.uuid}"
 
-# if __name__ == "__main__":
-#     e = Frame @ {"hey": "yo"}
-#     print(e)
-#     print(e.data)
-#
-#     e = Set @ {"data": "new"}
-#     print(e.serialize())
+
+if __name__ == "__main__":
+    # e = Frame @ {"hey": "yo"}
+    # print(e)
+    # print(e.data)
+    #
+    # e = Set @ {"data": "new"}
+    # print(e.serialize())
+    e = GrabRender({"message": "hey"})
+    print(e.serialize())

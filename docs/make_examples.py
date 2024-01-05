@@ -10,7 +10,7 @@ def create_rst(source, write_path, name):
 
 
 if __name__ == "__main__":
-    SOURCE_DIR = "../examples/vuer/"
+    SOURCE_DIR = "../examples/vuer_basics"
     WRITE_DIR = os.getcwd()
     ext = ".rst"
 

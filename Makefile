@@ -27,6 +27,7 @@ resize: # from https://stackoverflow.com/a/28221795/1560241
 update-doc: convert-rst
 	python setup.py sdist upload
 doc:
+	rm -rf docs/_build
 	cd docs && make html
 prepare-release:
 	git tag -d latest & \
