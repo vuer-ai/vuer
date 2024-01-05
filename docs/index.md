@@ -6,7 +6,7 @@ Vuer is a light-weight visualization toolkit for interacting with dynamic 3D and
 VR and AR ready, and can be run on mobile devices. To get started, just run:
 
 ```shell
-pip install vuer
+pip install vuer=={VERSION}
 ```
 
 Here is an example that loads a URDF file and displays it in the browser. For a more comprehensive list of examples, please refer to the [examples](https://docs.vuer.ai/en/latest/examples.html) page.

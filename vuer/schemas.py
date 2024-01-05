@@ -262,8 +262,8 @@ class Scene(BlockElement):
         rawChildren=None,
         htmlChildren=None,
         bgChildren=None,
-        # default to z-up
-        up=[0, 0, 1],
+        # default to y-up to be consistent with three.js. Blender uses z-up though.
+        up=[0, 1, 0],
         **kwargs,
     ):
         super().__init__(*children, up=up, **kwargs)
