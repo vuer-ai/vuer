@@ -12,7 +12,7 @@ This approach, however can be a bit slow, and won't work with pointcloud data th
 We apply a few tricks to make the pointcloud transmit faster. See the [Why is it so much faster?](#why-is-it-so-much-faster) section for more details.
 
 You should expect to see a scene that looks like the following:
-![pointcloud](../../assets/static_3d/pointcloud.png)
+![pointcloud](figures/pointcloud.png)
 """
 with doc, doc.skip:
     from pathlib import Path
