@@ -64,6 +64,14 @@ For a comprehensive list of data types, please refer to the [API documentation o
    
 .. toctree::
    :maxdepth: 3
+   :caption: NEW FEATURES 🔥
+   :hidden:
+   
+   Gaussian Splatting <gaussian_splatting/09_gaussian_splats.md>
+   Gaussian Splatting (VR) <gaussian_splatting/10_gaussian_splats_vr.md>
+   
+.. toctree::
+   :maxdepth: 3
    :caption: Tutorials
    :hidden:
    

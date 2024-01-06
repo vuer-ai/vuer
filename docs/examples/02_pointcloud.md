@@ -70,6 +70,8 @@ faster than the first one, due to its smaller size.
 We use half-precision for the vertices, and Uint8
 for the colors. This cuts the overall size by half.
 
+#### Why is it so much faster?
+
 ```{admonition} Why is it so much faster?
 :class: tip
 We accelerate pointcloud rendeirng by using a custom, half-precision format for the vertices, and Uint8 for the colors. This cuts the overall size by half.
