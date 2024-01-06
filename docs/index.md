@@ -9,7 +9,7 @@ VR and AR ready, and can be run on mobile devices. To get started, just run:
 pip install vuer=={VERSION}
 ```
 
-Here is an example that loads a URDF file and displays it in the browser. For a more comprehensive list of examples, please refer to the [examples](https://docs.vuer.ai/en/latest/examples.html) page.
+Here is an example that loads a URDF file and displays it in the browser. For a more comprehensive list of examples, please refer to the [examples](examples/01_trimesh.html) page.
 
 ```python
 from vuer import Vuer, VuerSession
