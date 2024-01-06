@@ -40,8 +40,10 @@ Vuer is built by researchers at MIT and UCSD in fields including robotics, compu
 
 To get a quick overview of what you can do with  <code style="font-size: 1.3em; background-clip: text; color: transparent; background-image: linear-gradient(to right, rgb(0,140,220), rgb(226,213,79), rgb(210,0,12));">vuer</code>, check out the following:
 
-- take a look at the example gallery [here](https://docs.vuer.ai/en/latest/examples.html)
-- or try to take a look at this demo [here](https://docs.vuer.ai/en/latest/examples.html#demo)
+- take a look at the basic tutorial or the tutorial for robotics:
+  - [Vuer Basics](tutorials/basics.html)
+  - [Tutorial for Roboticists](tutorials/robotics.html)
+- or try to take a look at the example gallery [here](examples/01_trimesh.html)
 
 For a comprehensive list of visualization components, please refer to
 the [API documentation on Components](https://docs.vuer.ai/en/latest/api.html).

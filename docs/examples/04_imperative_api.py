@@ -4,7 +4,7 @@ doc @ """
 # Imperative API
 
 """
-with doc:
+with doc, doc.skip:
     from asyncio import sleep
 
     from vuer import Vuer
@@ -22,11 +22,11 @@ with doc:
         ),
     )
 
-    @app.spawn
-    async def show_heatmap(proxy):
-        app.set @ DefaultScene()
+    @app.spawn(start=True)
+    async def show_heatmap(sess: VuerSession):
+        sess.set @ DefaultScene()
 
-        app.add @ Box(
+        sess.add @ Box(
             key="box",
             args=[0.2, 0.2, 0.2],
             position=[0, 0, 0.1],
@@ -36,7 +36,7 @@ with doc:
             outlines=dict(angle=0, thickness=0.005, color="white"),
         )
 
-        app.add @ Sphere(
+        sess.add @ Sphere(
             key="sphere",
             args=[0.1, 200, 200],
             position=[0.2, 0, 0.1],
@@ -52,7 +52,7 @@ with doc:
             position = [0.2, 0, 0.1 + h]
             # phase = 2 * np.pi * i / 240
             # position = [0.15 + 0.25 * np.sin(phase), 0.1, 0.2 * np.cos(phase)]
-            app.update @ Sphere(
+            sess.update @ Sphere(
                 key="sphere",
                 args=[0.1, 20, 20],
                 position=position,
@@ -61,10 +61,5 @@ with doc:
             ),
             await sleep(0.014)
 
-
-# won't run, unless the skip is commented out.
-with doc, doc.skip:
-    # Now, launch the vuer app.
-    app.run()
 
 doc.flush()

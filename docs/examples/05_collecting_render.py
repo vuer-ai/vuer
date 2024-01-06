@@ -5,7 +5,7 @@ doc @ """
 
 """
 
-with doc:
+with doc, doc.skip:
     from asyncio import sleep
     from io import BytesIO
 
@@ -18,6 +18,7 @@ with doc:
 
     app = Vuer()
 
+    # We don't auto start the vuer app because we need to bind a handler.
     @app.spawn
     async def show_heatmap(proxy):
         proxy.set @ DefaultScene(

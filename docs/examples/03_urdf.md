@@ -39,7 +39,6 @@ async def main(proxy):
         collapseMenu=True,
     )
 
-    # await save_doc()
-    # while True:
-    #     await sleep(16)
+    while True:
+        await sleep(16)
 ```

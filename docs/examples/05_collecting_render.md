@@ -15,6 +15,7 @@ from vuer.schemas import Box, Sphere, DefaultScene, CameraView, Plane
 
 app = Vuer()
 
+# We don't auto start the vuer app because we need to bind a handler.
 @app.spawn
 async def show_heatmap(proxy):
     proxy.set @ DefaultScene(

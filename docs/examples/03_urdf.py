@@ -41,7 +41,7 @@ make
 
 And then run the following in the example folder:
 """
-with doc:
+with doc, doc.skip:
     from vuer import Vuer
     from vuer.schemas import Urdf, Movable, DefaultScene
 
@@ -64,9 +64,8 @@ with doc:
             collapseMenu=True,
         )
 
-        # await save_doc()
-        # while True:
-        #     await sleep(16)
+        while True:
+            await sleep(16)
 
 
 doc.flush()

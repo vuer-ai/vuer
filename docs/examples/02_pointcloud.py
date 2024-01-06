@@ -44,21 +44,31 @@ with doc:
         )
 
 doc @ """
+
+Now remember to add: 
+
+```python
     # keep the session alive.
     while True:
         await sleep(16)
-
+        
 # now launch the vuer server
 app.run()
+```
 """
 
 doc @ """
-object is sent.
-
 The second pointcloud should load significantly 
 faster than the first one, due to its smaller size.
 We use half-precision for the vertices, and Uint8
 for the colors. This cuts the overall size by half.
+
+```{admonition} Why is it so much faster?
+:class: tip
+We accelerate pointcloud rendeirng by using a custom, half-precision format for the vertices, and Uint8 for the colors. This cuts the overall size by half.
+
+Alternative is to use compression algorithms designed specifically for geometric data (such as [Draco](https://google.github.io/draco/), or just simple LZ4 (or LZW). For depth images, LZW tend to work well due to near-by pixels being highly correlated.
+```
 """
 
 doc.flush()

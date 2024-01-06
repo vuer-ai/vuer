@@ -82,9 +82,13 @@ async def main(session):
         await sleep(0.016)
 ```
 
-# keep the session alive.
-while True:
-    await sleep(16)
-    
-w launch the vuer server
-run()
+Now remember to add: 
+
+```python
+    # keep the session alive.
+    while True:
+        await sleep(16)
+        
+# now launch the vuer server
+app.run()
+```

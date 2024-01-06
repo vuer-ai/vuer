@@ -7,18 +7,16 @@ import math
 from asyncio import sleep
 from pathlib import Path
 
-filename = Path(__file__).parent.parent.parent / "docs" / Path(__file__).stem
-
-from vuer import Vuer
+from vuer import Vuer, VuerSession
 from vuer.schemas import DefaultScene, Urdf, Movable
 
 pi = 3.1415
 
 app = Vuer(static_root=Path(__file__).parent / "../../assets")
 
-@app.spawn
-async def main(proxy):
-    app.set @ DefaultScene(
+@app.spawn(start=True)
+async def main(sess: VuerSession):
+    sess.set @ DefaultScene(
         Movable(
             Urdf(
                 src="http://localhost:8012/static/robots/mini_cheetah/mini_cheetah.urdf",
@@ -48,7 +46,7 @@ async def main(proxy):
 
     i = 0
     while True:
-        app.update @ Urdf(
+        sess.update @ Urdf(
             src="http://localhost:8012/static/robots/mini_cheetah/mini_cheetah.urdf",
             jointValues={
                 "FL_hip_joint": -0.2,
@@ -68,7 +66,4 @@ async def main(proxy):
         )
         await sleep(0.016)
         i += 1
-```
-```python
-app.run()
 ```
