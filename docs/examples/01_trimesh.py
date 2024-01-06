@@ -3,9 +3,12 @@ from cmx import doc
 doc @ """
 # Trimesh
 
+This example shows you how to load mesh files in various ways, and how to update the mesh in real-time.
+
+![](figures/trimesh.png)
 """
 
-with doc:
+with doc, doc.skip:
     from asyncio import sleep
     from pathlib import Path
 
@@ -30,10 +33,10 @@ with doc:
 
     app = Vuer(static_root=assets_folder)
 
-doc @ f"Loaded mesh with {mesh.vertices.shape} vertices and {mesh.faces.shape} faces"
+    print(f"Loaded mesh with {mesh.vertices.shape} vertices and {mesh.faces.shape} faces")
 
-with doc:
-    @app.spawn
+    # use `start=True` to start the app immediately
+    @app.spawn(start=True)
     async def main(session):
         session @ Set(
             DefaultScene(
@@ -86,16 +89,4 @@ with doc:
             await sleep(0.016)
 
 
-doc @ """
-Now remember to add: 
-
-```python
-    # keep the session alive.
-    while True:
-        await sleep(16)
-        
-# now launch the vuer server
-app.run()
-```
-"""
 doc.flush()

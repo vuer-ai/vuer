@@ -1,6 +1,9 @@
 
 # Trimesh
 
+This example shows you how to load mesh files in various ways, and how to update the mesh in real-time.
+
+![](figures/trimesh.png)
 
 ```python
 from asyncio import sleep
@@ -26,10 +29,11 @@ with open(assets_folder / test_file, "rb") as f:
     text = trimesh.util.decode_text(data)
 
 app = Vuer(static_root=assets_folder)
-```
-Loaded mesh with (50002, 3) vertices and (100000, 3) faces
-```python
-@app.spawn
+
+print(f"Loaded mesh with {mesh.vertices.shape} vertices and {mesh.faces.shape} faces")
+
+# use `start=True` to start the app immediately
+@app.spawn(start=True)
 async def main(session):
     session @ Set(
         DefaultScene(
@@ -80,15 +84,4 @@ async def main(session):
             color="#23aaff",
         )
         await sleep(0.016)
-```
-
-Now remember to add: 
-
-```python
-    # keep the session alive.
-    while True:
-        await sleep(16)
-        
-# now launch the vuer server
-app.run()
 ```

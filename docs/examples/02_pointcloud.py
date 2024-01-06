@@ -3,8 +3,18 @@ from cmx import doc
 doc @ """
 # Pointcloud
 
+This example shows you two ways to load a pointcloud.
+
+In the first example, you serve the pointcloud as an `ply` file, and have the webclient read direclty from your file system.
+
+This approach, however can be a bit slow, and won't work with pointcloud data that are updated at real time. In the second example, you load the pointcloud into python and then send the parsed vertices and the color information via the `PointCloud` component. 
+
+We apply a few tricks to make the pointcloud transmit faster. See the [Why is it so much faster?](#why-is-it-so-much-faster) section for more details.
+
+You should expect to see a scene that looks like the following:
+![pointcloud](../../assets/static_3d/pointcloud.png)
 """
-with doc:
+with doc, doc.skip:
     from pathlib import Path
 
     import numpy as np
@@ -22,7 +32,7 @@ with doc:
 
     app = Vuer(static_root=assets_folder)
 
-    @app.spawn
+    @app.spawn(start=True)
     async def main(proxy):
         proxy @ Set(
             DefaultScene(
