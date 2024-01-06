@@ -9,7 +9,7 @@ VR and AR ready, and can be run on mobile devices. To get started, just run:
 pip install vuer=={VERSION}
 ```
 
-Here is an example that loads a URDF file and displays it in the browser. For a more comprehensive list of examples, please refer to the [examples](examples/01_trimesh.html) page.
+Here is an example that loads a URDF file and displays it in the browser. For a more comprehensive list of examples, please refer to the [examples](examples/01_trimesh) page.
 
 ```python
 from vuer import Vuer, VuerSession
@@ -41,14 +41,14 @@ Vuer is built by researchers at MIT and UCSD in fields including robotics, compu
 To get a quick overview of what you can do with  <code style="font-size: 1.3em; background-clip: text; color: transparent; background-image: linear-gradient(to right, rgb(0,140,220), rgb(226,213,79), rgb(210,0,12));">vuer</code>, check out the following:
 
 - take a look at the basic tutorial or the tutorial for robotics:
-  - [Vuer Basics](tutorials/basics.html)
-  - [Tutorial for Roboticists](tutorials/robotics.html)
-- or try to take a look at the example gallery [here](examples/01_trimesh.html)
+  - [Vuer Basics](tutorials/basics)
+  - [Tutorial for Roboticists](tutorials/robotics)
+- or try to take a look at the example gallery [here](examples/01_trimesh)
 
 For a comprehensive list of visualization components, please refer to
-the [API documentation on Components](https://docs.vuer.ai/en/latest/api.html).
+the [API documentation on Components](https://docs.vuer.ai/en/latest/api).
 
-For a comprehensive list of data types, please refer to the [API documentation on Data Types](https://docs.vuer.ai/en/latest/api.html).
+For a comprehensive list of data types, please refer to the [API documentation on Data Types](https://docs.vuer.ai/en/latest/api).
 
 
 <!-- prettier-ignore-start -->
