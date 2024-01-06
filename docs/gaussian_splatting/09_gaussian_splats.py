@@ -10,7 +10,7 @@ You should expect to see a scene that looks like the following:
 ![3d gaussian splat: Garden Table](figures/garden_table_2.png)
 """
 
-with doc, doc.skip:
+with doc:
     from asyncio import sleep
     from pathlib import Path
 
