@@ -4,7 +4,7 @@
 You can programmatically insert camera frustums into the scene. Here
 we stress-test vuer by inserting 1728 frustums.
 
-![figures/12_camera.jpg](figures/12_camera.jpg)
+![figures/visualizing_camera_frustums.jpg](figures/visualizing_camera_frustums.jpg)
 
 Simply run the following script:
 

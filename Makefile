@@ -30,11 +30,11 @@ doc:
 	rm -rf docs/_build
 	cd docs && make html
 prepare-release:
-	git tag -d latest & \
-	git tag -d v$(VERSION)
+	git tag -d v$(VERSION) & \
+	git tag -d latest
 release:
-	git tag latest
 	git tag v$(VERSION) -m '$(msg)'
+	git tag latest
 	git push origin --tags -f
 publish-no-test: convert-rst
 	make wheel
