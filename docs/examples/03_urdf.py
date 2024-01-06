@@ -3,12 +3,6 @@ from cmx import doc
 from pathlib import Path
 from asyncio import sleep
 
-doc @ """
-# URDF
-
-"""
-
-
 async def save_doc():
     await sleep(10.0)
 
