@@ -69,7 +69,6 @@ For a comprehensive list of data types, please refer to the [API documentation o
    
    tutorials/basics.md
    tutorials/robotics.md
-   tutorials/visualizing_camera_frustums.md
    
 .. toctree::
    :maxdepth: 3

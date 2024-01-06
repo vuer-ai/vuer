@@ -14,5 +14,6 @@ You can move this robot around using the gizmo.
     
     Using URDF<robotics/urdf.md>
     Serving URDF locally<robotics/urdf_local.md>
+    Camera Frustums <tutorials/visualizing_camera_frustums.md>
 
 ```
