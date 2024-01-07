@@ -6,7 +6,7 @@ from vuer.events import ClientEvent
 from cmx import doc
 
 doc @ """
-# Collecting Render
+# Manipulating the Camera Pose
 
 This example requires saving and loading data from the local disk. 
 
@@ -151,7 +151,7 @@ doc @ """
 
 here is a simple example for logging the camera movement.
 """
-with doc:
+with doc, doc.skip:
 
     async def track_movement(event: ClientEvent, sess: VuerSession):
         # only intercept the ego camera.
@@ -162,7 +162,7 @@ with doc:
 
 
 # won't run, unless the skip is commented out.
-with doc, nullcontext() if True else doc.skip:
+with doc, doc.skip:
     app.add_handler("CAMERA_VIEW", collect_render)
     app.add_handler("CAMERA_MOVE", track_movement)
     app.run()

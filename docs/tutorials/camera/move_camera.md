@@ -1,5 +1,5 @@
 
-# Collecting Render
+# Manipulating the Camera Pose
 
 This example requires saving and loading data from the local disk. 
 
@@ -17,7 +17,7 @@ matrices = DataFrame(matrices)["matrix"].values.tolist()
 ```
 
 ```
-ML_Logger(root="/Users/ge/mit/vuer/docs/tutorials/virtual_camera",
+ML_Logger(root="/Users/ge/mit/vuer/docs/tutorials/camera",
           prefix="assets")
 ```
 ```python
