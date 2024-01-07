@@ -4,26 +4,6 @@ from cmx import doc
 from asyncio import sleep
 
 
-# async def save_doc():
-#     await sleep(1.0)
-#
-#     result = await app.grab_render(downsample=2)
-#
-#     filestem = Path(__file__).stem
-#     doc.window.logger.client.log_buffer(f"_static/{filestem}.jpg", result.value["frame"])
-#
-#     doc @ """"""
-#
-#     print(doc.window.logger)
-#     doc.flush()
-#     print("Example run is complete.")
-#     exit()
-#
-#
-# filename = Path(__file__).parent.parent.parent / "docs" / Path(__file__).stem
-# doc = CommonMark(f"{filename}.md", root=Path.cwd().parent.parent / "docs", prefix=".")
-
-
 async def save_doc():
     await sleep(10.0)
 
@@ -46,6 +26,7 @@ doc.image(src=f"figures/{Path(__file__).stem}.jpg", width=400)
 doc @ """
 Simply run the following script:
 """
+# with doc, doc.skip:
 with doc:
     from vuer import Vuer, VuerSession
     from vuer.schemas import DefaultScene, Frustum
@@ -54,7 +35,7 @@ with doc:
 
     app = Vuer()
 
-    @app.spawn
+    @app.spawn(start=True)
     async def main(sess: VuerSession):
         sess.set @ DefaultScene(
             *[
@@ -70,10 +51,3 @@ with doc:
                 for i in range(N)
             ]
         )
-
-        # # fmt: off
-        # await save_doc()
-
-
-with doc, doc.skip:
-    app.run()

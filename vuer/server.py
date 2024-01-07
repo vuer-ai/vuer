@@ -67,9 +67,7 @@ class VuerSession:
         :return: dqueue
         """
         assert isinstance(event, ServerEvent), "msg must be a ServerEvent type object."
-        assert not isinstance(
-            event, Frame
-        ), "Frame event is only used in vuer.bind method."
+        assert not isinstance(event, Frame), "Frame event is only used in vuer.bind method."
         assert self.CURRENT_WS_ID in self.vuer.ws, "Websocket session is missing."
 
         event_obj = event.serialize()
@@ -86,9 +84,7 @@ class VuerSession:
         :param subsample: The subsample of the render.
         :param ttl: The time to live for the handler. If the handler is not called within the time it gets removed from the handler list.
         """
-        assert (
-            self.CURRENT_WS_ID is not None
-        ), "Websocket session is missing. CURRENT_WS_ID is None."
+        assert self.CURRENT_WS_ID is not None, "Websocket session is missing. CURRENT_WS_ID is None."
 
         event = GrabRender(**kwargs)
 
@@ -125,6 +121,8 @@ class VuerSession:
         def _update(element):
             if isinstance(element, list):
                 self @ Update(*element)
+            elif isinstance(element, tuple):
+                self @ Update(*element)
             else:
                 self @ Update(element)
 
@@ -149,6 +147,8 @@ class VuerSession:
         @At
         def _add(element, to=None):
             if isinstance(element, list):
+                self @ Add(*element, to=to)
+            elif isinstance(element, tuple):
                 self @ Add(*element, to=to)
             else:
                 self @ Add(element, to=to)
@@ -175,6 +175,8 @@ class VuerSession:
         def _upsert(element, to=None, strict=False):
             if isinstance(element, list):
                 self @ Upsert(*element, to=to, strict=strict)
+            elif isinstance(element, tuple):
+                self @ Upsert(*element, to=to, strict=strict)
             else:
                 self @ Upsert(element, to=to, strict=strict)
 
@@ -197,6 +199,8 @@ class VuerSession:
         @At
         def _remove(keys):
             if isinstance(keys, list):
+                self @ Remove(*keys)
+            elif isinstance(keys, tuple):
                 self @ Remove(*keys)
             else:
                 self @ Remove(keys)
@@ -236,9 +240,7 @@ class Vuer(PrefixProto, Server):
     free_port = True
     static_root = "."
     queue_len = 100  # use a max lenth to avoid the momor from blowing up.
-    cors = (
-        "https://vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
-    )
+    cors = "https://vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
     queries = Proto({}, help="query parameters to pass")
 
     device = "cuda"
@@ -395,9 +397,7 @@ class Vuer(PrefixProto, Server):
         ws = self.ws[ws_id]
 
         if event_bytes is None:
-            assert isinstance(
-                event, ServerEvent
-            ), "event must be a ServerEvent type object."
+            assert isinstance(event, ServerEvent), "event must be a ServerEvent type object."
             event_obj = event.serialize()
             event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
         else:
@@ -421,9 +421,7 @@ class Vuer(PrefixProto, Server):
         rpc_event = asyncio.Event()
         response = None
 
-        async def response_handler(
-            response_event: ClientEvent, _: "VuerSession"
-        ) -> Coroutine:
+        async def response_handler(response_event: ClientEvent, _: "VuerSession") -> Coroutine:
             nonlocal response
 
             response = response_event
