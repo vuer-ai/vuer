@@ -26,8 +26,7 @@ doc.image(src=f"figures/{Path(__file__).stem}.jpg", width=400)
 doc @ """
 Simply run the following script:
 """
-# with doc, doc.skip:
-with doc:
+with doc, doc.skip:
     from vuer import Vuer, VuerSession
     from vuer.schemas import DefaultScene, Frustum
 
