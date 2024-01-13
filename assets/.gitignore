@@ -1,8 +1,3 @@
-**/*.gltf
-**/*.pcd
-**/*.obj
-**/*.glb
-**/*.ply
-
-**/*.webm
+.idea
+.DS_Store
 

@@ -30,3 +30,7 @@ sphinx:
 python:
   install:
   - requirements: docs/requirements.txt
+
+# We do not download the submodule because it slows down deployment.
+# submodules:
+#   include: docs/examples/assets

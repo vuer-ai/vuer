@@ -566,6 +566,23 @@ class Movable(SceneElement):
 class Obj(SceneElement):
     tag = "Obj"
 
+    def __init__(self, src, mtl=None, materials=None, **kwargs):
+        """
+        :param src: The source of the obj file. Can be a url or a local file.
+        :type  src: str
+        :param mtlSrc: The source of the mtl file. Can be a url or a local file.
+        :type  mtlSrc: str
+        :param materials: A list of materials to be used for the obj file.
+        :type  materials: List[String]
+
+        todo: In the future we probably want to enable the loading of multiple material files.
+        """
+        self.src = src
+        self.mtl = mtl
+        self.materials = []
+
+        super().__init__(**kwargs)
+
 
 class CoordsMarker(SceneElement):
     tag = "CoordsMarker"
@@ -670,7 +687,9 @@ class DefaultScene(Scene):
     ):
         rawChildren = [
             AmbientLight(intensity=1.0, key="default_ambient_light"),
-            DirectionalLight(intensity=1, key="default_directional_light", helper=show_helper),
+            DirectionalLight(
+                intensity=1, key="default_directional_light", helper=show_helper
+            ),
             *(rawChildren or []),
         ]
 
