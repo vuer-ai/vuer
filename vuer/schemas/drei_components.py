@@ -118,29 +118,29 @@ class Facemesh(SceneElement):
     """Renders an oriented MediaPipe face mesh:
 
     :param points: An array of 468+ keypoints as returned by google/mediapipe tasks-vision. Defaults to a sample face.
-    :type points: MediaPipePoints, optional
+    :type  points: MediaPipePoints, optional
     :param face: An face object as returned by tensorflow/tfjs-models face-landmarks-detection. This parameter is deprecated.
-    :type face: MediaPipeFaceMesh, optional
+    :type  face: MediaPipeFaceMesh, optional
     :param width: Constant width of the mesh. Defaults to undefined.
-    :type width: int, optional
+    :type  width: int, optional
     :param height: Constant height of the mesh. Defaults to undefined.
-    :type height: int, optional
+    :type  height: int, optional
     :param depth: Constant depth of the mesh. Defaults to 1.
-    :type depth: int, optional
+    :type  depth: int, optional
     :param verticalTri: A landmarks tri supposed to be vertical. Defaults to [159, 386, 200]. See: https://github.com/tensorflow/tfjs-models/tree/master/face-landmarks-detection#mediapipe-facemesh-keypoints
-    :type verticalTri: Tuple[int, int, int], optional
+    :type  verticalTri: Tuple[int, int, int], optional
     :param origin: A landmark index (to get the position from) or a vec3 to be the origin of the mesh. Defaults to undefined (i.e., the bbox center).
-    :type origin: Union[int, THREE.Vector3], optional
+    :type  origin: Union[int, THREE.Vector3], optional
     :param facialTransformationMatrix: A facial transformation matrix, as returned by FaceLandmarkerResult.facialTransformationMatrixes. See: https://developers.google.com/mediapipe/solutions/vision/face_landmarker/web_js#handle_and_display_results
-    :type facialTransformationMatrix: FacemeshDatas.SAMPLE_FACELANDMARKER_RESULT.facialTransformationMatrixes[0], optional
+    :type  facialTransformationMatrix: FacemeshDatas.SAMPLE_FACELANDMARKER_RESULT.facialTransformationMatrixes[0], optional
     :param offset: Apply position offset extracted from `facialTransformationMatrix`.
-    :type offset: bool, optional
+    :type  offset: bool, optional
     :param offsetScalar: Offset sensitivity factor, less is more sensible.
-    :type offsetScalar: float, optional
+    :type  offsetScalar: float, optional
     :param faceBlendshapes: Face blendshapes, as returned by FaceLandmarkerResult.faceBlendshapes. See: https://developers.google.com/mediapipe/solutions/vision/face_landmarker/web_js#handle_and_display_results
-    :type faceBlendshapes: FacemeshDatas.SAMPLE_FACELANDMARKER_RESULT.faceBlendshapes[0], optional
+    :type  faceBlendshapes: FacemeshDatas.SAMPLE_FACELANDMARKER_RESULT.faceBlendshapes[0], optional
     :param eyes: Whether to enable eyes (note: `faceBlendshapes` is required for this). Defaults to True.
-    :type eyes: bool, optional
+    :type  eyes: bool, optional
 
     Usage::
 
