@@ -39,6 +39,56 @@ class SceneElement(BlockElement):
 
 
 class Frustum(SceneElement):
+    """Camera Frustum
+
+    :param position: An optional tuple of three numbers representing the position.
+    :type position: tuple[float, float, float]
+    :param rotation: An optional tuple of three numbers representing the rotation.
+    :type rotation: tuple[float, float, float]
+    :param matrix: An optional tuple of sixteen numbers representing the matrix.
+    :type matrix: tuple[float, float, float, float, float, float, float, float, float, float, float, float, float, float, float, float]
+    :param aspect: An optional number representing the aspect.
+    :type aspect: float
+    :param focus: An optional number representing the focus.
+    :type focus: float
+    :param fov: An optional number representing the field of view.
+    :type fov: float
+    :param near: An optional number representing the near field.
+    :type near: float
+    :param far: An optional number representing the far field.
+    :type far: float
+    :param scale: An optional number representing the scale.
+    :type scale: float
+    :param upScale: An optional number representing the up scale.
+    :type upScale: float
+    :param focalLength: An optional number representing the focal length.
+    :type focalLength: float
+    :param showUp: An optional boolean indicating whether to show up.
+    :type showUp: bool
+    :param showFrustum: An optional boolean indicating whether to show the frustum.
+    :type showFrustum: bool
+    :param showFocalPlane: An optional boolean indicating whether to show the focal plane.
+    :type showFocalPlane: bool
+    :param showImagePlane: An optional boolean indicating whether to show the image plane.
+    :type showImagePlane: bool
+    :param src: An optional string representing the source.
+    :type src: str
+    :param colorOrigin: An optional ColorRepresentation for the origin color.
+    :type colorOrigin: ColorRepresentation
+    :param colorFrustum: An optional ColorRepresentation for the frustum color.
+    :type colorFrustum: ColorRepresentation
+    :param colorCone: An optional ColorRepresentation for the cone color.
+    :type colorCone: ColorRepresentation
+    :param colorFocalPlane: An optional ColorRepresentation for the focal plane color.
+    :type colorFocalPlane: ColorRepresentation
+    :param colorUp: An optional ColorRepresentation for the up color.
+    :type colorUp: ColorRepresentation
+    :param colorTarget: An optional ColorRepresentation for the target color.
+    :type colorTarget: ColorRepresentation
+    :param colorCross: An optional ColorRepresentation for the cross color.
+    :type colorCross: ColorRepresentation
+    """
+
     tag = "Frustum"
 
 
@@ -130,6 +180,9 @@ class PointCloud(SceneElement):
             self.colors = self.colors.astype(np.uint8)
 
         self.colors = self.colors.flatten().tobytes()
+
+
+p = PointCloud
 
 
 class Box(SceneElement):
@@ -442,9 +495,7 @@ class DefaultScene(Scene):
     ):
         rawChildren = [
             AmbientLight(intensity=1.0, key="default_ambient_light"),
-            DirectionalLight(
-                intensity=1, key="default_directional_light", helper=show_helper
-            ),
+            DirectionalLight(intensity=1, key="default_directional_light", helper=show_helper),
             *(rawChildren or []),
         ]
 

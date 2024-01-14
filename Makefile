@@ -30,8 +30,8 @@ doc:
 	rm -rf docs/_build
 	cd docs && make html
 prepare-release:
-	git tag -d v$(VERSION) & \
-	git tag -d latest
+	-git tag -d v$(VERSION)
+	-git tag -d latest
 release:
 	git push
 	git tag v$(VERSION) -m '$(msg)'
