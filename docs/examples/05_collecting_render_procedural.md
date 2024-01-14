@@ -20,6 +20,7 @@ from vuer.schemas import (
 
 app = Vuer()
 
+
 @app.spawn
 async def show_heatmap(sess: VuerSession):
     sess.set @ DefaultScene(

@@ -35,6 +35,7 @@ from vuer.schemas import DefaultScene, Obj
 
 app = Vuer(static_root=f"{Path(__file__).parent}/assets")
 
+
 # use `start=True` to start the app immediately
 @app.spawn(start=True)
 async def main(session):

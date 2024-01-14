@@ -20,6 +20,7 @@ app = Vuer()
 
 pi = 3.14
 
+
 @app.spawn(start=True)
 async def main(proxy):
     app.set @ DefaultScene(

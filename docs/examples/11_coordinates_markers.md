@@ -20,11 +20,12 @@ N = 1000
 
 markers = [
     CoordsMarker(
-        position=[i % n, (i // n) % n, (i // n**2) % n],
+        position=[i % n, (i // n) % n, (i // n ** 2) % n],
         scale=0.25,
     )
     for i in range(N)
 ]
+
 
 @app.spawn(start=True)
 async def main(proxy: VuerSession):

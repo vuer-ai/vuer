@@ -39,6 +39,7 @@ pi = 3.1415
 
 app = Vuer(static_root=Path(__file__).parent / "mini_cheetah")
 
+
 # this starts the vuer server immediately after this function is declared.
 @app.spawn(start=True)
 async def main(app: VuerSession):

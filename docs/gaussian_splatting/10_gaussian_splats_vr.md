@@ -24,6 +24,7 @@ src = "https://lumalabs.ai/capture/83e9aae8-7023-448e-83a6-53ccb377ec86"
 
 app = Vuer()
 
+
 @app.spawn(start=True)
 async def main(proxy):
     proxy @ Set(

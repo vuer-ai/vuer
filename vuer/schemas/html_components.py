@@ -30,6 +30,7 @@ class Element:
     def serialize(self):
         """
         Serialize the element to a dictionary for sending over the websocket.
+
         :return: Dictionary representing the element.
         """
 

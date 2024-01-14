@@ -30,6 +30,7 @@ assets_folder = Path(__file__).parent / "../../assets"
 
 app = Vuer(static_root=assets_folder)
 
+
 @app.spawn(start=True)
 async def main(proxy):
     proxy @ Set(

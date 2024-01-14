@@ -3,11 +3,11 @@
 # Setting Up Your First Scene
 
 This tutorial shows you how to setup a scene like below. We teach you how to:
-- ✅ Setup a vuer server
-- ✅ Add a 3D scene to the server
-- ✅ Add a SpotLight to the scene
-- ✅ Add a Box to the scene
-- ✅ Add a Movable component to move the box around
+- [ ] Setup a vuer server
+- [ ] Add a 3D scene to the server
+- [ ] Add a SpotLight to the scene
+- [ ] Add a Box to the scene
+- [ ] Add a Movable component to move the box around
 
 > – The Batteries🔋 Are Included!
 
@@ -59,6 +59,7 @@ inside this function:
 import asyncio
 from vuer import VuerSession
 from vuer.schemas import Scene, Box, SpotLight, Movable
+
 
 # The spawn decorator is used to bind this async function to the websocket session.
 # We instantiated the app earlier.

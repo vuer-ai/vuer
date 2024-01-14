@@ -19,6 +19,7 @@ reader = iio.get_reader("../../../assets/movies/disney.webm")
 
 app = Vuer()
 
+
 @app.spawn
 async def show_heatmap(session):
     session.set @ Scene()
@@ -47,6 +48,7 @@ async def show_heatmap(session):
         )
         # 'jpg' encoding should give you about 30fps with a 16ms wait in-between.
         await sleep(0.016)
+
 
 async def on_camera(event: ClientEvent, session):
     assert event == "CAMERA_MOVE", "the event type should be correct"

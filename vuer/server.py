@@ -27,7 +27,7 @@ from vuer.events import (
     Upsert,
 )
 from vuer.schemas import Page
-from vuer.types import EventHandler, Spawnable
+from vuer.types import EventHandler, SocketHandler
 
 
 class At:
@@ -242,6 +242,22 @@ class Vuer(PrefixProto, Server):
 
         app.run()
 
+
+    .. automethod:: bind
+    .. automethod:: spawn
+    .. automethod:: relay
+    .. automethod:: bound_fn
+    .. automethod:: spawn_task
+    .. automethod:: get_url
+    .. automethod:: send
+    .. automethod:: rpc
+    .. automethod:: rpc_stream
+    .. automethod:: close_ws
+    .. automethod:: uplink
+    .. automethod:: downlink
+    .. automethod:: add_handler
+    .. automethod:: _ttl_handler
+    .. automethod:: run
     """
 
     name = "vuer"
@@ -279,7 +295,7 @@ class Vuer(PrefixProto, Server):
         self.page = Page()
 
         self.ws = {}
-        self.spawned_fn: Spawnable = None
+        self.socket_handler: SocketHandler = None
         self.spawned_coroutines = []
 
     async def relay(self, request):
@@ -290,10 +306,10 @@ class Vuer(PrefixProto, Server):
 
         Interface:
             <uri>/relay?sid=<websocket_id>
+
         :return:
             - Status 200
             - Status 400
-
 
         """
         # todo: need to implement msgpack encoding, interface
@@ -350,20 +366,18 @@ class Vuer(PrefixProto, Server):
         loop = asyncio.get_running_loop()
         return loop.create_task(task)
 
-    def spawn(self, fn: Spawnable = None, start=False):
+    def spawn(self, fn: SocketHandler = None, start=False):
         """
-        Spawn a function as a task. This is useful in the following scenario:
 
-        code::
-
+        Note: this is really a misnomer.
 
         :param fn: The function to spawn.
         :param start: Start server after binding
         :return: None
         """
 
-        def wrap_fn(fn: Spawnable):
-            self.spawned_fn = fn
+        def wrap_fn(fn: SocketHandler):
+            self.socket_handler = fn
             if start:
                 self.run()
 
@@ -375,7 +389,7 @@ class Vuer(PrefixProto, Server):
 
     def bind(self, fn=None, start=False):
         """
-        Bind a function to the Tassa. The function should be a generator that yields Page objects.
+        Bind an asynchronous generator function for use in socket connection handler. The function should be a generator that yields Page objects.
 
         :param fn: The function to bind.
         :return: None
@@ -515,8 +529,8 @@ class Vuer(PrefixProto, Server):
 
         self._add_task(self.uplink(vuer_proxy))
 
-        if self.spawned_fn is not None:
-            task = self._add_task(self.spawned_fn(vuer_proxy))
+        if self.socket_handler is not None:
+            task = self._add_task(self.socket_handler(vuer_proxy))
 
         if hasattr(generator, "__anext__"):
             serverEvent = await generator.__anext__()

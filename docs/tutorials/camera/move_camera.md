@@ -20,6 +20,7 @@ matrices = DataFrame(matrices)["matrix"].values.tolist()
 ML_Logger(root="/Users/ge/mit/vuer/docs/tutorials/camera",
           prefix="assets")
 ```
+
 ```python
 from asyncio import sleep
 from io import BytesIO
@@ -32,6 +33,7 @@ from vuer.events import ClientEvent
 from vuer.schemas import Box, Sphere, DefaultScene, CameraView, Plane
 
 app = Vuer()
+
 
 # We don't auto start the vuer app because we need to bind a handler.
 @app.spawn
@@ -124,7 +126,9 @@ async def show_heatmap(proxy):
 
         await sleep(0.014)
 
+
 counter = 0
+
 
 async def collect_render(event: ClientEvent, sess: VuerSession):
     global counter

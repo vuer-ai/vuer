@@ -32,6 +32,7 @@ from ml_logger import ML_Logger
 logger = ML_Logger(root=os.getcwd(), prefix="assets")
 doc.print(logger)
 
+
 async def track_movement(event: ClientEvent, sess: VuerSession):
     # only intercept the ego camera.
     if event.key != "ego":
@@ -39,9 +40,11 @@ async def track_movement(event: ClientEvent, sess: VuerSession):
     print("camera moved", event.value["matrix"])
     logger.log(**event.value, flush=True, silent=True, file="camera_movement.pkl")
 
+
 app = Vuer()
 
 app.add_handler("CAMERA_MOVE", track_movement)
+
 
 # We don't auto start the vuer app because we need to bind a handler.
 @app.spawn(start=True)

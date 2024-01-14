@@ -15,6 +15,7 @@ from vuer.schemas import Urdf, Movable, DefaultScene
 
 app = Vuer()
 
+
 # Use the following to start the server immediately
 # @app.spawn(start=True)
 @app.spawn

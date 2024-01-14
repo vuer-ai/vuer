@@ -1,7 +1,6 @@
 
 # URDF (Serving Locally)
 
-
 ```python
 import math
 from asyncio import sleep
@@ -13,6 +12,7 @@ from vuer.schemas import DefaultScene, Urdf, Movable
 pi = 3.1415
 
 app = Vuer(static_root=Path(__file__).parent / "../../assets")
+
 
 @app.spawn(start=True)
 async def main(sess: VuerSession):

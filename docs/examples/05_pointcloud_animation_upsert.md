@@ -1,7 +1,6 @@
 
 # Point Cloud Animation (Upsert)
 
-
 ```python
 import asyncio
 from pathlib import Path
@@ -22,12 +21,14 @@ app = Vuer()
 infill = np.load("assets/suzanne_infill_good_traj.npy")
 surface_infill = np.load("assets/suzanne_surface_fill_only.npy")
 
+
 @app.spawn
 async def main(proxy):
     app.set @ DefaultScene()
 
     while True:
         await asyncio.sleep(1.0)
+
 
 async def frame_handle(e: ClientEvent, _):
     print("frame handle")

@@ -1,7 +1,6 @@
 
 # Imperative API
 
-
 ```python
 from asyncio import sleep
 
@@ -19,6 +18,7 @@ app = Vuer(
         backgroundColor="black",
     ),
 )
+
 
 @app.spawn(start=True)
 async def show_heatmap(sess: VuerSession):

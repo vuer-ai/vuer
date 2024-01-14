@@ -16,7 +16,7 @@ EventHandler = Callable[[ClientEvent, "VuerProxy"], None]
 """Defines a function that handles a client event. Second argument is the VuerProxy instance bound
 to a specific client connected through a websocket session."""
 
-Spawnable = Callable[["VuerProxy"], Coroutine]
+SocketHandler = Callable[["VuerProxy"], Coroutine]
 """Defines a function that spawns a new entity. Argument is the VuerProxy instance."""
 
 

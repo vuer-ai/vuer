@@ -5,11 +5,11 @@ doc @ """
 # Setting Up Your First Scene
 
 This tutorial shows you how to setup a scene like below. We teach you how to:
-- ✅ Setup a vuer server
-- ✅ Add a 3D scene to the server
-- ✅ Add a SpotLight to the scene
-- ✅ Add a Box to the scene
-- ✅ Add a Movable component to move the box around
+- [ ] Setup a vuer server
+- [ ] Add a 3D scene to the server
+- [ ] Add a SpotLight to the scene
+- [ ] Add a Box to the scene
+- [ ] Add a Movable component to move the box around
 
 > – The Batteries🔋 Are Included!
 
