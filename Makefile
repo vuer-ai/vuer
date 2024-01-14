@@ -33,6 +33,7 @@ prepare-release:
 	git tag -d v$(VERSION) & \
 	git tag -d latest
 release:
+	git push
 	git tag v$(VERSION) -m '$(msg)'
 	git tag latest
 	git push origin --tags -f
