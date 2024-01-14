@@ -1,20 +1,28 @@
 from cmx import doc
 
-with doc:
+doc @ """
+# Background Image
+
+This example shows how to set a background image. This is useful for
+relaying from a rendering model such as NeRFs, Gaussian Splatting, or 
+GANs.
+"""
+
+with doc, doc.skip:
     from asyncio import sleep
-    from pathlib import Path
 
     import imageio as iio
     from tqdm import tqdm
 
     from vuer import Vuer
     from vuer.events import ClientEvent
-    from vuer.schemas import Scene, ImageBackground, SceneBackground
+    from vuer.schemas import Scene, SceneBackground
 
     reader = iio.get_reader("../../../assets/movies/disney.webm")
 
     app = Vuer()
 
+    # Here we do not start the server, to allow binding to the camera handler.
     @app.spawn
     async def show_heatmap(session):
         session.set @ Scene()

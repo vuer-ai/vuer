@@ -1,4 +1,4 @@
-## Serialization and Deserialization of Vuer Data Types<br/>`vuer.serdes`
+# Serialization and Deserialization of Vuer Data Types<br/>`vuer.serdes`
 
 
 ```{eval-rst}
@@ -6,7 +6,7 @@
    :imported-members: False
    :members:
    :undoc-members:
-   :exclude-members: __init__, Coroutine, CancelledError, partial, Path
    :show-inheritance:
+   :exclude-members: __init__, Coroutine, CancelledError, partial, Path, BytesIO, Proto
 ```
 

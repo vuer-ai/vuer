@@ -228,8 +228,20 @@ class VuerSession:
 
 
 class Vuer(PrefixProto, Server):
-    """
-    A Vuer is a document that can be rendered in a browser.
+    """Vuer Server
+
+    This is the server for the Vuer client.
+
+    Usage::
+
+        app = Vuer()
+
+        @app.spawn
+        async def main(session: VuerSession):
+             session.set @ Scene(children=[...])
+
+        app.run()
+
     """
 
     name = "vuer"
@@ -239,13 +251,11 @@ class Vuer(PrefixProto, Server):
     port = 8012
     free_port = True
     static_root = "."
-    queue_len = 100  # use a max lenth to avoid the momor from blowing up.
+    queue_len = 100  # use a max length to avoid the memory from blowing up.
     cors = "https://vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
     queries = Proto({}, help="query parameters to pass")
 
     device = "cuda"
-
-    # need to be awaited
 
     def _proxy(self, ws_id) -> "VuerSession":
         """This is a proxy object that allows us to use the @ notation
@@ -554,7 +564,7 @@ class Vuer(PrefixProto, Server):
     def add_handler(
         self,
         event_type: str,
-        fn: EventHandler,
+        fn: EventHandler = None,
         once: bool = False,
     ) -> Callable[[], None]:
         """Adding event handlers to the vuer server.
@@ -565,7 +575,29 @@ class Vuer(PrefixProto, Server):
             This is useful for RPC, which cleans up after itself.
             The issue is for RPC, the `key` also needs to match. So we hack it here to use
             a call specific event_type to enforce the cleanup.
+
+        # Usage:
+
+        As a decorator::
+
+            app = Vuer()
+            @app.add_handler("CAMERA_MOVE")
+            def on_camera(event: ClientEvent, session: VuerSession):
+                print("camera event", event.etype, event.value)
+
+        As a function::
+
+            app = Vuer()
+            def on_camera(event: ClientEvent, session: VuerSession):
+                print("camera event", event.etype, event.value)
+
+            app.add_handler("CAMERA_MOVE", on_camera)
+            app.run()
         """
+
+        if fn is None:
+            return lambda fn: self.add_handler(event_type, fn, once=once)
+
         handler_id = uuid4()
 
         def cleanup():

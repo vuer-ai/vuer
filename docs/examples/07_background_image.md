@@ -1,13 +1,19 @@
+
+# Background Image
+
+This example shows how to set a background image. This is useful for
+relaying from a rendering model such as NeRFs, Gaussian Splatting, or 
+GANs.
+
 ```python
 from asyncio import sleep
-from pathlib import Path
 
 import imageio as iio
 from tqdm import tqdm
 
 from vuer import Vuer
 from vuer.events import ClientEvent
-from vuer.schemas import Scene, ImageBackground, SceneBackground
+from vuer.schemas import Scene, SceneBackground
 
 reader = iio.get_reader("../../../assets/movies/disney.webm")
 
@@ -45,4 +51,9 @@ async def show_heatmap(session):
 async def on_camera(event: ClientEvent, session):
     assert event == "CAMERA_MOVE", "the event type should be correct"
     print("camera event", event.etype, event.value)
+```
+
+```python
+app.add_handler("CAMERA_MOVE", on_camera)
+app.run()
 ```

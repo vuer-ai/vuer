@@ -1,6 +1,14 @@
 from cmx import doc
 
-with doc:
+doc @ """
+# Depth Texture
+
+There are two types of depth: range and metric depth. Range depth is the distance from the camera to the object in the scene. Metric depth is the distance from the camera to the object in the real world. 
+
+I have implemented range depth in the deformable image plane. I will add metric depth soon. Please consider adding a GitHub issueto upvote this feature, or contribute via a PR.
+"""
+
+with doc, doc.skip:
     from asyncio import sleep
 
     from vuer import Vuer
@@ -9,7 +17,7 @@ with doc:
 
     app = Vuer()
 
-    @app.spawn
+    @app.spawn(start=True)
     async def show_heatmap(proxy):
         scene = Scene(
             group(
@@ -40,23 +48,15 @@ with doc:
             i += 1
             h = 1 - (0.0166 * (i % 120 - 60)) ** 2
             position = [0.2, 0.1 + h / 5, 0]
-            proxy @ Update(
-                Sphere(
-                    key="sphere",
-                    args=[0.1, 20, 20],
-                    position=position,
-                    rotation=[0, 0, 0],
-                    materialType="depth",
-                ),
+
+            proxy.update @ Sphere(
+                key="sphere",
+                args=[0.1, 20, 20],
+                position=position,
+                rotation=[0, 0, 0],
+                materialType="depth",
             )
             await sleep(0.016)
 
-
-doc @ """
-```python
-app.add_handler("CAMERA_MOVE", on_camera)
-app.run()
-```
-"""
 
 doc.flush()

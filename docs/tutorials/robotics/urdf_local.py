@@ -30,7 +30,7 @@ You should have the following directory structure:
 ```
 """
 
-with doc:
+with doc, doc.skip:
     import math
     from asyncio import sleep
     from pathlib import Path

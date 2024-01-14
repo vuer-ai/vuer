@@ -8,5 +8,6 @@ Here are the basic types for events, html and three.js elements, and others.
    :members:
    :undoc-members:
    :show-inheritance:
+   :exclude-members: namedtuple, NamedTuple, UUID, ClientEvent
 ```
 

@@ -1,4 +1,6 @@
 
+# RGB-D Visualization
+
 Demo for rendering an RGB and depth pair. First run the makefile in the assets/images folder.
 
 ```shell
@@ -26,13 +28,11 @@ app = Vuer(
     static_root=assets_folder,
 )
 
-
 def get_buffer(file_path):
     with open(file_path, "rb") as f:
         file_buffer = f.read()
 
     return file_buffer
-
 
 @app.spawn
 async def show_heatmap(proxy):
@@ -55,7 +55,6 @@ async def show_heatmap(proxy):
 
     while True:
         await sleep(10.0)
-
 
 async def on_camera(event: ClientEvent, send_fn):
     assert event == "CAMERA_MOVE", "the event type should be correct"

@@ -1,6 +1,8 @@
 from cmx import doc
 
 doc @ """
+# RGB-D Visualization
+
 Demo for rendering an RGB and depth pair. First run the makefile in the assets/images folder.
 
 ```shell
@@ -9,7 +11,7 @@ make
 ```
 And this should download a pair of RGB and depth image.
 """
-with doc:
+with doc, doc.skip:
     from asyncio import sleep
     from pathlib import Path
 

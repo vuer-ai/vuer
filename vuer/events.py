@@ -1,7 +1,8 @@
-from typing import List, Type
+from typing import List, Tuple
 from uuid import uuid4
 
-from vuer.schemas import Element, Scene
+from vuer.schemas import Scene
+from vuer.schemas import Element
 from vuer.serdes import serializer
 
 
@@ -124,7 +125,7 @@ class Update(ServerEvent):
 
     etype = "UPDATE"
 
-    def __init__(self, *elements: List[Element], strict=False):
+    def __init__(self, *elements: Element, strict=False):
         # tuple is not serializable
         super().__init__({"nodes": elements}, strict=strict)
 

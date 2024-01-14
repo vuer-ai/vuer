@@ -2,7 +2,7 @@
 
 ```{eval-rst}
 .. automodule:: vuer
-   :imported-members:
-   :members:
-   :undoc-members:
+   :members: 
+   :show-inheritance: 
+   :private-members:
 ```
