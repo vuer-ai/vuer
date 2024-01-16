@@ -1,7 +1,7 @@
 
 # Collecting Render from a Virtual Camera
 
-![grab_render_virtual_camera](figures/grab_render_virtual_camera.jpg)
+![grab_render_virtual_camera](figures/grab_render_virtual_camera.png)
 
 This example requires saving and loading data from the local disk. 
 
@@ -29,7 +29,7 @@ import numpy as np
 
 from vuer import Vuer, VuerSession
 from vuer.events import ClientEvent
-from vuer.schemas import Box, Sphere, DefaultScene, CameraView, Plane
+from vuer.schemas import Sphere, DefaultScene, CameraView
 
 app = Vuer(queries=dict(grid=False))
 ```
