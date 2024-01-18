@@ -103,7 +103,7 @@ with doc @ "populate the queue with fake jobs.":
     for i in range(100):
         job_queue.append({"param_1": i * 100, "param_2": f"key-{i}"})
 
-with doc:
+with doc, doc.skip:
     from tqdm import trange
 
     @app.spawn(start=True)
