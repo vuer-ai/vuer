@@ -2,10 +2,12 @@ import asyncio
 from asyncio import sleep
 from collections import deque, defaultdict
 from functools import partial
-from typing import cast, Callable, Coroutine
+from typing import cast, Callable, Coroutine, Dict
 from uuid import uuid4
 
+from aiohttp.web_request import Request
 from aiohttp.web_response import Response
+from aiohttp.web_ws import WebSocketResponse
 from msgpack import packb, unpackb
 from params_proto import Proto, PrefixProto
 from websockets import ConnectionClosedError
@@ -54,6 +56,24 @@ class VuerSession:
 
         self.downlink_queue = que_maker()
         self.uplink_queue = que_maker()
+
+    @property
+    def socket(self):
+        """Getter for the websocket object.
+
+        this is useful for closing the socket session from the client side.
+
+        Example Usage::
+
+            @app.spawn(start=True):
+            async def main(session: VuerSession):
+                print("doing something...")
+                await sleep(1.0)
+
+                print("I am done! closing the socket.")
+                session.socket.close()
+        """
+        return self.vuer.ws[self.CURRENT_WS_ID]
 
     def __matmul__(self, event: ServerEvent):
         """
@@ -294,7 +314,7 @@ class Vuer(PrefixProto, Server):
         # todo: can remove
         self.page = Page()
 
-        self.ws = {}
+        self.ws: Dict[str, WebSocketResponse] = {}
         self.socket_handler: SocketHandler = None
         self.spawned_coroutines = []
 
@@ -510,7 +530,7 @@ class Vuer(PrefixProto, Server):
             else:
                 await sleep(0.0)
 
-    async def downlink(self, request, ws):
+    async def downlink(self, request: Request, ws: WebSocketResponse):
         """
         The websocket handler for receiving messages from the client.
 
@@ -530,7 +550,17 @@ class Vuer(PrefixProto, Server):
         self._add_task(self.uplink(vuer_proxy))
 
         if self.socket_handler is not None:
-            task = self._add_task(self.socket_handler(vuer_proxy))
+
+            async def handler():
+                try:
+                    await self.socket_handler(vuer_proxy)
+                except Exception:
+                    await self.close_ws(ws_id)
+                    return
+
+                await self.close_ws(ws_id)
+
+            task = self._add_task(handler())
 
         if hasattr(generator, "__anext__"):
             serverEvent = await generator.__anext__()
