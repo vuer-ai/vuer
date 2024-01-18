@@ -61,6 +61,7 @@ For a comprehensive list of data types, please refer to the [API documentation o
 
    Quick Start <quick_start>
    Report Issues <https://github.com/vuer-ai/vuer/issues?q=is:issue+is:closed>
+   CHANGE LOG <CHANGE_LOG.md>
    
 .. toctree::
    :maxdepth: 3
