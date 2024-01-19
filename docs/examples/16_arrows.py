@@ -8,7 +8,7 @@ This example visualizes a large number of coordinates markers.
 ![marker light](figures/16_arrows.png)
 
 """
-with doc, doc.skip:
+with doc:
     from asyncio import sleep
 
     from vuer import Vuer, VuerSession

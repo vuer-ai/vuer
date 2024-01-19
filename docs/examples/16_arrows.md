@@ -5,7 +5,6 @@ This example visualizes a large number of coordinates markers.
 
 ![marker light](figures/16_arrows.png)
 
-Live demo: TBD
 
 ```python
 from asyncio import sleep

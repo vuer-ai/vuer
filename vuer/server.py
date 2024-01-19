@@ -554,9 +554,10 @@ class Vuer(PrefixProto, Server):
             async def handler():
                 try:
                     await self.socket_handler(vuer_proxy)
-                except Exception:
+                except Exception as e:
                     await self.close_ws(ws_id)
-                    return
+                    # todo: absorb non-user induced exceptions.
+                    raise e
 
                 await self.close_ws(ws_id)
 
@@ -598,12 +599,11 @@ class Vuer(PrefixProto, Server):
                     vuer_proxy @ serverEvent
 
             print("websocket is now disconnected. Removing the socket.")
-            self.ws.pop(ws_id, None)
+            self.close_ws(ws_id)
         except Exception as e:
             print("websocket is now disconnected. Removing the socket.")
-            print("Exception: ", e)
             raise e
-            self.ws.pop(ws_id, None)
+            self.close_ws(ws_id)
 
     def add_handler(
         self,

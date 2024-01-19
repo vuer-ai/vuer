@@ -3,10 +3,11 @@ from cmx import doc
 doc @ """
 # Procedural Rendering (Async)
 
-This is very performant.
+Our RPC implementation is very performant. This also support non-blocking, multi-session 
+rendering. To test this, you can fire up a few identical browser sessions.
 """
 
-with doc:
+with doc, doc.skip:
     import asyncio
     from asyncio import sleep
     from io import BytesIO
@@ -23,7 +24,7 @@ with doc:
 
     app = Vuer()
 
-    @app.spawn
+    @app.spawn(start=True)
     async def show_heatmap(sess: VuerSession):
         sess.set @ DefaultScene(
             Plane(
@@ -64,18 +65,21 @@ with doc:
             if i == 0:
                 await sleep(1.0)
 
+            # this try/catch for timeout is important, because the first RPC
+            #   tends to timeout due to the frontend not having enough time to
+            #   finish loading the scene.
             try:
                 response = await sess.grab_render(quality=0.95, downsample=1)
 
                 import cv2
 
                 # add you render saving logic here.
-                value = response.value
+                buff = response.value["frame"]
 
-                buff = value["frame"]
-                # print(buff)
                 pil_image = PImage.open(BytesIO(buff))
                 img = np.array(pil_image)
+
+                # reverse the channel order for open-cv
                 img_bgr = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 cv2.imshow("frame", img_bgr)
                 if cv2.waitKey(1) == ord("q"):
@@ -84,14 +88,5 @@ with doc:
             except asyncio.TimeoutError as e:
                 print("render grab timed out.")
 
-
-# app.run()
-
-doc @ """
-```python
-# Now launch the vuer server.
-app.run()
-```
-"""
 
 doc.flush()
