@@ -24,18 +24,42 @@ assets
 1 directory, 3 files
 ```
 
-Now, run
+We first setup the vuer app:
 
 ```python
 from asyncio import sleep
 
 from vuer import Vuer
-from vuer.events import Set
+from vuer.events import Set, ClientEvent
 from vuer.schemas import DefaultScene, Obj
 
 app = Vuer(static_root=f"{Path(__file__).parent}/assets")
+```
 
+## Detecting when the assets has been loaded
 
+Sometimes the 3D assets we want to load can be very large (in the hundreds of MBs). In that case, we want to know when the assets has been loaded so that we can start the simulation and the rendering.
+
+To do so, simply bind a function to the `LOAD` event, which is emitted if
+1. the component has been loaded
+2. the `onLoad` attribute is set to a non-empty string.
+
+```python
+@app.add_handler("LOAD")
+async def onLoad(event: ClientEvent, _):
+    print(f"mesh has been loaded: {event.value}")
+```
+
+This should print out the following message:
+```
+mesh has been loaded: textured stairs are loaded
+mesh has been loaded: wireframe stairs are loaded
+mesh has been loaded: red stairs are loaded
+```
+
+Now to setup the scene, we can bind the main function:
+
+```python
 # use `start=True` to start the app immediately
 @app.spawn(start=True)
 async def main(session):
@@ -44,23 +68,28 @@ async def main(session):
             src="http://localhost:8012/static/textured.obj",
             mtl="http://localhost:8012/static/textured.mtl",
             position=[-4.5, 1.5, -3.5],
+            # This component emits a `LOAD` event when the mesh is loaded.
+            # this also extends to other 3D asset components.
+            onLoad="textured stairs are loaded",
         ),
         up=[0, 1, 0],
     )
 
     session.add @ Obj(
         src="http://localhost:8012/static/textured.obj",
+        # you can omit this. See the red stairs below.
         mtl="http://localhost:8012/static/textured.mtl",
         wireframe=True,
         position=[0, 1.5, 0],
+        onLoad="wireframe stairs are loaded",
     )
 
     session.add @ Obj(
         src="http://localhost:8012/static/textured.obj",
-        mtl="http://localhost:8012/static/textured.mtl",
         wireframe=True,
         color="#ff0000",
         position=[4.5, 1.5, 3.5],
+        onLoad="red stairs are loaded",
     )
 
     while True:
