@@ -1,5 +1,5 @@
 
-# Movable Grippers (in web viwe and VR)
+# Movable Grippers (in WebView and VR)
 
 The movable component allows you to wrap objects inside,
 and change their position and orientation. The following
