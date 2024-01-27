@@ -15,7 +15,7 @@ try to load from the url `http://localhost:8012/static/farm_house.jpg`.
 Here is the expected result:
 ![marker light](figures/17_sky_ball.png)
 """
-with doc:
+with doc, doc.skip:
     from asyncio import sleep
     import numpy as np
 
