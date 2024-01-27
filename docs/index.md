@@ -46,9 +46,9 @@ To get a quick overview of what you can do with  <code style="font-size: 1.3em; 
 - or try to take a look at the example gallery [here](examples/01_trimesh)
 
 For a comprehensive list of visualization components, please refer to
-the [API documentation on Components](https://docs.vuer.ai/en/latest/api).
+the [API documentation on Components | vuer](https://docs.vuer.ai/en/latest/api/vuer.html).
 
-For a comprehensive list of data types, please refer to the [API documentation on Data Types](https://docs.vuer.ai/en/latest/api).
+For a comprehensive list of data types, please refer to the [API documentation on Data Types](https://docs.vuer.ai/en/latest/api/types.html).
 
 
 <!-- prettier-ignore-start -->
@@ -101,7 +101,10 @@ For a comprehensive list of data types, please refer to the [API documentation o
    Background Image <examples/07_background_image.md>
    Depth Image <examples/08_experimental_depth_image.md>
    Coordinate Markers <examples/11_coordinates_markers.md>
+   Arrows <examples/16_arrows.md>
    Virtual Camera <examples/12_camera.md>
+   360 Image <examples/17_sky_ball.md>
+   Movable Handles <examples/18_movable.md>
 
 .. toctree::
    :maxdepth: 3
