@@ -78,3 +78,5 @@ TriMesh(
     ),
 ),
 ```
+
+![Appying a UV Map](figures/trimesh_uv_repeat.png)
