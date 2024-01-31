@@ -9,14 +9,14 @@ class Scene(BlockElement):
     tag = "Scene"
 
     def __init__(
-        self,
-        *children,
-        rawChildren=None,
-        htmlChildren=None,
-        bgChildren=None,
-        # default to y-up to be consistent with three.js. Blender uses z-up though.
-        up=[0, 1, 0],
-        **kwargs,
+            self,
+            *children,
+            rawChildren=None,
+            htmlChildren=None,
+            bgChildren=None,
+            # default to y-up to be consistent with three.js. Blender uses z-up though.
+            up=[0, 1, 0],
+            **kwargs,
     ):
         super().__init__(*children, up=up, **kwargs)
         self.rawChildren = rawChildren or []
@@ -114,6 +114,7 @@ class TriMesh(SceneElement):
     # note: Uint16 is too few. Quickly overflows
     faces: NDArray[np.uint32] = None
     colors: NDArray[np.uint8] = None
+    uv: NDArray[np.float16] = None
 
     def __post_init__(self, **kwargs):
         self.vertices = self.vertices.astype(np.float16).flatten().tobytes()
@@ -121,18 +122,19 @@ class TriMesh(SceneElement):
         # uinit16 is too few at 65536. Have to use uint32.
         self.faces = self.faces.astype(np.uint32).flatten().tobytes()
 
-        if self.colors is None:
-            return
+        if self.colors is not None:
+            if self.colors.shape[-1] == 4:
+                self.colors = self.colors[:, :3]
 
-        if self.colors.shape[-1] == 4:
-            self.colors = self.colors[:, :3]
+            # send only integers: https://stackoverflow.com/questions/34669537
+            if self.colors.dtype != np.uint8:
+                self.colors *= 255
+                self.colors = self.colors.astype(np.uint8)
 
-        # send only integers: https://stackoverflow.com/questions/34669537
-        if self.colors.dtype != np.uint8:
-            self.colors *= 255
-            self.colors = self.colors.astype(np.uint8)
+            self.colors = self.colors.flatten().tobytes()
 
-        self.colors = self.colors.flatten().tobytes()
+        if self.uv is not None:
+            self.uv = self.uv.astype(np.float16).flatten().tobytes()
 
 
 class PointCloud(SceneElement):
@@ -508,17 +510,17 @@ class DefaultScene(Scene):
     """
 
     def __init__(
-        self,
-        *children: SceneElement,
-        rawChildren: List[SceneElement] = None,
-        htmlChildren: List[Element] = None,
-        bgChildren: List[SceneElement] = [],
-        show_helper=True,
-        startStep=0,
-        endStep=None,
-        # default to z-up
-        up=[0, 0, 1],
-        **kwargs,
+            self,
+            *children: SceneElement,
+            rawChildren: List[SceneElement] = None,
+            htmlChildren: List[Element] = None,
+            bgChildren: List[SceneElement] = [],
+            show_helper=True,
+            startStep=0,
+            endStep=None,
+            # default to z-up
+            up=[0, 0, 1],
+            **kwargs,
     ):
         rawChildren = [
             AmbientLight(intensity=1.0, key="default_ambient_light"),

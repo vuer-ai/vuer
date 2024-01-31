@@ -105,6 +105,15 @@ For a comprehensive list of data types, please refer to the [API documentation o
    Virtual Camera <examples/12_camera.md>
    360 Image <examples/17_sky_ball.md>
    Movable Handles <examples/18_movable.md>
+   
+.. toctree::
+   :maxdepth: 3
+   :caption: LucidSim
+   :hidden:
+   
+   Sphere Scene <examples/lucidsim/ball_scene.md>
+   Stairs Scene <examples/lucidsim/stairs_scene.md>
+   Adding UV and Texture Map to Trimesh <examples/lucidsim/textured_trimesh.md>
 
 .. toctree::
    :maxdepth: 3
