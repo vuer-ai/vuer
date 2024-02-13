@@ -40,7 +40,6 @@ dev = [
     "sphinx_copybutton",
     "myst_parser",
     # these are very optional, but needed for the doc site
-    "termcolor",
     "trimesh",
     "tqdm",
 ]
