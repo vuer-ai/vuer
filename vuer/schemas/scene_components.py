@@ -16,6 +16,10 @@ class Scene(BlockElement):
             bgChildren=None,
             # default to y-up to be consistent with three.js. Blender uses z-up though.
             up=[0, 1, 0],
+            # background=None,
+            # bgLight=None,
+            # bgDark=None,
+            # grid=True,
             **kwargs,
     ):
         super().__init__(*children, up=up, **kwargs)
@@ -272,15 +276,21 @@ class Fog(SceneElement):
     Fog is a scene element that adds fog to the scene. This
     can be used to approximate depth.
 
-    Arguments:
-        args: color, near, far
+    Args:
+        color: The color of the fog.
+        near: The distance to the near plane.
+        far: The distance to the far plane.
 
     Example Usage:
-        Fog(args=[0xcccccc, 10, 15])
 
+        Fog(color="green", near=3, far=7)
     """
 
     tag = "fog"
+
+    def __init__(self, *, children=None, color=None, near=None, far=None, **kwargs):
+        assert children is None, "Fog does not support children."
+        super().__init__(attach="fog", key="fog", color=color, near=near, far=far, **kwargs)
 
 
 class Wireframe(SceneElement):
