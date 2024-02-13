@@ -33,7 +33,7 @@ pip install -U 'vuer[all]'
 ```
 
 Here is an example that loads a URDF file and displays it in the browser. For a more comprehensive list of examples, please refer to
-the [examples](https://docs.vuer.ai/en/latest/examples.html) page.
+the [examples](https://docs.vuer.ai/en/latest/examples/01_trimesh.html) page.
 
 ```python
 from vuer import Vuer, VuerSession
@@ -56,13 +56,13 @@ async def main(session: VuerSession):
 
 To get a quick overview of what you can do with `vuer`, check out the following:
 
-- take a look at the example gallery [here](https://docs.vuer.ai/en/latest/examples.html)
-- or try to take a look at this demo [here](https://docs.vuer.ai/en/latest/examples.html#demo)
+- take a look at the example gallery [here](https://docs.vuer.ai/en/latest/examples/01_trimesh.html)
+- or try to take a look at this demo with a Unitree Go1 robot in front of a flight of stairs [here](https://docs.vuer.ai/en/latest/tutorials/robotics/urdf_go1_stairs.html)
 
 For a comprehensive list of visualization components, please refer to
-the [API documentation on Components](https://docs.vuer.ai/en/latest/api.html).
+the [API documentation on Components](https://docs.vuer.ai/en/latest/api/vuer.html).
 
-For a comprehensive list of data types, please refer to the [API documentation on Data Types](https://docs.vuer.ai/en/latest/api.html).
+For a comprehensive list of data types, please refer to the [API documentation on Data Types](https://docs.vuer.ai/en/latest/api/types.html).
 
 Now, to run the examples, first download the example datasets.
 
