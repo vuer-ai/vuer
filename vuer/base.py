@@ -1,11 +1,12 @@
 import asyncio
 import traceback
+import aiohttp_cors
+
 from collections.abc import Coroutine
 from concurrent.futures import CancelledError
 from functools import partial
 from pathlib import Path
 
-import aiohttp_cors
 from aiohttp import web
 from params_proto import Proto
 
@@ -25,8 +26,8 @@ async def websocket_handler(request, handler, **ws_kwargs):
     except ConnectionResetError:
         print("Connection reset")
 
-    except CancelledError as exp:
-        print(f"WebSocket Canceled")
+    except CancelledError:
+        print("WebSocket Canceled")
 
     except Exception as exp:
         print(f"Error:\n{exp}\n{traceback.print_exc()}")
@@ -51,7 +52,7 @@ class Server:
     cors = Proto(help="Enable CORS", default="*")
     port = Proto(env="PORT", default=8012)
 
-    WEBSOCKET_MAX_SIZE = 2**28
+    WEBSOCKET_MAX_SIZE = 2 ** 28
 
     def __post_init__(self):
         self.app = web.Application()
@@ -67,10 +68,10 @@ class Server:
         self.cors_context = aiohttp_cors.setup(self.app, defaults=cors_config)
 
     def _route(
-        self,
-        path: str,
-        handler: callable,
-        method: str = "GET",
+            self,
+            path: str,
+            handler: callable,
+            method: str = "GET",
     ):
         route = self.app.router.add_resource(path).add_route(method, handler)
         self.cors_context.add(route)
