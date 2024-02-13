@@ -9,6 +9,8 @@
 dist
 build
 
+__pycache__
+
 
 # Python egg metadata, regenerated from source files by setuptools.
 .ipynb_checkpoints

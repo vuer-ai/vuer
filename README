@@ -12,7 +12,7 @@ Vuer: Modern High-Performance Visualization for AI & Robotics in VR
 
    <p>
 
-pip install vuer[all]   ⬝   visit  https://docs.vuer.ai  for documentation
+pip install vuer   ⬝   visit  https://docs.vuer.ai  for documentation
 
 .. raw:: html
 
@@ -22,8 +22,12 @@ Vuer is a light-weight visualization toolkit for interacting with
 dynamic 3D and robotics data. It is VR and AR ready, and can be run on
 mobile devices.
 
-Our features include: - light-weight and performant - VR and AR ready -
-Hackable and extensible - Open source, licensed under MIT
+Our features include:
+
+-  light-weight and performant
+-  VR and AR ready
+-  Hackable and extensible
+-  Open source, licensed under MIT
 
 Installation
 ============
@@ -99,8 +103,11 @@ to documentation and usage examples, simply:
 
 .. code-block:: bash
 
-   cd docs
-   pip install -r requirements.txt
+   pip install -e '.[dev]'
+   make docs
+
+This should fire up an http server at the port ``8888``, and you can
+view the documentation at ``http://localhost:8888``.
 
 About Us
 ========
