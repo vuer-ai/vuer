@@ -13,7 +13,7 @@ You can move this robot around using the gizmo.
     :hidden:
     
     Using URDF<robotics/urdf.md>
-    Serving URDF locally<robotics/urdf_local.md>
+    MIT Mini Cheetah<robotics/urdf_mini_cheetah.md>
+    Unitree Go1 (With Stairs)<robotics/urdf_go1_stairs.md>
     Camera Frustums <robotics/frustums.md>
-
 ```

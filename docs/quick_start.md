@@ -17,7 +17,7 @@ conda activate vuer
 Install vuer --- the latest version is `{VERSION}` on [pypi](https://pypi.org/project/vuer/{VERSION}/).
 
 ```python
-pip install -U vuer=={VERSION}
+pip install -U `vuer[dev]=={VERSION}`
 ```
 
 ## Running These Examples
