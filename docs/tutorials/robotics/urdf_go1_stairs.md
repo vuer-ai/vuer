@@ -7,12 +7,14 @@ This tutorial shows you how to setup a scene with the following components:
 3. A fog effect that makes the part of the scene that is far away darker in color.
 4. Fixtures of two movable lights. One [AmbientLight](https://threejs.org/docs/#api/en/lights/AmbientLight) and one [PointLight](https://threejs.org/docs/#api/en/lights/PointLight).
 
+![Unitree Go1 Robot in front of a flight of stairs](figures/go1_stairs.png)
+
 ```python
 import math
 from asyncio import sleep
 
 from vuer import Vuer, VuerSession
-from vuer.schemas import Scene, Urdf, Movable, PointLight, AmbientLight, Obj, Plane
+from vuer.schemas import Scene, Urdf, Movable, PointLight, AmbientLight, Obj, Plane, Fog
 
 pi = 3.1415
 

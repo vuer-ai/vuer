@@ -3,7 +3,11 @@ from cmx import doc
 doc @ """
 # Serving URDF Files Locally (MIT Mini Cheetah)
 
-This tutorial shows you how to serve a URDF file locally. We will use the MIT Mini Cheetah robot as an example.
+This tutorial shows you how to serve a URDF file locally. We will use the MIT Mini Cheetah 
+robot as an example. At the end of this tutorial, you should be able to see the robot in the 
+following view:
+
+![MIT Mini Cheetah](figures/mini_cheetah.png)
 
 Before you start, let's first download the URDF file from [here](https://github.com/geyang/unitree-go1-setup-guide/raw/main/robots/mini_cheetah).
 
@@ -33,7 +37,6 @@ You should have the following directory structure:
 with doc, doc.skip:
     import math
     from asyncio import sleep
-    from pathlib import Path
 
     from vuer import Vuer, VuerSession
     from vuer.schemas import Scene, Urdf, Movable, PointLight, AmbientLight, Obj

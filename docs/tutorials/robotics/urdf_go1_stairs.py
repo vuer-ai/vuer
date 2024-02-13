@@ -8,6 +8,8 @@ This tutorial shows you how to setup a scene with the following components:
 2. A 3D mesh of a stair way
 3. A fog effect that makes the part of the scene that is far away darker in color.
 4. Fixtures of two movable lights. One [AmbientLight](https://threejs.org/docs/#api/en/lights/AmbientLight) and one [PointLight](https://threejs.org/docs/#api/en/lights/PointLight).
+
+![Unitree Go1 Robot in front of a flight of stairs](figures/go1_stairs.png)
 """
 
 with doc, doc.skip:
