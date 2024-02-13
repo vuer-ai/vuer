@@ -1,11 +1,13 @@
 # Conditional import for the pyScript.
 try:
     from vuer.server import Vuer, VuerSession
-except ImportError as e:
+except ImportError:
     print("""
-    Import error. Run
+    By default, vuer does not include the aiohttp and aiohttp-cors packages
+    to enable installation in PyScript environments. For most usecase, you
+    should install with the [all] option to include all dependencies.
     
-        pip install vuer[all]
+        pip install 'vuer[all]'
     
-    to include all dependencies. 
+    Use `'` if using zsh since `[` is a special character.
     """)
