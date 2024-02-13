@@ -45,7 +45,7 @@ for i in range(10):
 You can install this package from PyPI under the `cmx` package name.
 
 ``` python
-pip install mdx
+pip install cmx
 ```
 ## Developing Plugins
 

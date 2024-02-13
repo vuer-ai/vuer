@@ -14,8 +14,6 @@ classifiers = [
     "Programming Language :: Python",
 ]
 dependencies = [
-    "aiohttp",
-    "aiohttp-cors",
     "killport",
     "params-proto>=2.11.16",
     "pillow",
@@ -25,11 +23,21 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Development packages
+# add the cors package, not needed in pyScript
+all = [
+    "aiohttp",
+    "aiohttp-cors",
+]
 dev = [
+    "aiohttp",
+    "aiohttp-cors",
     "black==22.3.0",
     "pylint==2.13.4",
     "pytest==7.1.2",
+    "sphinx==7.1.2",
+    "furo",
+    "sphinx_copybutton",
+    "myst_parser",
     # these are very optional, but needed for the doc site
     "termcolor",
     "trimesh",

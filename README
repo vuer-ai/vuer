@@ -12,7 +12,7 @@ Vuer: Modern High-Performance Visualization for AI & Robotics in VR
 
    <p>
 
-pip install vuer   ⬝   visit  https://docs.vuer.ai  for documentation
+pip install vuer[all]   ⬝   visit  https://docs.vuer.ai  for documentation
 
 .. raw:: html
 
@@ -32,7 +32,7 @@ You can install ``vuer`` with ``pip``:
 
 .. code-block:: shell
 
-   pip install vuer
+   pip install -U 'vuer[all]'
 
 Here is an example that loads a URDF file and displays it in the
 browser. For a more comprehensive list of examples, please refer to the

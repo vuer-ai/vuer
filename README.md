@@ -1,11 +1,11 @@
-<h2>Vuer: Modern High-Performance Visualization for AI & Robotics in VR 
+<h2>Vuer: Modern High-Performance Visualization for AI & Robotics in VR
 <br/>
 <img src="https://api.netlify.com/api/v1/badges/2df7f3ba-1a26-4047-b76a-d7401f907bb5/deploy-status" alt="Production">
 <a href="https://pypi.org/project/vuer/">
-    <img src="https://img.shields.io/pypi/v/vuer.svg" alt="pypi">
+<img src="https://img.shields.io/pypi/v/vuer.svg" alt="pypi">
 </a>
 <a href="https://docs.vuer.ai">
-    <img src="https://readthedocs.org/projects/vuer-py/badge/?version=latest">
+<img src="https://readthedocs.org/projects/vuer-py/badge/?version=latest">
 </a>
 </h2>
 <p>
@@ -15,9 +15,10 @@ visit &ensp;<a href="https://docs.vuer.ai">https://docs.vuer.ai</a>&ensp; for do
 </p>
 
 Vuer is a light-weight visualization toolkit for interacting with dynamic 3D and robotics data. It is
-VR and AR ready, and can be run on mobile devices. 
+VR and AR ready, and can be run on mobile devices.
 
 Our features include:
+
 - light-weight and performant
 - VR and AR ready
 - Hackable and extensible
@@ -25,14 +26,14 @@ Our features include:
 
 ## Installation
 
-
 You can install `vuer` with `pip`:
 
 ```shell
-pip install vuer
+pip install -U 'vuer[all]'
 ```
 
-Here is an example that loads a URDF file and displays it in the browser. For a more comprehensive list of examples, please refer to the [examples](https://docs.vuer.ai/en/latest/examples.html) page.
+Here is an example that loads a URDF file and displays it in the browser. For a more comprehensive list of examples, please refer to
+the [examples](https://docs.vuer.ai/en/latest/examples.html) page.
 
 ```python
 from vuer import Vuer, VuerSession
@@ -63,9 +64,10 @@ the [API documentation on Components](https://docs.vuer.ai/en/latest/api.html).
 
 For a comprehensive list of data types, please refer to the [API documentation on Data Types](https://docs.vuer.ai/en/latest/api.html).
 
-Now, to run the examples, first download the example datasets. 
+Now, to run the examples, first download the example datasets.
 
-Each subdirectory in the `assets` directory contains a `Makefile`. Run the `make` command in each subdirectory to download the datasets. For example:
+Each subdirectory in the `assets` directory contains a `Makefile`. Run the `make` command in each subdirectory to download the datasets. For
+example:
 
 ```bash
 cd assets/static_3d
@@ -82,11 +84,12 @@ python 01_trimesh.py
 ## Contributing to Documentation and Features
 
 Documentation is a crucial part of the `vuer` ecosystem. To contribute to documentation and usage examples, simply:
-```bash
-cd docs
-pip install -r requirements.txt
-```
 
+```bash
+pip install -e '.[dev]'
+make docs
+```
+This should fire up an http server at the port `8888`, and you can view the documentation at `http://localhost:8888`.
 
 ## About Us
 

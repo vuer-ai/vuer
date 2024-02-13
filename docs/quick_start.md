@@ -17,7 +17,7 @@ conda activate vuer
 Install vuer --- the latest version is `{VERSION}` on [pypi](https://pypi.org/project/vuer/{VERSION}/).
 
 ```python
-pip install -U `vuer[dev]=={VERSION}`
+pip install -U `vuer[all]=={VERSION}`
 ```
 
 ## Running These Examples
@@ -37,7 +37,7 @@ git clone https://github.com/vuer-ai/vuer.git
 **Optional:** If you want to develop vuer, you can install it in editable mode:
 ```shell
 cd vuer
-pip install -e .
+pip install -e '.[all]'
 ```
 To run the examples, look for the asset you need in the assets folder, and run the
 Makefile to download the dataset.

@@ -1,3 +1,5 @@
+.PHONY: default wheel dev convert-rst resize update-doc docs prepare-release release publish-no-test publish test
+
 # shell option to use extended glob from from https://stackoverflow.com/a/6922447/1560241
 SHELL:=/bin/bash -O extglob
 
@@ -26,7 +28,7 @@ resize: # from https://stackoverflow.com/a/28221795/1560241
 	convert ./figures/!(*resized).jpg -resize 888x1000 -set filename:f '%t' ./figures/'%[filename:f]_resized.jpg'
 update-doc: convert-rst
 	python setup.py sdist upload
-doc:
+docs:
 	rm -rf docs/_build
 	cd docs && make html && cd _build/html && python -m http.server 8888
 prepare-release:
