@@ -19,7 +19,7 @@ with doc, doc.skip:
     from vuer.events import Set
     from vuer.schemas import Obj, DefaultScene, TriMesh, SceneBackground
 
-    assets_folder = Path(__file__).parent / "../../assets"
+    assets_folder = Path(__file__).parent / "../../../assets"
     test_file = "static_3d/armadillo_midres.obj"
 
     mesh = trimesh.load_mesh(assets_folder / test_file)

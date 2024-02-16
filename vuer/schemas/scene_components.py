@@ -383,15 +383,26 @@ class Movable(SceneElement):
     tag = "Movable"
 
 
+class Hands(SceneElement):
+    tag = "Hands"
+
+    def __init__(self, fps=30, key="hands", eventTypes=('squeeze',), stream=False, left=None, right=None, **kwargs):
+        super().__init__(fps=fps, key=key, eventTypes=eventTypes, stream=stream, left=left, right=right, **kwargs)
+
+
 class Obj(SceneElement):
     tag = "Obj"
 
-    def __init__(self, src, mtl=None, materials=None, **kwargs):
+    def __init__(self, src=None, mtl=None, text=None, buff=None, materials=None, **kwargs):
         """
         :param src: The source of the obj file. Can be a url or a local file.
         :type  src: str
-        :param mtlSrc: The source of the mtl file. Can be a url or a local file.
-        :type  mtlSrc: str
+        :param mtl: The source of the mtl file. Can be a url or a local file.
+        :type  mtl: str
+        :param text: The text content of the obj file, allow one to load a scene from a string.
+        :type  text: str
+        :param buff: The binary content of the obj file. This is the most efficient, because you are sending binaries..
+        :type  buff: bytes
         :param materials: A list of materials to be used for the obj file.
         :type  materials: List[String]
 
@@ -399,7 +410,9 @@ class Obj(SceneElement):
         """
         self.src = src
         self.mtl = mtl
-        self.materials = []
+        self.text = text
+        self.buff = buff
+        self.materials = materials
 
         super().__init__(**kwargs)
 

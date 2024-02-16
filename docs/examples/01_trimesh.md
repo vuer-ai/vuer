@@ -16,7 +16,7 @@ from vuer import Vuer
 from vuer.events import Set
 from vuer.schemas import Obj, DefaultScene, TriMesh, SceneBackground
 
-assets_folder = Path(__file__).parent / "../../assets"
+assets_folder = Path(__file__).parent / "../../../assets"
 test_file = "static_3d/armadillo_midres.obj"
 
 mesh = trimesh.load_mesh(assets_folder / test_file)
@@ -31,7 +31,6 @@ with open(assets_folder / test_file, "rb") as f:
 app = Vuer(static_root=assets_folder)
 
 print(f"Loaded mesh with {mesh.vertices.shape} vertices and {mesh.faces.shape} faces")
-
 
 # use `start=True` to start the app immediately
 @app.spawn(start=True)
