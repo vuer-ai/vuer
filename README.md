@@ -86,7 +86,7 @@ python 01_trimesh.py
 Documentation is a crucial part of the `vuer` ecosystem. To contribute to documentation and usage examples, simply:
 
 ```bash
-pip install -e '.[dev]'
+pip install -e '.[all]'
 make docs
 ```
 This should fire up an http server at the port `8888`, and you can view the documentation at `http://localhost:8888`.

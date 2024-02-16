@@ -6,7 +6,7 @@ Vuer is a light-weight visualization toolkit for interacting with dynamic 3D and
 VR and AR ready, and can be run on mobile devices. To get started, just run:
 
 ```shell
-pip install vuer=={VERSION}
+pip install vuer[all]=={VERSION}
 ```
 
 Here is an example that loads a URDF file and displays it in the browser. For a more comprehensive list of examples, please refer to the [examples](examples/01_trimesh) page.
@@ -68,6 +68,7 @@ For a comprehensive list of data types, please refer to the [API documentation o
    :caption: NEW FEATURES 🔥
    :hidden:
    
+   Scene Generation (OpenAI Sora) <gaussian_splatting/openai_sora.md>
    Gaussian Splatting <gaussian_splatting/09_gaussian_splats.md>
    Gaussian Splatting (VR) <gaussian_splatting/10_gaussian_splats_vr.md>
    
@@ -105,6 +106,7 @@ For a comprehensive list of data types, please refer to the [API documentation o
    Virtual Camera <examples/12_camera.md>
    360 Image <examples/17_sky_ball.md>
    Movable Handles <examples/18_movable.md>
+   Hand Tracking <examples/19_hand_tracking.md>
    
 .. toctree::
    :maxdepth: 3

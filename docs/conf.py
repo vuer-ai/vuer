@@ -26,9 +26,12 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.viewcode",
     "sphinx.ext.mathjax",
-    "sphinx_copybutton",
     "myst_parser",
+    "sphinx_copybutton",
+    "sphinxcontrib.video",
 ]
+
+video_enforce_extra_source = True
 
 rst_epilog = f".. |version| replace:: {version}"
 
