@@ -13,6 +13,13 @@ to wss://xxxx.ngrok.io, and pass it as a query parameter that looks like this
 
 https://vuer.ai?ws=wss://xxxxx.ngrok.io
 ```
+
+Here is the what it looks like with the Vision Pro
+
+<video controls width="250">
+  <source src="figures/19_hand_tracking.webm" type="video/webm" />
+</video>
+
 """
 
 doc @ """
