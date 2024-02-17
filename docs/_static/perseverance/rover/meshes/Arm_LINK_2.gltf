@@ -1,0 +1,147 @@
+{
+  "asset": {
+    "generator": "glTF-Transform v0.9.6",
+    "version": "2.0"
+  },
+  "accessors": [
+    {
+      "type": "VEC3",
+      "componentType": 5126,
+      "count": 37326,
+      "max": [
+        2.2587199211120605,
+        -0.16932900249958038,
+        0.40935200452804565
+      ],
+      "min": [
+        1.25872004032135,
+        -0.4109179973602295,
+        0.21375900506973267
+      ],
+      "normalized": false,
+      "bufferView": 0,
+      "byteOffset": 0
+    },
+    {
+      "type": "VEC2",
+      "componentType": 5126,
+      "count": 37326,
+      "max": [
+        0.9999740123748779,
+        0.9918234944343567
+      ],
+      "min": [
+        0.0005351079744286835,
+        0.00026702880859375
+      ],
+      "normalized": false,
+      "bufferView": 0,
+      "byteOffset": 12
+    },
+    {
+      "type": "SCALAR",
+      "componentType": 5123,
+      "count": 97962,
+      "max": [
+        37325
+      ],
+      "min": [
+        0
+      ],
+      "normalized": false,
+      "bufferView": 1,
+      "byteOffset": 0
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 746520,
+      "byteStride": 20,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 746520,
+      "byteLength": 195924,
+      "target": 34963
+    }
+  ],
+  "samplers": [
+    {
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "textures": [
+    {
+      "source": 0,
+      "sampler": 0
+    }
+  ],
+  "images": [
+    {
+      "mimeType": "image/jpeg",
+      "uri": "Textures/M2020_Rover_Texture.jpg"
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "Arm_LINK_2.bin",
+      "byteLength": 942444
+    }
+  ],
+  "materials": [
+    {
+      "alphaMode": "OPAQUE",
+      "doubleSided": false,
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "roughnessFactor": 1,
+        "metallicFactor": 0,
+        "baseColorTexture": {
+          "index": 0,
+          "texCoord": 0
+        }
+      },
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "TEXCOORD_0": 1
+          },
+          "mode": 4,
+          "material": 0,
+          "indices": 2
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0
+    }
+  ],
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ]
+}
