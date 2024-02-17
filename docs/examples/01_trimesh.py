@@ -1,14 +1,26 @@
-from cmx import doc
+import os
+import contextlib
+filename = os.path.basename(__file__)
+MD_EXIST_FLAG = os.path.exists(os.path.splitext(filename)[0] + ".md")
 
-doc @ """
-# Trimesh
+if MD_EXIST_FLAG:
+    context_a, context_b = contextlib.nullcontext(), contextlib.nullcontext()
+else:
+    from cmx import doc
 
-This example shows you how to load mesh files in various ways, and how to update the mesh in real-time.
+    doc @ """
+    # Trimesh
 
-![](figures/trimesh.png)
-"""
+    This example shows you how to load mesh files in various ways, and how to update the mesh in real-time.
 
-with doc, doc.skip:
+    ![](figures/trimesh.png)
+    """
+
+    context_a = doc
+    context_b = doc.skip
+
+# Need to use this hack to make the code works for python < 3.9
+with context_a, context_b:
     from asyncio import sleep
     from pathlib import Path
 
@@ -88,5 +100,5 @@ with doc, doc.skip:
             )
             await sleep(0.016)
 
-
-doc.flush()
+if not MD_EXIST_FLAG:
+    doc.flush()
