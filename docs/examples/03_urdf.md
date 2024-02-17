@@ -20,9 +20,8 @@ app = Vuer()
 
 pi = 3.14
 
-
 @app.spawn(start=True)
-async def main(proxy):
+async def main(app):
     app.set @ DefaultScene(
         Movable(
             Urdf(
