@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vuer"
-version = "0.0.26-rc1"
+version = "0.0.26-rc2"
 description = ""
 readme = "README.md"
 license = { text = "MIT" }
@@ -27,6 +27,16 @@ all = [
     "aiohttp",
     "aiohttp-cors",
     "killport",
+]
+example = [
+    "aiohttp",
+    "aiohttp-cors",
+    "killport",
+    "open3d>=0.15.0,<0.16.0",
+    "trimesh",
+    "cmx",
+    "functional_notations",
+    "ml_logger"
 ]
 dev = [
     "aiohttp",
