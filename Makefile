@@ -30,7 +30,8 @@ update-doc: convert-rst
 	python setup.py sdist upload
 docs:
 	rm -rf docs/_build
-	cd docs && make html && cd _build/html && python -m http.server 8888
+	cd docs && MAKE_DOCS=true make html
+	cd docs/_build/html && python -m http.server 8888
 prepare-release:
 	-git tag -d v$(VERSION)
 	-git tag -d latest
