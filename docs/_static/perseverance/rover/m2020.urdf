@@ -1,0 +1,1657 @@
+<?xml version="1.0" ?>
+<!-- This file was generated automatically. [2021_08_18_14_10_08] -->
+<!-- [Tool url: git@github.jpl.nasa.gov:CR/rst.git, branch: dev/working, commit_hash: 47e8686b, commit_time: 2021-08-16 19:00:50 -0700] -->
+
+<robot name="Perseverance">
+	<link name="ground">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Body_Chassis">
+		<inertial>
+			<origin xyz="0.09002 0 -1.13338" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_CHASSIS">
+			<origin xyz="0.09002 0 -1.13338" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/CHASSIS.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_MHS_DebrisShield">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<!-- hidden visual element
+		<visual name="VisGeom_MHS_DebrisShield">
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/MHS_DebrisShield.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+		-->
+	</link>
+	<link name="Body_Differential">
+		<inertial>
+			<origin xyz="0.142 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_CenterDifferential">
+			<origin xyz="0.142 0 0" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/CenterDifferential.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_RockerLeft">
+		<inertial>
+			<origin xyz="-0.214 0.79959 -0.2405" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Left_Rocker">
+			<origin xyz="-0.214 0.79959 -0.2405" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Left_Rocker.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_BogieLeft">
+		<inertial>
+			<origin xyz="0.54 0.91959 -0.4705" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Left_Bogie">
+			<origin xyz="0.54 0.91959 -0.4705" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Left_Bogie.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_SteerLeftRear">
+		<inertial>
+			<origin xyz="1.165 1.0625 -0.8705" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Steer_LeftRear">
+			<origin xyz="1.165 1.0625 -0.8705" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Steer_LeftRear.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_WheelLeftRear">
+		<inertial>
+			<origin xyz="1.165 1.0625 -0.8705" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Wheel_LeftRear">
+			<origin xyz="1.165 1.0625 -0.8705" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Wheel_LeftRear.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_WheelLeftMiddle">
+		<inertial>
+			<origin xyz="0.09002 1.1845 -0.8705" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Wheel_LeftMiddle">
+			<origin xyz="0.09002 1.1845 -0.8705" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Wheel_LeftMiddle.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_SteerLeftFront">
+		<inertial>
+			<origin xyz="-1.095 1.0625 -0.8705" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Steer_LeftFront">
+			<origin xyz="-1.095 1.0625 -0.8705" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Steer_LeftFront.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_WheelLeftFront">
+		<inertial>
+			<origin xyz="-1.095 1.0625 -0.8705" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Wheel_LeftFront">
+			<origin xyz="-1.095 1.0625 -0.8705" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Wheel_LeftFront.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_RockerRight">
+		<inertial>
+			<origin xyz="-0.214 -0.79959 -0.2405" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Right_Rocker">
+			<origin xyz="-0.214 -0.79959 -0.2405" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Right_Rocker.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_BogieRight">
+		<inertial>
+			<origin xyz="0.54 -0.91959 -0.4705" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Right_Bogie">
+			<origin xyz="0.54 -0.91959 -0.4705" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Right_Bogie.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_SteerRightRear">
+		<inertial>
+			<origin xyz="1.165 -1.0625 -0.8705" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Steer_RightRear">
+			<origin xyz="1.165 -1.0625 -0.8705" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Steer_RightRear.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_WheelRightRear">
+		<inertial>
+			<origin xyz="1.165 -1.0625 -0.8705" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Wheel_RightRear">
+			<origin xyz="1.165 -1.0625 -0.8705" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Wheel_RightRear.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_WheelRightMiddle">
+		<inertial>
+			<origin xyz="0.09002 -1.1845 -0.8705" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Wheel_RightMiddle">
+			<origin xyz="0.09002 -1.1845 -0.8705" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Wheel_RightMiddle.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_SteerRightFront">
+		<inertial>
+			<origin xyz="-1.095 -1.0625 -0.8705" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Steer_RightFront">
+			<origin xyz="-1.095 -1.0625 -0.8705" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Steer_RightFront.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_WheelRightFront">
+		<inertial>
+			<origin xyz="-1.095 -1.0625 -0.8705" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Wheel_RightFront">
+			<origin xyz="-1.095 -1.0625 -0.8705" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Wheel_RightFront.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_RSM_AZ">
+		<inertial>
+			<origin xyz="-0.714017 -0.559028 0.78589" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_RSM">
+			<origin xyz="-0.714017 -0.559028 0.78589" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/RSM.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_RSM_EL">
+		<inertial>
+			<origin xyz="-0.714017 -0.559028 0.78589" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_RSM_HEAD">
+			<origin xyz="-0.714017 -0.559028 0.78589" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/RSM_Head.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_HGA_AZ">
+		<inertial>
+			<origin xyz="0.46 0.475 -0.0005" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_HGA_AZ">
+			<origin xyz="0.46 0.475 -0.0005" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/HGA_AZ.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_HGA_EL">
+		<inertial>
+			<origin xyz="0.46 0.475 0.2475" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_HGA_EL">
+			<origin xyz="0.46 0.475 0.2475" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/HGA_EL.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_RA_Base">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Body_RA_Link1">
+		<inertial>
+			<origin xyz="-1.1756 0.4515 -0.3116" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Arm_LINK_1">
+			<origin xyz="-1.1756 0.4515 -0.3116" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Arm_LINK_1.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_RA_Link2">
+		<inertial>
+			<origin xyz="-1.3416 0.4515 -0.3116" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Arm_LINK_2">
+			<origin xyz="-1.3416 0.4515 -0.3116" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Arm_LINK_2.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_RA_Link3">
+		<inertial>
+			<origin xyz="-2.161 0.4515 -0.3116" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Arm_LINK_3">
+			<origin xyz="-2.161 0.4515 -0.3116" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Arm_LINK_3.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_RA_Link4">
+		<inertial>
+			<origin xyz="-2.9143 0.4515 -0.3116" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Arm_LINK_4">
+			<origin xyz="-2.9143 0.4515 -0.3116" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Arm_LINK_4.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_RA_Link5">
+		<inertial>
+			<origin xyz="-2.7386 0.2724 -0.3116" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Arm_LINK_5">
+			<origin xyz="-2.7386 0.2724 -0.3116" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Arm_LINK_5.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_Turret">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_Turret">
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/Turret.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_CorerFeed">
+		<inertial>
+			<origin xyz="-2.5301 0.272349 0.0168656" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<!-- hidden visual element
+		<visual name="VisGeom_LaunchBit">
+			<origin xyz="0.208499 -5.1e-05 -3.438e-05" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/LaunchBitInTurretAtZeroFeed.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+		-->
+		<visual name="VisGeom_AbradingBit">
+			<origin xyz="0.208499 -5.1e-05 -3.438e-05" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/AbradingBitInTurretAtZeroFeed.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+		<!-- hidden visual element
+		<visual name="VisGeom_CoringBit">
+			<origin xyz="0.208499 -5.1e-05 -3.438e-05" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/CoringBitInTurretAtZeroFeed.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+		-->
+		<!-- hidden visual element
+		<visual name="VisGeom_RegolithBit">
+			<origin xyz="0.208499 -5.1e-05 -3.438e-05" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/RegolithBitInTurretAtZeroFeed.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+		-->
+	</link>
+	<link name="Body_StabilizerFar">
+		<inertial>
+			<origin xyz="-2.5301 0.272349 0.0168656" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_StabilizerFar">
+			<origin xyz="0.208499 -5.1e-05 -3.438e-05" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/StabilizerFarInTurret.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_StabilizerNear">
+		<inertial>
+			<origin xyz="-2.5301 0.272349 0.0168656" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_StabilizerNear">
+			<origin xyz="0.208499 -5.1e-05 -3.438e-05" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/StabilizerNearInTurret.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_WATSON_Cap">
+		<inertial>
+			<origin xyz="-2.6025 0.581204 0.0309103" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_WATSON_Cap">
+			<origin xyz="-2.6025 0.581204 0.0309103" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/WATSON_Camera_Cap.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_SHERLOC_Cap">
+		<inertial>
+			<origin xyz="-2.86084 0.58439 -0.0124626" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_SHERLOC_Cap">
+			<origin xyz="-2.86084 0.58439 -0.0124626" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/ContextImager_Cap.gltf" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Frame_RNAV">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_RMECH">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_FHCB">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_FHC1">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_FHC2">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_FHC3">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_FHC4">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_FHC1_FOV">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_FHC2_FOV">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_FHC3_FOV">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_FHC4_FOV">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_RHC1">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_RHC2">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_RHC1_FOV">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_RHC2_FOV">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_ATS1">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_ATS2">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_ATS3">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_ATS4">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_ATS5">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_HS">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_ICU">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_RDS">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_TIRS">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_WS1">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_WS2">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_MOXIE">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_MI">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_MAZ">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_MEL">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_SCI">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_SCRMI">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_SCLIBS">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_SCIR">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_MCL">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_MCR">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_NCL">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_NCR">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_NCL_FOV">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_NCR_FOV">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_ROCKER_L">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_ROCKER_R">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_BOGIE_L">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_BOGIE_R">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_DIFF">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_STEER_LF">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_STEER_LR">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_STEER_RF">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_STEER_RR">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_WHEEL_LF">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_WHEEL_LM">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_WHEEL_LR">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_WHEEL_RF">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_WHEEL_RM">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_WHEEL_RR">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_RIMUA">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_RIMUB">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_RIMFAX">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_HGAS">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_HGAG">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_ANT">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_RA_BASE">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_RA1">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_RA2">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_RA3">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_RA4">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_RA5">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_RA6">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_TURRET">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_DOCKING_POST">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_DRILL">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_FCS">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_GDRT">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_PIXL">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_SHERLOC">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_WATSON">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_CAL_MC1">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_CAL_MC2">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_CAL_SC">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_CAL_PIXL">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Frame_CAL_SHERLOC">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<joint name="JointRoot" type="floating">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="ground"/>
+		<child link="Body_Chassis"/>
+	</joint>
+	<joint name="Joint_MHS_DebrisShield" type="floating">
+		<origin xyz="0.09002 0 -1.13338" rpy="0 -0 0"/>
+		<parent link="Body_Chassis"/>
+		<child link="Body_MHS_DebrisShield"/>
+	</joint>
+	<joint name="CENTER_DIFFERENTIAL" type="revolute">
+		<origin xyz="-0.05198 0 -1.13338" rpy="0 -0 0"/>
+		<parent link="Body_Chassis"/>
+		<child link="Body_Differential"/>
+		<axis xyz="0 0 1"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="LEFT_DIFFERENTIAL" type="revolute">
+		<origin xyz="0.30402 -0.79959 -0.89288" rpy="0 -0 0"/>
+		<parent link="Body_Chassis"/>
+		<child link="Body_RockerLeft"/>
+		<axis xyz="0 1 0"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="LEFT_BOGIE" type="revolute">
+		<origin xyz="-0.754 -0.12 0.23" rpy="0 -0 0"/>
+		<parent link="Body_RockerLeft"/>
+		<child link="Body_BogieLeft"/>
+		<axis xyz="0 1 0"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="LR_STEER" type="revolute">
+		<origin xyz="-0.625 -0.14291 0.4" rpy="0 -0 0"/>
+		<parent link="Body_BogieLeft"/>
+		<child link="Body_SteerLeftRear"/>
+		<axis xyz="0 0 1"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="LR_DRIVE" type="revolute">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_SteerLeftRear"/>
+		<child link="Body_WheelLeftRear"/>
+		<axis xyz="0 -1 0"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="LM_DRIVE" type="revolute">
+		<origin xyz="0.44998 -0.26491 0.4" rpy="0 -0 0"/>
+		<parent link="Body_BogieLeft"/>
+		<child link="Body_WheelLeftMiddle"/>
+		<axis xyz="0 -1 0"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="LF_STEER" type="revolute">
+		<origin xyz="0.881 -0.26291 0.63" rpy="0 -0 0"/>
+		<parent link="Body_RockerLeft"/>
+		<child link="Body_SteerLeftFront"/>
+		<axis xyz="0 0 1"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="LF_DRIVE" type="revolute">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_SteerLeftFront"/>
+		<child link="Body_WheelLeftFront"/>
+		<axis xyz="0 -1 0"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="RIGHT_DIFFERENTIAL" type="revolute">
+		<origin xyz="0.30402 0.79959 -0.89288" rpy="0 -0 0"/>
+		<parent link="Body_Chassis"/>
+		<child link="Body_RockerRight"/>
+		<axis xyz="0 1 0"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="RIGHT_BOGIE" type="revolute">
+		<origin xyz="-0.754 0.12 0.23" rpy="0 -0 0"/>
+		<parent link="Body_RockerRight"/>
+		<child link="Body_BogieRight"/>
+		<axis xyz="0 1 0"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="RR_STEER" type="revolute">
+		<origin xyz="-0.625 0.14291 0.4" rpy="0 -0 0"/>
+		<parent link="Body_BogieRight"/>
+		<child link="Body_SteerRightRear"/>
+		<axis xyz="0 0 1"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="RR_DRIVE" type="revolute">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_SteerRightRear"/>
+		<child link="Body_WheelRightRear"/>
+		<axis xyz="0 -1 0"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="RM_DRIVE" type="revolute">
+		<origin xyz="0.44998 0.26491 0.4" rpy="0 -0 0"/>
+		<parent link="Body_BogieRight"/>
+		<child link="Body_WheelRightMiddle"/>
+		<axis xyz="0 -1 0"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="RF_STEER" type="revolute">
+		<origin xyz="0.881 0.26291 0.63" rpy="0 -0 0"/>
+		<parent link="Body_RockerRight"/>
+		<child link="Body_SteerRightFront"/>
+		<axis xyz="0 0 1"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="RF_DRIVE" type="revolute">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_SteerRightFront"/>
+		<child link="Body_WheelRightFront"/>
+		<axis xyz="0 -1 0"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="RSM_AZ_ENC" type="revolute">
+		<origin xyz="0.804037 0.559028 -1.91927" rpy="0 -0 3.12414"/>
+		<parent link="Body_Chassis"/>
+		<child link="Body_RSM_AZ"/>
+		<axis xyz="0 0 1"/>
+		<limit lower="0" upper="6.31809" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="RSM_EL_ENC" type="revolute">
+		<origin xyz="0 0 0" rpy="3.14159 -1.55334 3.14159"/>
+		<parent link="Body_RSM_AZ"/>
+		<child link="Body_RSM_EL"/>
+		<axis xyz="0 1 0"/>
+		<limit lower="0" upper="3.1765" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="HGA_AZ" type="revolute">
+		<origin xyz="-0.36998 -0.475 -1.13288" rpy="0 -0 0.436332"/>
+		<parent link="Body_Chassis"/>
+		<child link="Body_HGA_AZ"/>
+		<axis xyz="0 0 1"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="HGA_EL" type="revolute">
+		<origin xyz="0 0 -0.248" rpy="0.785398 -0 0"/>
+		<parent link="Body_HGA_AZ"/>
+		<child link="Body_HGA_EL"/>
+		<axis xyz="1 0 0"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="JointRobotArmBase" type="fixed">
+		<origin xyz="0.09002 0 -1.13338" rpy="0 -0 0"/>
+		<parent link="Body_Chassis"/>
+		<child link="Body_RA_Base"/>
+	</joint>
+	<joint name="JOINT1_ENC" type="revolute">
+		<origin xyz="1.1756 -0.4515 0.3116" rpy="0 -0 0"/>
+		<parent link="Body_RA_Base"/>
+		<child link="Body_RA_Link1"/>
+		<axis xyz="0 0 1"/>
+		<limit lower="-3.145" upper="1.592" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="JOINT2_ENC" type="revolute">
+		<origin xyz="0.166 0 0" rpy="0 -0 0"/>
+		<parent link="Body_RA_Link1"/>
+		<child link="Body_RA_Link2"/>
+		<axis xyz="0 -1 0"/>
+		<limit lower="-3.267" upper="0.126" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="JOINT3_ENC" type="revolute">
+		<origin xyz="0.8194 0 0" rpy="0 -0 0"/>
+		<parent link="Body_RA_Link2"/>
+		<child link="Body_RA_Link3"/>
+		<axis xyz="0 -1 0"/>
+		<limit lower="-2.866" upper="2.866" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="JOINT4_ENC" type="revolute">
+		<origin xyz="0.7533 0 0" rpy="0 -0 0"/>
+		<parent link="Body_RA_Link3"/>
+		<child link="Body_RA_Link4"/>
+		<axis xyz="0 -1 0"/>
+		<limit lower="-0.178" upper="3.669" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="JOINT5_ENC" type="revolute">
+		<origin xyz="-0.1757 0.1791 0" rpy="0 -0 0"/>
+		<parent link="Body_RA_Link4"/>
+		<child link="Body_RA_Link5"/>
+		<axis xyz="0 0 1"/>
+		<limit lower="-0.353" upper="6.636" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="JointTurret" type="fixed">
+		<origin xyz="-2.7386 0.2724 -0.3116" rpy="0 -0 0"/>
+		<parent link="Body_RA_Link5"/>
+		<child link="Body_Turret"/>
+	</joint>
+	<joint name="DRILL_FEED" type="prismatic">
+		<origin xyz="2.5301 -0.272349 -0.0168656" rpy="0 -0 0"/>
+		<parent link="Body_Turret"/>
+		<child link="Body_CorerFeed"/>
+		<axis xyz="1 0 0"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="STABILIZER_LOWER" type="prismatic">
+		<origin xyz="2.5301 -0.272349 -0.0168656" rpy="0 -0 0"/>
+		<parent link="Body_Turret"/>
+		<child link="Body_StabilizerFar"/>
+		<axis xyz="-1 0 0"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="STABILIZER_UPPER" type="prismatic">
+		<origin xyz="2.5301 -0.272349 -0.0168656" rpy="0 -0 0"/>
+		<parent link="Body_Turret"/>
+		<child link="Body_StabilizerNear"/>
+		<axis xyz="-1 0 0"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="WATSON_CAP_ENC" type="revolute">
+		<origin xyz="2.6025 -0.581204 -0.0309103" rpy="0 -0 0"/>
+		<parent link="Body_Turret"/>
+		<child link="Body_WATSON_Cap"/>
+		<axis xyz="0 0 -1"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="SHERLOC_CAP_ENC" type="revolute">
+		<origin xyz="2.86084 -0.58439 0.0124626" rpy="0 -0 0"/>
+		<parent link="Body_Turret"/>
+		<child link="Body_SHERLOC_Cap"/>
+		<axis xyz="0 0 -1"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="Joint_for_Frame_RNAV" type="fixed">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_RNAV"/>
+	</joint>
+	<joint name="Joint_for_Frame_RMECH" type="fixed">
+		<origin xyz="0.09002 0 -1.13338" rpy="0 -0 0"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_RMECH"/>
+	</joint>
+	<joint name="Joint_for_Frame_FHCB" type="fixed">
+		<origin xyz="0.95652 0.074 -0.76858" rpy="0 -0 0"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_FHCB"/>
+	</joint>
+	<joint name="Joint_for_Frame_FHC1" type="fixed">
+		<origin xyz="1.03958 0.226094 -0.760608" rpy="-0.174841 1.117 -0.000247676"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_FHC1"/>
+	</joint>
+	<joint name="Joint_for_Frame_FHC2" type="fixed">
+		<origin xyz="1.05159 -0.002264 -0.754746" rpy="0.174841 1.117 0.000247676"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_FHC2"/>
+	</joint>
+	<joint name="Joint_for_Frame_FHC3" type="fixed">
+		<origin xyz="1.05159 0.150264 -0.754746" rpy="-0.174841 1.117 -0.000247676"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_FHC3"/>
+	</joint>
+	<joint name="Joint_for_Frame_FHC4" type="fixed">
+		<origin xyz="1.03958 -0.078094 -0.760608" rpy="0.174841 1.117 0.000247676"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_FHC4"/>
+	</joint>
+	<joint name="Joint_for_Frame_FHC1_FOV" type="fixed">
+		<origin xyz="1.09534 0.237039 -0.733411" rpy="-0.174841 1.117 -0.000247676"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_FHC1_FOV"/>
+	</joint>
+	<joint name="Joint_for_Frame_FHC2_FOV" type="fixed">
+		<origin xyz="1.10736 -0.0132091 -0.727549" rpy="0.174841 1.117 0.000247676"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_FHC2_FOV"/>
+	</joint>
+	<joint name="Joint_for_Frame_FHC3_FOV" type="fixed">
+		<origin xyz="1.10736 0.161209 -0.727549" rpy="-0.174841 1.117 -0.000247676"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_FHC3_FOV"/>
+	</joint>
+	<joint name="Joint_for_Frame_FHC4_FOV" type="fixed">
+		<origin xyz="1.09534 -0.0890391 -0.733411" rpy="0.174841 1.117 0.000247676"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_FHC4_FOV"/>
+	</joint>
+	<joint name="Joint_for_Frame_RHC1" type="fixed">
+		<origin xyz="-1.00766 -0.467 -0.77468" rpy="-2.99453e-22 0.785336 3.14159"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_RHC1"/>
+	</joint>
+	<joint name="Joint_for_Frame_RHC2" type="fixed">
+		<origin xyz="-1.00766 0.467 -0.77468" rpy="-2.99453e-22 0.785336 3.14159"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_RHC2"/>
+	</joint>
+	<joint name="Joint_for_Frame_RHC1_FOV" type="fixed">
+		<origin xyz="-1.0522 -0.467 -0.73013" rpy="-2.99453e-22 0.785336 3.14159"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_RHC1_FOV"/>
+	</joint>
+	<joint name="Joint_for_Frame_RHC2_FOV" type="fixed">
+		<origin xyz="-1.0522 0.467 -0.73013" rpy="-2.99453e-22 0.785336 3.14159"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_RHC2_FOV"/>
+	</joint>
+	<joint name="Joint_for_Frame_ATS1" type="fixed">
+		<origin xyz="0.846027 0.597543 -1.44188" rpy="1.5708 -0 2.44323"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_ATS1"/>
+	</joint>
+	<joint name="Joint_for_Frame_ATS2" type="fixed">
+		<origin xyz="0.749647 0.576177 -1.49028" rpy="-1.5708 -0 1.13391"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_ATS2"/>
+	</joint>
+	<joint name="Joint_for_Frame_ATS3" type="fixed">
+		<origin xyz="0.816326 0.50341 -1.44188" rpy="1.5708 -0 0.348992"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_ATS3"/>
+	</joint>
+	<joint name="Joint_for_Frame_ATS4" type="fixed">
+		<origin xyz="0.896872 -0.63405 -0.879074" rpy="-1.5708 -0 -1.5708"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_ATS4"/>
+	</joint>
+	<joint name="Joint_for_Frame_ATS5" type="fixed">
+		<origin xyz="0.896872 0.63405 -0.830674" rpy="1.5708 -0 1.5708"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_ATS5"/>
+	</joint>
+	<joint name="Joint_for_Frame_HS" type="fixed">
+		<origin xyz="0.743443 0.576337 -1.50598" rpy="-0.463643 1.57079 0.463643"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_HS"/>
+	</joint>
+	<joint name="Joint_for_Frame_ICU" type="fixed">
+		<origin xyz="0.179008 -0.209 -1.04738" rpy="3.14159 -0 0"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_ICU"/>
+	</joint>
+	<joint name="Joint_for_Frame_RDS" type="fixed">
+		<origin xyz="0.138992 -0.298597 -1.17948" rpy="3.14159 -2.64698e-23 -0.157044"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_RDS"/>
+	</joint>
+	<joint name="Joint_for_Frame_TIRS" type="fixed">
+		<origin xyz="0.802591 0.616374 -1.55388" rpy="0 -0 -1.53621"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_TIRS"/>
+	</joint>
+	<joint name="Joint_for_Frame_WS1" type="fixed">
+		<origin xyz="0.854257 0.597514 -1.59588" rpy="0 -0 0.104166"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_WS1"/>
+	</joint>
+	<joint name="Joint_for_Frame_WS2" type="fixed">
+		<origin xyz="0.801386 0.623898 -1.62438" rpy="0 -0 2.19924"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_WS2"/>
+	</joint>
+	<joint name="Joint_for_Frame_MOXIE" type="fixed">
+		<origin xyz="-0.193552 -0.508 -1.04738" rpy="0 -0 0"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_MOXIE"/>
+	</joint>
+	<joint name="Joint_for_Frame_MI" type="fixed">
+		<origin xyz="0.804037 0.559028 -1.13288" rpy="0 -0 0"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_MI"/>
+	</joint>
+	<joint name="Joint_for_Frame_MAZ" type="fixed">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_RSM_AZ"/>
+		<child link="Frame_MAZ"/>
+	</joint>
+	<joint name="Joint_for_Frame_MEL" type="fixed">
+		<origin xyz="0 0 0" rpy="-1.5708 -0 0"/>
+		<parent link="Body_RSM_EL"/>
+		<child link="Frame_MEL"/>
+	</joint>
+	<joint name="Joint_for_Frame_SCI" type="fixed">
+		<origin xyz="-0.071379 -0.112 -0.114609" rpy="3.14159 -0 0"/>
+		<parent link="Body_RSM_EL"/>
+		<child link="Frame_SCI"/>
+	</joint>
+	<joint name="Joint_for_Frame_SCRMI" type="fixed">
+		<origin xyz="-0.062479 -0.112 -0.213609" rpy="3.14159 -0 0"/>
+		<parent link="Body_RSM_EL"/>
+		<child link="Frame_SCRMI"/>
+	</joint>
+	<joint name="Joint_for_Frame_SCLIBS" type="fixed">
+		<origin xyz="-0.062479 -0.112 -0.213609" rpy="3.14159 -0 0"/>
+		<parent link="Body_RSM_EL"/>
+		<child link="Frame_SCLIBS"/>
+	</joint>
+	<joint name="Joint_for_Frame_SCIR" type="fixed">
+		<origin xyz="-0.062479 -0.112 -0.213609" rpy="3.14159 -0 0"/>
+		<parent link="Body_RSM_EL"/>
+		<child link="Frame_SCIR"/>
+	</joint>
+	<joint name="Joint_for_Frame_MCL" type="fixed">
+		<origin xyz="-0.085135 -0.126634 -0.065127" rpy="0 -0 0.0219954"/>
+		<parent link="Body_RSM_EL"/>
+		<child link="Frame_MCL"/>
+	</joint>
+	<joint name="Joint_for_Frame_MCR" type="fixed">
+		<origin xyz="-0.085134 0.121506 -0.065128" rpy="0 -0 -0.0220028"/>
+		<parent link="Body_RSM_EL"/>
+		<child link="Frame_MCR"/>
+	</joint>
+	<joint name="Joint_for_Frame_NCL" type="fixed">
+		<origin xyz="0.080595 -0.214392 -0.057109" rpy="1.57079 1.57079 1.57079"/>
+		<parent link="Body_RSM_EL"/>
+		<child link="Frame_NCL"/>
+	</joint>
+	<joint name="Joint_for_Frame_NCR" type="fixed">
+		<origin xyz="0.080595 0.209607 -0.057111" rpy="1.57079 1.57079 1.57079"/>
+		<parent link="Body_RSM_EL"/>
+		<child link="Frame_NCR"/>
+	</joint>
+	<joint name="Joint_for_Frame_NCL_FOV" type="fixed">
+		<origin xyz="0.143595 -0.214392 -0.057109" rpy="1.57079 1.57079 1.57079"/>
+		<parent link="Body_RSM_EL"/>
+		<child link="Frame_NCL_FOV"/>
+	</joint>
+	<joint name="Joint_for_Frame_NCR_FOV" type="fixed">
+		<origin xyz="0.143595 0.209607 -0.057111" rpy="1.57079 1.57079 1.57079"/>
+		<parent link="Body_RSM_EL"/>
+		<child link="Frame_NCR_FOV"/>
+	</joint>
+	<joint name="Joint_for_Frame_ROCKER_L" type="fixed">
+		<origin xyz="0 0 0" rpy="-1.5708 -0 0"/>
+		<parent link="Body_RockerLeft"/>
+		<child link="Frame_ROCKER_L"/>
+	</joint>
+	<joint name="Joint_for_Frame_ROCKER_R" type="fixed">
+		<origin xyz="0 0 0" rpy="-1.5708 -0 0"/>
+		<parent link="Body_RockerRight"/>
+		<child link="Frame_ROCKER_R"/>
+	</joint>
+	<joint name="Joint_for_Frame_BOGIE_L" type="fixed">
+		<origin xyz="0 0 0" rpy="-1.5708 -0 0"/>
+		<parent link="Body_BogieLeft"/>
+		<child link="Frame_BOGIE_L"/>
+	</joint>
+	<joint name="Joint_for_Frame_BOGIE_R" type="fixed">
+		<origin xyz="0 0 0" rpy="-1.5708 -0 0"/>
+		<parent link="Body_BogieRight"/>
+		<child link="Frame_BOGIE_R"/>
+	</joint>
+	<joint name="Joint_for_Frame_DIFF" type="fixed">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_Differential"/>
+		<child link="Frame_DIFF"/>
+	</joint>
+	<joint name="Joint_for_Frame_STEER_LF" type="fixed">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_SteerLeftFront"/>
+		<child link="Frame_STEER_LF"/>
+	</joint>
+	<joint name="Joint_for_Frame_STEER_LR" type="fixed">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_SteerLeftRear"/>
+		<child link="Frame_STEER_LR"/>
+	</joint>
+	<joint name="Joint_for_Frame_STEER_RF" type="fixed">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_SteerRightFront"/>
+		<child link="Frame_STEER_RF"/>
+	</joint>
+	<joint name="Joint_for_Frame_STEER_RR" type="fixed">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_SteerRightRear"/>
+		<child link="Frame_STEER_RR"/>
+	</joint>
+	<joint name="Joint_for_Frame_WHEEL_LF" type="fixed">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_WheelLeftFront"/>
+		<child link="Frame_WHEEL_LF"/>
+	</joint>
+	<joint name="Joint_for_Frame_WHEEL_LM" type="fixed">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_WheelLeftMiddle"/>
+		<child link="Frame_WHEEL_LM"/>
+	</joint>
+	<joint name="Joint_for_Frame_WHEEL_LR" type="fixed">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_WheelLeftRear"/>
+		<child link="Frame_WHEEL_LR"/>
+	</joint>
+	<joint name="Joint_for_Frame_WHEEL_RF" type="fixed">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_WheelRightFront"/>
+		<child link="Frame_WHEEL_RF"/>
+	</joint>
+	<joint name="Joint_for_Frame_WHEEL_RM" type="fixed">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_WheelRightMiddle"/>
+		<child link="Frame_WHEEL_RM"/>
+	</joint>
+	<joint name="Joint_for_Frame_WHEEL_RR" type="fixed">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_WheelRightRear"/>
+		<child link="Frame_WHEEL_RR"/>
+	</joint>
+	<joint name="Joint_for_Frame_RIMUA" type="fixed">
+		<origin xyz="0.310906 -0.441586 -1.04738" rpy="0 0 -1.5708"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_RIMUA"/>
+	</joint>
+	<joint name="Joint_for_Frame_RIMUB" type="fixed">
+		<origin xyz="0.403906 -0.441586 -1.04738" rpy="0 0 -1.5708"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_RIMUB"/>
+	</joint>
+	<joint name="Joint_for_Frame_RIMFAX" type="fixed">
+		<origin xyz="-0.79478 0 -0.71724" rpy="-0.686834 -5.55112e-17 1.5708"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_RIMFAX"/>
+	</joint>
+	<joint name="Joint_for_Frame_HGAS" type="fixed">
+		<origin xyz="-0.36998 -0.475 -1.13288" rpy="0 -0 0.436316"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_HGAS"/>
+	</joint>
+	<joint name="Joint_for_Frame_HGAG" type="fixed">
+		<origin xyz="0 0 0" rpy="3.14159 -0 0"/>
+		<parent link="Body_HGA_AZ"/>
+		<child link="Frame_HGAG"/>
+	</joint>
+	<joint name="Joint_for_Frame_ANT" type="fixed">
+		<origin xyz="0.2084 0 0" rpy="2.35619 -0 0"/>
+		<parent link="Body_HGA_EL"/>
+		<child link="Frame_ANT"/>
+	</joint>
+	<joint name="Joint_for_Frame_RA_BASE" type="fixed">
+		<origin xyz="0.967871 -0.561 -0.90838" rpy="0 -0 0"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_RA_BASE"/>
+	</joint>
+	<joint name="Joint_for_Frame_RA1" type="fixed">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_RA_Link1"/>
+		<child link="Frame_RA1"/>
+	</joint>
+	<joint name="Joint_for_Frame_RA2" type="fixed">
+		<origin xyz="0 0 0" rpy="1.5708 -0 0"/>
+		<parent link="Body_RA_Link2"/>
+		<child link="Frame_RA2"/>
+	</joint>
+	<joint name="Joint_for_Frame_RA3" type="fixed">
+		<origin xyz="0 0 0" rpy="1.5708 -0 0"/>
+		<parent link="Body_RA_Link3"/>
+		<child link="Frame_RA3"/>
+	</joint>
+	<joint name="Joint_for_Frame_RA4" type="fixed">
+		<origin xyz="0 0 0" rpy="1.5708 -0 0"/>
+		<parent link="Body_RA_Link4"/>
+		<child link="Frame_RA4"/>
+	</joint>
+	<joint name="Joint_for_Frame_RA5" type="fixed">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_RA_Link5"/>
+		<child link="Frame_RA5"/>
+	</joint>
+	<joint name="Joint_for_Frame_RA6" type="fixed">
+		<origin xyz="0 0 -0.208" rpy="0 -0 0"/>
+		<parent link="Body_RA_Link5"/>
+		<child link="Frame_RA6"/>
+	</joint>
+	<joint name="Joint_for_Frame_TURRET" type="fixed">
+		<origin xyz="0 0 -0.3285" rpy="0 -0 0"/>
+		<parent link="Body_RA_Link5"/>
+		<child link="Frame_TURRET"/>
+	</joint>
+	<joint name="Joint_for_Frame_DOCKING_POST" type="fixed">
+		<origin xyz="0.29715 0 -0.3285" rpy="0 -0 0"/>
+		<parent link="Body_RA_Link5"/>
+		<child link="Frame_DOCKING_POST"/>
+	</joint>
+	<joint name="Joint_for_Frame_DRILL" type="fixed">
+		<origin xyz="0.373 0 -0.3285" rpy="0 -0 0"/>
+		<parent link="Body_RA_Link5"/>
+		<child link="Frame_DRILL"/>
+	</joint>
+	<joint name="Joint_for_Frame_FCS" type="fixed">
+		<origin xyz="-0.37138 0 -0.2704" rpy="0 -0 3.14159"/>
+		<parent link="Body_RA_Link5"/>
+		<child link="Frame_FCS"/>
+	</joint>
+	<joint name="Joint_for_Frame_GDRT" type="fixed">
+		<origin xyz="-0.283436 0.237831 -0.2625" rpy="0 -0 2.44346"/>
+		<parent link="Body_RA_Link5"/>
+		<child link="Frame_GDRT"/>
+	</joint>
+	<joint name="Joint_for_Frame_PIXL" type="fixed">
+		<origin xyz="0 0.3577 -0.3385" rpy="0 -0 1.5708"/>
+		<parent link="Body_RA_Link5"/>
+		<child link="Frame_PIXL"/>
+	</joint>
+	<joint name="Joint_for_Frame_SHERLOC" type="fixed">
+		<origin xyz="0.143585 -0.305411 -0.292126" rpy="0 -0 -1.22173"/>
+		<parent link="Body_RA_Link5"/>
+		<child link="Frame_SHERLOC"/>
+	</joint>
+	<joint name="Joint_for_Frame_WATSON" type="fixed">
+		<origin xyz="-0.115541 -0.317445 -0.342785" rpy="0 0 -1.91986"/>
+		<parent link="Body_RA_Link5"/>
+		<child link="Frame_WATSON"/>
+	</joint>
+	<joint name="Joint_for_Frame_CAL_MC1" type="fixed">
+		<origin xyz="-0.28518 0.414008 -1.30252" rpy="3.14159 -0 0"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_CAL_MC1"/>
+	</joint>
+	<joint name="Joint_for_Frame_CAL_MC2" type="fixed">
+		<origin xyz="-0.23089 0.436008 -1.26302" rpy="3.14159 -0 0"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_CAL_MC2"/>
+	</joint>
+	<joint name="Joint_for_Frame_CAL_SC" type="fixed">
+		<origin xyz="-0.73817 0.5365 -1.29482" rpy="2.26898 -0 1.5708"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_CAL_SC"/>
+	</joint>
+	<joint name="Joint_for_Frame_CAL_PIXL" type="fixed">
+		<origin xyz="-0.1082 -0.01669 -0.025" rpy="0 -0 2.61799"/>
+		<parent link="Body_RA_Link1"/>
+		<child link="Frame_CAL_PIXL"/>
+	</joint>
+	<joint name="Joint_for_Frame_CAL_SHERLOC" type="fixed">
+		<origin xyz="1.32087 0.488 -0.87888" rpy="0 -0 0"/>
+		<parent link="Body_Chassis"/>
+		<child link="Frame_CAL_SHERLOC"/>
+	</joint>
+</robot>

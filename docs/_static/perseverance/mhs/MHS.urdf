@@ -1,0 +1,205 @@
+<?xml version="1.0" ?>
+<!-- This file was generated automatically. [2020_07_14_13_00_00] -->
+<!-- [Tool url: git@github.jpl.nasa.gov:CR/rst.git, branch: dev/working, commit_hash: c6befd6c, commit_time: 2020-07-13 19:17:50 -0700] -->
+
+<robot name="">
+	<link name="root">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Body_MHS_MainBody_v16">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_MHS_MainBody_v16">
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/MHS_MainBody_v16.glb" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_MHS_TopBlades_v16">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_MHS_TopBlades_v16">
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/MHS_TopBlades_v16.glb" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_MHS_BottomBlades_v16">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_MHS_BottomBlades_v16">
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/MHS_BottomBlades_v16.glb" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_Joint_Leg02_Axis">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Body_MHS_Leg02_v16">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_MHS_Leg02_v16">
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/MHS_Leg02_v16.glb" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_Joint_Leg01_Axis">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Body_MHS_Leg01_v16">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_MHS_Leg01_v16">
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/MHS_Leg01_v16.glb" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_Joint_Leg03_Axis">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Body_MHS_Leg03_v16">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_MHS_Leg03_v16">
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/MHS_Leg03_v16.glb" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Body_Joint_Leg04_Axis">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+	</link>
+	<link name="Body_MHS_Leg04_v16">
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<mass value="0"/>
+			<inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+		</inertial>
+		<visual name="VisGeom_MHS_Leg04_v16">
+			<origin xyz="0 0 0" rpy="0 -0 0"/>
+			<geometry>
+				<mesh filename="./meshes/MHS_Leg04_v16.glb" scale="1 1 1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="Frame_MHS_NAVCAM"></link>
+	<joint name="MHS_MainBody_v16" type="fixed">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="root"/>
+		<child link="Body_MHS_MainBody_v16"/>
+	</joint>
+	<joint name="MHS_TopBlades_v16" type="revolute">
+		<origin xyz="0 0 0" rpy="0 -0 0"/>
+		<parent link="Body_MHS_MainBody_v16"/>
+		<child link="Body_MHS_TopBlades_v16"/>
+		<axis xyz="0 0 1"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="MHS_BottomBlades_v16" type="revolute">
+		<origin xyz="0 0 0" rpy="0 -0 0.994839"/>
+		<parent link="Body_MHS_MainBody_v16"/>
+		<child link="Body_MHS_BottomBlades_v16"/>
+		<axis xyz="0 0 1"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="Joint_Leg02_Axis" type="revolute">
+		<origin xyz="-0.0799965 -0.0899998 0.013566" rpy="-0.0338305 -0.721918 0.0511692"/>
+		<parent link="Body_MHS_MainBody_v16"/>
+		<child link="Body_Joint_Leg02_Axis"/>
+		<axis xyz="-1 0 0"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="MHS_Leg02_v16" type="fixed">
+		<origin xyz="0.0544521 0.0879744 -0.0630787" rpy="1.11631e-09 0.722567 -0.0383972"/>
+		<parent link="Body_Joint_Leg02_Axis"/>
+		<child link="Body_MHS_Leg02_v16"/>
+	</joint>
+	<joint name="Joint_Leg01_Axis" type="revolute">
+		<origin xyz="0.0804546 -0.0897671 0.013368" rpy="0.180504 0.364465 0.473174"/>
+		<parent link="Body_MHS_MainBody_v16"/>
+		<child link="Body_Joint_Leg01_Axis"/>
+		<axis xyz="-1 0 0"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="MHS_Leg01_v16" type="fixed">
+		<origin xyz="-0.0239246 0.110467 -0.0439815" rpy="-5.70219e-08 -0.404917 -0.439824"/>
+		<parent link="Body_Joint_Leg01_Axis"/>
+		<child link="Body_MHS_Leg01_v16"/>
+	</joint>
+	<joint name="Joint_Leg03_Axis" type="revolute">
+		<origin xyz="-0.0799965 0.0899998 0.013566" rpy="0.0338306 -0.721918 -0.0511692"/>
+		<parent link="Body_MHS_MainBody_v16"/>
+		<child link="Body_Joint_Leg03_Axis"/>
+		<axis xyz="-1 0 0"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="MHS_Leg03_v16" type="fixed">
+		<origin xyz="0.0544521 -0.0879744 -0.0630787" rpy="9.26579e-09 0.722567 0.0383972"/>
+		<parent link="Body_Joint_Leg03_Axis"/>
+		<child link="Body_MHS_Leg03_v16"/>
+	</joint>
+	<joint name="Joint_Leg04_Axis" type="revolute">
+		<origin xyz="0.0804546 0.0898284 0.013315" rpy="6.77871e-07 0.460765 -0.364774"/>
+		<parent link="Body_MHS_MainBody_v16"/>
+		<child link="Body_Joint_Leg04_Axis"/>
+		<axis xyz="-1 0 0"/>
+		<limit lower="-1.79769e+308" upper="1.79769e+308" effort="1.79769e+308" velocity="1.79769e+308"/>
+	</joint>
+	<joint name="MHS_Leg04_v16" type="fixed">
+		<origin xyz="-0.032699 -0.112619 -0.0310971" rpy="-0.175269 -0.428359 0.402991"/>
+		<parent link="Body_Joint_Leg04_Axis"/>
+		<child link="Body_MHS_Leg04_v16"/>
+	</joint>
+	<joint name="MHS_NAVCAM">
+		<origin xyz="0.0 0.0616891 0.13743" rpy="-0.0027478 0.0580433 -1.57391594"/>
+		<parent link="Body_MHS_MainBody_v16"/>
+		<child link="Frame_MHS_NAVCAM"/>
+	</joint>
+</robot>
