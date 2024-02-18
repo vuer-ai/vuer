@@ -1,4 +1,8 @@
 from cmx import doc
+import os
+from contextlib import nullcontext
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 doc @ """
 # Procedural Rendering (Async)
@@ -7,7 +11,7 @@ Our RPC implementation is very performant. This also support non-blocking, multi
 rendering. To test this, you can fire up a few identical browser sessions.
 """
 
-with doc, doc.skip:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     import asyncio
     from asyncio import sleep
     from io import BytesIO
