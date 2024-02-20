@@ -92,7 +92,7 @@ with doc, doc.skip:
     @app.spawn(start=True)
     async def main(proxy):
         proxy.upsert @ Splat(
-            src="https://docs.vuer.ai/en/latest/_static/gaussian_splatting/art.splat",
+            src="https://docs.vuer.ai/en/{VERSION}/_static/gaussian_splatting/art.splat",
             scale=5,
             position=[0., 0.6, 0.],
             rotation=[90 * 0.01744, -3 * 0.01744, 0 * 0.01744],
