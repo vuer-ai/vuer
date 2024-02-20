@@ -1,6 +1,9 @@
 
 # Collecting Render from a Virtual Camera
 
+## Updates:
+- 2024-02-20: Added depth rendering without needing to change object materials.
+
 ![grab_render_virtual_camera](figures/grab_render_virtual_camera.png)
 
 This example requires saving and loading data from the local disk. 
@@ -38,7 +41,7 @@ In the past we use the "CAMERA_VIEW" event to collect the rendered image. This i
 in the stream="frame" or stream="time" mode. Since these modes offer little control for the backend,
 we offer the synchronous `grab_render` RPC api. This api is only available in the stream="ondemand"
 
-**frame and time mode:**
+## Frame and Time mode
 
 This should not print anything because we set the `CameraView` to stream="ondemand" mode.
 
@@ -50,7 +53,14 @@ async def collect_render(event: ClientEvent, sess: VuerSession):
     print(*event.value.keys(), sep=", ", end="]\r")
 ```
 
-**ondemand mode:**
+## Render `ondemand`
+
+This is the version you should use. It does not render for transmittion
+unless requested. 
+
+A `session.grab_render(key)` rps call will return the rendered image.
+
+Use the `renderDepth` flag to request the depth map. See below:
 
 ```python
 # We don't auto start the vuer app because we need to bind a handler.
