@@ -32,6 +32,7 @@ pip install -U 'vuer[example]=={VERSION}'
 
 Now clone the vuer repo for example code,
 ```shell
+cd ~  # assume working in home directory
 git clone https://github.com/vuer-ai/vuer.git
 ```
 
@@ -52,6 +53,7 @@ git lfs install
 With a working installation of `git lfs`, assets should be put into the same folder where the main `vuer` repo was cloned by running,
 
 ```shell
+cd ~  # assume working in home directory
 git lfs clone https://github.com/vuer-ai/assets
 
 # Download optional assets for all examples
@@ -63,6 +65,7 @@ After this, you can find code included in the [official vuer examples](https://d
 `vuer/docs/examples`. To run the Trimesh examples, do
 
 ```shell
+cd ~  # assume working in home directory
 cd vuer/docs/examples
 python 01_trimesh.py
 ```
