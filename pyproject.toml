@@ -36,7 +36,8 @@ example = [
     "trimesh",
     "cmx",
     "functional_notations",
-    "ml_logger"
+    "ml_logger",
+    "opencv-python"
 ]
 dev = [
     "aiohttp",
