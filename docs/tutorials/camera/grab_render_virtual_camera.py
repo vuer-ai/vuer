@@ -1,6 +1,9 @@
 import os
+from io import BytesIO
 
+import cv2
 from cmx import doc
+from PIL import Image as PImage
 
 doc @ """
 # Collecting Render from a Virtual Camera
@@ -42,13 +45,11 @@ we offer the synchronous `grab_render` RPC api. This api is only available in th
 This should not print anything because we set the `CameraView` to stream="ondemand" mode.
 """
 with doc, doc.skip:
-
     @app.add_handler("CAMERA_VIEW")
     async def collect_render(event: ClientEvent, sess: VuerSession):
         global counter
         print("return render event with keys: [", end="")
         print(*event.value.keys(), sep=", ", end="]\r")
-
 
 doc @ """
 **ondemand mode:**
@@ -58,13 +59,7 @@ with doc, doc.skip:
     @app.spawn(start=True)
     async def show_heatmap(proxy):
         proxy.set @ DefaultScene(
-            Sphere(
-                key="sphere",
-                args=[0.1, 20, 20],
-                position=[0, 0, 0],
-                rotation=[0, 0, 0],
-                materialType="depth",
-            ),
+            Sphere(key="sphere"),
             rawChildren=[
                 CameraView(
                     fov=50,
@@ -77,6 +72,7 @@ with doc, doc.skip:
                     fps=30,
                     near=0.45,
                     far=1.8,
+                    renderDepth=True,
                     showFrustum=True,
                     downsample=1,
                     distanceToCamera=2
@@ -100,7 +96,8 @@ with doc, doc.skip:
                     args=[0.1, 20, 20],
                     position=position,
                     rotation=[0, 0, 0],
-                    materialType="depth",
+                    materialType="standard",
+                    material={"roughness": 0.5, "metalness": 0.5, "color": "red"},
                 ),
                 CameraView(
                     fov=50,
@@ -112,6 +109,7 @@ with doc, doc.skip:
                     fps=30,
                     near=0.45,
                     far=1.8,
+                    renderDepth=True,
                     showFrustum=True,
                     downsample=1,
                     distanceToCamera=2,
@@ -121,10 +119,18 @@ with doc, doc.skip:
             await sleep(0.0)
             try:
                 result = await proxy.grab_render(downsample=1, key="ego")
-                print("you render came back with keys: [", end="")
-                print(*result.value.keys(), sep=", ", end="]\r")
+                print("\ryou render came back with keys: [", end="")
+                print(*result.value.keys(), sep=", ", end="]")
+
+                frame = result.value["depthFrame"] or result.value["frame"]
+                pil_image = PImage.open(BytesIO(frame))
+                img = np.array(pil_image)
+                img_bgr = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                cv2.imshow("monitor", img_bgr)
+                if cv2.waitKey(1) == ord("q"):
+                    exit()
+
             except TimeoutError:
                 print("timed out.")
-
 
 doc.flush()

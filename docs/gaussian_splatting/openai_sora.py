@@ -28,7 +28,7 @@ Download the asset file at {download}`_static/assets/big_sur.splat`
 and run the following code:
 """
 # doc @ """https://vuer.ai/?ws=ws://localhost:8012&position=-0.33,0.75,0.68&rotation=1.31,-3.92,0.44&fov=50"""
-with doc, doc.skip:
+with doc:
     from asyncio import sleep
     from vuer import Vuer
     from vuer.schemas import Splat
@@ -36,11 +36,11 @@ with doc, doc.skip:
     pi = 3.141592653
     app = Vuer()
 
-
+with doc, doc.skip:
     @app.spawn(start=True)
     async def main(proxy):
         proxy.upsert @ Splat(
-            src="https://docs.vuer.ai/en/{VERSION}/_static/assets/big_sur.splat",
+            src="https://docs.vuer.ai/en/{VERSION}/_static/gaussian_splatting/big_sur.splat",
             scale=0.5,
             position=[-0.7, 0.75, 1.58],
             rotation=[75 / 180 * pi, -3.92 / 180 * pi, 25 / 180 * pi],
@@ -62,17 +62,11 @@ Or click on this <a href="https://vuer.ai/?collapseMenu=True&fov=50&scene=3gAEqG
 
 You can also run the following code to load the construction scene.
 """
-with doc.hide:
-    from vuer import Vuer
-
-    pi = 3.141592653
-    app = Vuer()
-
 with doc, doc.skip:
     @app.spawn(start=True)
     async def main(proxy):
         proxy.upsert @ Splat(
-            src="https://docs.vuer.ai/en/{VERSION}/_static/assets/construction.splat",
+            src="https://docs.vuer.ai/en/{VERSION}/_static/gaussian_platting/construction.splat",
             scale=0.5,
             position=[-0.33, 0.39, -0.07],
             rotation=[94 / 180 * pi, -28 / 180 * pi, 134 / 180 * pi],
@@ -81,15 +75,19 @@ with doc, doc.skip:
 
         while True:
             await sleep(10.0)
-doc @ """
+
+scene = ("3gAEqGNoaWxkcmVukd4ABqhjaGlsZHJlbpCjdGFnpVNwbGF0o2tleadiaWdfc3Vyo3NyY9lDaHR"
+         "0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvZ2F1c3NpYW5fc3BsYXR0aW5nL2"
+         "FydC5zcGxhdKVzY2FsZcs%2F4AAAAAAAAKhwb3NpdGlvbpPLv7R64UAAAADLP9PXCkAAAADLv7H"
+         "rhSAAAACsaHRtbENoaWxkcmVukKtyYXdDaGlsZHJlbpCqYmdDaGlsZHJlbpA%3D")
+doc @ f"""
 ## Art Gallery
 
 You can rotate, pan and dolly the camera to view the construction scene from different angles.
 
-<iframe src="https://vuer.ai/?collapseMenu=True&fov=50&scene=" width="100%" height="400" frameborder="0"></iframe>
+<iframe src="https://vuer.ai/?collapseMenu=True&fov=50&grid=False&scene={scene}" width="100%" height="400" frameborder="0"></iframe>
 
-Or click on this <a href="https://vuer.ai/?collapseMenu=True&fov=50&scene=
-">link</a> to visit the scene in full screen.
+Or click on this <a href="https://vuer.ai/?collapseMenu=True&grid=False&fov=50&scene={scene}">link</a> to visit the scene in full screen.
 
 You can also run the following code to load the construction scene.
 """
@@ -97,25 +95,25 @@ with doc, doc.skip:
     @app.spawn(start=True)
     async def main(proxy):
         proxy.upsert @ Splat(
-            src="https://docs.vuer.ai/en/{VERSION}/_static/assets/gaussian_splatting/art.splat",
-            scale=0.5,
-            position=[-0.33, 0.39, -0.07],
-            rotation=[94 / 180 * pi, -28 / 180 * pi, 134 / 180 * pi],
+            src="https://docs.vuer.ai/en/{VERSION}/_static/gaussian_splatting/art.splat",
+            scale=5,
+            position=[0., 0.6, 0.],
+            rotation=[90 * 0.01744, -3 * 0.01744, 0 * 0.01744],
             key="big_sur",
         )
 
         while True:
             await sleep(10.0)
 
-doc @ """
+scene = "3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tlealtaW5lY3JhZnSjc3Jj2UhodHRwczoL2RvY3MudnVlci5haS9lbi9sYXRlc3QvX3N0YXRpYy9nYXVzc2lhbl9zcGxhdHRpbmcvbWluZWNyYWZ0LnNwbHSlc2NhbGXLP%2BAAAAAAAACocG9zaXRpb26Ty7%2B0euFAAAAAyz%2FT1wpAAAAAy7%2Bx64UgAAAAqHJvdGF0aW9uk8s%2F9KYiQAAAAMu%2FyI42gAAAAMs%2F9XxvwAAAAKxodG1sQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVukKpiZ0NoaWxkcmVukA%3D%3D"
+doc @ f"""
 ## Minecraft
 
 You can rotate, pan and dolly the camera to view the construction scene from different angles.
 
-<iframe src="https://vuer.ai/?collapseMenu=True&fov=50&scene=" width="100%" height="400" frameborder="0"></iframe>
+<iframe src="https://vuer.ai/?collapseMenu=True&fov=50&grid=False&scene={scene}" width="100%" height="400" frameborder="0"></iframe>
 
-Or click on this <a href="https://vuer.ai/?collapseMenu=True&fov=50&scene=
-">link</a> to visit the scene in full screen.
+Or click on this <a href="https://vuer.ai/?collapseMenu=True&fov=50&grid=False&scene={scene}">link</a> to visit the scene in full screen.
 
 You can also run the following code to load the construction scene.
 """
@@ -123,11 +121,11 @@ with doc, doc.skip:
     @app.spawn(start=True)
     async def main(proxy):
         proxy.upsert @ Splat(
-            src="https://docs.vuer.ai/en/{VERSION}/_static/assets/gaussian_splatting/minecraft.splat",
+            src="https://docs.vuer.ai/en/latest/_static/gaussian_splatting/minecraft.splt",
             scale=0.5,
-            position=[-0.33, 0.39, -0.07],
-            rotation=[94 / 180 * pi, -28 / 180 * pi, 134 / 180 * pi],
-            key="big_sur",
+            position=[-0.08, 0.31, -0.07],
+            rotation=[74 * 0.01744, -11 * 0.01744, 77 * 0.01744],
+            key="minecraft",
         )
 
         while True:
