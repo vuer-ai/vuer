@@ -21,7 +21,7 @@ To run this python code locally, you need to install the `vuer` package
 pip install 'vuer[all]=={VERSION}'
 ```
 
-Download the asset file at {download}`_static/assets/big_sur.splat`
+Download the asset file at {download}`_static/gaussian_splatting/big_sur.splat`
 
 and run the following code:
 
