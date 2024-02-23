@@ -48,6 +48,7 @@ and run the following code:
 """
 with doc:
     from asyncio import sleep
+    import numpy as np
     from vuer import Vuer
     from vuer.schemas import Splat
 
@@ -58,7 +59,10 @@ with doc:
     @app.spawn(start=True)
     async def main(proxy):
         proxy.upsert @ Splat(
-            src="https://docs.vuer.ai/en/{VERSION}/_static/gaussian_splatting/big-sur.splat",
+            src="https://oasisyang.github.io/colmap-free-3dgs/static/splats/art-museum.splat",
+            scale=0.5,
+            position=[-1.0, 0.85, 1.0],
+            rotation=np.deg2rad([-30.7, -23, -15]).tolist(),
             key="big_sur"
         )
 

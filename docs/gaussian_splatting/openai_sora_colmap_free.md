@@ -46,6 +46,7 @@ and run the following code:
 
 ```python
 from asyncio import sleep
+import numpy as np
 from vuer import Vuer
 from vuer.schemas import Splat
 
