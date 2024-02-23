@@ -281,10 +281,8 @@ class Vuer(PrefixProto, Server):
     """
 
     name = "vuer"
-    uri = "ws://localhost:8012"
     # change to vuer.dash.ml
     domain = "https://vuer.ai"
-    port = 8012
     free_port = True
     static_root = "."
     queue_len = 100  # use a max length to avoid the memory from blowing up.
@@ -431,11 +429,13 @@ class Vuer(PrefixProto, Server):
         Get the URL for the Tassa.
         :return: The URL for the Tassa.
         """
+        uri = f"ws://{self.host}:{self.port}"
+        
         if self.queries:
             query_str = "&".join([f"{k}={v}" for k, v in self.queries.items()])
-            return f"{self.domain}?ws={self.uri}&" + query_str
+            return f"{self.domain}?ws={uri}&" + query_str
 
-        return f"{self.domain}?ws={self.uri}"
+        return f"{self.domain}?ws={uri}"
 
     async def send(self, ws_id, event: ServerEvent = None, event_bytes=None):
         ws = self.ws[ws_id]
