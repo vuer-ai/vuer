@@ -1,4 +1,8 @@
 from cmx import doc
+import os
+from contextlib import nullcontext
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 doc @ """
 # Pointcloud
@@ -13,8 +17,23 @@ We apply a few tricks to make the pointcloud transmit faster. See the [Why is it
 
 You should expect to see a scene that looks like the following:
 ![pointcloud](figures/pointcloud.png)
+
+The second pointcloud should load significantly 
+faster than the first one, due to its smaller size.
+We use half-precision for the vertices, and Uint8
+for the colors. This cuts the overall size by half.
+
+## Why is it so much faster?
+
+```{admonition} Why is it so much faster?
+:class: tip
+We accelerate pointcloud rendeirng by using a custom, half-precision format for the vertices, and Uint8 for the colors. This cuts the overall size by half.
+
+Alternative is to use compression algorithms designed specifically for geometric data (such as [Draco](https://google.github.io/draco/), or just simple LZ4 (or LZW). For depth images, LZW tend to work well due to near-by pixels being highly correlated.
+```
 """
-with doc, doc.skip:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
+    from asyncio import sleep
     from pathlib import Path
 
     import numpy as np
@@ -24,7 +43,7 @@ with doc, doc.skip:
     from vuer.events import Set
     from vuer.schemas import DefaultScene, Ply, PointCloud
 
-    assets_folder = Path(__file__).parent / "../../assets"
+    assets_folder = Path(__file__).parent / "../../../assets"
     test_file = "static_3d/porsche.ply"
 
     # trimesh has issue loading large pointclouds.
@@ -53,34 +72,5 @@ with doc, doc.skip:
             ),
         )
 
-doc @ """
-
-Now remember to add: 
-
-```python
-    # keep the session alive.
-    while True:
-        await sleep(16)
-        
-# now launch the vuer server
-app.run()
-```
-"""
-
-doc @ """
-The second pointcloud should load significantly 
-faster than the first one, due to its smaller size.
-We use half-precision for the vertices, and Uint8
-for the colors. This cuts the overall size by half.
-
-## Why is it so much faster?
-
-```{admonition} Why is it so much faster?
-:class: tip
-We accelerate pointcloud rendeirng by using a custom, half-precision format for the vertices, and Uint8 for the colors. This cuts the overall size by half.
-
-Alternative is to use compression algorithms designed specifically for geometric data (such as [Draco](https://google.github.io/draco/), or just simple LZ4 (or LZW). For depth images, LZW tend to work well due to near-by pixels being highly correlated.
-```
-"""
-
-doc.flush()
+        while True:
+            await sleep(1)

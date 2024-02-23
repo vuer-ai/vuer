@@ -8,46 +8,37 @@ In this simple example, we will load an URDF file of the Mars Rover Perserveranc
 Vuer supports URDF files with mesh files in the following formats: `.dae`, `.stl`, `.obj`, `.ply`. For 
 details on the mesh file formats supported, refer to the Typescript source code.
 
-<iframe src="https://vuer.ai/?background=131416,fff&collapseMenu=true&ws=ws%3A%2F%2Flocalhost%3A8012&scene=3gAJqGNoaWxkcmVukd4ABKhjaGlsZHJlbpHeAAaoY2hpbGRyZW6Qo3RhZ6RVcmRmo2tleaExo3NyY9lSaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL25hc2EtanBsL20yMDIwLXVyZGYtbW9kZWxzL21haW4vcm92ZXIvbTIwMjAudXJkZqtqb2ludFZhbHVlc94AAKhyb3RhdGlvbpPLQAkeuGAAAAAAAKN0YWenTW92YWJsZaNrZXmhMqhwb3NpdGlvbpMAAMs%2FwzMzQAAAAKN0YWelU2NlbmWja2V5oTOidXCTAAABpGdyaWTDqHNob3dMZXZhwqtyYXdDaGlsZHJlbpLeAASoY2hpbGRyZW6Qo3RhZ6xBbWJpZW50TGlnaHSja2V5tWRlZmF1bHRfYW1iaWVudF9saWdodKlpbnRlbnNpdHkB3gAFqGNoaWxkcmVukKN0YWewRGlyZWN0aW9uYWxMaWdodKNrZXm5ZGVmYXVsdF9kaXJlY3Rpb25hbF9saWdodKlpbnRlbnNpdHkBpmhlbHBlcsOsaHRtbENoaWxkcmVukLJiYWNrZ3JvdW5kQ2hpbGRyZW6Q" width="100%" height="400px" frameborder="0"></iframe>
+<iframe src="https://vuer.ai/?background=131416,fff&collapseMenu=true&scene=3gAEqGNoaWxkcmVukt4AB6hjaGlsZHJlbpCjdGFnpFVyZGaja2V5rHBlcnNldmVyYW5jZaNzcmPZRGh0dHBzOi8vZG9jcy52dWVyLmFpL2VuL2xhdGVzdC9fc3RhdGljL3BlcnNldmVyYW5jZS9yb3Zlci9tMjAyMC51cmRmq2pvaW50VmFsdWVz3gAAqHJvdGF0aW9uk8s%2F%2BR64YAAAAAAAqHBvc2l0aW9ukwAAy7%2F4AAAAAAAA3gAHqGNoaWxkcmVukKN0YWekVXJkZqNrZXmvbWFycy1oZWxpY29wdGVyo3NyY9lAaHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvcGVyc2V2ZXJhbmNlL21ocy9NSFMudXJkZqtqb2ludFZhbHVlc94AAKhyb3RhdGlvbpPLP%2FkeuGAAAAAAAKhwb3NpdGlvbpMAyz%2FR64UgAAAAyz%2FgAAAAAAAArGh0bWxDaGlsZHJlbpCrcmF3Q2hpbGRyZW6QqmJnQ2hpbGRyZW6Q" width="100%" height="400px" frameborder="0"></iframe>
 """
 
-with doc:
+with doc, doc.skip:
     from asyncio import sleep
     from vuer import Vuer, VuerSession
-    from vuer.schemas import Urdf, Movable, DefaultScene
+    from vuer.schemas import Urdf
 
     app = Vuer()
 
-    # Use the following to start the server immediately
-    # @app.spawn(start=True)
-    @app.spawn
+
+    @app.spawn(start=True)
     async def main(proxy: VuerSession):
-        proxy.set @ DefaultScene(
-            Movable(
-                Urdf(
-                    src="https://raw.githubusercontent.com/nasa-jpl/m2020-urdf-models/main/rover/m2020.urdf",
-                    jointValues={},
-                    rotation=[3.14, 0, 0],
-                    position=[0, 0, -2],
-                ),
-                position=[0, 0, 2.15],
-            ),
-            grid=True,
-            collapseMenu=False,
+        proxy.upsert @ Urdf(
+            src="https://docs.vuer.ai/en/latest/_static/perseverance/rover/m2020.urdf",
+            jointValues={},
+            rotation=[3.14 / 2, 0, 0],
+            position=[0, 0, -1.5],
+            key="perseverance",
         )
 
+        proxy.upsert @ Urdf(
+            src="https://docs.vuer.ai/en/latest/_static/perseverance/mhs/MHS.urdf",
+            jointValues={},
+            rotation=[3.14 / 2, 0, 0],
+            position=[0, 0.28, 0.5],
+            key="mars-helicopter",
+        )
 
-doc @ """
-Now also:
-
-```python
-    # keep the session alive.
-    while True:
-        await sleep(16)
-
-# Run the app
-app.run()
-```
-"""
+        # keep the session alive.
+        while True:
+            await sleep(10)
 
 doc.flush()

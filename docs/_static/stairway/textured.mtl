@@ -1,0 +1,10 @@
+# Created by Polycam
+# object name: textured
+newmtl textured_0
+Ka 0.000 0.000 0.000
+Kd 1.000 1.000 1.000
+Ks 0.000 0.000 0.000
+Tr 0.000000
+illum 1
+Ns 1.000000
+map_Kd textured_0_tafhfG3a.jpg

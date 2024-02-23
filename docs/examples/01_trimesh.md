@@ -32,6 +32,7 @@ app = Vuer(static_root=assets_folder)
 
 print(f"Loaded mesh with {mesh.vertices.shape} vertices and {mesh.faces.shape} faces")
 
+
 # use `start=True` to start the app immediately
 @app.spawn(start=True)
 async def main(session):

@@ -1,4 +1,8 @@
+import os
 from cmx import doc
+from contextlib import nullcontext
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 doc @ """
 # Trimesh
@@ -7,8 +11,8 @@ This example shows you how to load mesh files in various ways, and how to update
 
 ![](figures/trimesh.png)
 """
-
-with doc, doc.skip:
+# Need to use this hack to make the code works for python < 3.9
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
     from pathlib import Path
 
@@ -34,6 +38,7 @@ with doc, doc.skip:
     app = Vuer(static_root=assets_folder)
 
     print(f"Loaded mesh with {mesh.vertices.shape} vertices and {mesh.faces.shape} faces")
+
 
     # use `start=True` to start the app immediately
     @app.spawn(start=True)
@@ -87,6 +92,3 @@ with doc, doc.skip:
                 color="#23aaff",
             )
             await sleep(0.016)
-
-
-doc.flush()

@@ -9,7 +9,7 @@ Let's first instantiate a local ML-Logger instance.
 from ml_logger import ML_Logger
 from pandas import DataFrame
 
-logger = ML_Logger(root=os.getcwd(), prefix="assets")
+logger = ML_Logger(root=os.path.join(os.getcwd(), '..', '..', '..'), prefix="assets")
 doc.print(logger)
 
 matrices = logger.load_pkl("metrics.pkl")
@@ -17,10 +17,9 @@ matrices = DataFrame(matrices)["matrix"].values.tolist()
 ```
 
 ```
-ML_Logger(root="/Users/ge/mit/vuer/docs/examples",
+ML_Logger(root="/home/roger/vuer-ai/vuer/docs/examples/../../..",
           prefix="assets")
 ```
-
 ```python
 from asyncio import sleep
 from io import BytesIO
@@ -33,7 +32,6 @@ from vuer.events import ClientEvent
 from vuer.schemas import Box, Sphere, DefaultScene, CameraView, Plane
 
 app = Vuer()
-
 
 # We don't auto start the vuer app because we need to bind a handler.
 @app.spawn
@@ -126,9 +124,7 @@ async def show_heatmap(proxy):
 
         await sleep(0.014)
 
-
 counter = 0
-
 
 async def collect_render(event: ClientEvent, sess: VuerSession):
     global counter
@@ -159,4 +155,9 @@ async def track_movement(event: ClientEvent, sess: VuerSession):
         return
     print("camera moved", event.value["matrix"])
     logger.log(**event.value, flush=True, silent=True)
+```
+```python
+app.add_handler("CAMERA_VIEW", collect_render)
+app.add_handler("CAMERA_MOVE", track_movement)
+app.run()
 ```

@@ -1,13 +1,17 @@
 from cmx import doc
+import os
+from contextlib import nullcontext
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 doc @ """
 # Imperative API
 
 """
-with doc, doc.skip:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
 
-    from vuer import Vuer
+    from vuer import Vuer, VuerSession
     from vuer.schemas import (
         Box,
         Sphere,
@@ -60,6 +64,3 @@ with doc, doc.skip:
                 materialType="standard",
             ),
             await sleep(0.014)
-
-
-doc.flush()
