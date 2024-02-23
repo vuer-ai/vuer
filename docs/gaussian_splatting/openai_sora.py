@@ -14,9 +14,9 @@ are the generated 3D Gaussian Splatting models. This page includes four scenes:
 ## Big Sur
 
 Here is a live demo:
-<iframe src="https://vuer.ai/?collapseMenu=True&grid=False&fov=115&scene=3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tleadiaWdfc3Vyo3NyY9k7aHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvYXNzZXRzL2JpZ19zdXIuc3BsYXSlc2NhbGXLP%2BAAAAAAAACocG9zaXRpb26Ty7%2FmZmZgAAAAyz%2FoAAAAAAAAyz%2F5R64gAAAAqHJvdGF0aW9uk8s%2F9PGmwAAAAMu%2FsYPFQAAAAMs%2F2%2BzeYAAAAKxodG1sQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVukKpiZ0NoaWxkcmVukA%3D%3D" width="100%" height="400" frameborder="0"></iframe>
+<iframe src="https://vuer.ai/?collapseMenu=True&grid=False&fov=115&reconnect=0&scene=3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tleadiaWdfc3Vyo3NyY9k7aHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvYXNzZXRzL2JpZ19zdXIuc3BsYXSlc2NhbGXLP%2BAAAAAAAACocG9zaXRpb26Ty7%2FmZmZgAAAAyz%2FoAAAAAAAAyz%2F5R64gAAAAqHJvdGF0aW9uk8s%2F9PGmwAAAAMu%2FsYPFQAAAAMs%2F2%2BzeYAAAAKxodG1sQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVukKpiZ0NoaWxkcmVukA%3D%3D" width="100%" height="400" frameborder="0"></iframe>
 
-can visit: <a href="https://vuer.ai/?collapseMenu=True&grid=False&fov=115&scene=3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tleadiaWdfc3Vyo3NyY9k7aHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvYXNzZXRzL2JpZ19zdXIuc3BsYXSlc2NhbGXLP%2BAAAAAAAACocG9zaXRpb26Ty7%2FmZmZgAAAAyz%2FoAAAAAAAAyz%2F5R64gAAAAqHJvdGF0aW9uk8s%2F9PGmwAAAAMu%2FsYPFQAAAAMs%2F2%2BzeYAAAAKxodG1sQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVukKpiZ0NoaWxkcmVukA%3D%3">link</a>
+can visit: <a href="https://vuer.ai/?collapseMenu=True&grid=False&fov=115&reconnect=0&scene=3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tleadiaWdfc3Vyo3NyY9k7aHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvYXNzZXRzL2JpZ19zdXIuc3BsYXSlc2NhbGXLP%2BAAAAAAAACocG9zaXRpb26Ty7%2FmZmZgAAAAyz%2FoAAAAAAAAyz%2F5R64gAAAAqHJvdGF0aW9uk8s%2F9PGmwAAAAMu%2FsYPFQAAAAMs%2F2%2BzeYAAAAKxodG1sQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVukKpiZ0NoaWxkcmVukA%3D%3">link</a>
 
 To run this python code locally, you need to install the `vuer` package 
 ```shell
@@ -56,9 +56,9 @@ doc @ """
 
 You can rotate, pan and dolly the camera to view the construction scene from different angles.
 
-<iframe src="https://vuer.ai/?collapseMenu=True&fov=50&scene=3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tleadiaWdfc3Vyo3NyY9lAaHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvYXNzZXRzL2NvbnN0cnVjdGlvbi5zcGxhdKVzY2FsZcs%2F4AAAAAAAAKhwb3NpdGlvbpPLv9UeuGAAAADLP9j1woAAAADLv7HrhSAAAACocm90YXRpb26Tyz%2F6P%2B%2FAAAAAy7%2FfRrugAAAAy0ACtb4AAAAArGh0bWxDaGlsZHJlbpCrcmF3Q2hpbGRyZW6QqmJnQ2hpbGRyZW6Q" width="100%" height="400" frameborder="0"></iframe>
+<iframe src="https://vuer.ai/?collapseMenu=True&fov=50&reconnect=0&scene=3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tleadiaWdfc3Vyo3NyY9lAaHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvYXNzZXRzL2NvbnN0cnVjdGlvbi5zcGxhdKVzY2FsZcs%2F4AAAAAAAAKhwb3NpdGlvbpPLv9UeuGAAAADLP9j1woAAAADLv7HrhSAAAACocm90YXRpb26Tyz%2F6P%2B%2FAAAAAy7%2FfRrugAAAAy0ACtb4AAAAArGh0bWxDaGlsZHJlbpCrcmF3Q2hpbGRyZW6QqmJnQ2hpbGRyZW6Q" width="100%" height="400" frameborder="0"></iframe>
 
-Or click on this <a href="https://vuer.ai/?collapseMenu=True&fov=50&scene=3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tleadiaWdfc3Vyo3NyY9lAaHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvYXNzZXRzL2NvbnN0cnVjdGlvbi5zcGxhdKVzY2FsZcs%2F4AAAAAAAAKhwb3NpdGlvbpPLv9UeuGAAAADLP9j1woAAAADLv7HrhSAAAACocm90YXRpb26Tyz%2F6P%2B%2FAAAAAy7%2FfRrugAAAAy0ACtb4AAAAArGh0bWxDaGlsZHJlbpCrcmF3Q2hpbGRyZW6QqmJnQ2hpbGRyZW6Q">link</a> to visit the scene in full screen.
+Or click on this <a href="https://vuer.ai/?collapseMenu=True&fov=50&reconnect=0&scene=3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tleadiaWdfc3Vyo3NyY9lAaHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvYXNzZXRzL2NvbnN0cnVjdGlvbi5zcGxhdKVzY2FsZcs%2F4AAAAAAAAKhwb3NpdGlvbpPLv9UeuGAAAADLP9j1woAAAADLv7HrhSAAAACocm90YXRpb26Tyz%2F6P%2B%2FAAAAAy7%2FfRrugAAAAy0ACtb4AAAAArGh0bWxDaGlsZHJlbpCrcmF3Q2hpbGRyZW6QqmJnQ2hpbGRyZW6Q">link</a> to visit the scene in full screen.
 
 You can also run the following code to load the construction scene.
 """
@@ -82,9 +82,9 @@ doc @ f"""
 
 You can rotate, pan and dolly the camera to view this art gallery scene from different angles.
 
-<iframe src="https://vuer.ai/?collapseMenu=True&fov=50&grid=False&scene={scene}" width="100%" height="400" frameborder="0"></iframe>
+<iframe src="https://vuer.ai/?collapseMenu=True&fov=50&grid=False&reconnect=0&scene={scene}" width="100%" height="400" frameborder="0"></iframe>
 
-Or click on this <a href="https://vuer.ai/?collapseMenu=True&grid=False&fov=50&scene={scene}">link</a> to visit the scene in full screen.
+Or click on this <a href="https://vuer.ai/?collapseMenu=True&grid=False&fov=50&reconnect=0&scene={scene}">link</a> to visit the scene in full screen.
 
 You can also run the following code to load the construction scene.
 """
@@ -108,9 +108,9 @@ doc @ f"""
 
 You can rotate, pan and dolly the camera to view the minecraft scene from different angles.
 
-<iframe src="https://vuer.ai/?collapseMenu=True&fov=50&grid=False&scene={scene}" width="100%" height="400" frameborder="0"></iframe>
+<iframe src="https://vuer.ai/?collapseMenu=True&fov=50&grid=False&reconnect=0&scene={scene}" width="100%" height="400" frameborder="0"></iframe>
 
-Or click on this <a href="https://vuer.ai/?collapseMenu=True&fov=50&grid=False&scene={scene}">link</a> to visit the scene in full screen.
+Or click on this <a href="https://vuer.ai/?collapseMenu=True&fov=50&grid=False&reconnect=0&scene={scene}">link</a> to visit the scene in full screen.
 
 You can also run the following code to load the construction scene.
 """

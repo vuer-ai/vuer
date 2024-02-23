@@ -53,3 +53,17 @@ from vuer.schemas import Splat
 pi = 3.141592653
 app = Vuer()
 ```
+```python
+@app.spawn(start=True)
+async def main(proxy):
+    proxy.upsert @ Splat(
+        src="https://oasisyang.github.io/colmap-free-3dgs/static/splats/art-museum.splat",
+        scale=0.5,
+        position=[-1.0, 0.85, 1.0],
+        rotation=np.deg2rad([-30.7, -23, -15]).tolist(),
+        key="big_sur"
+    )
+
+    while True:
+        await sleep(10.0)
+```
