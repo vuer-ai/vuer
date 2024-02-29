@@ -105,7 +105,7 @@ to documentation and usage examples, simply:
 
 .. code-block:: bash
 
-   pip install -e '.[dev]'
+   pip install -e '.[all]'
    make docs
 
 This should fire up an http server at the port ``8888``, and you can
