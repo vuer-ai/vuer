@@ -1,3 +1,2 @@
 include VERSION
 recursive-include vuer/ *.*
-recursive-include client_build/ *.*

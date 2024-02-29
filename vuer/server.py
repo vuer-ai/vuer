@@ -688,9 +688,9 @@ class Vuer(PrefixProto, Server):
         self._socket("", self.downlink)
 
         # Serve the client build locally.
-        self._static("/client", Path(__file__).parent.parent / "client_build", filename="index.html")
-        self._static("/assets", Path(__file__).parent.parent / "client_build/assets")
-        self._static("/hands", Path(__file__).parent.parent / "client_build/hands")
+        self._static("/client", Path(__file__).parent / "client_build", filename="index.html")
+        self._static("/assets", Path(__file__).parent / "client_build/assets")
+        self._static("/hands", Path(__file__).parent / "client_build/hands")
 
         # serve local files via /static endpoint
         self._static("/static", self.static_root)
