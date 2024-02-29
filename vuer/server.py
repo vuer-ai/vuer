@@ -2,6 +2,7 @@ import asyncio
 from asyncio import sleep
 from collections import deque, defaultdict
 from functools import partial
+from pathlib import Path
 from typing import cast, Callable, Coroutine, Dict
 from uuid import uuid4
 
@@ -488,7 +489,7 @@ class Vuer(PrefixProto, Server):
 
     async def rpc_stream(self, ws_id, event: ServerEvent = None, event_bytes=None):
         """This RPC offers multiple responses."""
-        raise NotImplemented("This is not implemented yet.")
+        raise NotImplementedError("This is not implemented yet.")
 
     async def close_ws(self, ws_id):
         # uplink is moved to the proxy object. Clearned by garbage collection.
@@ -606,10 +607,10 @@ class Vuer(PrefixProto, Server):
             await self.close_ws(ws_id)
 
     def add_handler(
-        self,
-        event_type: str,
-        fn: EventHandler = None,
-        once: bool = False,
+            self,
+            event_type: str,
+            fn: EventHandler = None,
+            once: bool = False,
     ) -> Callable[[], None]:
         """Adding event handlers to the vuer server.
 
@@ -685,6 +686,12 @@ class Vuer(PrefixProto, Server):
             time.sleep(0.01)
 
         self._socket("", self.downlink)
+
+        # Serve the client build locally.
+        self._static("/client", Path(__file__).parent.parent / "client_build", filename="index.html")
+        self._static("/assets", Path(__file__).parent.parent / "client_build/assets")
+        self._static("/hands", Path(__file__).parent.parent / "client_build/hands")
+
         # serve local files via /static endpoint
         self._static("/static", self.static_root)
         print("Serving file://" + os.path.abspath(self.static_root), "at", "/static")

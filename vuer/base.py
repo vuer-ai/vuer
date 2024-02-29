@@ -37,8 +37,10 @@ async def websocket_handler(request, handler, **ws_kwargs):
         print("WebSocket connection closed")
 
 
-async def handle_file_request(request, root):
-    filename = request.match_info["filename"]
+async def handle_file_request(request, root, filename=None):
+    if filename is None:
+        filename = request.match_info["filename"]
+
     filepath = Path(root) / filename
 
     if not filepath.is_file():
@@ -87,8 +89,8 @@ class Server:
         loop = asyncio.get_event_loop()
         loop.create_task(fn, name=name)
 
-    def _static(self, path, root):
-        _fn = partial(handle_file_request, root=root)
+    def _static(self, path, root, filename=None):
+        _fn = partial(handle_file_request, root=root, filename=None)
         self._route(f"{path}/{{filename:.*}}", _fn, method="GET")
 
     def run(self):
