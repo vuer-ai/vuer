@@ -90,7 +90,7 @@ class Server:
         loop.create_task(fn, name=name)
 
     def _static(self, path, root, filename=None):
-        _fn = partial(handle_file_request, root=root, filename=None)
+        _fn = partial(handle_file_request, root=root, filename=filename)
         self._route(f"{path}/{{filename:.*}}", _fn, method="GET")
 
     def run(self):
