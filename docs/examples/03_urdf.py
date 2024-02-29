@@ -1,4 +1,8 @@
 from cmx import doc
+import os
+from contextlib import nullcontext
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 from pathlib import Path
 from asyncio import sleep
@@ -35,7 +39,7 @@ make
 
 And then run the following in the example folder:
 """
-with doc, doc.skip:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     from vuer import Vuer
     from vuer.schemas import Urdf, Movable, DefaultScene
 
@@ -44,7 +48,7 @@ with doc, doc.skip:
     pi = 3.14
 
     @app.spawn(start=True)
-    async def main(proxy):
+    async def main(app):
         app.set @ DefaultScene(
             Movable(
                 Urdf(

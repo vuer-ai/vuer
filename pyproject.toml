@@ -28,6 +28,17 @@ all = [
     "aiohttp-cors",
     "killport",
 ]
+example = [
+    "aiohttp",
+    "aiohttp-cors",
+    "killport",
+    "open3d>=0.15.0,<0.16.0",
+    "trimesh",
+    "cmx",
+    "functional_notations",
+    "ml_logger",
+    "opencv-python"
+]
 dev = [
     "aiohttp",
     "aiohttp-cors",

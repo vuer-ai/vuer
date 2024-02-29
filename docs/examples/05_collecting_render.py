@@ -1,6 +1,8 @@
 import os
 from contextlib import nullcontext
 
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
+
 from cmx import doc
 
 doc @ """
@@ -14,7 +16,7 @@ with doc:
     from ml_logger import ML_Logger
     from pandas import DataFrame
 
-    logger = ML_Logger(root=os.getcwd(), prefix="assets")
+    logger = ML_Logger(root=os.path.join(os.getcwd(), '..', '..', '..'), prefix="assets")
     doc.print(logger)
 
     matrices = logger.load_pkl("metrics.pkl")
@@ -159,8 +161,7 @@ with doc:
         logger.log(**event.value, flush=True, silent=True)
 
 
-# won't run, unless the skip is commented out.
-with doc, nullcontext() if True else doc.skip:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     app.add_handler("CAMERA_VIEW", collect_render)
     app.add_handler("CAMERA_MOVE", track_movement)
     app.run()

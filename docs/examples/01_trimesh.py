@@ -1,26 +1,18 @@
 import os
-import contextlib
-filename = os.path.basename(__file__)
-MD_EXIST_FLAG = os.path.exists(os.path.splitext(filename)[0] + ".md")
+from cmx import doc
+from contextlib import nullcontext
 
-if MD_EXIST_FLAG:
-    context_a, context_b = contextlib.nullcontext(), contextlib.nullcontext()
-else:
-    from cmx import doc
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
-    doc @ """
-    # Trimesh
+doc @ """
+# Trimesh
 
-    This example shows you how to load mesh files in various ways, and how to update the mesh in real-time.
+This example shows you how to load mesh files in various ways, and how to update the mesh in real-time.
 
-    ![](figures/trimesh.png)
-    """
-
-    context_a = doc
-    context_b = doc.skip
-
+![](figures/trimesh.png)
+"""
 # Need to use this hack to make the code works for python < 3.9
-with context_a, context_b:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
     from pathlib import Path
 
@@ -46,6 +38,7 @@ with context_a, context_b:
     app = Vuer(static_root=assets_folder)
 
     print(f"Loaded mesh with {mesh.vertices.shape} vertices and {mesh.faces.shape} faces")
+
 
     # use `start=True` to start the app immediately
     @app.spawn(start=True)
@@ -99,6 +92,3 @@ with context_a, context_b:
                 color="#23aaff",
             )
             await sleep(0.016)
-
-if not MD_EXIST_FLAG:
-    doc.flush()

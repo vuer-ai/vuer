@@ -60,9 +60,11 @@ doc @ """
 This is the version you should use. It does not render for transmittion
 unless requested. 
 
-A `session.grab_render(key)` rps call will return the rendered image.
+A `session.grab_render(key)` rps call will return the rendered image. Use the `renderDepth` flag to request the depth map. See below:
 
-Use the `renderDepth` flag to request the depth map. See below:
+```{admonition} Depth Rendering
+The `renderDepth` flag should be set to `True` to render the depth map.
+```
 """
 with doc, doc.skip:
     # We don't auto start the vuer app because we need to bind a handler.
