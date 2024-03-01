@@ -6,14 +6,15 @@ from pathlib import Path
 from typing import cast, Callable, Coroutine, Dict
 from uuid import uuid4
 
-from aiohttp.web_request import Request
+from aiohttp.hdrs import UPGRADE
+from aiohttp.web_request import Request, BaseRequest
 from aiohttp.web_response import Response
 from aiohttp.web_ws import WebSocketResponse
 from msgpack import packb, unpackb
 from params_proto import Proto, PrefixProto
 from websockets import ConnectionClosedError
 
-from vuer.base import Server
+from vuer.base import Server, handle_file_request, websocket_handler
 from vuer.events import (
     ClientEvent,
     NullEvent,
@@ -248,6 +249,9 @@ class VuerSession:
         yield from self.downlink_queue
 
 
+DEFAULT_PORT = 8012
+
+
 class Vuer(PrefixProto, Server):
     """Vuer Server
 
@@ -282,15 +286,15 @@ class Vuer(PrefixProto, Server):
     """
 
     name = "vuer"
-    uri = "ws://localhost:8012"
-    # change to vuer.dash.ml
     domain = "https://vuer.ai"
-    port = 8012
+    port = DEFAULT_PORT
     free_port = True
     static_root = "."
     queue_len = 100  # use a max length to avoid the memory from blowing up.
     cors = "https://vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
     queries = Proto({}, help="query parameters to pass")
+
+    client_root = Path(__file__).parent / "client_build"
 
     device = "cuda"
 
@@ -432,11 +436,20 @@ class Vuer(PrefixProto, Server):
         Get the URL for the Tassa.
         :return: The URL for the Tassa.
         """
-        if self.queries:
-            query_str = "&".join([f"{k}={v}" for k, v in self.queries.items()])
-            return f"{self.domain}?ws={self.uri}&" + query_str
+        if self.port != DEFAULT_PORT:
+            uri = f"ws://localhost:{self.port}"
 
-        return f"{self.domain}?ws={self.uri}"
+            if self.queries:
+                query_str = "&".join([f"{k}={v}" for k, v in self.queries.items()])
+                return f"{self.domain}?ws={uri}&" + query_str
+
+            return f"{self.domain}?ws={uri}"
+        else:
+            if self.queries:
+                query_str = "&".join([f"{k}={v}" for k, v in self.queries.items()])
+                return f"{self.domain}?" + query_str
+
+            return f"{self.domain}"
 
     async def send(self, ws_id, event: ServerEvent = None, event_bytes=None):
         ws = self.ws[ws_id]
@@ -672,12 +685,31 @@ class Vuer(PrefixProto, Server):
 
         return ttl_handler()
 
+    async def socket_index(self, request: BaseRequest):
+        """This is the relay object for sending events to the server.
+
+        Todo: add API for specifying the websocket ID. Or just broadcast to all.
+        Todo: add type hint
+
+        Interface:
+            <uri>/relay?sid=<websocket_id>
+
+        :return:
+            - Status 200
+            - Status 400
+
+        """
+        headers = request.headers
+        if "websocket" != headers.get(UPGRADE, "").lower().strip():
+            return await handle_file_request(request, self.client_root, filename="index.html")
+        else:
+            return await websocket_handler(request, self.downlink)
+
     def run(self, kill=None, *args, **kwargs):
         import os
 
         # protocol, host, _ = self.uri.split(":")
         # port = int(_)
-
         if kill or self.free_port:
             import time
             from killport import kill_ports
@@ -685,12 +717,14 @@ class Vuer(PrefixProto, Server):
             kill_ports(ports=[self.port])
             time.sleep(0.01)
 
-        self._socket("", self.downlink)
-
         # Serve the client build locally.
-        self._static("/client", Path(__file__).parent / "client_build", filename="index.html")
-        self._static("/assets", Path(__file__).parent / "client_build/assets")
-        self._static("/hands", Path(__file__).parent / "client_build/hands")
+        # self._socket("", self.downlink)
+        # self._static_file("", Path(__file__).parent / "client_build", filename="index.html")
+
+        # use the same endpoint for websocket and file serving.
+        self._route("", self.socket_index, method="GET")
+        self._static("/assets", self.client_root / "assets")
+        self._static("/hands", self.client_root / "hands")
 
         # serve local files via /static endpoint
         self._static("/static", self.static_root)

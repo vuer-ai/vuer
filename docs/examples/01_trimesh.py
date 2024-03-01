@@ -35,7 +35,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         data = f.read()
         text = trimesh.util.decode_text(data)
 
-    app = Vuer(static_root=assets_folder)
+    app = Vuer(static_root=assets_folder, port=8013)
 
     print(f"Loaded mesh with {mesh.vertices.shape} vertices and {mesh.faces.shape} faces")
 

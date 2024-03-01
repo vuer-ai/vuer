@@ -42,10 +42,12 @@ async def handle_file_request(request, root, filename=None):
         filename = request.match_info["filename"]
 
     filepath = Path(root) / filename
+    print(filepath)
 
     if not filepath.is_file():
         raise web.HTTPNotFound()
 
+    print("return the file")
     return web.FileResponse(filepath)
 
 
@@ -82,16 +84,20 @@ class Server:
         ws_handler = partial(
             websocket_handler, handler=handler, max_msg_size=self.WEBSOCKET_MAX_SIZE
         )
-        self._route(path, ws_handler, method="GET")
+        self._route(path, ws_handler)
 
     @staticmethod
     def _add_task(fn: Coroutine, name=None):
         loop = asyncio.get_event_loop()
         loop.create_task(fn, name=name)
 
-    def _static(self, path, root, filename=None):
-        _fn = partial(handle_file_request, root=root, filename=filename)
+    def _static(self, path, root):
+        _fn = partial(handle_file_request, root=root)
         self._route(f"{path}/{{filename:.*}}", _fn, method="GET")
+
+    def _static_file(self, path, root, filename=None):
+        _fn = partial(handle_file_request, root=root, filename=filename)
+        self._route(f"{path}", _fn, method="GET")
 
     def run(self):
         async def init_server():
