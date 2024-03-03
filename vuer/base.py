@@ -42,12 +42,10 @@ async def handle_file_request(request, root, filename=None):
         filename = request.match_info["filename"]
 
     filepath = Path(root) / filename
-    print(filepath)
 
     if not filepath.is_file():
         raise web.HTTPNotFound()
 
-    print("return the file")
     return web.FileResponse(filepath)
 
 
