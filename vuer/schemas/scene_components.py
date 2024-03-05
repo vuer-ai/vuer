@@ -1,7 +1,7 @@
 from typing import List
 
 import numpy as np
-from numpy._typing import NDArray
+from numpy.typing import NDArray
 
 from vuer.schemas.html_components import BlockElement, Image, Element
 
