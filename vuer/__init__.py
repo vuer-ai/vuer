@@ -10,4 +10,6 @@ except ImportError:
         pip install 'vuer[all]'
     
     Use `'` if using zsh since `[` is a special character.
+    
+    Also, we require numpy>=1.21 for numpy.typing.NDArray.
     """)

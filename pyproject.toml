@@ -17,7 +17,7 @@ dependencies = [
     "params-proto>=2.11.16",
     "pillow",
     "msgpack",
-    "numpy",
+    "numpy>=1.21", # because we require numpy.typing.NDArray
     "websockets",
 ]
 
