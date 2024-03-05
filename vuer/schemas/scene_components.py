@@ -1,7 +1,7 @@
 from typing import List
 
 import numpy as np
-from numpy.typing import ArrayLike
+from numpy.typing import NDArray
 
 from vuer.schemas.html_components import BlockElement, Image, Element
 
@@ -115,11 +115,11 @@ class TriMesh(SceneElement):
     tag = "TriMesh"
     children = []
 
-    vertices: ArrayLike[np.float16] = None
+    vertices: NDArray[np.float16] = None
     # note: Uint16 is too few. Quickly overflows
-    faces: ArrayLike[np.uint32] = None
-    colors: ArrayLike[np.uint8] = None
-    uv: ArrayLike[np.float16] = None
+    faces: NDArray[np.uint32] = None
+    colors: NDArray[np.uint8] = None
+    uv: NDArray[np.float16] = None
 
     def __post_init__(self, **kwargs):
         self.vertices = self.vertices.astype(np.float16).flatten().tobytes()
@@ -146,9 +146,9 @@ class PointCloud(SceneElement):
     """PointCould element, highly optimized for payload size and speed.
 
     :param vertices: An optional numpy array of shape (N, 3) containing the vertices of the pointcloud.
-    :type  vertices: ArrayLike[np.float16]
+    :type  vertices: NDArray[np.float16]
     :param colors: An optional numpy array of shape (N, 3) containing the colors of the point cloud.
-    :type  color: ArrayLike[np.uint8]
+    :type  color: NDArray[np.uint8]
     :param size: An optional float that sets the size of the points.
     :type  size: float
     :param key: str An optional string that sets the key of the element.
@@ -166,9 +166,9 @@ class PointCloud(SceneElement):
     """
 
     tag: str = "PointCloud"
-    vertices: ArrayLike[np.float16] = None
+    vertices: NDArray[np.float16] = None
     """An optional numpy array of shape (N, 3) containing the vertices of the point cloud."""
-    colors: ArrayLike[np.uint8] = None
+    colors: NDArray[np.uint8] = None
     """An optional numpy array of shape (N, 3) containing the colors of the point cloud."""
     children = []
 
