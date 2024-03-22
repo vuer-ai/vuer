@@ -216,6 +216,7 @@ class Image(Element):
         *,
         src: str = None,
         format="png",
+        quality=None,
         **kwargs,
     ):
         if src is not None:
@@ -236,7 +237,10 @@ class Image(Element):
                 else:
                     data = (data * 255).astype(np.uint8)
 
-            src = IMAGE_FORMATS[format](data)
+            if quality is not None:
+                src = IMAGE_FORMATS[format](data, quality=quality)
+            else:
+                src = IMAGE_FORMATS[format](data)
 
         super().__init__(src=src, **kwargs)
 
