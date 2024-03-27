@@ -1,0 +1,41 @@
+objects:
+- filename: assets/sofa.glb
+  name: sofa
+  position:
+  - 1
+  - 4
+  size:
+  - 2
+  - 1
+- filename: assets/desk.glb
+  name: computer desk
+  position:
+  - 3
+  - 1
+  size:
+  - 1.5
+  - 1
+- filename: assets/chair.glb
+  name: chair
+  position:
+  - 3.5
+  - 2
+  size:
+  - 0.5
+  - 0.5
+- filename: assets/tv_stand.glb
+  name: tv stand with TV
+  position:
+  - 0.5
+  - 0.5
+  size:
+  - 2
+  - 0.5
+- filename: assets/coffee_table.glb
+  name: coffee_table
+  position:
+  - 1.5
+  - 3
+  size:
+  - 1
+  - 0.5
