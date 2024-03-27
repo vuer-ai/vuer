@@ -485,6 +485,15 @@ class Ply(SceneElement):
 
 
 class Glb(SceneElement):
+    """Glb Component
+
+    # this follows the material type
+    :param materialType: Literal["basic", ...]
+    :param material: {
+      side=0: inside, side=1: outsie, side=2: both.
+    }
+
+    """
     tag = "Glb"
 
 

@@ -100,6 +100,7 @@ For a comprehensive list of data types, please refer to the [API documentation o
    Upsert <examples/05_pointcloud_animation_upsert.md>
    Depth Texture <examples/06_depth_texture.md>
    Background Image <examples/07_background_image.md>
+   Heads Up Display <examples/07b_vr_hud.md>
    Depth Image <examples/08_experimental_depth_image.md>
    Coordinate Markers <examples/11_coordinates_markers.md>
    Arrows <examples/16_arrows.md>

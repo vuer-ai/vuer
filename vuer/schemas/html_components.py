@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Literal
 
 import numpy as np
 from PIL import Image as pil_image
@@ -215,8 +215,8 @@ class Image(Element):
         data: Union[str, np.ndarray, pil_image.Image] = None,
         *,
         src: str = None,
-        format="png",
-        quality=None,
+        format: Literal["png", "jpg", "b64png", "b64jpg"] = "png",
+        quality: int = None,
         **kwargs,
     ):
         if src is not None:
