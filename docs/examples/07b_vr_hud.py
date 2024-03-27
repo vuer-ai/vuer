@@ -35,12 +35,13 @@ with doc, doc.skip:
         sess.set @ Scene()
 
         for i, frame in tqdm(enumerate(reader), desc="playing video"):
-
             # use the upsert(..., to="bgChildren") syntax, so it is in global frame.
             sess.upsert(
                 ImageBackground(
+
                     # Can scale the images down.
                     frame[::1, ::1, :],
+
                     # One of ['b64png', 'png', 'b64jpg', 'jpg']
                     # 'b64png' does not work for some reason, but works for the nerf demo.
                     # 'jpg' encoding is significantly faster than 'png'.
@@ -48,12 +49,25 @@ with doc, doc.skip:
                     quality=20,
                     key="background",
                     interpolate=True,
-                    # fixed=True,
+                    fixed=True,
                     distanceToCamera=1,
+
+                    # can test with matrix
+                    # matrix=[
+                    #     1.2418025750411799, 0, 0, 0,
+                    #     0, 1.5346539759579207, 0, 0,
+                    #     0, 0, 1, 0,
+                    #     0, 0, -3, 1,
+                    # ],
                     position=[0, 0, -3],
-                    rotation=[-0.25, 0, 0],
+                    ### Can also rotate the plane in-place.
+                    # rotation=[-0.25, 0, 0],
                 ),
+                # we place this into the background children list, so that it is
+                # not affected by the global rotation
                 to="bgChildren",
             )
+
             # 'jpg' encoding should give you about 30fps with a 16ms wait in-between.
+            # this is mostly limited by the python server side.
             await sleep(0.016)
