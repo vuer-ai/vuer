@@ -294,6 +294,10 @@ class Vuer(PrefixProto, Server):
     cors = "https://vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
     queries = Proto({}, help="query parameters to pass")
 
+    cert = Proto(None, dtype=str, help="the path to the SSL certificate")
+    key = Proto(None, dtype=str, help="the path to the SSL key")
+    ca_cert = Proto(None, dtype=str, help="the trusted root CA certificates")
+
     client_root = Path(__file__).parent / "client_build"
 
     device = "cuda"
