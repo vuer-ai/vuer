@@ -1,12 +1,12 @@
 import asyncio
+import ssl
 import traceback
-import aiohttp_cors
-
 from collections.abc import Coroutine
 from concurrent.futures import CancelledError
 from functools import partial
 from pathlib import Path
 
+import aiohttp_cors
 from aiohttp import web
 from params_proto import Proto
 
@@ -50,11 +50,16 @@ async def handle_file_request(request, root, filename=None):
 
 
 class Server:
+    """Base TCP server"""
     host = Proto(env="HOST", default="localhost")
     cors = Proto(help="Enable CORS", default="*")
     port = Proto(env="PORT", default=8012)
 
-    WEBSOCKET_MAX_SIZE = 2 ** 28
+    cert = Proto(None, dtype=str, help="the path to the SSL certificate")
+    key = Proto(None, dtype=str, help="the path to the SSL key")
+    ca_cert = Proto(None, dtype=str, help="the trusted root CA certificates")
+
+    WEBSOCKET_MAX_SIZE = 2**28
 
     def __post_init__(self):
         self.app = web.Application()
@@ -70,10 +75,10 @@ class Server:
         self.cors_context = aiohttp_cors.setup(self.app, defaults=cors_config)
 
     def _route(
-            self,
-            path: str,
-            handler: callable,
-            method: str = "GET",
+        self,
+        path: str,
+        handler: callable,
+        method: str = "GET",
     ):
         route = self.app.router.add_resource(path).add_route(method, handler)
         self.cors_context.add(route)
@@ -99,9 +104,22 @@ class Server:
 
     def run(self):
         async def init_server():
+            ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+            ssl_context.load_cert_chain(certfile=self.cert, keyfile=self.key)
+            if self.ca_crt:
+                ssl_context.load_verify_locations(self.ca_crt)
+                ssl_context.verify_mode = ssl.CERT_REQUIRED
+            else:
+                ssl_context.verify_mode = ssl.CERT_OPTIONAL
+
             runner = web.AppRunner(self.app)
             await runner.setup()
-            site = web.TCPSite(runner, self.host, self.port)
+            if self.cert:
+                site = web.TCPSite(
+                    runner, self.host, self.port, ssl_context=ssl_context
+                )
+            else:
+                site = web.TCPSite(runner, self.host, self.port)
             await site.start()
 
             # This print has been very confusing to the user. Remove. - Ge
