@@ -105,9 +105,11 @@ class Server:
     def run(self):
         async def init_server():
             ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+            print(self.cert)
+            print(self.key)
             ssl_context.load_cert_chain(certfile=self.cert, keyfile=self.key)
-            if self.ca_crt:
-                ssl_context.load_verify_locations(self.ca_crt)
+            if self.ca_cert:
+                ssl_context.load_verify_locations(self.ca_cert)
                 ssl_context.verify_mode = ssl.CERT_REQUIRED
             else:
                 ssl_context.verify_mode = ssl.CERT_OPTIONAL
