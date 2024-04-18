@@ -3,7 +3,7 @@ from asyncio import sleep
 from collections import deque, defaultdict
 from functools import partial
 from pathlib import Path
-from typing import cast, Callable, Coroutine, Dict
+from typing import cast, Callable, Dict, Union
 from uuid import uuid4
 
 from aiohttp.hdrs import UPGRADE
@@ -11,7 +11,7 @@ from aiohttp.web_request import Request, BaseRequest
 from aiohttp.web_response import Response
 from aiohttp.web_ws import WebSocketResponse
 from msgpack import packb, unpackb
-from params_proto import Proto, PrefixProto
+from params_proto import Proto, PrefixProto, Flag
 from websockets import ConnectionClosedError
 
 from vuer.base import Server, handle_file_request, websocket_handler
@@ -89,7 +89,9 @@ class VuerSession:
         :return: dqueue
         """
         assert isinstance(event, ServerEvent), "msg must be a ServerEvent type object."
-        assert not isinstance(event, Frame), "Frame event is only used in vuer.bind method."
+        assert not isinstance(
+            event, Frame
+        ), "Frame event is only used in vuer.bind method."
         assert self.CURRENT_WS_ID in self.vuer.ws, "Websocket session is missing."
 
         event_obj = event.serialize()
@@ -106,7 +108,9 @@ class VuerSession:
         :param subsample: The subsample of the render.
         :param ttl: The time to live for the handler. If the handler is not called within the time it gets removed from the handler list.
         """
-        assert self.CURRENT_WS_ID is not None, "Websocket session is missing. CURRENT_WS_ID is None."
+        assert (
+            self.CURRENT_WS_ID is not None
+        ), "Websocket session is missing. CURRENT_WS_ID is None."
 
         event = GrabRender(**kwargs)
 
@@ -285,22 +289,28 @@ class Vuer(PrefixProto, Server):
     .. automethod:: run
     """
 
-    name = "vuer"
-    domain = "https://vuer.ai"
-    port = DEFAULT_PORT
-    free_port = True
-    static_root = "."
-    queue_len = 100  # use a max length to avoid the memory from blowing up.
-    cors = "https://vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
-    queries = Proto({}, help="query parameters to pass")
+    domain = Proto("https://vuer.ai", help="default url of web client")
+    host = Proto("localhost", help="set to 0.0.0.0 to enable remote connections")
+    port = Proto(DEFAULT_PORT, help="port to use")
+    free_port: bool = Flag("Kill what is running on the requested port if True.")
+    static_root: str = Proto(".", help="root for file serving")
+    """todo: we want to support multiple paths."""
+    queue_len: int = Proto(
+        100, help="use a max length to avoid the memory from blowing up."
+    )
+    cors = Proto(
+        "https://vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*",
+        help="domains that are allowed for cross origin requests.",
+    )
+    queries: Dict = Proto({}, help="query parameters to pass")
 
-    cert = Proto(None, dtype=str, help="the path to the SSL certificate")
-    key = Proto(None, dtype=str, help="the path to the SSL key")
-    ca_cert = Proto(None, dtype=str, help="the trusted root CA certificates")
+    cert: str = Proto(None, dtype=str, help="the path to the SSL certificate")
+    key: str = Proto(None, dtype=str, help="the path to the SSL key")
+    ca_cert: str = Proto(None, dtype=str, help="the trusted root CA certificates")
 
-    client_root = Path(__file__).parent / "client_build"
+    client_root: Path = Path(__file__).parent / "client_build"
 
-    device = "cuda"
+    verbose = Flag("Print the settings if True.")
 
     def _proxy(self, ws_id) -> "VuerSession":
         """This is a proxy object that allows us to use the @ notation
@@ -316,6 +326,13 @@ class Vuer(PrefixProto, Server):
 
     def __post_init__(self):
         # todo: what is this?
+
+        if self.verbose:
+            print("========= Arguments =========")
+            for k, v in vars(self).items():
+                print(f" {k} = {v},")
+            print("-----------------------------")
+
         Server.__post_init__(self)
 
         self.handlers = defaultdict(dict)
@@ -460,7 +477,9 @@ class Vuer(PrefixProto, Server):
         ws = self.ws[ws_id]
 
         if event_bytes is None:
-            assert isinstance(event, ServerEvent), "event must be a ServerEvent type object."
+            assert isinstance(
+                event, ServerEvent
+            ), "event must be a ServerEvent type object."
             event_obj = event.serialize()
             event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
         else:
@@ -468,7 +487,7 @@ class Vuer(PrefixProto, Server):
 
         return await ws.send_bytes(event_bytes)
 
-    async def rpc(self, ws_id, event: ServerRPC, ttl=2.0) -> ClientEvent:
+    async def rpc(self, ws_id, event: ServerRPC, ttl=2.0) -> Union[ClientEvent, None]:
         """RPC only takes a single response. For multi-response streaming,
         we need to build a new one
 
@@ -484,7 +503,7 @@ class Vuer(PrefixProto, Server):
         rpc_event = asyncio.Event()
         response = None
 
-        async def response_handler(response_event: ClientEvent, _: "VuerSession") -> Coroutine:
+        async def response_handler(response_event: ClientEvent, _: "VuerSession") -> None:
             nonlocal response
 
             response = response_event
@@ -510,7 +529,7 @@ class Vuer(PrefixProto, Server):
         raise NotImplementedError("This is not implemented yet.")
 
     async def close_ws(self, ws_id):
-        # uplink is moved to the proxy object. Clearned by garbage collection.
+        # uplink is moved to the proxy object. Cleaned by garbage collection.
         # self.uplink_queue.pop(ws_id)
         try:
             ws = self.ws.pop(ws_id)
@@ -625,10 +644,10 @@ class Vuer(PrefixProto, Server):
             await self.close_ws(ws_id)
 
     def add_handler(
-            self,
-            event_type: str,
-            fn: EventHandler = None,
-            once: bool = False,
+        self,
+        event_type: str,
+        fn: EventHandler = None,
+        once: bool = False,
     ) -> Callable[[], None]:
         """Adding event handlers to the vuer server.
 
@@ -706,7 +725,9 @@ class Vuer(PrefixProto, Server):
         """
         headers = request.headers
         if "websocket" != headers.get(UPGRADE, "").lower().strip():
-            return await handle_file_request(request, self.client_root, filename="index.html")
+            return await handle_file_request(
+                request, self.client_root, filename="index.html"
+            )
         else:
             return await websocket_handler(request, self.downlink)
 
