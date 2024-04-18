@@ -1,28 +1,47 @@
 import os
 from contextlib import nullcontext
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", None)
+MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
 from cmx import doc
 
 doc @ """
 # Collecting Render
 
-This example requires saving and loading data from the local disk. 
+This example requires saving and loading data from the local disk. We
+collected these camera pose data from the previous example. If you are
+missing these files, can go back to the previous example to generate
+the `*.pkl` files.
 
-Let's first instantiate a local ML-Logger instance.
+## Loading Camera Trajectory Data
+
+Let's first instantiate a local ML-Logger instance. To install `ml-logger`:
+
+```shell
+conda install pandas pycurl
+pip install ml-logger functional_notations
+```
 """
 with doc:
     from ml_logger import ML_Logger
     from pandas import DataFrame
 
-    logger = ML_Logger(root=os.path.join(os.getcwd(), '..', '..', '..'), prefix="assets")
-    doc.print(logger)
+    logger = ML_Logger(
+        root=os.path.join(os.getcwd(), "..", "..", ".."), prefix="assets"
+    )
 
     matrices = logger.load_pkl("metrics.pkl")
     matrices = DataFrame(matrices)["matrix"].values.tolist()
 
-with (doc):
+doc @ """
+```python
+Out[1]: ML_Logger(root="/some/logging/prefix/path/../../..", 
+                  prefix="assets")
+```
+"""
+
+
+with doc:
     from asyncio import sleep
     from io import BytesIO
 
@@ -53,7 +72,7 @@ with (doc):
                     far=1.8,
                     showFrustum=True,
                     downsample=1,
-                    distanceToCamera=2
+                    distanceToCamera=2,
                     # dpr=1,
                 ),
             ],
@@ -81,14 +100,17 @@ with (doc):
             meterial=dict(color="green", side=2),
         )
 
-        proxy.add @ Sphere(
-            key="sphere",
-            args=[0.1, 200, 200],
-            position=[0.2, 0, 0.1],
-            rotation=[0, 0, 0],
-            materialType="depth",
-            outlines=dict(angle=0, thickness=0.002, color="white"),
-        ),
+        (
+            proxy.add
+            @ Sphere(
+                key="sphere",
+                args=[0.1, 200, 200],
+                position=[0.2, 0, 0.1],
+                rotation=[0, 0, 0],
+                materialType="depth",
+                outlines=dict(angle=0, thickness=0.002, color="white"),
+            ),
+        )
 
         await sleep(0.0)
 
@@ -126,8 +148,23 @@ with (doc):
 
             await sleep(0.014)
 
+doc @ """
+
+```{admonition} The code below is also needed!
+Remember to add the `app.run()` at the end to launch the vuer session!
+all of the code snippets in this example, including the ones below, are
+parts of the script.
+```
+
+## Binding the Camera Movement Handler
+
+We can now add a handler function to collect the camera movement.
+
+"""
+with doc:
     counter = 0
 
+    @app.add_handler("CAMERA_VIEW")
     async def collect_render(event: ClientEvent, sess: VuerSession):
         global counter
         import cv2
@@ -147,12 +184,29 @@ with (doc):
 
 
 doc @ """
-## Collecting User Camera Movement
 
-here is a simple example for logging the camera movement.
+```{admonition} OpenCV waitKey blocks the event loop!
+When you use with a UVC Camera, the `cv2.waitKey` call
+could block the entire event loop. This could cause the
+script to pause. 
+```
+
+## How To Collect Camera Movement
+
+here is a simple example for logging the camera movement. 
+
+```{admonition} Alternative Syntax
+You can also bind to those handler functions via
+
+    app.add_handler("CAMERA_VIEW", collect_render)
+    app.add_handler("CAMERA_MOVE", track_movement)
+
+```
+
 """
 with doc:
 
+    @app.add_handler("CAMERA_MOVE")
     async def track_movement(event: ClientEvent, sess: VuerSession):
         # only intercept the ego camera.
         if event.key != "ego":
@@ -161,9 +215,12 @@ with doc:
         logger.log(**event.value, flush=True, silent=True)
 
 
+doc @ """
+## Starting the Vuer Server
+
+Now finally, you can start the vuer app:
+"""
 with doc, doc.skip if MAKE_DOCS else nullcontext():
-    app.add_handler("CAMERA_VIEW", collect_render)
-    app.add_handler("CAMERA_MOVE", track_movement)
     app.run()
 
 doc.flush()

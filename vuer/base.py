@@ -51,6 +51,7 @@ async def handle_file_request(request, root, filename=None):
 
 class Server:
     """Base TCP server"""
+
     host = Proto(env="HOST", default="localhost")
     cors = Proto(help="Enable CORS", default="*")
     port = Proto(env="PORT", default=8012)
@@ -59,10 +60,19 @@ class Server:
     key = Proto(None, dtype=str, help="the path to the SSL key")
     ca_cert = Proto(None, dtype=str, help="the trusted root CA certificates")
 
-    WEBSOCKET_MAX_SIZE = 2**28
+    WEBSOCKET_MAX_SIZE: int = Proto(
+        2**28,
+        env="WEBSOCKET_MAX_SIZE",
+        help="maximum size for websocket requests.",
+    )
+    REQUEST_MAX_SIZE: int = Proto(
+        2**28,
+        env="REQUEST_MAX_SIZE",
+        help="maximum size for requests.",
+    )
 
     def __post_init__(self):
-        self.app = web.Application()
+        self.app = web.Application(client_max_size=self.REQUEST_MAX_SIZE)
 
         default = aiohttp_cors.ResourceOptions(
             allow_credentials=True,
@@ -104,9 +114,13 @@ class Server:
 
     def run(self):
         async def init_server():
+            runner = web.AppRunner(self.app)
+            await runner.setup()
+            if not self.cert:
+                site = web.TCPSite(runner, self.host, self.port)
+                return await site.start()
+
             ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-            print(self.cert)
-            print(self.key)
             ssl_context.load_cert_chain(certfile=self.cert, keyfile=self.key)
             if self.ca_cert:
                 ssl_context.load_verify_locations(self.ca_cert)
@@ -114,18 +128,8 @@ class Server:
             else:
                 ssl_context.verify_mode = ssl.CERT_OPTIONAL
 
-            runner = web.AppRunner(self.app)
-            await runner.setup()
-            if self.cert:
-                site = web.TCPSite(
-                    runner, self.host, self.port, ssl_context=ssl_context
-                )
-            else:
-                site = web.TCPSite(runner, self.host, self.port)
-            await site.start()
-
-            # This print has been very confusing to the user. Remove. - Ge
-            # print(f"Serving on http://{self.host}:{self.port}")
+            site = web.TCPSite(runner, self.host, self.port, ssl_context=ssl_context)
+            return await site.start()
 
         event_loop = asyncio.get_event_loop()
 

@@ -396,7 +396,8 @@ class Vuer(PrefixProto, Server):
         return loop.create_task(task)
 
     def spawn(self, fn: SocketHandler = None, start=False):
-        """
+        """bind the socket handler function `fn` to vuer, and start
+        the event loop if `start is` `True`.
 
         Note: this is really a misnomer.
 
