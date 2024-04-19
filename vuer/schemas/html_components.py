@@ -1,3 +1,4 @@
+from io import BytesIO
 from typing import Union, Literal
 
 import numpy as np
@@ -214,28 +215,46 @@ class Image(Element):
         self,
         data: Union[str, np.ndarray, pil_image.Image] = None,
         *,
-        src: str = None,
+        src: Union[str, bytes] = None,
         format: Literal["png", "jpg", "b64png", "b64jpg"] = "png",
         quality: int = None,
         **kwargs,
     ):
         if src is not None:
-            assert data is None, "data and src can not be truful at the same time"
-        if data is None:
-            pass
-        elif isinstance(data, list) and len(data) == 0:
-            pass
-        else:
-            if isinstance(data, pil_image.Image):
-                data = data
-            elif isinstance(data, str):
-                # convert back to image first from base64
-                data = pil_image.open(data)
-            elif isinstance(data, np.ndarray):
-                if data.dtype == np.uint8:
-                    pass
-                else:
-                    data = (data * 255).astype(np.uint8)
+            assert data is None, "data and src can not be truthy at the same time"
+            super().__init__(src=src, **kwargs)
+            return
+
+        elif data is None or isinstance(data, list) and len(data) == 0:
+            super().__init__(**kwargs)
+            return
+
+        elif isinstance(data, pil_image.Image):
+            buff = BytesIO()
+            assert not format.startswith(
+                "b64"
+            ), "does not support base64 encoding, use binary."
+            data.save(buff, format=format)
+            binary = buff.getbuffer().tobytes()
+            super().__init__(src=binary, **kwargs)
+            return
+
+        elif isinstance(data, str):
+            buff = BytesIO()
+            img = pil_image.open(data)
+            assert not format.startswith(
+                "b64"
+            ), "does not support base64 encoding, use binary."
+            img.save(buff, format=format)
+            binary = buff.getbuffer().tobytes()
+            super().__init__(src=binary, **kwargs)
+            return
+
+        if isinstance(data, np.ndarray):
+            if data.dtype == np.uint8:
+                pass
+            else:
+                data = (data * 255).astype(np.uint8)
 
             if quality is not None:
                 src = IMAGE_FORMATS[format](data, quality=quality)

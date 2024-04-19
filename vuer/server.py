@@ -246,7 +246,7 @@ class VuerSession:
             return None
 
     def clear(self):
-        "clears all client messages"
+        """clears all client messages"""
         self.downlink_queue.clear()
 
     def stream(self):
@@ -365,15 +365,17 @@ class Vuer(PrefixProto, Server):
             return Response(400)
         elif session_id in self.ws:
             self.send(ws_id=session_id, event_bytes=bytes)
+
             return Response(status=200)
-        elif session_id == "all":
+        elif session_id == "*":
             # print broadcast
             for ws_id in self.ws:
                 try:
                     self.send(ws_id=ws_id, event_bytes=bytes)
                 except Exception as e:
                     print("Exception: ", e)
-                    pass
+                    return Response(status=502, text=str(e))
+
             return Response(status=200)
         else:
             return Response(status=400)
@@ -503,7 +505,9 @@ class Vuer(PrefixProto, Server):
         rpc_event = asyncio.Event()
         response = None
 
-        async def response_handler(response_event: ClientEvent, _: "VuerSession") -> None:
+        async def response_handler(
+            response_event: ClientEvent, _: "VuerSession"
+        ) -> None:
             nonlocal response
 
             response = response_event
