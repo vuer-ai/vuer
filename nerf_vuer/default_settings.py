@@ -110,7 +110,7 @@ RGB_DEFAULT = {
     "alphaThreshold": {"value": 0.0, "min": 0, "max": 1, "step": 0.001, "pad": 4, "label": "ɑ Threshold"},
     "format": {
         "value": "png",
-        "options": ["png", "jpg", "b64png", "b64jpg"],
+        "options": ["png", "jpeg", "b64png", "b64jpeg"],
     },
 }
 

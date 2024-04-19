@@ -216,7 +216,7 @@ class Image(Element):
         data: Union[str, np.ndarray, pil_image.Image] = None,
         *,
         src: Union[str, bytes] = None,
-        format: Literal["png", "jpg", "b64png", "b64jpg"] = "png",
+        format: Literal["png", "jpeg", "b64png", "b64jpeg"] = "png",
         quality: int = None,
         **kwargs,
     ):

@@ -318,7 +318,7 @@ class FeatA(Singleton):
         mask_float = raw_accumulation
         print("raw_accumulation", raw_accumulation.shape)
 
-        format = settings.get("format", "jpg")
+        format = settings.get("format", "jpeg")
 
         return {
             "heatmap": eval(format)(heatmap_rgb),
@@ -411,7 +411,7 @@ class CLIPQueryMap(Singleton):
 
         mask_float = mask.float()[..., None]
 
-        format = settings.get("format", "jpg")
+        format = settings.get("format", "jpeg")
 
         return {
             "heatmap": eval(format)(heatmap_rgb),

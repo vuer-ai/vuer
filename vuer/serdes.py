@@ -41,7 +41,7 @@ def serializer(data):
     # # raise NotImplementedError(f"Cannot serialize {data}")
 
 
-def jpg(image, quality: int = 90):
+def jpeg(image, quality: int = 90):
     """
     base64 encode the image into a string, using JPEG encoding
 
@@ -65,7 +65,7 @@ def png(image):
         return buff.getbuffer().tobytes()
 
 
-def b64jpg(image, quality: int = 90):
+def b64jpeg(image, quality: int = 90):
     """
     base64 encode the image into a string, using JPEG encoding
 
@@ -92,8 +92,8 @@ def b64png(image):
 
 
 IMAGE_FORMATS = {
-    "jpg": jpg,
+    "jpeg": jpeg,
     "png": png,
-    "b64jpg": b64jpg,
+    "b64jpeg": b64jpeg,
     "b64png": b64png,
 }

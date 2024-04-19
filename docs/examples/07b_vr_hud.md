@@ -39,10 +39,10 @@ async def show_heatmap(sess: VuerSession):
                 # Can scale the images down.
                 frame[::1, ::1, :],
 
-                # One of ['b64png', 'png', 'b64jpg', 'jpg']
+                # One of ['b64png', 'png', 'b64jpeg', 'jpeg']
                 # 'b64png' does not work for some reason, but works for the nerf demo.
-                # 'jpg' encoding is significantly faster than 'png'.
-                format="jpg",
+                # 'jpeg' encoding is significantly faster than 'png'.
+                format="jpeg",
                 quality=20,
                 key="background",
                 interpolate=True,
@@ -65,7 +65,7 @@ async def show_heatmap(sess: VuerSession):
             to="bgChildren",
         )
 
-        # 'jpg' encoding should give you about 30fps with a 16ms wait in-between.
+        # 'jpeg' encoding should give you about 30fps with a 16ms wait in-between.
         # this is mostly limited by the python server side.
         await sleep(0.016)
 ```
