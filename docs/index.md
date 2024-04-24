@@ -108,6 +108,7 @@ For a comprehensive list of data types, please refer to the [API documentation o
    360 Image <examples/17_sky_ball.md>
    Movable Handles <examples/18_movable.md>
    Hand Tracking <examples/19_hand_tracking.md>
+   3D Movie <examples/20_3D_movie.md>
    
 .. toctree::
    :maxdepth: 3
