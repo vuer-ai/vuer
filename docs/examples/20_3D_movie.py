@@ -1,10 +1,10 @@
 from cmx import doc
 
 doc @ """
-# Playing 3D Movie in VisionPro
+# Playing 3D Movie in VisionPro and Quest 3
 
 This example shows how to use background images + layers
-to play a 3D movie in the VisionPro.
+to play a 3D movie in the VisionPro and the Quest 3.
 
 Before you start, first run the following script:
 
