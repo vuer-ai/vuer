@@ -1,0 +1,1 @@
+import{j as g,F as h,a as e}from"../chunks/chunk-c676def8.js";function s({is404:d,errorTitle:n,errorDescription:a}){return d?(n??(n="404 Page Not Found"),a??(a="This page could not be found.")):(n??(n="500 Internal Error"),a??(a="Something went wrong.")),g(h,{children:[e("h1",{children:n}),e("p",{children:a})]})}export{s as Page};

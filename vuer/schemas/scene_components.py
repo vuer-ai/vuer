@@ -10,18 +10,18 @@ class Scene(BlockElement):
     tag = "Scene"
 
     def __init__(
-            self,
-            *children,
-            rawChildren=None,
-            htmlChildren=None,
-            bgChildren=None,
-            # default to y-up to be consistent with three.js. Blender uses z-up though.
-            up=[0, 1, 0],
-            # background=None,
-            # bgLight=None,
-            # bgDark=None,
-            # grid=True,
-            **kwargs,
+        self,
+        *children,
+        rawChildren=None,
+        htmlChildren=None,
+        bgChildren=None,
+        # default to y-up to be consistent with three.js. Blender uses z-up though.
+        up=[0, 1, 0],
+        # background=None,
+        # bgLight=None,
+        # bgDark=None,
+        # grid=True,
+        **kwargs,
     ):
         super().__init__(*children, up=up, **kwargs)
         self.rawChildren = rawChildren or []
@@ -291,7 +291,9 @@ class Fog(SceneElement):
 
     def __init__(self, *, children=None, color=None, near=None, far=None, **kwargs):
         assert children is None, "Fog does not support children."
-        super().__init__(attach="fog", key="fog", color=color, near=near, far=far, **kwargs)
+        super().__init__(
+            attach="fog", key="fog", color=color, near=near, far=far, **kwargs
+        )
 
 
 class Wireframe(SceneElement):
@@ -342,6 +344,7 @@ class CameraView(SceneElement):
     :param distanceToCamera: The distance to the camera. Defaults to 2.
     :type distanceToCamera: float, optional
     """
+
     tag = "CameraView"
 
 
@@ -360,6 +363,53 @@ class ImageBackground(Image, SceneElement):
     """
 
     tag = "ImageBackground"
+
+
+class HUDPlane(Image, SceneElement):
+    """A Head-up display (HUD) plane that is always facing the camera. Requires
+    mounting a material."""
+
+    tag = "HUDPlane"
+
+
+class VideoMaterial(Image, SceneElement):
+    """A Video Material for loading from a file hosted at a url."""
+
+    tag = "VideoMaterial"
+
+
+class WebRTCVideoMaterial(Image, SceneElement):
+    """A Video Material for loading from a media stream."""
+
+    tag = "WebRTCVideoMaterial"
+
+
+class VideoPlane(Image, SceneElement):
+    """A Head-up display (HUD) plane that is always facing the camera. Requires
+    mounting a material."""
+
+    tag = "VideoPlane"
+
+
+class WebRTCVideoPlane(Image, SceneElement):
+    """A Head-up display (HUD) plane that is always facing the camera. Requires
+    mounting a material."""
+
+    tag = "WebRTCVideoPlane"
+
+
+class StereoVideoPlane(Image, SceneElement):
+    """A Head-up display (HUD) plane that is always facing the camera. Requires
+    mounting a material."""
+
+    tag = "StereoVideoPlane"
+
+
+class WebRTCStereoVideoPlane(Image, SceneElement):
+    """A Head-up display (HUD) plane that is always facing the camera. Requires
+    mounting a material."""
+
+    tag = "WebRTCStereoVideoPlane"
 
 
 class Gamepads(SceneElement):
@@ -418,14 +468,33 @@ class Movable(SceneElement):
 class Hands(SceneElement):
     tag = "Hands"
 
-    def __init__(self, fps=30, key="hands", eventTypes=('squeeze',), stream=False, left=None, right=None, **kwargs):
-        super().__init__(fps=fps, key=key, eventTypes=eventTypes, stream=stream, left=left, right=right, **kwargs)
+    def __init__(
+        self,
+        fps=30,
+        key="hands",
+        eventTypes=("squeeze",),
+        stream=False,
+        left=None,
+        right=None,
+        **kwargs,
+    ):
+        super().__init__(
+            fps=fps,
+            key=key,
+            eventTypes=eventTypes,
+            stream=stream,
+            left=left,
+            right=right,
+            **kwargs,
+        )
 
 
 class Obj(SceneElement):
     tag = "Obj"
 
-    def __init__(self, src=None, mtl=None, text=None, buff=None, materials=None, **kwargs):
+    def __init__(
+        self, src=None, mtl=None, text=None, buff=None, materials=None, **kwargs
+    ):
         """
         :param src: The source of the obj file. Can be a url or a local file.
         :type  src: str
@@ -494,6 +563,7 @@ class Glb(SceneElement):
     }
 
     """
+
     tag = "Glb"
 
 
@@ -574,21 +644,23 @@ class DefaultScene(Scene):
     """
 
     def __init__(
-            self,
-            *children: SceneElement,
-            rawChildren: List[SceneElement] = None,
-            htmlChildren: List[Element] = None,
-            bgChildren: List[SceneElement] = [],
-            show_helper=True,
-            startStep=0,
-            endStep=None,
-            # default to z-up
-            up=[0, 0, 1],
-            **kwargs,
+        self,
+        *children: SceneElement,
+        rawChildren: List[SceneElement] = None,
+        htmlChildren: List[Element] = None,
+        bgChildren: List[SceneElement] = [],
+        show_helper=True,
+        startStep=0,
+        endStep=None,
+        # default to z-up
+        up=[0, 0, 1],
+        **kwargs,
     ):
         rawChildren = [
             AmbientLight(intensity=1.0, key="default_ambient_light"),
-            DirectionalLight(intensity=1, key="default_directional_light", helper=show_helper),
+            DirectionalLight(
+                intensity=1, key="default_directional_light", helper=show_helper
+            ),
             *(rawChildren or []),
         ]
 
