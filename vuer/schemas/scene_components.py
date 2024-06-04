@@ -412,6 +412,31 @@ class WebRTCStereoVideoPlane(Image, SceneElement):
     tag = "WebRTCStereoVideoPlane"
 
 
+# class ImagePlane(Image, SceneElement):
+#     """For displaying a static image. Just pass in an image object to the first argument."
+#
+#     Untested, not taking in images right now.
+#     ""
+#
+#     tag = "ImagePlane"
+
+
+class Group(SceneElement):
+    tag = "VuerGroup"
+
+
+class HemisphereLight(SceneElement):
+    tag = "HemisphereLight"
+
+
+class RectAreaLight(SceneElement):
+    tag = "RectAreaLight"
+
+
+class Stage(SceneElement):
+    tag = "Stage"
+
+
 class Gamepads(SceneElement):
     tag = "Gamepads"
 
