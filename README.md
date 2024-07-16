@@ -91,7 +91,22 @@ make docs
 ```
 This should fire up an http server at the port `8888`, and you can view the documentation at `http://localhost:8888`.
 
+## To Cite
+
+```bibtex
+@software{vuer,
+  author = {Ge Yang},
+  title = {{VUER}: A 3D Visualization and Data Collection Environment for Robot Learning},
+  version = {},
+  publisher = {GitHub},
+  url = {https://github.com/vuer-ai/vuer},
+  year = {2024}
+}
+```
+
 ## About Us
 
 Vuer is built by researchers at MIT and UCSD in fields including robotics, computer vision, and computer graphics.
+
+
 
