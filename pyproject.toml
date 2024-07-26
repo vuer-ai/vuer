@@ -56,7 +56,7 @@ dev = [
 ]
 
 [project.scripts]
-# Note, add entrypoint name to scripts/completions/install.py to include CLI completion
+# Note, add entrypoint name to scripts/completions/install.py to include CLI percentage
 vuer = "vuer:entrypoint"
 
 [tool.setuptools.packages.find]

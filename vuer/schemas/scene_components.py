@@ -2,7 +2,6 @@ from typing import List
 
 import numpy as np
 from numpy.typing import NDArray
-
 from vuer.schemas.html_components import BlockElement, Image, Element
 
 
@@ -679,10 +678,11 @@ class DefaultScene(Scene):
         endStep=None,
         # default to z-up
         up=[0, 0, 1],
+        grid=True,
         **kwargs,
     ):
         rawChildren = [
-            AmbientLight(intensity=1.0, key="default_ambient_light"),
+            AmbientLight(intensity=0.5, key="default_ambient_light"),
             DirectionalLight(
                 intensity=1, key="default_directional_light", helper=show_helper
             ),
@@ -704,7 +704,7 @@ class DefaultScene(Scene):
                     else None,
                 ],
                 PointerControls(),
-                Grid(),
+                Grid() if grid else None,
                 *bgChildren,
             ],
             up=up,

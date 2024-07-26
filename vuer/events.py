@@ -1,14 +1,21 @@
-from typing import List, Tuple
+from datetime import datetime as Datetime, timedelta as Timedelta
+from typing import List, Union
 from uuid import uuid4
 
-from vuer.schemas import Scene
-from vuer.schemas import Element
+from vuer.schemas import Scene, Element
 from vuer.serdes import serializer
 
 
 class Event:
     """
     An event is a message sent from the server to the client.
+    """
+
+    ts: float
+    """
+    timestamp is a float representing the UTC datetime. Msgpack natively
+    supports this. `datetime`'s Datetime class is significantly more 
+    complex as it includes timezone information.
     """
 
     def __eq__(self, etype):
@@ -26,7 +33,12 @@ class ClientEvent(Event):
     def __repr__(self):
         return f"client<{self.etype}>({self.value})"
 
-    def __init__(self, etype=None, **kwargs):
+    def __init__(self, etype=None, ts=None, **kwargs):
+        if ts is None:
+            self.ts = Datetime.timestamp(Datetime.now())
+        else:
+            self.ts = Datetime.fromtimestamp(ts / 1000)
+
         self.etype = etype
         self.__dict__.update(kwargs)
 
@@ -62,7 +74,13 @@ NULL = NullEvent()
 
 
 class ServerEvent(Event):  # , metaclass=Meta):
-    def __init__(self, data, etype=None, **kwargs):
+    def __init__(
+        self, data, etype=None, ts: Union[Datetime, Timedelta] = None, **kwargs
+    ):
+        if ts is None:
+            self.ts = Datetime.timestamp(Datetime.now())
+        else:
+            self.ts = Datetime.fromtimestamp(ts / 1000)
         self.data = data
 
         if etype is not None:
@@ -144,7 +162,7 @@ class Add(ServerEvent):
     inserts into the root node, but you can specify a parent node to insert into
     via the `to` argument.
 
-    Note: only supports a single parent key right now.
+    Note: only supports a single parent key right timestamp.
 
     Example:
         app.add @ Element(...)
@@ -182,7 +200,7 @@ class Upsert(ServerEvent):
     UPSERT Operator is used to update nodes to new values, when then they do not
     exist, insert new ones to the scene graph.
 
-    Note: only supports a single parent key right now.
+    Note: only supports a single parent key right timestamp.
 
     Example:
         app.upsert @ Element(...)
