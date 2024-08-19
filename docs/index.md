@@ -112,12 +112,12 @@ For a comprehensive list of data types, please refer to the [API documentation o
    
 .. toctree::
    :maxdepth: 3
-   :caption: LucidSim
+   :caption: Textuers and Meshes
    :hidden:
    
-   Sphere Scene <examples/lucidsim/ball_scene.md>
-   Stairs Scene <examples/lucidsim/stairs_scene.md>
-   Adding UV and Texture Map to Trimesh <examples/lucidsim/textured_trimesh.md>
+   Sphere Scene <examples/texture_meshes/ball_scene.md>
+   Stairs Scene <examples/texture_meshes/stairs_scene.md>
+   Adding UV and Texture Map to Trimesh <examples/texture_meshes/textured_trimesh.md>
 
 .. toctree::
    :maxdepth: 3
