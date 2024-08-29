@@ -27,7 +27,7 @@ Here is the what it looks like with the Vision Pro
     :muted:
     :poster: ../_static/19_hand_tracking.png
     :preload: auto
-    :width: '100%'
+    :width: 100%
 ```
 
 The returned data looks like the following:
