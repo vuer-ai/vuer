@@ -32,6 +32,21 @@ Here is the what it looks like with the Vision Pro
     :width: '100%'
 ```
 
+The returned data looks like the following:
+
+```typescript
+/**
+ * Left and right pose are relative to the wrist transformations.
+ */
+export type HandsData = {
+  left?: Float32Array;       // 16 * 25 values. Wrist is always at origin.
+  right?: Float32Array;      // 16 * 25 values. Wrist is always at origin.
+  leftWrist?: Float32Array;  // 16 values.
+  rightWrist?: Float32Array; // 16 values.
+};
+```
+
+The coordinate convention is row-major, Y-up, and the values are in meters.
 """
 
 doc @ """

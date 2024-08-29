@@ -490,6 +490,23 @@ class Movable(SceneElement):
 
 
 class Hands(SceneElement):
+    """
+    The Hand component offers a way to stream the current pose of the hand to the server.
+
+    The return data looks like the following:
+
+    Usage::
+
+        /**
+         * Left and right pose are relative to the wrist transformations.
+         */
+        export type HandsData = {
+          left?: Float32Array;       // 16 * 25 values. Wrist is always at origin.
+          right?: Float32Array;      // 16 * 25 values. Wrist is always at origin.
+          leftWrist?: Float32Array;  // 16 values.
+          rightWrist?: Float32Array; // 16 values.
+        };
+    """
     tag = "Hands"
 
     def __init__(
