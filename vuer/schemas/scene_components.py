@@ -2,6 +2,7 @@ from typing import List
 
 import numpy as np
 from numpy.typing import NDArray
+
 from vuer.schemas.html_components import BlockElement, Image, Element
 
 
@@ -16,16 +17,36 @@ class Scene(BlockElement):
         bgChildren=None,
         # default to y-up to be consistent with three.js. Blender uses z-up though.
         up=[0, 1, 0],
-        # background=None,
-        # bgLight=None,
-        # bgDark=None,
-        # grid=True,
+        grid=True,
+        toneMapping: str = None,
+        toneMappingExposure: float = None,
+        frameloop: Literal["always", "demand"] = None,
+        enableOrbitControl: bool = None,
+        camPosition: List[float] = None,
+        camRotation: List[float] = None,
+        camMatrix: List[float] = None,
         **kwargs,
     ):
         super().__init__(*children, up=up, **kwargs)
         self.rawChildren = rawChildren or []
         self.htmlChildren = htmlChildren or []
         self.bgChildren = bgChildren or []
+        self.up = up
+        self.grid = grid
+
+        if toneMapping is not None:
+            self.toneMapping = toneMapping
+        if toneMappingExposure is not None:
+            self.toneMappingExposure = toneMappingExposure
+
+        if frameloop is not None:
+            self.frameloop = frameloop
+        if enableOrbitControl is not None:
+            self.enableOrbitControl = enableOrbitControl
+        if initCamPosition is not None:
+            self.initCamPosition = initCamPosition
+        if initCamRotation is not None:
+            self.initCamRotation = initCamRotation
 
     def serialize(self):
         obj = super().serialize()
@@ -507,6 +528,7 @@ class Hands(SceneElement):
           rightWrist?: Float32Array; // 16 values.
         };
     """
+
     tag = "Hands"
 
     def __init__(
