@@ -5,7 +5,7 @@ from contextlib import nullcontext
 MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 doc @ """
-# Pointcloud
+# Showing Point Clouds Programmatically and Fast💨
 
 This example shows you two ways to load a pointcloud.
 

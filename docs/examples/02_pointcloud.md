@@ -1,18 +1,19 @@
-
-# Pointcloud
+# Showing Point Clouds Programmatically and Fast💨
 
 This example shows you two ways to load a pointcloud.
 
 In the first example, you serve the pointcloud as an `ply` file, and have the webclient read direclty from your file system.
 
-This approach, however can be a bit slow, and won't work with pointcloud data that are updated at real time. In the second example, you load the pointcloud into python and then send the parsed vertices and the color information via the `PointCloud` component. 
+This approach, however can be a bit slow, and won't work with pointcloud data that are updated at real time. In the second example, you load
+the pointcloud into python and then send the parsed vertices and the color information via the `PointCloud` component.
 
-We apply a few tricks to make the pointcloud transmit faster. See the [Why is it so much faster?](#why-is-it-so-much-faster) section for more details.
+We apply a few tricks to make the pointcloud transmit faster. See the [Why is it so much faster?](#why-is-it-so-much-faster) section for
+more details.
 
 You should expect to see a scene that looks like the following:
 ![pointcloud](figures/pointcloud.png)
 
-The second pointcloud should load significantly 
+The second pointcloud should load significantly
 faster than the first one, due to its smaller size.
 We use half-precision for the vertices, and Uint8
 for the colors. This cuts the overall size by half.
@@ -44,6 +45,7 @@ test_file = "static_3d/porsche.ply"
 pcd = o3d.io.read_point_cloud(str(assets_folder / test_file))
 
 app = Vuer(static_root=assets_folder)
+
 
 @app.spawn(start=True)
 async def main(proxy):
