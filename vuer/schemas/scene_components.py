@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Literal
 
 import numpy as np
 from numpy.typing import NDArray
@@ -21,6 +21,7 @@ class Scene(BlockElement):
         toneMapping: str = None,
         toneMappingExposure: float = None,
         frameloop: Literal["always", "demand"] = None,
+
         enableOrbitControl: bool = None,
         camPosition: List[float] = None,
         camRotation: List[float] = None,
@@ -41,12 +42,13 @@ class Scene(BlockElement):
 
         if frameloop is not None:
             self.frameloop = frameloop
+
         if enableOrbitControl is not None:
             self.enableOrbitControl = enableOrbitControl
-        if initCamPosition is not None:
-            self.initCamPosition = initCamPosition
-        if initCamRotation is not None:
-            self.initCamRotation = initCamRotation
+        if camPosition is not None:
+            self.camPosition = camPosition
+        if camRotation is not None:
+            self.camRotation = camRotation
 
     def serialize(self):
         obj = super().serialize()

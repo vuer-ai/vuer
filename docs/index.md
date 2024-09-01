@@ -1,4 +1,4 @@
-<h1 class="full-width" style="font-size: 49px">Welcome to <code style="font-size: 1.3em; background-clip: text; color: transparent; background-image: linear-gradient(to right, rgb(0,140,220), rgb(226,213,79), rgb(210,0,12));">vuer</code><span style="font-size: 0.3em; margin-left: -0.5em; margin-right:-0.4em;">｣</span></h1>
+span
 
 <link rel="stylesheet" href="_static/title_resize.css">
 
@@ -50,7 +50,6 @@ the [API documentation on Components | vuer](https://docs.vuer.ai/en/latest/api/
 
 For a comprehensive list of data types, please refer to the [API documentation on Data Types](https://docs.vuer.ai/en/latest/api/types.html).
 
-
 <!-- prettier-ignore-start -->
 
 ```{eval-rst}
@@ -87,7 +86,9 @@ For a comprehensive list of data types, please refer to the [API documentation o
    :hidden:
    
    Mesh <examples/01_trimesh.md>
-   Point Cloud <examples/02_pointcloud.md>
+   `Programmatic PointCloud` <examples/02_pointcloud.md>
+   `pcd` files <examples/02_pointcloud_pcd.md>
+   `ply` files <examples/02_pointcloud_ply.md>
    Simpe Plane <examples/13_plane_primitive.md>
    Obj Files <examples/14_obj.md>
    Frustum and Spline <examples/15_spline_frustum.md>
@@ -130,5 +131,5 @@ For a comprehensive list of data types, please refer to the [API documentation o
    vuer.events — Event Types <api/events.md>
    vuer.schemas — Components <api/schemas.md>
    vuer.serdes — Serialization <api/serdes.md>
-    
+  
 ```
