@@ -86,9 +86,9 @@ For a comprehensive list of data types, please refer to the [API documentation o
    :hidden:
    
    Mesh <examples/01_trimesh.md>
-   <bold>Programmatic</bold> PointCloud <examples/02_pointcloud.md>
-   <code>pcd</code> files <examples/02_pointcloud_pcd.md>
-   <code>ply</code> files <examples/02_pointcloud_ply.md>
+   *Programmatic* PointCloud <examples/02_pointcloud.md>
+   ``pcd`` files <examples/02_pointcloud_pcd.md>
+   ``ply`` files <examples/02_pointcloud_ply.md>
    Simpe Plane <examples/13_plane_primitive.md>
    Obj Files <examples/14_obj.md>
    Frustum and Spline <examples/15_spline_frustum.md>
