@@ -37,7 +37,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 position=[0, 0, 0],
                 rotation=[0, 0, 0],
                 materialType="depth",
-                meterial=dict(color="green", side=2),
+                material=dict(color="green", side=2),
             ),
             Sphere(
                 key="sphere",

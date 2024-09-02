@@ -36,7 +36,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             position=[0, 0, 0.1],
             rotation=[0, 0, 0],
             materialType="phong",
-            meterial=dict(color="green"),
+            material=dict(color="green"),
             outlines=dict(angle=0, thickness=0.005, color="white"),
         )
 

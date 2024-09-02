@@ -3,62 +3,7 @@ from typing import List, Literal
 import numpy as np
 from numpy.typing import NDArray
 
-from vuer.schemas.html_components import BlockElement, Image, Element
-
-
-class Scene(BlockElement):
-    tag = "Scene"
-
-    def __init__(
-        self,
-        *children,
-        rawChildren=None,
-        htmlChildren=None,
-        bgChildren=None,
-        # default to y-up to be consistent with three.js. Blender uses z-up though.
-        up=[0, 1, 0],
-        grid=True,
-        toneMapping: str = None,
-        toneMappingExposure: float = None,
-        frameloop: Literal["always", "demand"] = None,
-
-        enableOrbitControl: bool = None,
-        camPosition: List[float] = None,
-        camRotation: List[float] = None,
-        camMatrix: List[float] = None,
-        **kwargs,
-    ):
-        super().__init__(*children, up=up, **kwargs)
-        self.rawChildren = rawChildren or []
-        self.htmlChildren = htmlChildren or []
-        self.bgChildren = bgChildren or []
-        self.up = up
-        self.grid = grid
-
-        if toneMapping is not None:
-            self.toneMapping = toneMapping
-        if toneMappingExposure is not None:
-            self.toneMappingExposure = toneMappingExposure
-
-        if frameloop is not None:
-            self.frameloop = frameloop
-
-        if enableOrbitControl is not None:
-            self.enableOrbitControl = enableOrbitControl
-        if camPosition is not None:
-            self.camPosition = camPosition
-        if camRotation is not None:
-            self.camRotation = camRotation
-
-    def serialize(self):
-        obj = super().serialize()
-        if self.rawChildren:
-            obj["rawChildren"] = [e.serialize() for e in self.rawChildren if e]
-        if self.htmlChildren:
-            obj["htmlChildren"] = [e.serialize() for e in self.htmlChildren if e]
-        if self.bgChildren:
-            obj["bgChildren"] = [e.serialize() for e in self.bgChildren if e]
-        return obj
+from .html_components import BlockElement, Image, Element
 
 
 class SceneElement(BlockElement):
@@ -663,6 +608,69 @@ class TimelineControls(SceneElement):
 class PointerControls(SceneElement):
     tag = "PointerControls"
     # todo: consider adding default component keys here.
+
+
+class Scene(BlockElement):
+    tag = "Scene"
+
+    def __init__(
+        self,
+        *children,
+        rawChildren=None,
+        htmlChildren=None,
+        bgChildren: List[Element] = None,
+        # default to y-up to be consistent with three.js. Blender uses z-up though.
+        up=[0, 1, 0],
+        background=None,
+        grid=True,
+        toneMapping: str = None,
+        toneMappingExposure: float = None,
+        frameloop: Literal["always", "demand"] = None,
+        enableOrbitControl: bool = None,
+        camPosition: List[float] = None,
+        camRotation: List[float] = None,
+        **kwargs,
+    ):
+        super().__init__(*children, up=up, **kwargs)
+        self.rawChildren = rawChildren or []
+        self.htmlChildren = htmlChildren or []
+        # note: empty list switch to default.
+        self.bgChildren = bgChildren or [
+            # use `grid=True` to select the grid component
+            Grid(key="default-grid", _key="default-grid") if grid else None,
+            AmbientLight(key="ambient", intensity=0.25),
+            PointLight(key="spot", intensity=1, position=[0, 1, 1]),
+            Hands(fps=30, eventType=["squeeze"], stream=True),
+        ]
+
+        self.up = up
+        if background:
+            self.background = background
+
+        if toneMapping is not None:
+            self.toneMapping = toneMapping
+        if toneMappingExposure is not None:
+            self.toneMappingExposure = toneMappingExposure
+
+        if frameloop is not None:
+            self.frameloop = frameloop
+
+        if enableOrbitControl is not None:
+            self.enableOrbitControl = enableOrbitControl
+        if camPosition is not None:
+            self.camPosition = camPosition
+        if camRotation is not None:
+            self.camRotation = camRotation
+
+    def serialize(self):
+        obj = super().serialize()
+        if self.rawChildren:
+            obj["rawChildren"] = [e.serialize() for e in self.rawChildren if e]
+        if self.htmlChildren:
+            obj["htmlChildren"] = [e.serialize() for e in self.htmlChildren if e]
+        if self.bgChildren:
+            obj["bgChildren"] = [e.serialize() for e in self.bgChildren if e]
+        return obj
 
 
 class DefaultScene(Scene):
