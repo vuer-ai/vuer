@@ -28,25 +28,23 @@ resize: # from https://stackoverflow.com/a/28221795/1560241
 	convert ./figures/!(*resized).jpg -resize 888x1000 -set filename:f '%t' ./figures/'%[filename:f]_resized.jpg'
 update-doc: convert-rst
 	python setup.py sdist upload
+preview:
+    sphinx-autobuild docs docs/_build/html
 docs:
 	rm -rf docs/_build
 	cd docs && make html
 	cd docs/_build/html && python -m http.server 8888
-prepare-release:
+prepare:
 	-git tag -d v$(VERSION)
 	-git push --delete v$(VERSION)
 	-git tag -d latest
 	-git push --delete latest
-release:
+release: prepare
 	git push
 	git tag v$(VERSION) -m '$(msg)'
 	git tag latest
 	git push origin --tags -f
-publish-no-test: convert-rst
-	make wheel
-	twine upload dist/*
 publish: convert-rst
-	make test
 	make wheel
 	twine upload dist/*
 test:
