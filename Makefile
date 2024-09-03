@@ -29,7 +29,7 @@ resize: # from https://stackoverflow.com/a/28221795/1560241
 update-doc: convert-rst
 	python setup.py sdist upload
 preview:
-    sphinx-autobuild docs docs/_build/html
+	sphinx-autobuild docs docs/_build/html
 docs:
 	rm -rf docs/_build
 	cd docs && make html
