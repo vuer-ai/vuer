@@ -48,6 +48,7 @@ dev = [
     "pytest==7.1.2",
     "sphinx==7.1.2",
     "furo",
+    "sphinx-autobuild",
     "sphinx_copybutton",
     "myst_parser",
     # these are very optional, but needed for the doc site
