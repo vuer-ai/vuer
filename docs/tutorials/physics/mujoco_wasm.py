@@ -31,7 +31,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         # default style.
         sess.set @ Scene(
             # grid=False,
-            backgroundColor
+            # backgroundColor
             bgChildren=[
                 Fog(color=0x2c3f57, near=10, far=20),
                 Sphere(
