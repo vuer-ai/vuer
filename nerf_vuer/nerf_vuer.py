@@ -54,7 +54,7 @@ class RenderVuer(Vuer):
                     # todo: see if we want to add throttling here.
                     # also pass in an event handler.
                     # Use an arrow function to avoid exposing the server instance.
-                    my_task = self.spawn_task(fn_factory(event, lambda e: self @ e))
+                    my_task = self._add_task(fn_factory(event, lambda e: self @ e))
                     await sleep(0.0)
 
             if event == "CAMERA_MOVE":

@@ -14,5 +14,6 @@ In other words, [`vuer.ai`](https://vuer.ai) offers a powerful, component-based 
     :hidden:
 
     Setting Up Your First Scene <basics/setting_a_scene.md>
+    Async Programming 101 <basics/async_programming.md>
 ```
 

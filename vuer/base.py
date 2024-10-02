@@ -101,7 +101,7 @@ class Server:
 
     @staticmethod
     def _add_task(fn: Coroutine, name=None):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         loop.create_task(fn, name=name)
 
     def _static(self, path, root):

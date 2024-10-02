@@ -252,6 +252,39 @@ class VuerSession:
     def stream(self):
         yield from self.downlink_queue
 
+    def spawn_task(self, task, name=None):
+        """Spawn a task in the running asyncio event loop.
+
+        Useful for background tasks. Returns an asyncio task that can be canceled.
+
+        Example Usage:
+
+        .. code-block:: python
+
+            async background_task():
+                print('\rthis ran once')
+
+            async long_running_bg_task():
+                while True:
+                    await asyncio.sleep(1.0)
+                    print("\rlong running background task is still running")
+
+            @app.spawn_task
+            async def main_fn(sess: VuerSession):
+
+                # Prepare background tasks here:
+                task = sess.spawn_task(background_task)
+                long_running_task = sess.spawn_task(long_running_bg_task)
+
+        Now to cancel a running task, simply
+
+        .. code-block:: python
+
+            task.cancel()
+
+        """
+        loop = asyncio.get_running_loop()
+        return loop.create_task(task, name=name)
 
 DEFAULT_PORT = 8012
 
@@ -405,14 +438,10 @@ class Vuer(PrefixProto, Server):
                         print("this handler is gone")
                         continue
 
-                    self.spawn_task(fn_factory(client_event, session_proxy))
+                    self._add_task(fn_factory(client_event, session_proxy))
                     await sleep(0.0)
 
             session_proxy.downlink_queue.append(client_event)
-
-    def spawn_task(self, task):
-        loop = asyncio.get_running_loop()
-        return loop.create_task(task)
 
     def spawn(self, fn: SocketHandler = None, start=False):
         """bind the socket handler function `fn` to vuer, and start
