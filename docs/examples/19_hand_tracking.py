@@ -1,4 +1,9 @@
+import os
+from contextlib import nullcontext
+
 from cmx import doc
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
 doc @ """
 # Hand Tracking
@@ -39,10 +44,8 @@ The returned data looks like the following:
  * Left and right pose are relative to the wrist transformations.
  */
 export type HandsData = {
-  left?: Float32Array;       // 25 * 16 values. Wrist is always at origin.
-  right?: Float32Array;      // 25 * 16 values. Wrist is always at origin.
-  leftWrist?: Float32Array;  // 16 values.
-  rightWrist?: Float32Array; // 16 values.
+  left?: Float32Array;       // 25 * 16 values.
+  right?: Float32Array;      // 25 * 16 values.
 };
 ```
 
@@ -56,16 +59,18 @@ You can get the full pose of the hands by listening to the `HAND_MOVE` event.
 You can add flags `left` and `right` to specify which hand you want to track.
 """
 
-with doc, doc.skip:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     from vuer import Vuer, VuerSession
     from vuer.schemas import Hands
     from asyncio import sleep
 
     app = Vuer()
 
+
     @app.add_handler("HAND_MOVE")
     async def handler(event, session):
         print(f"Movement Event: key-{event.key}", event.value)
+
 
     @app.spawn(start=True)
     async def main(session: VuerSession):
