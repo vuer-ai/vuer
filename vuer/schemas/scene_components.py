@@ -724,7 +724,7 @@ class DefaultScene(Scene):
         startStep=0,
         endStep=None,
         # default to z-up
-        up=[0, 0, 1],
+        up=[0, 1, 0],
         grid=True,
         **kwargs,
     ):

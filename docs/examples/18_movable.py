@@ -1,4 +1,9 @@
+import os
+from contextlib import nullcontext
+
 from cmx import doc
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 doc @ """
 # Movable Grippers (in WebView and VR)
@@ -27,7 +32,7 @@ I plan to make it possible to bind the event listener to
 a specific movable object for a more compact API.
 """
 
-with doc, doc.skip:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     @app.add_handler("OBJECT_MOVE")
     async def handler(event, session):
         print(f"Movement Event: key-{event.key}", event.value)
@@ -36,7 +41,7 @@ doc @ """
 As usual, we spawn the main session:
 """
 
-with doc, doc.skip:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     @app.spawn(start=True)
     async def main(session: VuerSession):
         session.set @ DefaultScene()

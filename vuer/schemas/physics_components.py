@@ -37,3 +37,15 @@ class MuJoCo(SceneElement):
     #     self.fps = fps
     #     self.timeout = timeout
     #     self.keyFrames = keyFrames
+
+
+class HandActuator(SceneElement):
+    tag = "HandActuator"
+
+    ctrlId = -1
+    offset = 0.01
+    low = 0.01
+    high = 1.0
+    cond = 'right-squeeze'
+    value = "right:thumb-tip,right:index-finger-tip"
+    scale = 1.0

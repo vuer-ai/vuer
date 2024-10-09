@@ -9,4 +9,5 @@ The ability to simulate physics in the browser is a powerful tool for robotics. 
     :hidden:
     
     MuJoCo Cassie <physics/mujoco_wasm.md>
+    MoCap Control <physics/mocap_control.md>
 ```

@@ -1,0 +1,22 @@
+<mujoco model="base">
+  <compiler angle="radian" meshdir="assets" texturedir="assets" inertiagrouprange="0 0" autolimits="true"/>
+  <option impratio="20" cone="elliptic" density="1.2" viscosity="0.00002" timestep="0.002"/>
+  <size nconmax="5000" njmax="5000"/>
+
+  <include file="franka_gripper.xml"/>
+
+  <worldbody>
+    <light pos="2.0 -2.0 2.0" dir="0.01 0.01 -1" specular="0.3 0.3 0.3" ambient="0.3 0.3 0.3" diffuse="0.3 0.3 0.3" directional="true"
+           castshadow="false"/>
+
+    <body mocap="true" name="mocap" pos="0 0 0">
+      <site pos="0 0 0.075" size="0.003 0.003 0.1" type="box" name="mocap_left_site1" rgba="0 0 1 1"/>
+      <site pos="0 0.075 0" size="0.003 0.1 0.003" type="box" name="mocap_left_site2" rgba="0 1 0 1"/>
+      <site pos="0.075 0 0" size="0.1 0.003 0.003" type="box" name="mocap_left_site3" rgba="1 0 0 1"/>
+    </body>
+  </worldbody>
+
+  <equality>
+    <weld body1="mocap" body2="hand"/>
+  </equality>
+</mujoco>
