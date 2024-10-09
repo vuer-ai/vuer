@@ -37,10 +37,8 @@ The returned data looks like the following:
  * Left and right pose are relative to the wrist transformations.
  */
 export type HandsData = {
-  left?: Float32Array;       // 25 * 16 values. Wrist is always at origin.
-  right?: Float32Array;      // 25 * 16 values. Wrist is always at origin.
-  leftWrist?: Float32Array;  // 16 values.
-  rightWrist?: Float32Array; // 16 values.
+  left?: Float32Array;       // 25 * 16 values.
+  right?: Float32Array;      // 25 * 16 values.
 };
 ```
 

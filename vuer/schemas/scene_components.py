@@ -463,15 +463,26 @@ class Hands(SceneElement):
 
     The return data looks like the following:
 
-    Usage::
-
+    .. code-block:: typescript
         /**
          * Left and right pose are relative to the wrist transformations.
          */
         export type HandsData = {
-            left?: Float32Array;       // 25 * 16 values. Wrist is always at origin.
-            right?: Float32Array;      // 25 * 16 values. Wrist is always at origin.
+          left?: Float32Array;       // 25 * 16 values.
+          right?: Float32Array;      // 25 * 16 values.
+          leftState: HandState;
+          rightState: HandState;
         };
+
+        export type HandState = {
+          pinch: boolean;
+          squeeze: boolean;
+          tap: boolean;
+
+          pinchValue: number;
+          squeezeValue: number;
+          tapValue: number;
+        }
     """
 
     tag = "Hands"

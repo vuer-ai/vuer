@@ -46,7 +46,19 @@ The returned data looks like the following:
 export type HandsData = {
   left?: Float32Array;       // 25 * 16 values.
   right?: Float32Array;      // 25 * 16 values.
+  leftState: HandState;
+  rightState: HandState;
 };
+
+export type HandState = {
+  pinch: boolean;
+  squeeze: boolean;
+  tap: boolean;
+
+  pinchValue: number;
+  squeezeValue: number;
+  tapValue: number;
+}
 ```
 
 The coordinate convention is row-major, Y-up, and the values are in meters.
