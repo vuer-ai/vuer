@@ -464,6 +464,7 @@ class Hands(SceneElement):
     The return data looks like the following:
 
     .. code-block:: typescript
+
         /**
          * Left and right pose are relative to the wrist transformations.
          */
