@@ -139,6 +139,23 @@ gripper fingers. This is currently hand-specific.
         value = "right:thumb-tip,right:index-finger-tip"
         scale = 1.0
 ```
+
+This correspond to the following actuator definition
+in the MJCF file:
+
+```xml
+...
+      <body name="right_finger" pos="0 0 0.0584" quat="0 0 0 1">
+        <inertial mass="0.015" pos="0 0 0" diaginertia="2.375e-6 2.375e-6 7.5e-7"/>
+        <joint name="finger_joint2" class="finger"/>
+        <geom mesh="finger_0" material="off_white" class="visual"/>
+
+...
+    <!-- Remap original ctrlrange (0, 0.04) to (0, 255): 0.04 * 100 / 255 = 0.01568627451 -->
+    <position ctrllimited="true" ctrlrange="0.001 0.2" joint="finger_joint1" kp="30"
+              gear="3" name="finger_joint"/>
+  </actuator>
+</mujoco>
 """
 
 doc.flush()
