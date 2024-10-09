@@ -156,6 +156,7 @@ in the MJCF file:
               gear="3" name="finger_joint"/>
   </actuator>
 </mujoco>
+```
 """
 
 doc.flush()
