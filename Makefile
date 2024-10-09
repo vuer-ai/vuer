@@ -36,9 +36,9 @@ docs:
 	cd docs/_build/html && python -m http.server 8888
 prepare:
 	-git tag -d v$(VERSION)
-	-git push --delete v$(VERSION)
+	-git push origin --delete v$(VERSION)
 	-git tag -d latest
-	-git push --delete latest
+	-git push origin --delete latest
 release: prepare
 	git push
 	git tag v$(VERSION) -m '$(msg)'
