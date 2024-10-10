@@ -3,7 +3,7 @@ from contextlib import nullcontext
 
 from cmx import doc
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", True)
+MAKE_DOCS = os.getenv("MAKE_DOCS", False)
 
 doc @ """
 # MuJoCo VR Mocap Example
@@ -37,6 +37,8 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         assets/hand_2.obj
         assets/hand_3.obj
         assets/hand_4.obj
+        assets/bin.xml
+        assets/table.xml
         """)
         .strip()
         .split("\n")
@@ -60,23 +62,22 @@ w[ss] in the protocol), and pass it as a query parameter that
 looks like this:
 
       https://vuer.ai?ws=wss://xxxxx.ngrok.io
-      
+
 You also need to load from the correct host.    
 ```
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
     # this won't work because it does not have SSL.
     # host = "http://localhost:8012"
-    host = "https://723fd39939e9.ngrok.app"
+    host = "https://1e68144d6228.ngrok.app"
 
-    asset_pref = f"{host}/static/gripper_model"
+    asset_pref = f"{host}/static/gripper_model/"
 
 doc @ """
 
 Now, to get the mujoco updates, we can listen to the `ON_MUJOCO_FRAME` event.
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
-
     @app.add_handler("ON_MUJOCO_FRAME")
     async def on_mujoco_frame(event: ClientEvent, sess: VuerSession):
         print("ON_MUJOCO_FRAME", event)
