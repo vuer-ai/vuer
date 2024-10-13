@@ -46,6 +46,10 @@ async def main(sess: VuerSession):
     )
 ```
 
+Here would be the result
+
+<iframe src="" title="MuJoCo block stacking example"></iframe>
+
 List of files
 
 - [physics.md](physics.md)
