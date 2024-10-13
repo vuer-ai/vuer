@@ -1,15 +1,13 @@
 # Physics in Mixed Reality
 
-_Physics and Human Data In Mixed Reality, Through Your Browser_
+> _Physics and Human Data In Mixed Reality, Through Your Browser_
 
 The ability to interact with the simulated physics in virtual reality is magical. Vuer has
 recently integrated MuJoCo, a general purpose physics engine that has become a standard in
 robot learning, to directly run it on your device. 
 
 The documentations in this page will show you how to use the physics engine in vuer, to collect
-demonstration data.
-
-From the MuJoCo official repository,
+demonstration data. Now, from the MuJoCo official repository,
 
 > MuJoCo stands for Multi-Joint dynamics with Contact. It is a general purpose physics engine
 > that aims to facilitate research and development in robotics, biomechanics, graphics and
