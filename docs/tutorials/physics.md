@@ -1,6 +1,50 @@
-# Physics In The Browser
+# Physics and Human Data In Mixed Reality, Through Your Browser
 
-The ability to simulate physics in the browser is a powerful tool for robotics. It allows you to test your robot's behavior in a controlled environment before deploying it in the real world. This tutorial will show you how to use the physics engine in the browser to simulate a robot.
+The ability to interact with the simulated physics in virtual reality is magical. Vuer has
+recently integrated MuJoCo, a general purpose physics engine that has become a standard in
+robot learning, to directly run it on your device. 
+
+The documentations in this page will show you how to use the physics engine in vuer, to collect
+demonstration data.
+
+From the MuJoCo official repository,
+
+> MuJoCo stands for Multi-Joint dynamics with Contact. It is a general purpose physics engine
+> that aims to facilitate research and development in robotics, biomechanics, graphics and
+> animation, machine learning, and other areas which demand fast and accurate simulation of
+> articulated structures interacting with their environment.
+
+Recently, MuJoCo was acquired and open-sourced by DeepMind. Since then, the library is accessible 
+to whomever without licence. The MuJoCo running inside vuer is compiled to webAssembly from
+the MuJoCo source code, and aim to be feature complete. In other words, you should be able to do
+everything you can do in MuJoCo with the vuer MuJoCo integration.
+
+## A Simple Example
+
+```python
+from vuer import Vuer, VuerSession
+from vuer.schemas import MuJoCo, HandActuator
+
+app = Vuer(port=8012)
+
+@app.spanw(start=True)
+async def main(sess: VuerSession):
+    print("client is connected!")
+    
+    pref = ""
+
+    sess.upsert @ MuJoCo(
+        HandActuator(key="pinch-on-squeeze"),
+        src="static/scene.xml",
+        assets=[
+            pref + "assets/chair.obj",
+            pref + "assets/table_texture.png",
+            pref + "assets/pot_lid.obj",
+            # ...
+            pref + "emika.xml",
+        ],
+    )
+```
 
 List of files
 
