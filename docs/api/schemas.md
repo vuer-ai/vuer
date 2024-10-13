@@ -23,7 +23,7 @@ vuer.upsert @ Sphere(args=[0.1, 20, 20], position=[0, 0.1, 0], key="sphere")
 .. automodule:: vuer.schemas.html_components
    :members:
    :undoc-members:
-   :exclude-members: __init__, Coroutine, CancelledError, partial, Path
+   :exclude-members: __init__, Coroutine, CancelledError, partial, Path, BytesIO
    :show-inheritance:
 ```
 
@@ -41,6 +41,16 @@ vuer.upsert @ Sphere(args=[0.1, 20, 20], position=[0, 0.1, 0], key="sphere")
 
 ```{eval-rst}
 .. automodule:: vuer.schemas.drei_components
+   :members:
+   :undoc-members:
+   :exclude-members: __init__, Coroutine, CancelledError, partial, Path
+   :show-inheritance:
+```
+
+##  Physics Components
+
+```{eval-rst}
+.. automodule:: vuer.schemas.physics_components
    :members:
    :undoc-members:
    :exclude-members: __init__, Coroutine, CancelledError, partial, Path

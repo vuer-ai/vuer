@@ -89,9 +89,7 @@ class VuerSession:
         :return: dqueue
         """
         assert isinstance(event, ServerEvent), "msg must be a ServerEvent type object."
-        assert not isinstance(
-            event, Frame
-        ), "Frame event is only used in vuer.bind method."
+        assert not isinstance(event, Frame), "Frame event is only used in vuer.bind method."
         assert self.CURRENT_WS_ID in self.vuer.ws, "Websocket session is missing."
 
         event_obj = event.serialize()
@@ -108,9 +106,7 @@ class VuerSession:
         :param subsample: The subsample of the render.
         :param ttl: The time to live for the handler. If the handler is not called within the time it gets removed from the handler list.
         """
-        assert (
-            self.CURRENT_WS_ID is not None
-        ), "Websocket session is missing. CURRENT_WS_ID is None."
+        assert self.CURRENT_WS_ID is not None, "Websocket session is missing. CURRENT_WS_ID is None."
 
         event = GrabRender(**kwargs)
 
@@ -253,25 +249,23 @@ class VuerSession:
         yield from self.downlink_queue
 
     def spawn_task(self, task, name=None):
-        """Spawn a task in the running asyncio event loop.
+        """Spawn a task in the running asyncio event loop
 
         Useful for background tasks. Returns an asyncio task that can be canceled.
 
-        Example Usage:
-
         .. code-block:: python
+            :linenos:
 
             async background_task():
-                print('\rthis ran once')
+                print('\\rthis ran once')
 
             async long_running_bg_task():
                 while True:
                     await asyncio.sleep(1.0)
-                    print("\rlong running background task is still running")
+                    print("\\rlong running background task is still running")
 
             @app.spawn_task
             async def main_fn(sess: VuerSession):
-
                 # Prepare background tasks here:
                 task = sess.spawn_task(background_task)
                 long_running_task = sess.spawn_task(long_running_bg_task)
@@ -279,12 +273,17 @@ class VuerSession:
         Now to cancel a running task, simply
 
         .. code-block:: python
+            :linenos:
 
             task.cancel()
 
+        **Todos**
+
+        ▫️ Add a way to automatically clean up when exiting the main_fn.
         """
         loop = asyncio.get_running_loop()
         return loop.create_task(task, name=name)
+
 
 DEFAULT_PORT = 8012
 
@@ -328,9 +327,7 @@ class Vuer(PrefixProto, Server):
     free_port: bool = Flag("Kill what is running on the requested port if True.")
     static_root: str = Proto(".", help="root for file serving")
     """todo: we want to support multiple paths."""
-    queue_len: int = Proto(
-        100, help="use a max length to avoid the memory from blowing up."
-    )
+    queue_len: int = Proto(100, help="use a max length to avoid the memory from blowing up.")
     cors = Proto(
         "https://vuer.ai,https://staging.vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*",
         help="domains that are allowed for cross origin requests.",
@@ -508,9 +505,7 @@ class Vuer(PrefixProto, Server):
         ws = self.ws[ws_id]
 
         if event_bytes is None:
-            assert isinstance(
-                event, ServerEvent
-            ), "event must be a ServerEvent type object."
+            assert isinstance(event, ServerEvent), "event must be a ServerEvent type object."
             event_obj = event.serialize()
             event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
         else:
@@ -534,9 +529,7 @@ class Vuer(PrefixProto, Server):
         rpc_event = asyncio.Event()
         response = None
 
-        async def response_handler(
-            response_event: ClientEvent, _: "VuerSession"
-        ) -> None:
+        async def response_handler(response_event: ClientEvent, _: "VuerSession") -> None:
             nonlocal response
 
             response = response_event
@@ -758,9 +751,7 @@ class Vuer(PrefixProto, Server):
         """
         headers = request.headers
         if "websocket" != headers.get(UPGRADE, "").lower().strip():
-            return await handle_file_request(
-                request, self.client_root, filename="index.html"
-            )
+            return await handle_file_request(request, self.client_root, filename="index.html")
         else:
             return await websocket_handler(request, self.downlink)
 
