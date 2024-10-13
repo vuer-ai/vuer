@@ -1,4 +1,6 @@
-# Physics and Human Data In Mixed Reality, Through Your Browser
+# Physics in Mixed Reality
+
+_Physics and Human Data In Mixed Reality, Through Your Browser_
 
 The ability to interact with the simulated physics in virtual reality is magical. Vuer has
 recently integrated MuJoCo, a general purpose physics engine that has become a standard in
