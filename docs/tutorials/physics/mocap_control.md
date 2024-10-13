@@ -61,8 +61,8 @@ You also need to load from the correct host.
 
 ```python
 # this won't work because it does not have SSL.
-# host = "http://localhost:8012"
-host = "https://1e68144d6228.ngrok.app"
+host = "http://localhost:8012"
+# host = "https://1e68144d6228.ngrok.app"
 
 asset_pref = f"{host}/static/gripper_model/"
 ```
