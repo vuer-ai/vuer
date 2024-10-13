@@ -332,7 +332,7 @@ class Vuer(PrefixProto, Server):
         100, help="use a max length to avoid the memory from blowing up."
     )
     cors = Proto(
-        "https://vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*",
+        "https://vuer.ai,https://staging.vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*",
         help="domains that are allowed for cross origin requests.",
     )
     queries: Dict = Proto({}, help="query parameters to pass")
