@@ -3,7 +3,7 @@ from contextlib import nullcontext
 
 from cmx import doc
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", None)
+MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
 doc @ """
 # MuJoCo VR Mocap Example
@@ -68,10 +68,7 @@ You also need to load from the correct host.
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
     # this won't work because it does not have SSL.
-    host = "http://localhost:8012"
-    # host = "https://1e68144d6228.ngrok.app"
-
-    asset_pref = f"{host}/static/gripper_model/"
+    asset_pref = f"https://docs.vuer.ai/en/latest/_static/mujoco_scenes/gripper_model/"
 
 doc @ """
 
