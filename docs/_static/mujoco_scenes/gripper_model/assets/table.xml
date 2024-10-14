@@ -1,0 +1,15 @@
+<mujoco model="table">
+    <compiler angle="radian" autolimits="true" />
+    <option impratio="10" />
+    <asset>
+        <material name="table" rgba="0.5 0.5 0.5 1" reflectance="0" specular="0.0"
+            shininess="0" />
+    </asset>
+    <worldbody>
+        <body name="table_body" pos="0 0 1">
+            <geom size="0.2915 0.5825 0.05" class="visual" type="box"
+                material="table" />
+            <geom size="0.2915 0.5825 0.05" class="collision" type="box" />
+        </body>
+    </worldbody>
+</mujoco>
