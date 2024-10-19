@@ -459,9 +459,17 @@ class Movable(SceneElement):
 
 class Hands(SceneElement):
     """
-    The Hand component offers a way to stream the current pose of the hand to the server.
 
-    The return data looks like the following:
+    .. admonition:: tip Setting stream to True
+
+        Important: You need to set the `stream` option to `True` to
+        start streaming the hand movement.
+
+
+    The Hand component offers a way to stream the current pose of the hand to the server.
+    You can get the full pose of the hands by listening to the `HAND_MOVE` event.
+    You can add flags `left` and `right` to specify which hand you want to track.
+    The returned data looks like the following:
 
     .. code-block:: typescript
 
@@ -484,27 +492,139 @@ class Hands(SceneElement):
           squeezeValue: number;
           tapValue: number;
         }
+
+    **Matrix format**
+
+    All 4x4 transform matrices used in WebGL are stored in 16-element `Float32Arrays`.
+    The values are stored in the array in column-major order; that is, each column is
+    written into the array top-down before moving to the next column to the right and
+    writing it into the array. Therefore, for the array [a0, a1, a2, …, a13, a14, a15],
+    the matrix looks like this:
+
+    .. code-block::
+                                      ⌈  a0 a4 a8 a12  ⌉
+                                      |  a1 a5 a9 a13  |
+                                      |  a2 a6 a10 a14 |
+                                      ⌊  a3 a7 a11 a15 ⌋
+
+
+    For details, refer to the MDN documentation on [XR Rigid Body Transformation](https://developer.mozilla.org/en-US/docs/Web/API/XRRigidTransform/matrix)
+
+    **Hand Landmarks**
+
+    We follow the [XR Hand](https://developer.mozilla.org/en-US/docs/Web/API/XRHand)
+    conventions, and return the landmarks in a single array of `25 * 16` values in
+    the following order:
+
+    .. list-table::
+       :widths: 40 10 40 10
+       :header-rows: 1
+
+       * - Hand joint
+         - Index
+         - Hand joint (continue)
+         - Index
+       * - wrist
+         - 0
+         - middle-finger-phalanx-distal
+         - 13
+       * - thumb-metacarpal
+         - 1
+         - middle-finger-tip
+         - 14
+       * - thumb-phalanx-proximal
+         - 2
+         - ring-finger-metacarpal
+         - 15
+       * - thumb-phalanx-distal
+         - 3
+         - ring-finger-phalanx-proximal
+         - 16
+       * - thumb-tip
+         - 4
+         - ring-finger-phalanx-intermediate
+         - 17
+       * - index-finger-metacarpal
+         - 5
+         - ring-finger-phalanx-distal
+         - 18
+       * - index-finger-phalanx-proximal
+         - 6
+         - ring-finger-tip
+         - 19
+       * - index-finger-phalanx-intermediate
+         - 7
+         - pinky-finger-metacarpal
+         - 20
+       * - index-finger-phalanx-distal
+         - 8
+         - pinky-finger-phalanx-proximal
+         - 21
+       * - index-finger-tip
+         - 9
+         - pinky-finger-phalanx-intermediate
+         - 22
+       * - middle-finger-metacarpal
+         - 10
+         - pinky-finger-phalanx-distal
+         - 23
+       * - middle-finger-phalanx-proximal
+         - 11
+         - pinky-finger-tip
+         - 24
+       * - middle-finger-phalanx-intermediate
+         - 12
+         - -
+         - -
+
+    Usage Example:
+
+    .. code-block:: python
+
+        from vuer import Vuer, VuerSession
+        from vuer.schemas import Hands
+        from asyncio import sleep
+
+        app = Vuer()
+
+
+        @app.add_handler("HAND_MOVE")
+        async def handler(event, session):
+            print(f"Movement Event: key-{event.key}", event.value)
+
+
+        @app.spawn(start=True)
+        async def main(session: VuerSession):
+            # Important: You need to set the `stream` option to `True` to start
+            # streaming the hand movement.
+            session.upsert @ Hands(stream=True, key="hands")
+
+            while True:
+                await sleep(1)
+
     """
 
     tag = "Hands"
 
     def __init__(
         self,
-        fps=30,
         key="hands",
         eventTypes=("squeeze",),
-        stream=False,
+        stream=True,
         left=None,
         right=None,
+        showLeft=True,
+        showRight=True,
         **kwargs,
     ):
         super().__init__(
-            fps=fps,
             key=key,
             eventTypes=eventTypes,
             stream=stream,
             left=left,
             right=right,
+            showLeft=True,
+            showRight=True,
             **kwargs,
         )
 

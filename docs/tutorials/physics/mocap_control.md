@@ -56,7 +56,9 @@ looks like this:
 
       https://vuer.ai?ws=wss://xxxxx.ngrok.io
 
-You also need to load from the correct host.    
+You also need to load from the correct host for components
+that requires assets. For example, if you want to load an 
+MuJoCo scene, you use the correct url starting with `https`.
 ```
 
 ```python

@@ -15,5 +15,6 @@ In other words, [`vuer.ai`](https://vuer.ai) offers a powerful, component-based 
 
     Setting Up Your First Scene <basics/setting_a_scene.md>
     Async Programming 101 <basics/async_programming.md>
+    Setting Up SSL Proxy for WebSocket <basics/ssl_proxy_webxr.md>
 ```
 
