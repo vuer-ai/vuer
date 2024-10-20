@@ -127,6 +127,7 @@ For a comprehensive list of data types, please refer to the [API documentation o
    :hidden:
    
    vuer <api/vuer.md>
+   vuer.frame <api/frame.md>
    vuer.base <api/base.md>
    vuer.types — Type Interafce <api/types.md>
    vuer.events — Event Types <api/events.md>
