@@ -3,7 +3,7 @@ from contextlib import nullcontext
 
 from cmx import doc
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", True)
+MAKE_DOCS = os.getenv("MAKE_DOCS", False)
 
 doc @ """
 # MuJoCo VR Mocap Example
@@ -17,7 +17,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     from killport import kill_ports
     from vuer import Vuer, VuerSession
     from vuer.events import ClientEvent
-    from vuer.schemas import MuJoCo, Scene, Fog, Sphere, Hands, HandActuator
+    from vuer.schemas import MuJoCo, Scene, Fog, Sphere, Hands, HandActuator, MotionControllers, MotionControllerActuator
 
 doc @ """
 
@@ -98,6 +98,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             bgChildren=[
                 Fog(color=0x2C3F57, near=10, far=20),
                 Hands(),
+                MotionControllers(),
                 Sphere(
                     args=[50, 10, 10],
                     materialType="basic",
@@ -109,7 +110,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         sess.upsert @ MuJoCo(
 
             HandActuator(key="pinch-on-squeeze"),
-
+            MotionControllerActuator(),
             key="franka-gripper",
             src=asset_pref + "scene.xml",
             assets=[asset_pref + fn for fn in ASSETS_LIST],
