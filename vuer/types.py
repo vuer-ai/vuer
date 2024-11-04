@@ -1,4 +1,3 @@
-from typing import NamedTuple, Callable, Union, Coroutine
 from math import pi
 from typing import NamedTuple, Callable, Union, Coroutine
 from uuid import UUID
