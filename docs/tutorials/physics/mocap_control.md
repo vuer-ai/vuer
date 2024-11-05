@@ -74,3 +74,43 @@ Now, to get the mujoco updates, we can listen to the `ON_MUJOCO_FRAME` event.
 async def on_mujoco_frame(event: ClientEvent, sess: VuerSession):
     print("ON_MUJOCO_FRAME", event)
 ```
+
+You should get events that looks like these:
+
+![mujoco_frame_event](figures/mujoco_frame_event.png)
+
+and the main session handler.
+
+```python
+@app.spawn(start=True)
+async def main(sess: VuerSession):
+    # here we setup the staging area. Use Fog to simulate MuJoCo's
+    # default style.
+    sess.set @ Scene(
+        # grid=False,
+        bgChildren=[
+            Fog(color=0x2C3F57, near=10, far=20),
+            # Hands(),
+            MotionControllers(),
+            Sphere(
+                args=[50, 10, 10],
+                materialType="basic",
+                material=dict(color=0x2C3F57, side=1),
+            ),
+        ],
+    )
+    await sleep(0.0005)
+    sess.upsert @ MuJoCo(
+
+        # HandActuator(key="pinch-on-squeeze"),
+        MotionControllerActuator(high=0.15, low=0.01, ctrlId=-1),
+        key="franka-gripper",
+        src=asset_pref + "scene.xml",
+        assets=[asset_pref + fn for fn in ASSETS_LIST],
+        useLights=True,
+        timeout=1000000,
+        scale=0.1,
+    )
+
+    await sleep(100.0)
+```

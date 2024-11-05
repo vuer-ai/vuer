@@ -97,7 +97,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             # grid=False,
             bgChildren=[
                 Fog(color=0x2C3F57, near=10, far=20),
-                Hands(),
+                # Hands(),
                 MotionControllers(),
                 Sphere(
                     args=[50, 10, 10],
@@ -109,8 +109,8 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         await sleep(0.0005)
         sess.upsert @ MuJoCo(
 
-            HandActuator(key="pinch-on-squeeze"),
-            MotionControllerActuator(),
+            # HandActuator(key="pinch-on-squeeze"),
+            MotionControllerActuator(high=0.15, low=0.01, ctrlId=-1),
             key="franka-gripper",
             src=asset_pref + "scene.xml",
             assets=[asset_pref + fn for fn in ASSETS_LIST],
