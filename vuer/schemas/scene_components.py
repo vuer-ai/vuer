@@ -628,6 +628,49 @@ class Hands(SceneElement):
             **kwargs,
         )
 
+class MotionControllers(SceneElement):
+    """
+    MotionController for tracking XR controller poses and button states.
+
+    :param key: Unique identifier for the controller.
+    :type key: str, optional
+    :param eventTypes: A tuple or list of events to track (e.g., "trigger", "squeeze").
+    :type eventTypes: tuple or list, optional
+    :param stream: Whether to enable streaming of controller data.
+    :type stream: bool, optional
+    :param left: Boolean indicating if the left controller should be tracked.
+    :type left: bool, optional
+    :param right: Boolean indicating if the right controller should be tracked.
+    :type right: bool, optional
+    :param showLeft: Boolean indicating if the left controller visualization should be shown.
+    :type showLeft: bool, optional
+    :param showRight: Boolean indicating if the right controller visualization should be shown.
+    :type showRight: bool, optional
+    """
+
+    tag = "MotionControllers"
+
+    def __init__(
+        self,
+        key="motionControllers",
+        eventTypes=("trigger", "squeeze"),
+        stream=True,
+        left=None,
+        right=None,
+        showLeft=True,
+        showRight=True,
+        **kwargs,
+    ):
+        super().__init__(
+            key=key,
+            eventTypes=eventTypes,
+            stream=stream,
+            left=left,
+            right=right,
+            showLeft=showLeft,
+            showRight=showRight,
+            **kwargs,
+        )
 
 class Obj(SceneElement):
     tag = "Obj"
