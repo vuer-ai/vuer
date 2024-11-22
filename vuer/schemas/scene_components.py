@@ -628,6 +628,74 @@ class Hands(SceneElement):
             **kwargs,
         )
 
+class OculusHands(SceneElement):
+    """
+    OculusHands Scene Element
+
+    The OculusHands component provides hand tracking specifically tailored for Oculus devices,
+    including hand pose data and interaction states like pinch, squeeze, and hover.
+
+    **Key Features:**
+    - Streams hand pose and state data to the server.
+    - Detects and manages interaction events like pinch, squeeze, and hover.
+    - Tracks individual landmarks and returns 4x4 transformation matrices.
+
+    **Usage:**
+    .. code-block:: python
+
+        from vuer import Vuer, VuerSession
+        from vuer.schemas import OculusHands
+        from asyncio import sleep
+
+        app = Vuer()
+
+        @app.add_handler("HAND_MOVE")
+        async def handler(event, session):
+            print(f"Hand Movement Event: key-{event.key}", event.value)
+
+        @app.spawn(start=True)
+        async def main(session: VuerSession):
+            session.upsert @ OculusHands(stream=True, key="oculus_hands")
+            while True:
+                await sleep(1)
+
+    """
+
+    tag = "OculusHands"
+
+    def __init__(
+        self,
+        key="oculus_hands",
+        eventTypes=("squeeze", "pinch", "hover"),
+        stream=True,
+        left=None,
+        right=None,
+        showLeft=True,
+        showRight=True,
+        **kwargs,
+    ):
+        """
+        Initialize the OculusHands component.
+
+        :param key: Unique key for identifying the hand component in events.
+        :param eventTypes: Tuple of event types to track (e.g., "squeeze", "pinch").
+        :param stream: Enable streaming of hand pose data to the server.
+        :param left: Specify whether to track the left hand.
+        :param right: Specify whether to track the right hand.
+        :param showLeft: Whether to render the left hand in the scene.
+        :param showRight: Whether to render the right hand in the scene.
+        :param kwargs: Additional arguments for customization.
+        """
+        super().__init__(
+            key=key,
+            eventTypes=eventTypes,
+            stream=stream,
+            left=left,
+            right=right,
+            showLeft=showLeft,
+            showRight=showRight,
+            **kwargs,
+        )
 
 class Obj(SceneElement):
     tag = "Obj"
