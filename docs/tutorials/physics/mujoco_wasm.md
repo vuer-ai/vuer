@@ -9,7 +9,7 @@ You need to supply a list of path to relevant files to the `assets` attribute.
 
 ```python
 from vuer import Vuer, VuerSession
-from vuer.schemas import MuJoCo, Scene, Fog, Sphere
+from vuer.schemas import MuJoCo, Scene, Fog, Sphere, ContribLoader
 
 app = Vuer(static_root="./assets")
 
@@ -21,6 +21,7 @@ async def main(sess: VuerSession):
     # default style.
     sess.set @ Scene(
         # grid=False,
+        # backgroundColor
         bgChildren=[
             Fog(color=0x2c3f57, near=10, far=20),
             Sphere(
@@ -31,6 +32,12 @@ async def main(sess: VuerSession):
         ],
     )
     await sleep(0.0005)
+    sess.upsert @ ContribLoader(
+        library="@vuer-ai/mujoco-ts",
+        version="0.0.24-rc8",
+        main="dist/index.umd.js",
+    )
+    await sleep(1.)
     sess.upsert @ MuJoCo(
         key="cassie-1",
         src=asset_pref + "scene.xml",

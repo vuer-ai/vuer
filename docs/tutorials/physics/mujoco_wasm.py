@@ -19,7 +19,7 @@ You need to supply a list of path to relevant files to the `assets` attribute.
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
     from vuer import Vuer, VuerSession
-    from vuer.schemas import MuJoCo, Scene, Fog, Sphere
+    from vuer.schemas import MuJoCo, Scene, Fog, Sphere, ContribLoader
 
     app = Vuer(static_root="./assets")
 
@@ -42,6 +42,12 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             ],
         )
         await sleep(0.0005)
+        sess.upsert @ ContribLoader(
+            library="@vuer-ai/mujoco-ts",
+            version="0.0.24-rc9",
+            main="dist/index.umd.js",
+        )
+        await sleep(1.)
         sess.upsert @ MuJoCo(
             key="cassie-1",
             src=asset_pref + "scene.xml",
