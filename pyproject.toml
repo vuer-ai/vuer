@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vuer"
-version = "0.0.35"
+version = "0.0.36rc1"
 description = ""
 readme = "README.md"
 license = { text = "MIT" }
