@@ -26,13 +26,13 @@ or localtunnel before preceding.
 ## Motion Controller API
 
 You can get the full pose of the motion controllers by listening to the `CONTROLLER_MOVE` event.
-You can add flags `left` and `right` to specify which hand you want to track.
+You can add flags `left` and `right` to specify which side you want to track.
 
 
 ```{admonition} Warning
 :class: warning
 Make sure that you set the `stream` option to `True` to start streaming the 
-hand movement! Otherwise the event will not be triggered. This is to avoid
+controller movement! Otherwise the event will not be triggered. This is to avoid
 unnecessary clogging up the uplink from the client.
 ```
 """
@@ -53,7 +53,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     @app.spawn(start=True)
     async def main(session: VuerSession):
         # Important: You need to set the `stream` option to `True` to start
-        # streaming the hand movement.
+        # streaming the controller movement.
         session.upsert @ MotionController(stream=True, key="motion-controller")
 
         while True:
@@ -65,7 +65,7 @@ The returned data looks like the following:
 
 ```typescript
 /**
- * Significantly more accurate and stable than hand-tracking.
+ * Significantly more accurate and stable than controller-tracking.
  */
 export type ControllerData = {
   left?:       Matrix4Tuple;      // array with length==25
