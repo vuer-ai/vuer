@@ -12,7 +12,7 @@ Before you start, first run the following script:
 wget -O mary.webm https://threejs.org/examples/textures/MaryOculus.webm
 ```
 
-![Side view of the 3D movie screen](figures/20_3D_movie.png)
+![Side view of the 3D movie screen](figures/21_3D_movie.png)
 
 ```{admonition} ImagePlane.layer Property
 The underlying rendering engine supported a layer binary bitmask

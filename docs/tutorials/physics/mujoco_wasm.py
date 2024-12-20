@@ -25,13 +25,17 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
     asset_pref = "http://localhost:8012/static/agility_cassie/"
 
+
     @app.spawn(start=True)
     async def main(sess: VuerSession):
         # here we setup the staging area. Use Fog to simulate MuJoCo's
         # default style.
         sess.set @ Scene(
-            # grid=False,
-            # backgroundColor
+            ContribLoader(
+                library="@vuer-ai/mujoco-ts",
+                version="0.0.24-rc11",
+                main="dist/index.umd.js",
+            ),
             bgChildren=[
                 Fog(color=0x2c3f57, near=10, far=20),
                 Sphere(
@@ -41,12 +45,8 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 ),
             ],
         )
-        await sleep(0.0005)
-        sess.upsert @ ContribLoader(
-            library="@vuer-ai/mujoco-ts",
-            version="0.0.24-rc9",
-            main="dist/index.umd.js",
-        )
+        # you need to wait long enough for the script to load, unless you
+        # listen to and wait for the `ON_CONTRIB_LOAD` event.
         await sleep(1.)
         sess.upsert @ MuJoCo(
             key="cassie-1",
