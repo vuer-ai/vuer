@@ -25,7 +25,7 @@ or localtunnel before preceding.
 
 ## Motion Controller API
 
-You can get the full pose of the hands by listening to the `CONTROLLER_MOVE` event.
+You can get the full pose of the motion controllers by listening to the `CONTROLLER_MOVE` event.
 You can add flags `left` and `right` to specify which hand you want to track.
 
 
@@ -54,7 +54,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     async def main(session: VuerSession):
         # Important: You need to set the `stream` option to `True` to start
         # streaming the hand movement.
-        session.upsert @ MotionController(stream=True, key="hands")
+        session.upsert @ MotionController(stream=True, key="motion-controller")
 
         while True:
             await sleep(1)
