@@ -49,3 +49,34 @@ class HandActuator(SceneElement):
     cond = 'right-squeeze'
     value = "right:thumb-tip,right:index-finger-tip"
     scale = 1.0
+
+class MotionControllerActuator(SceneElement):
+    """
+    MotionControllerActuator component for actuating the MuJoCo simulation based on motion controller inputs.
+
+    :param ctrlId: The control ID in the MuJoCo simulation to actuate.
+    :type ctrlId: int
+    :param low: The minimum value for actuation.
+    :type low: float
+    :param high: The maximum value for actuation.
+    :type high: float
+    :param cond: The condition for actuation, e.g., 'right-trigger'.
+    :type cond: str
+    :param scale: The scaling factor applied to the input value for actuation.
+    :type scale: float
+    """
+    tag = "MotionControllerActuator"
+
+    ctrlId: int = -1
+    low: float = 0.0
+    high: float = 1.0
+    cond: str = 'right-trigger'
+    scale: float = 1.0
+
+    def __init__(self, ctrlId=-1, low=0.0, high=1.0, cond='right-trigger', scale=1.0, **kwargs):
+        super().__init__(**kwargs)
+        self.ctrlId = ctrlId
+        self.low = low
+        self.high = high
+        self.cond = cond
+        self.scale = scale

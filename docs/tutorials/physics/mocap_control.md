@@ -10,7 +10,7 @@ from textwrap import dedent
 from killport import kill_ports
 from vuer import Vuer, VuerSession
 from vuer.events import ClientEvent
-from vuer.schemas import MuJoCo, Scene, Fog, Sphere, Hands, HandActuator
+from vuer.schemas import MuJoCo, Scene, Fog, Sphere, Hands, HandActuator, MotionControllers, MotionControllerActuator
 ```
 
 
@@ -90,7 +90,8 @@ async def main(sess: VuerSession):
         # grid=False,
         bgChildren=[
             Fog(color=0x2C3F57, near=10, far=20),
-            Hands(),
+            # Hands(),
+            MotionControllers(),
             Sphere(
                 args=[50, 10, 10],
                 materialType="basic",
@@ -101,8 +102,8 @@ async def main(sess: VuerSession):
     await sleep(0.0005)
     sess.upsert @ MuJoCo(
 
-        HandActuator(key="pinch-on-squeeze"),
-
+        # HandActuator(key="pinch-on-squeeze"),
+        MotionControllerActuator(high=0.15, low=0.01, ctrlId=-1),
         key="franka-gripper",
         src=asset_pref + "scene.xml",
         assets=[asset_pref + fn for fn in ASSETS_LIST],
@@ -112,41 +113,4 @@ async def main(sess: VuerSession):
     )
 
     await sleep(100.0)
-```
-
-
-```{admonition} Note
-:class: tip
-
-Note the `HandActuator` that is used to add control to the
-gripper fingers. This is currently hand-specific.
-
-    class HandActuator(SceneElement):
-        tag = "HandActuator"
-
-        ctrlId = -1
-        offset = 0.01
-        low = 0.01
-        high = 1.0
-        cond = 'right-squeeze'
-        value = "right:thumb-tip,right:index-finger-tip"
-        scale = 1.0
-```
-
-This correspond to the following actuator definition
-in the MJCF file:
-
-```xml
-...
-      <body name="right_finger" pos="0 0 0.0584" quat="0 0 0 1">
-        <inertial mass="0.015" pos="0 0 0" diaginertia="2.375e-6 2.375e-6 7.5e-7"/>
-        <joint name="finger_joint2" class="finger"/>
-        <geom mesh="finger_0" material="off_white" class="visual"/>
-
-...
-    <!-- Remap original ctrlrange (0, 0.04) to (0, 255): 0.04 * 100 / 255 = 0.01568627451 -->
-    <position ctrllimited="true" ctrlrange="0.001 0.2" joint="finger_joint1" kp="30"
-              gear="3" name="finger_joint"/>
-  </actuator>
-</mujoco>
 ```
