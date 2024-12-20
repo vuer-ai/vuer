@@ -27,17 +27,6 @@ class MuJoCo(SceneElement):
     useMocap = True
     gizmoScale = 0.3
 
-    # def __init__(self, src: str, assets: List[str] = [], workDir: str = None, speed: float = 1.0, pause: bool = True, fps: int = 60, timeout: float = 0.0, keyFrames: List[str] = [], **kwargs):
-    #     super().__init__(**kwargs)
-    #     self.src = src
-    #     self.assets = assets
-    #     self.workDir = workDir
-    #     self.speed = speed
-    #     self.pause = pause
-    #     self.fps = fps
-    #     self.timeout = timeout
-    #     self.keyFrames = keyFrames
-
 
 class HandActuator(SceneElement):
     tag = "HandActuator"
@@ -72,11 +61,3 @@ class MotionControllerActuator(SceneElement):
     high: float = 1.0
     cond: str = 'right-trigger'
     scale: float = 1.0
-
-    def __init__(self, ctrlId=-1, low=0.0, high=1.0, cond='right-trigger', scale=1.0, **kwargs):
-        super().__init__(**kwargs)
-        self.ctrlId = ctrlId
-        self.low = low
-        self.high = high
-        self.cond = cond
-        self.scale = scale
