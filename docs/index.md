@@ -110,7 +110,8 @@ For a comprehensive list of data types, please refer to the [API documentation o
    360 Image <examples/17_sky_ball.md>
    Movable Handles <examples/18_movable.md>
    Hand Tracking <examples/19_hand_tracking.md>
-   3D Movie <examples/20_3D_movie.md>
+   Quest 3 Controllers <examples/20_motion_controllers.md>
+   3D Movie <examples/21_3D_movie.md>
    Raycasted 3D Pointer <examples/21_pointer_example>
    
 .. toctree::
