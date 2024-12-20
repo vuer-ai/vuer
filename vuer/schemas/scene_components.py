@@ -814,6 +814,7 @@ class Scene(BlockElement):
             AmbientLight(key="ambient", intensity=0.25),
             PointLight(key="spot", intensity=1, position=[0, 1, 1]),
             Hands(fps=30, eventType=["squeeze"], stream=True),
+            MotionControllers(fps=30, eventType=["trigger", "squeeze"], stream=True),
         ]
 
         self.up = up
