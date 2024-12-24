@@ -31,7 +31,7 @@ unnecessary clogging up the uplink from the client.
 
 ```python
 from vuer import Vuer, VuerSession
-from vuer.schemas import MotionController
+from vuer.schemas import MotionControllers
 from asyncio import sleep
 
 app = Vuer()
@@ -46,7 +46,7 @@ async def handler(event, session):
 async def main(session: VuerSession):
     # Important: You need to set the `stream` option to `True` to start
     # streaming the controller movement.
-    session.upsert @ MotionController(stream=True, key="motion-controller")
+    session.upsert @ MotionControllers(stream=True, key="motion-controller")
 
     while True:
         await sleep(1)
