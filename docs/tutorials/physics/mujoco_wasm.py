@@ -33,7 +33,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         sess.set @ Scene(
             ContribLoader(
                 library="@vuer-ai/mujoco-ts",
-                version="0.0.24-rc11",
+                version="0.0.24-rc13",
                 main="dist/index.umd.js",
             ),
             bgChildren=[
