@@ -60,8 +60,8 @@ The returned data looks like the following:
  * Significantly more accurate and stable than controller-tracking.
  */
 export type ControllerData = {
-  left?:       Matrix4Tuple;      // array with length==25
-  right?:      Matrix4Tuple;     // array with length==25
+  left?:       Matrix4Tuple;      // array with length==16
+  right?:      Matrix4Tuple;      // array with length==16
   leftState?:  ControllerStateType;
   rightState?: ControllerStateType;
 };
