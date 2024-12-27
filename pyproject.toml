@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vuer"
-version = "0.0.36rc1"
+version = "0.0.36rc2"
 description = ""
 readme = "README.md"
 license = { text = "MIT" }
@@ -24,12 +24,12 @@ dependencies = [
 [project.optional-dependencies]
 # add the cors package, not needed in pyScript
 all = [
-    "aiohttp",
+    "aiohttp==3.10.5",
     "aiohttp-cors",
     "killport",
 ]
 example = [
-    "aiohttp",
+    "aiohttp==3.10.5",
     "aiohttp-cors",
     "killport",
     "open3d>=0.15.0,<0.16.0",
@@ -40,7 +40,7 @@ example = [
     "opencv-python"
 ]
 dev = [
-    "aiohttp",
+    "aiohttp==3.10.5",
     "aiohttp-cors",
     "killport",
     "black==22.3.0",
