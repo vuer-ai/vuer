@@ -24,7 +24,7 @@ surface_infill = np.load("assets/suzanne_surface_fill_only.npy")
 
 @app.spawn
 async def main(proxy):
-    app.set @ DefaultScene()
+    proxy.set @ DefaultScene()
 
     while True:
         await asyncio.sleep(1.0)

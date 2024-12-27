@@ -11,7 +11,7 @@ with doc:
     import numpy as np
     import open3d as o3d
 
-    from vuer import Vuer
+    from vuer import Vuer, VuerSession
     from vuer.events import Set, ClientEvent
     from vuer.schemas import DefaultScene, TriMesh, PointCloud, TimelineControls
 
@@ -26,18 +26,18 @@ with doc:
 
     @app.spawn
     async def main(proxy):
-        app.set @ DefaultScene()
+        proxy.set @ DefaultScene()
 
         while True:
             await asyncio.sleep(1.0)
 
-    async def frame_handle(e: ClientEvent, _):
+    async def frame_handle(e: ClientEvent, proxy: VuerSession):
         print("frame handle")
 
         step = e.value["step"]
         step = step % len(infill)
 
-        app.upsert @ [
+        proxy.upsert(
             TimelineControls(end=len(infill), step=step, speed=1.0, paused=False, key="timeline"),
             PointCloud(key="infill", vertices=infill[step], position=[0, 0, 0], color="red"),
             PointCloud(
@@ -46,7 +46,7 @@ with doc:
                 position=[0.8, 0, 0],
                 color="green",
             ),
-        ]
+        )
         print("updated the scene")
 
 

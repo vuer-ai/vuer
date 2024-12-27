@@ -9,6 +9,14 @@ VR and AR ready, and can be run on mobile devices. To get started, just run:
 pip install 'vuer[all]=={VERSION}'
 ```
 
+```{admonition} 
+:class: info
+On Macs, `msgpack` requires gcc@11.
+
+  brew install gcc@11
+  
+```
+
 Here is an example that loads a URDF file and displays it in the browser. For a more comprehensive list of examples, please refer to the [examples](examples/01_trimesh) page.
 
 ```python
@@ -20,7 +28,7 @@ app = Vuer()
 
 @app.spawn(start=True)
 async def main(session: VuerSession):
-  app.set @ DefaultScene(
+  session.set @ DefaultScene(
     Urdf("assets/urdf/robotiq.urdf"),
   )
 
