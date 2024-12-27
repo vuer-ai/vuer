@@ -91,6 +91,57 @@ export type ControllerStateType = {
 };
 ```
 
+### Button and Trackpad States
+
+The webXR Motion Controller API uses the [XRInputSource's gamepad](https://developer.mozilla.org/en-US/docs/Web/API/XRInputSource/gamepad).
+
+For detailed API, refer to the [link](https://immersive-web.github.io/webxr-gamepads-module/#dom-xrinputsource-gamepad)
+
+attribute to get the button and trackpad states. The following code snippet shows how to extract the button and trackpad states from the gamepad:
+
+```{admonition} Warning
+I plan to add a more event driven API for this in the future to make it easier to 
+register press events.
+```
+
+![Mixed-reality Controller](./figures/motion_controller_diagram.png)
+
+| Buttons    | `xr-standard` Mapping                                        | Required |
+| ---------- | ------------------------------------------------------------ | -------- |
+| buttons[0] | [Primary trigger](https://immersive-web.github.io/webxr-gamepads-module/#primary-trigger) | Yes      |
+| buttons[1] | [Primary squeeze button](https://immersive-web.github.io/webxr-gamepads-module/#primary-squeeze-button) | No       |
+| buttons[2] | Primary touchpad                                             | No       |
+| buttons[3] | Primary thumbstick                                           | No       |
+
+| Axes    | `xr-standard` Mapping | Required |
+| ------- | --------------------- | -------- |
+| axes[0] | Primary touchpad X    | No       |
+| axes[1] | Primary touchpad Y    | No       |
+| axes[2] | Primary thumbstick X  | No       |
+| axes[3] | Primary thumbstick Y  | No       |
+
+```typescript
+  const gamepad = inputSource.gamepad;
+  const buttons = gamepad?.buttons || [];
+
+  return {
+    transform: Array.from(transform) as Matrix4Tuple,
+    trigger: buttons[0]?.pressed  || false,
+    squeeze: buttons[1]?.pressed  || false,
+    touchpad: buttons[2]?.pressed || false,
+    thumbstick: buttons[3]?.pressed || false,
+    aButton: buttons[4]?.pressed || false,
+    bButton: buttons[5]?.pressed || false,
+
+    triggerValue: buttons[0]?.value || 0,
+    squeezeValue: buttons[1]?.value || 0,
+    touchpadValue: [gamepad?.axes[0] || 0, gamepad?.axes[1] || 0],
+    thumbstickValue: [gamepad?.axes[2] || 0, gamepad?.axes[3] || 0],
+    aButtonValue: buttons[4]?.pressed || false,
+    bButtonValue: buttons[5]?.pressed || false,
+  };
+```
+
 ### Matrix format
 
 All 4x4 transform matrices used in WebGL are stored in 16-element `Float32Arrays`.
