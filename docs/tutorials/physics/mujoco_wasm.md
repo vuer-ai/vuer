@@ -23,7 +23,7 @@ async def main(sess: VuerSession):
     sess.set @ Scene(
         ContribLoader(
             library="@vuer-ai/mujoco-ts",
-            version="0.0.24-rc13",
+            version="0.0.24",
             main="dist/index.umd.js",
         ),
         bgChildren=[
