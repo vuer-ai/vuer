@@ -24,10 +24,10 @@ mobile devices.
 
 Our features include:
 
-- light-weight and performant
-- VR and AR ready
-- Hackable and extensible
-- Open source, licensed under MIT
+-  light-weight and performant
+-  VR and AR ready
+-  Hackable and extensible
+-  Open source, licensed under MIT
 
 Installation
 ============
@@ -65,11 +65,11 @@ page.
 To get a quick overview of what you can do with ``vuer``, check out the
 following:
 
-- take a look at the example gallery
-  `here <https://docs.vuer.ai/en/latest/examples/01_trimesh.html>`__
-- or try to take a look at this demo with a Unitree Go1 robot in front
-  of a flight of stairs
-  `here <https://docs.vuer.ai/en/latest/tutorials/robotics/urdf_go1_stairs.html>`__
+-  take a look at the example gallery
+   `here <https://docs.vuer.ai/en/latest/examples/01_trimesh.html>`__
+-  or try to take a look at this demo with a Unitree Go1 robot in front
+   of a flight of stairs
+   `here <https://docs.vuer.ai/en/latest/tutorials/robotics/urdf_go1_stairs.html>`__
 
 For a comprehensive list of visualization components, please refer to
 the `API documentation on

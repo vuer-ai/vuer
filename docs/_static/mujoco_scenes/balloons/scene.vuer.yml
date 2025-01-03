@@ -1,0 +1,6 @@
+tag: Scene
+children:
+- tag: MuJoCo
+  src: https://docs.vuer.ai/en/latest/_static/mujoco_scenes/ballons/balloons.mjcf.xml
+  assets:
+  children: []

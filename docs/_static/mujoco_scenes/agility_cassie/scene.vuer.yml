@@ -1,0 +1,21 @@
+tag: Scene
+children:
+- tag: MuJoCo
+  src: https://docs.vuer.ai/en/latest/_static/mujoco_scenes/agility_cassie/scene.mjcf
+  assets:
+  - cassie.xml
+  - assets/achilles-rod.obj
+  - assets/cassie-texture.png
+  - assets/foot-crank.obj
+  - assets/foot.obj
+  - assets/heel-spring.obj
+  - assets/hip-pitch.obj
+  - assets/hip-roll.obj
+  - assets/hip-yaw.obj
+  - assets/knee-spring.obj
+  - assets/knee.obj
+  - assets/pelvis.obj
+  - assets/plantar-rod.obj
+  - assets/shin.obj
+  - assets/tarsus.obj
+  children: []

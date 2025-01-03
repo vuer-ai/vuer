@@ -18,4 +18,4 @@ declare global {
         Drei: typeof Drei;
     }
 }
-export default function Page(): JSX.JSX.Element;
+export default function Page(): JSX.JSX.Element | null;

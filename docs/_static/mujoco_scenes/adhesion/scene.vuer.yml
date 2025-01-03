@@ -1,6 +1,5 @@
-- tag: Scene
-  children:
-  - tag: MuJoCo
-    # src: https://docs.vuer.ai/tutorials/physics/mujoco_scenes/adhesion/mujoco.vuer.yml
-    src: https://docs.vuer.ai/tutorials/physics/mujoco_scenes/adhesion/active_adhesion.mjcf.xml
-    children: []
+tag: Scene
+children:
+- tag: MuJoCo
+  src: https://docs.vuer.ai/en/latest/_static/mujoco_scenes/adhesion/active_adhesion.mjcf.xml
+  children: []
