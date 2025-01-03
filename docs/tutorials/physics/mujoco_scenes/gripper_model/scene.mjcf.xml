@@ -1,0 +1,46 @@
+<mujoco model="base">
+  <compiler angle="radian" meshdir="assets" texturedir="assets" inertiagrouprange="0 0" autolimits="true"/>
+  <option impratio="20" cone="elliptic" density="1.2" viscosity="0.00002" timestep="0.002"/>
+  <size nconmax="5000" njmax="5000"/>
+
+  <include file="franka_gripper.xml"/>
+
+  <!-- Include external assets -->
+  <include file="assets/table.xml"/>
+<!--  <include file="assets/block.xml"/>-->
+
+  <worldbody>
+    <light pos="2.0 -2.0 2.0" dir="0.01 0.01 -1" specular="0.3 0.3 0.3" ambient="0.3 0.3 0.3" diffuse="0.3 0.3 0.3" directional="true"
+           castshadow="false"/>
+
+    <body name="object0" pos="0.02 0.02 1.025">
+      <joint name="object0:joint" type="free" damping="0.01"/>
+      <geom size="0.025 0.025 0.025" type="box" condim="3" name="object0" mass="0.25" rgba="0.5 1 0.5 1."/>
+    </body>
+
+    <body name="object1" pos="0.03 0.03 1.025">
+      <joint name="object1:joint" type="free" damping="0.01"/>
+      <geom size="0.025 0.025 0.025" type="box" condim="3" name="object1" mass="0.25" rgba="0.5 0.5 1.0 1."/>
+    </body>
+
+    <body name="object2" pos="0.04 0.04 1.025">
+      <joint name="object2:joint" type="free" damping="0.01"/>
+      <geom size="0.025 0.025 0.025" type="box" condim="3" name="object2" mass="0.25" rgba="1.0 0.5 0.5 1."/>
+    </body>
+
+    <body name="object3" pos="0.03 0.04 1.025">
+      <joint name="object3:joint" type="free" damping="0.01"/>
+      <geom size="0.025 0.025 0.025" type="sphere" condim="3" name="object3" mass="0.25" rgba="1.0 0.8 0.8 1."/>
+    </body>
+
+    <body mocap="true" name="mocap" pos="0 0 0">
+      <site pos="0 0 0.075" size="0.003 0.003 0.1" type="box" name="mocap_left_site1" rgba="0 0 1 1"/>
+      <site pos="0 0.075 0" size="0.003 0.1 0.003" type="box" name="mocap_left_site2" rgba="0 1 0 1"/>
+      <site pos="0.075 0 0" size="0.1 0.003 0.003" type="box" name="mocap_left_site3" rgba="1 0 0 1"/>
+    </body>
+  </worldbody>
+
+  <equality>
+    <weld body1="mocap" body2="hand"/>
+  </equality>
+</mujoco>
