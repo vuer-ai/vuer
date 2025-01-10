@@ -4,6 +4,10 @@ from uuid import UUID
 
 from vuer.events import ClientEvent
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from vuer.server import VuerSession
+
 IDType = Union[UUID, str]
 """IDType is either a UUID or a string. Not in use."""
 
@@ -11,12 +15,12 @@ CoroutineFn = Callable[[], Coroutine]
 """A function that returns a coroutine. Not in use."""
 
 # SendProxy = Callable[[ServerEvent], None]
-EventHandler = Callable[[ClientEvent, "VuerProxy"], None]
-"""Defines a function that handles a client event. Second argument is the VuerProxy instance bound
+EventHandler = Callable[[ClientEvent, "VuerSession"], None]
+"""Defines a function that handles a client event. Second argument is the VuerSession instance bound
 to a specific client connected through a websocket session."""
 
-SocketHandler = Callable[["VuerProxy"], Coroutine]
-"""Defines a function that spawns a new entity. Argument is the VuerProxy instance."""
+SocketHandler = Callable[["VuerSession"], Coroutine]
+"""Defines a function that spawns a new entity. Argument is the VuerSession instance."""
 
 
 class Vector3(NamedTuple):

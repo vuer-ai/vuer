@@ -1,9 +1,7 @@
-from io import BytesIO
-from typing import Union, Literal
-
 import numpy as np
+from io import BytesIO
 from PIL import Image as pil_image
-
+from typing import Union, Literal
 from vuer.serdes import IMAGE_FORMATS
 
 element_count = 0
@@ -106,7 +104,7 @@ class Header1(BlockElement):
     tag = "h1"
 
     def __init__(self, *children, **kwargs):
-        children = [Text(c) if isinstance(c, str) else c for c in children]
+        children = [span(c) if isinstance(c, str) else c for c in children]
         super().__init__(*children, **kwargs)
 
 
@@ -134,38 +132,38 @@ class Paragraph(BlockElement):
     tag = "p"
 
     def __init__(self, *children, **kwargs):
-        children = [Text(c) if isinstance(c, str) else c for c in children]
+        children = [span(c) if isinstance(c, str) else c for c in children]
         super().__init__(*children, **kwargs)
 
 
-class Text(Element):
+class span(Element):
     """
     A Text element is an element that displays text.
     It is represented by a text, or p element in the DOM.
     """
 
-    tag = "Text"
+    tag = "Span"
 
     def __init__(self, *text, sep=" ", **kwargs):
         self.text = sep.join(text)
         super().__init__(**kwargs)
 
 
-class Bold(Text):
+class Bold(span):
     def __init__(self, text, style=None, **kwargs):
         _style = {"fontWeight": "bold"}
         _style.update(style or {})
         super().__init__(text, style=_style, **kwargs)
 
 
-class Italic(Text):
+class Italic(span):
     def __init__(self, text, style=None, **kwargs):
         _style = {"fontStyle": "italic"}
         _style.update(style or {})
         super().__init__(text, style=_style, **kwargs)
 
 
-class Link(Text):
+class Link(span):
     tag = "a"
 
     def __init__(self, text, src, **kwargs):
@@ -231,9 +229,7 @@ class Image(Element):
 
         elif isinstance(data, pil_image.Image):
             buff = BytesIO()
-            assert not format.startswith(
-                "b64"
-            ), "does not support base64 encoding, use binary."
+            assert not format.startswith("b64"), "does not support base64 encoding, use binary."
             data.save(buff, format=format)
             binary = buff.getbuffer().tobytes()
             super().__init__(src=binary, **kwargs)
@@ -242,9 +238,7 @@ class Image(Element):
         elif isinstance(data, str):
             buff = BytesIO()
             img = pil_image.open(data)
-            assert not format.startswith(
-                "b64"
-            ), "does not support base64 encoding, use binary."
+            assert not format.startswith("b64"), "does not support base64 encoding, use binary."
             img.save(buff, format=format)
             binary = buff.getbuffer().tobytes()
             super().__init__(src=binary, **kwargs)

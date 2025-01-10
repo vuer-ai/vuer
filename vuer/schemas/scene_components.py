@@ -705,7 +705,6 @@ class CoordsMarker(SceneElement):
     """Coordinates Marker Component.
 
     Args:
-        matrix: A list of 16 numbers representing the matrix. Overrides position and rotation.
         position: A list of 3 numbers representing the position.
         rotation: A list of 3 numbers representing the rotation.
         matrix: A list of 16 numbers representing the matrix. Overrides position and rotation.
