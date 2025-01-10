@@ -6,6 +6,8 @@ import * as THREE from 'three';
 import * as JSX from 'react/jsx-runtime';
 import * as Drei from '@react-three/drei';
 import * as XR from '@react-three/xr';
+import * as LEVA from 'leva';
+import * as ZUSTAND from 'zustand';
 declare global {
     interface Window {
         React: typeof React;
@@ -16,6 +18,8 @@ declare global {
         FIBER: typeof FIBER;
         XR: typeof XR;
         Drei: typeof Drei;
+        LEVA: typeof LEVA;
+        ZUSTAND: typeof ZUSTAND;
     }
 }
 export default function Page(): JSX.JSX.Element | null;
