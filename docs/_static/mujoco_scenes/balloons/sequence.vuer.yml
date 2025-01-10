@@ -1,0 +1,17 @@
+tag: Scene
+events:
+- tag: Frame
+  span: 50 # in milliseconds
+  children:
+  - tag: ContribLoader
+    library: "@vuer-ai/mujoco-ts"
+    version: "0.0.28"
+    main: "dist/index.umd.js"
+
+- tag: Frame
+  span: 50 # in milliseconds
+  children:
+  - tag: MuJoCo
+    src: https://docs.vuer.ai/en/latest/_static/mujoco_scenes/ballons/balloons.mjcf.xml
+    assets:
+    children: [ ]
