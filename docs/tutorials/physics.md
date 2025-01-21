@@ -61,6 +61,7 @@ title="MuJoCo block stacking example"></iframe>
     
     MuJoCo Cassie <physics/mujoco_wasm.md>
     MoCap Control <physics/mocap_control.md>
+    Hand Control <physics/mocap_hand_control.md>
     Example Gallery <physics/mujoco_gallery.md>
 ```
 
