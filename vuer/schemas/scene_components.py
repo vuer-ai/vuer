@@ -1,7 +1,6 @@
-from typing import List, Literal
-
 import numpy as np
 from numpy.typing import NDArray
+from typing import List, Literal
 
 from .html_components import BlockElement, Image, Element
 
@@ -258,9 +257,7 @@ class Fog(SceneElement):
 
     def __init__(self, *, children=None, color=None, near=None, far=None, **kwargs):
         assert children is None, "Fog does not support children."
-        super().__init__(
-            attach="fog", key="fog", color=color, near=near, far=far, **kwargs
-        )
+        super().__init__(attach="fog", key="fog", color=color, near=near, far=far, **kwargs)
 
 
 class Wireframe(SceneElement):
@@ -611,22 +608,23 @@ class Hands(SceneElement):
         key="hands",
         eventTypes=("squeeze",),
         stream=True,
-        left=None,
-        right=None,
-        showLeft=True,
-        showRight=True,
+        disableLeft=True,  # disables the left data stream, also hides the hand.
+        disableRight=True, # disables the right data stream, also hides the hand.
+        hideLeft=True,     # hides the hand, but still streams the data.
+        hideRight=True,    # hides the hand, but still streams the data.
         **kwargs,
     ):
         super().__init__(
             key=key,
             eventTypes=eventTypes,
             stream=stream,
-            left=left,
-            right=right,
-            showLeft=True,
-            showRight=True,
+            disableLeft=disableLeft,
+            disableRight=disableRight,
+            hideLeft=hideLeft,
+            hideRight=hideRight,
             **kwargs,
         )
+
 
 class MotionControllers(SceneElement):
     """
@@ -672,12 +670,11 @@ class MotionControllers(SceneElement):
             **kwargs,
         )
 
+
 class Obj(SceneElement):
     tag = "Obj"
 
-    def __init__(
-        self, src=None, mtl=None, text=None, buff=None, materials=None, **kwargs
-    ):
+    def __init__(self, src=None, mtl=None, text=None, buff=None, materials=None, **kwargs):
         """
         :param src: The source of the obj file. Can be a url or a local file.
         :type  src: str
@@ -905,9 +902,7 @@ class DefaultScene(Scene):
     ):
         rawChildren = [
             AmbientLight(intensity=0.5, key="default_ambient_light"),
-            DirectionalLight(
-                intensity=1, key="default_directional_light", helper=show_helper
-            ),
+            DirectionalLight(intensity=1, key="default_directional_light", helper=show_helper),
             *(rawChildren or []),
         ]
 
@@ -921,9 +916,7 @@ class DefaultScene(Scene):
                 GrabRender(key="DEFAULT"),
                 *[
                     # we use a key here so that we can replace the timeline controls via update
-                    TimelineControls(start=startStep, end=endStep, key="timeline")
-                    if endStep
-                    else None,
+                    TimelineControls(start=startStep, end=endStep, key="timeline") if endStep else None,
                 ],
                 PointerControls(),
                 Grid() if grid else None,
