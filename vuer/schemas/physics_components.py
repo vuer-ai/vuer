@@ -20,6 +20,9 @@ class MuJoCo(SceneElement):
     threshold: float = 0.001
     keyFrames: List[str] = []
 
+    # visible GeomGroups.
+    visibile: List[int] = None
+
     # Allow adding additional children for the user to control.
     # actually this can be done outside.
     selfProvide = True
@@ -35,9 +38,10 @@ class HandActuator(SceneElement):
     offset = 0.01
     low = 0.01
     high = 1.0
-    cond = 'right-squeeze'
+    cond = "right-squeeze"
     value = "right:thumb-tip,right:index-finger-tip"
     scale = 1.0
+
 
 class MotionControllerActuator(SceneElement):
     """
@@ -54,10 +58,11 @@ class MotionControllerActuator(SceneElement):
     :param scale: The scaling factor applied to the input value for actuation.
     :type scale: float
     """
+
     tag = "MotionControllerActuator"
 
     ctrlId: int = -1
     low: float = 0.0
     high: float = 1.0
-    cond: str = 'right-trigger'
+    cond: str = "right-trigger"
     scale: float = 1.0
