@@ -17,5 +17,6 @@ In other words, [`vuer.ai`](https://vuer.ai) offers a powerful, component-based 
     Async Programming 101 <basics/async_programming.md>
     Simpe Life-Cycle <basics/simple_life_cycle.md>
     Setting Up SSL Proxy for WebSocket <basics/ssl_proxy_webxr.md>
+    Serviing Dynamic Content <basics/adding_html_handler.md>
 ```
 

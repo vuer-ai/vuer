@@ -84,7 +84,7 @@ class Server:
 
         self.cors_context = aiohttp_cors.setup(self.app, defaults=cors_config)
 
-    def _route(
+    def _add_route(
         self,
         path: str,
         handler: callable,
@@ -97,20 +97,20 @@ class Server:
         ws_handler = partial(
             websocket_handler, handler=handler, max_msg_size=self.WEBSOCKET_MAX_SIZE
         )
-        self._route(path, ws_handler)
+        self._add_route(path, ws_handler)
 
     @staticmethod
     def _add_task(fn: Coroutine, name=None):
         loop = asyncio.get_running_loop()
         loop.create_task(fn, name=name)
 
-    def _static(self, path, root):
+    def _add_static(self, path, root):
         _fn = partial(handle_file_request, root=root)
-        self._route(f"{path}/{{filename:.*}}", _fn, method="GET")
+        self._add_route(f"{path}/{{filename:.*}}", _fn, method="GET")
 
     def _static_file(self, path, root, filename=None):
         _fn = partial(handle_file_request, root=root, filename=filename)
-        self._route(f"{path}", _fn, method="GET")
+        self._add_route(f"{path}", _fn, method="GET")
 
     def run(self):
         async def init_server():
@@ -139,6 +139,6 @@ class Server:
 
 if __name__ == "__main__":
     app = Server()
-    app._route("", websocket_handler)
-    app._static("/static", handle_file_request, root=".")
+    app._add_route("", websocket_handler)
+    app._add_static("/static", handle_file_request, root=".")
     app.run()

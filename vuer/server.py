@@ -1,33 +1,33 @@
 import asyncio
 from asyncio import sleep
-from collections import deque, defaultdict
+from collections import defaultdict, deque
 from functools import partial
 from pathlib import Path
-from typing import cast, Callable, Dict, Union
+from typing import Callable, Dict, Union, cast
 from uuid import uuid4
 
 from aiohttp.hdrs import UPGRADE
-from aiohttp.web_request import Request, BaseRequest
+from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import Response
 from aiohttp.web_ws import WebSocketResponse
 from msgpack import packb, unpackb
-from params_proto import Proto, PrefixProto, Flag
+from params_proto import Flag, PrefixProto, Proto
 from websockets import ConnectionClosedError
 
 from vuer.base import Server, handle_file_request, websocket_handler
 from vuer.events import (
-    ClientEvent,
-    NullEvent,
-    ServerEvent,
+    INIT,
     NOOP,
+    Add,
+    ClientEvent,
     Frame,
+    GrabRender,
+    NullEvent,
+    Remove,
+    ServerEvent,
+    ServerRPC,
     Set,
     Update,
-    INIT,
-    Remove,
-    Add,
-    ServerRPC,
-    GrabRender,
     Upsert,
 )
 from vuer.schemas import Page
@@ -755,6 +755,25 @@ class Vuer(PrefixProto, Server):
         else:
             return await websocket_handler(request, self.downlink)
 
+    def add_route(self, path, fn: Callable, method="GET", content_type="text/html"):
+        if self.verbose:
+            print("========= Adding Route =========")
+            print("        path:", path)
+            print("          fn:", fn)
+            print("      method:", method)
+            print("content_type:", content_type)
+            print("--------------------------------")
+
+        async def handler(request: Request):
+            try:
+                output = fn()
+                return Response(text=output, content_type=content_type)
+            except Exception as e:
+                print("\033[91m" + str(e) + "\033[0m", flush=True)
+                return Response(status=500, text=str(e))
+
+        self._add_route(path, handler, method=method)
+
     def run(self, kill=None, *args, **kwargs):
         import os
 
@@ -762,6 +781,7 @@ class Vuer(PrefixProto, Server):
         # port = int(_)
         if kill or self.free_port:
             import time
+
             from killport import kill_ports
 
             kill_ports(ports=[self.port])
@@ -772,14 +792,14 @@ class Vuer(PrefixProto, Server):
         # self._static_file("", Path(__file__).parent / "client_build", filename="index.html")
 
         # use the same endpoint for websocket and file serving.
-        self._route("", self.socket_index, method="GET")
-        self._static("/assets", self.client_root / "assets")
-        self._static("/hands", self.client_root / "hands")
+        self._add_route("", self.socket_index, method="GET")
+        self._add_static("/assets", self.client_root / "assets")
+        self._static_file("/editor", self.client_root, "editor/index.html")
 
         # serve local files via /static endpoint
-        self._static("/static", self.static_root)
+        self._add_static("/static", self.static_root)
         print("Serving file://" + os.path.abspath(self.static_root), "at", "/static")
-        self._route("/relay", self.relay, method="POST")
+        self._add_route("/relay", self.relay, method="POST")
 
         print("Visit: " + self.get_url())
 
