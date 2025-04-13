@@ -70,10 +70,10 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             Hands(
                 stream=True,
                 key="hands",
-                # hideLeft=True,       # hides the hand, but still streams the data.
-                # hideRight=True,      # hides the hand, but still streams the data.
-                # disableLeft=True,    # disables the left data stream, also hides the hand.
-                # disableRight=True,   # disables the right data stream, also hides the hand.
+                # hideLeft=False,       # hides the hand, but still streams the data.
+                # hideRight=False,      # hides the hand, but still streams the data.
+                # disableLeft=False,    # disables the left data stream, also hides the hand.
+                # disableRight=False,   # disables the right data stream, also hides the hand.
             ),
             to="bgChildren",
         )

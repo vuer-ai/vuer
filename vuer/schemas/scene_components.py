@@ -1,8 +1,9 @@
-import numpy as np
-from numpy.typing import NDArray
 from typing import List, Literal
 
-from .html_components import BlockElement, Image, Element
+import numpy as np
+from numpy.typing import NDArray
+
+from .html_components import BlockElement, Element, Image
 
 
 class SceneElement(BlockElement):
@@ -355,7 +356,7 @@ class VideoPlane(Image, SceneElement):
     tag = "VideoPlane"
 
 
-class WebRTCVideoPlane(Image, SceneElement):
+class WebRTCVideoPlane(SceneElement):
     """A Head-up display (HUD) plane that is always facing the camera. Requires
     mounting a material."""
 
@@ -369,7 +370,7 @@ class StereoVideoPlane(Image, SceneElement):
     tag = "StereoVideoPlane"
 
 
-class WebRTCStereoVideoPlane(Image, SceneElement):
+class WebRTCStereoVideoPlane(SceneElement):
     """A Head-up display (HUD) plane that is always facing the camera. Requires
     mounting a material."""
 
@@ -606,17 +607,17 @@ class Hands(SceneElement):
     def __init__(
         self,
         key="hands",
-        eventTypes=("squeeze",),
+        # eventTypes=("squeeze",),
         stream=True,
-        disableLeft=True,  # disables the left data stream, also hides the hand.
-        disableRight=True, # disables the right data stream, also hides the hand.
-        hideLeft=True,     # hides the hand, but still streams the data.
-        hideRight=True,    # hides the hand, but still streams the data.
+        disableLeft=False,  # disables the left data stream, also hides the hand.
+        disableRight=False, # disables the right data stream, also hides the hand.
+        hideLeft=False,     # hides the hand, but still streams the data.
+        hideRight=False,    # hides the hand, but still streams the data.
         **kwargs,
     ):
         super().__init__(
             key=key,
-            eventTypes=eventTypes,
+            # eventTypes=eventTypes,
             stream=stream,
             disableLeft=disableLeft,
             disableRight=disableRight,
