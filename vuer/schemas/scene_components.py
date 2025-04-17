@@ -453,6 +453,7 @@ class Pivot(SceneElement):
 
 class Movable(SceneElement):
     tag = "Movable"
+    localRotation: bool = False
 
 
 class Hands(SceneElement):
