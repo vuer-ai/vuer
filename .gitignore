@@ -2,6 +2,8 @@
 .DS_Store
 # PyCharm project files
 .idea
+# since this is public
+.run
 # IDE files
 .eggs
 .tox
