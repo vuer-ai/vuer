@@ -454,16 +454,15 @@ class Pivot(SceneElement):
 class Movable(SceneElement):
     """A universal component that can be grabbed and moved using pointers, hands, controllers.
 
-    Args:
-        offset: Optional [x, y, z] offset from the position. Defaults to [0, 0, 0].
-        position: Optional [x, y, z] position. Defaults to [0, 1, -1].
-        quaternion: Optional [x, y, z, w] quaternion rotation.
-        rotation: Optional [x, y, z] euler rotation.
-        scale: Optional float or [x, y, z] scale factor. Defaults to 0.1.
-        handle: Optional float or [x, y, z] handle size. Overrides scale for the handle geometry.
-        showFrame: Optional boolean to show coordinate frame. Defaults to True.
-        wireframe: Optional boolean for wireframe rendering. Defaults to False.
-        localRotation: Optional boolean to use local rotation. Defaults to False.
+    :param offset: Optional [x, y, z] offset from the position. Defaults to [0, 0, 0].
+    :param position: Optional [x, y, z] position. Defaults to [0, 1, -1].
+    :param quaternion: Optional [x, y, z, w] quaternion rotation.
+    :param rotation: Optional [x, y, z] euler rotation.
+    :param scale: Optional float or [x, y, z] scale factor. Defaults to 0.1.
+    :param handle: Optional float or [x, y, z] handle size. Overrides scale for the handle geometry.
+    :param showFrame: Optional boolean to show coordinate frame. Defaults to True.
+    :param wireframe: Optional boolean for wireframe rendering. Defaults to False.
+    :param localRotation: Optional boolean to use local rotation. Defaults to False.
 
     The component can be grabbed using:
     - Hand pinch gestures (left/right hand)
@@ -472,7 +471,7 @@ class Movable(SceneElement):
     When grabbed, the component follows the hand/controller movement and rotation.
     A coordinate frame can be displayed to visualize the current transformation.
 
-    The component supports both AR and VR modes through the XR system.
+    The component supports both AR and VR modes through the WebXR versions of these components.
     """
 
     tag = "Movable"
