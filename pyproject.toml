@@ -40,10 +40,10 @@ example = [
     "opencv-python"
 ]
 dev = [
+    "cmx",
     "aiohttp==3.10.5",
     "aiohttp-cors",
     "killport",
-    "black==22.3.0",
     "pylint==2.13.4",
     "pytest==7.1.2",
     "sphinx==7.1.2",

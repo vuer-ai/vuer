@@ -803,6 +803,168 @@ class PointerControls(SceneElement):
     # todo: consider adding default component keys here.
 
 
+class AccumulativeShadows(SceneElement):
+    """A planar, Y-up oriented shadow-catcher that accumulates soft shadows with zero performance impact after accumulation.
+
+    The shadow-catcher can operate in temporal mode (accumulating over time) or instantaneous mode. It must be paired with
+    light sources and scene objects that cast shadows as children. Works best with RandomizedLight components for realistic
+    raycast-like shadows and ambient occlusion.
+
+    :param frames: Number of frames to render. More frames yield cleaner results but take longer. Defaults to 40.
+    :type frames: int
+    :param blend: Controls the refresh ratio when frames=Infinity. Defaults to 100.
+    :type blend: int
+    :param limit: Limits rendered frames when frames=Infinity to regain performance once scene settles. Defaults to Infinity.
+    :type limit: int
+    :param scale: Scale of the shadow plane. No default.
+    :type scale: float
+    :param temporal: Whether to accumulate shadows over time (more performant but has visual regression). Defaults to False.
+    :type temporal: bool
+    :param opacity: Opacity of the shadow plane. Defaults to 1.
+    :type opacity: float
+    :param alphaTest: Threshold for discarding alpha pixels. Defaults to 0.65.
+    :type alphaTest: float
+    :param color: Shadow color. Defaults to black.
+    :type color: str
+    :param colorBlend: How much colors turn to black (0 is black). Defaults to 2.
+    :type colorBlend: float
+    :param resolution: Buffer resolution. Defaults to 1024.
+    :type resolution: int
+
+    Example Usage::
+
+        AccumulativeShadows(
+            temporal=True,
+            frames=100,
+            scale=10,
+            children=[
+                RandomizedLight(amount=8, position=[5, 5, -10])
+            ]
+        )
+    """
+
+    tag = "AccumulativeShadows"
+
+
+class Trail(SceneElement):
+    """A declarative, three.MeshLine based Trails implementation. You can attach it to any mesh and it will give it a beautiful trail.
+
+    :param width: Width of the line. Defaults to 0.2.
+    :type width: float
+    :param color: Color of the line. Defaults to 'hotpink'.
+    :type color: str
+    :param length: Length of the line. Defaults to 1.
+    :type length: float
+    :param decay: How fast the line fades away. Defaults to 1.
+    :type decay: float
+    :param local: Whether to use the target's world or local positions. Defaults to False.
+    :type local: bool
+    :param stride: Min distance between previous and current point. Defaults to 0.
+    :type stride: float
+    :param interval: Number of frames to wait before next calculation. Defaults to 1.
+    :type interval: int
+    :param target: Optional target. This object will produce the trail.
+    :type target: Any
+    :param attenuation: A function to define the width in each point along it.
+    :type attenuation: callable
+
+    Note: If `target` is not defined, Trail will use the first `Object3D` child as the target.
+    You can optionally define a custom meshLineMaterial to use.
+
+    Example Usage::
+
+        Trail(
+            width=0.2,
+            color='hotpink',
+            length=1,
+            decay=1,
+            local=False,
+            stride=0,
+            interval=1
+        )
+    """
+
+    tag = "Trail"
+
+
+class Center(SceneElement):
+    """Centers its children by calculating their boundary box.
+
+    The Center component automatically centers child elements by calculating their bounding box.
+    It allows fine control over which axes to center along.
+
+    :param top: Align to top edge instead of center on Y axis
+    :type top: bool
+    :param right: Align to right edge instead of center on X axis
+    :type right: bool
+    :param bottom: Align to bottom edge instead of center on Y axis
+    :type bottom: bool
+    :param left: Align to left edge instead of center on X axis
+    :type left: bool
+    :param front: Align to front edge instead of center on Z axis
+    :type front: bool
+    :param back: Align to back edge instead of center on Z axis
+    :type back: bool
+    :param disable: Disable centering on all axes
+    :type disable: bool
+    :param disableX: Disable centering on X axis
+    :type disableX: bool
+    :param disableY: Disable centering on Y axis
+    :type disableY: bool
+    :param disableZ: Disable centering on Z axis
+    :type disableZ: bool
+    :param precise: Use precise boundary box calculation (default: True)
+    :type precise: bool
+
+    Example Usage::
+
+        Center(
+            top=True,
+            left=True,
+            children=[mesh]
+        )
+    """
+
+    tag = "Center"
+
+
+class Text3D(SceneElement):
+    """Renders 3D text using ThreeJS's TextGeometry.
+
+    Text3D will suspend while loading the font data. It requires fonts in JSON format
+    generated through typeface.json, either as a path to a JSON file or a JSON object.
+    If you face display issues try checking "Reverse font direction" in the typeface tool.
+
+    :param font: Font URL or JSON object with font data
+    :type font: str
+    :param smooth: Merges vertices with a tolerance and calls computeVertexNormals
+    :type smooth: float
+    :param lineHeight: Line height in threejs units (default: 0)
+    :type lineHeight: float
+    :param letterSpacing: Letter spacing factor (default: 1)
+    :type letterSpacing: float
+
+    You can align the text using the Center component:
+
+    .. code-block:: python
+
+        Center(
+            Text3D(
+                "Hello world!",
+                font="fonts/helvetiker.json",
+                smooth=1,
+                lineHeight=0.5,
+                letterSpacing=-0.025
+            )
+        )
+    """
+
+    tag = "Text3D"
+
+    def __init__(self, *text, font=None, smooth=None, lineHeight=0, letterSpacing=1, **kwargs):
+        super().__init__(*text, font=font, smooth=smooth, lineHeight=lineHeight, letterSpacing=letterSpacing, **kwargs)
+
+
 class Scene(BlockElement):
     tag = "Scene"
 
