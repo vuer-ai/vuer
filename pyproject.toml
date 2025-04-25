@@ -50,14 +50,15 @@ dev = [
     "furo",
     "sphinx-autobuild",
     "sphinx_copybutton",
+    "sphinxcontrib-video",
     "myst_parser",
-    # these are very optional, but needed for the doc site
+    # these are very optional but needed for the doc site
     "trimesh",
     "tqdm",
 ]
 
 [project.scripts]
-# Note, add entrypoint name to scripts/completions/install.py to include CLI percentage
+# Note, add the entrypoint name to scripts/completions/install.py to include CLI percentage
 vuer = "vuer:entrypoint"
 
 [tool.setuptools.packages.find]
