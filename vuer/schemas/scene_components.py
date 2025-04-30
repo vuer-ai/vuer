@@ -803,6 +803,55 @@ class PointerControls(SceneElement):
     # todo: consider adding default component keys here.
 
 
+class RandomizedLight(SceneElement):
+    """A randomized light that internally runs multiple lights and jiggles them.
+
+    This component is typically paired with AccumulativeShadows for realistic soft shadows.
+    When used with AccumulativeShadows, it automatically inherits the number of frames
+    from the parent component.
+
+    :param frames: How many frames to jiggle the lights. Defaults to 1. If used with
+                  AccumulativeShadows, frames will be inherited from there.
+    :type frames: int
+    :param position: Light position [x, y, z]. Defaults to [0, 0, 0].
+    :type position: List[float]
+    :param radius: Radius of the jiggle - higher values create softer light. Defaults to 5.
+    :type radius: float
+    :param amount: Number of lights to use. Defaults to 8.
+    :type amount: int
+    :param intensity: Light intensity. Defaults to 1.
+    :type intensity: float
+    :param ambient: Ambient occlusion factor - lower values mean less AO. Can be mixed with directional light. Defaults to 0.5.
+    :type ambient: float
+    :param castShadow: Whether lights cast shadows. Defaults to True.
+    :type castShadow: bool
+    :param bias: Shadow bias value. Defaults to 0.
+    :type bias: float
+    :param mapSize: Shadow map size. Defaults to 512.
+    :type mapSize: int
+    :param size: Size of the shadow camera. Defaults to 10.
+    :type size: float
+    :param near: Shadow camera near plane. Defaults to 0.5.
+    :type near: float
+    :param far: Shadow camera far plane. Defaults to 500.
+    :type far: float
+
+    Example Usage::
+
+        RandomizedLight(
+            frames=40,
+            position=[5, 5, -10],
+            radius=8,
+            amount=8,
+            intensity=1,
+            ambient=0.5,
+            castShadow=True
+        )
+    """
+
+    tag = "RandomizedLight"
+
+
 class AccumulativeShadows(SceneElement):
     """A planar, Y-up oriented shadow-catcher that accumulates soft shadows with zero performance impact after accumulation.
 
