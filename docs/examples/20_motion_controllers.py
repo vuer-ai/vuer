@@ -3,7 +3,7 @@ from contextlib import nullcontext
 
 from cmx import doc
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", True)
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 doc @ """
 # Quest 3 Motion Controller States

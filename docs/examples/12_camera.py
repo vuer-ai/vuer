@@ -2,6 +2,10 @@ from pathlib import Path
 
 from cmx import doc
 from asyncio import sleep
+import os
+from contextlib import nullcontext
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 
 async def save_doc():
@@ -26,7 +30,7 @@ doc.image(src=f"figures/{Path(__file__).stem}.jpg", width=400)
 doc @ """
 Simply run the following script:
 """
-with doc, doc.skip:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     from vuer import Vuer, VuerSession
     from vuer.schemas import DefaultScene, Frustum
 
@@ -50,3 +54,6 @@ with doc, doc.skip:
                 for i in range(N)
             ]
         )
+
+        while True:
+            await sleep(0.01)

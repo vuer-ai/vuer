@@ -1,4 +1,9 @@
 from cmx import doc
+from contextlib import nullcontext
+from pathlib import Path
+import os
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 doc @ """
 # Spline and Frustums
@@ -37,7 +42,7 @@ with doc @ "Extract the points from the camera matrices":
     points = matrices[:, [3, 7, 11]]
     three_matrices = colmap2three(matrices)
 
-with doc @ f"Camera path with {len(points)} points", doc.skip:
+with doc @ f"Camera path with {len(points)} points", doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
     from vuer import Vuer
     from vuer.schemas import DefaultScene, Line, Frustum

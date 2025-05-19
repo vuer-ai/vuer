@@ -1,6 +1,10 @@
 from pathlib import Path
+import os
+from contextlib import nullcontext
 
 from cmx import doc
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 doc @ """
 # Plane Primitive
@@ -66,7 +70,7 @@ mesh has been loaded: red stairs are loaded
 
 Now to setup the scene, we can bind the main function:
 """
-with doc, doc.skip:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     # use `start=True` to start the app immediately
     @app.spawn(start=True)
     async def main(session):

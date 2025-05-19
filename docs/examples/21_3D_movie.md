@@ -2,7 +2,7 @@
 # Playing 3D Movie in VisionPro and Quest 3
 
 This example shows how to use background images + layers
-to play a 3D movie in the VisionPro and the Quest 3
+to play a 3D movie in the VisionPro and the Quest 3.
 
 Before you start, first run the following script:
 
@@ -14,12 +14,16 @@ wget -O mary.webm https://threejs.org/examples/textures/MaryOculus.webm
 
 ![Side view of the 3D movie screen](figures/21_3D_movie.png)
 
-```{admonition} ImagePlane.layer Property
 The underlying rendering engine supported a layer binary bitmask
 for both objects and the camera. Below we set the two image planes,
 left and right, to `layers=1` and `layers=2`. Note that these two 
 masks are associated with left eye's camera and the right eye's
 camera.
+
+```{admonition} ImagePlane.layer Property
+Pay attention to the layer property. You can set it to 3 to have
+it show up in both eyes! layers=0 is the default, and it appears 
+on all of the cameras.
 ```
 
 
@@ -33,7 +37,12 @@ from vuer import Vuer
 from vuer.events import ClientEvent
 from vuer.schemas import Scene, ImageBackground
 
-reader = iio.get_reader("./mary.webm")
+assets_folder = Path(__file__).parent / "../../../assets"
+mary_file = "movies/mary.webm"
+reader_file = assets_folder / mary_file
+
+
+reader = iio.get_reader(reader_file)
 
 app = Vuer()
 
@@ -43,7 +52,7 @@ async def on_camera(event: ClientEvent, session):
     assert event == "CAMERA_MOVE", "the event type should be correct"
     print("camera event", event.etype, event.value)
 
-@app.spawn(start=True)
+@app.spawn
 async def show_heatmap(session):
     session.set @ Scene()
 
@@ -83,4 +92,13 @@ async def show_heatmap(session):
             )
             # 'jpeg' encoding should give you about 30fps with a 16ms wait in-between.
             await sleep(0.016 * 2)
+```
+
+## Next Steps
+
+- [ ] Add layers support to the virtual cameras.
+
+
+```python
+app.run()
 ```

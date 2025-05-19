@@ -16,6 +16,7 @@ You should expect to see a scene that looks like the following:
 ![pointcloud](figures/pointcloud_pcd.png)
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
+    import os
     from asyncio import sleep
 
     from vuer import Vuer, VuerSession

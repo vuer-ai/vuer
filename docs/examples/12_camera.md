@@ -12,10 +12,9 @@ Simply run the following script:
 from vuer import Vuer, VuerSession
 from vuer.schemas import DefaultScene, Frustum
 
-n, N = 12, 12 ** 3
+n, N = 12, 12**3
 
 app = Vuer()
-
 
 @app.spawn(start=True)
 async def main(sess: VuerSession):
@@ -27,10 +26,13 @@ async def main(sess: VuerSession):
                 showImagePlane=True,
                 showFrustum=False,
                 showFocalPlane=False,
-                position=[i % n, (i // n) % n, (i // n ** 2) % n],
+                position=[i % n, (i // n) % n, (i // n**2) % n],
                 rotation=[0.5 * 3.14, 0, 0],
             )
             for i in range(N)
         ]
     )
+
+    while True:
+        await sleep(0.01)
 ```

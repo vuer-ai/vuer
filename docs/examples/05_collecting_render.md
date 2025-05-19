@@ -78,7 +78,7 @@ async def show_heatmap(proxy):
         position=[0, 0, 0.1],
         rotation=[0, 0, 0],
         materialType="depth",
-        meterial=dict(color="green"),
+        material=dict(color="green"),
         outlines=dict(angle=0, thickness=0.005, color="white"),
     )
 
@@ -88,7 +88,7 @@ async def show_heatmap(proxy):
         position=[0, 0, -0.01],
         rotation=[0, 0, 0],
         materialType="depth",
-        meterial=dict(color="green", side=2),
+        material=dict(color="green", side=2),
     )
 
     (

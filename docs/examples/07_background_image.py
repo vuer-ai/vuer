@@ -1,4 +1,10 @@
+from pathlib import Path
 from cmx import doc
+import os
+from contextlib import nullcontext
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
+
 
 doc @ """
 # Background Image
@@ -8,7 +14,7 @@ relaying from a rendering model such as NeRFs, Gaussian Splatting, or
 GANs.
 """
 
-with doc, doc.skip:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
 
     import imageio as iio
@@ -18,7 +24,13 @@ with doc, doc.skip:
     from vuer.events import ClientEvent
     from vuer.schemas import Scene, SceneBackground
 
-    reader = iio.get_reader("../../../assets/movies/disney.webm")
+    assets_folder = Path(__file__).parent / "../../../assets"
+
+    disney_file = "movies/disney.webm"
+
+    reader_file = assets_folder / disney_file
+
+    reader = iio.get_reader(reader_file)
 
     app = Vuer()
 
@@ -48,6 +60,9 @@ with doc, doc.skip:
                     interpolate=True,
                 ),
                 to="bgChildren",
+                
             )
             # 'jpeg' encoding should give you about 30fps with a 16ms wait in-between.
             await sleep(0.016)
+
+doc.flush()

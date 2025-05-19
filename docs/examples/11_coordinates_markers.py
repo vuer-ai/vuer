@@ -1,4 +1,9 @@
+import os
+from contextlib import nullcontext
 from cmx import doc
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
+
 
 doc @ """
 # Coordinates Markers
@@ -10,7 +15,7 @@ This example visualizes a large number of coordinates markers.
 Live demo: TBD
 """
 
-with doc, doc.skip:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
 
     from vuer import Vuer, VuerSession

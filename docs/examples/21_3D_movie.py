@@ -1,4 +1,9 @@
 from cmx import doc
+import os
+from contextlib import nullcontext
+from pathlib import Path
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 doc @ """
 # Playing 3D Movie in VisionPro and Quest 3
@@ -30,7 +35,7 @@ on all of the cameras.
 
 """
 
-with doc, doc.skip:
+with doc:
     from asyncio import sleep
 
     import imageio as iio
@@ -40,7 +45,12 @@ with doc, doc.skip:
     from vuer.events import ClientEvent
     from vuer.schemas import Scene, ImageBackground
 
-    reader = iio.get_reader("./mary.webm")
+    assets_folder = Path(__file__).parent / "../../../assets"
+    mary_file = "movies/mary.webm"
+    reader_file = assets_folder / mary_file
+
+
+    reader = iio.get_reader(reader_file)
 
     app = Vuer()
 
@@ -50,7 +60,7 @@ with doc, doc.skip:
         assert event == "CAMERA_MOVE", "the event type should be correct"
         print("camera event", event.etype, event.value)
 
-    @app.spawn(start=True)
+    @app.spawn
     async def show_heatmap(session):
         session.set @ Scene()
 
@@ -98,3 +108,7 @@ doc @ """
 - [ ] Add layers support to the virtual cameras.
 
 """
+with doc, doc.skip if MAKE_DOCS else nullcontext():
+    app.run()
+
+doc.flush()

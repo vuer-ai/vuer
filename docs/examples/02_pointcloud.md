@@ -1,3 +1,4 @@
+
 # Showing Point Clouds Programmatically and Fast💨
 
 This example shows you two ways to load a point cloud. In the first example, you serve the point cloud as an `ply` file, and have the webclient read directly from your file system. This approach, however can be a bit slow, and won't work with point cloud data that are updated at real time. In the second example, you load the point cloud into python and then send the parsed vertices and the color information via the `PointCloud` component.
@@ -32,7 +33,7 @@ from vuer.schemas import DefaultScene, Ply, PointCloud
 assets_folder = Path(__file__).parent / "../../../assets"
 test_file = "static_3d/porsche.ply"
 
-# trimesh has issue loading large pointclouds.
+# trimesh has issue loading large point clouds.
 pcd = o3d.io.read_point_cloud(str(assets_folder / test_file))
 
 app = Vuer(static_root=assets_folder)

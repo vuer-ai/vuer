@@ -2,6 +2,8 @@ import os
 from contextlib import nullcontext
 from cmx import doc
 
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
+
 doc @ """
 # 3D Text in Vuer
 
@@ -10,8 +12,6 @@ The Text3D component renders 3D text using ThreeJS's TextGeometry.
 
 ![3D Text Example](figures/22_3d_text.png)
 """
-
-MAKE_DOCS = os.getenv("MAKE_DOCS", False)
 
 with doc, doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
