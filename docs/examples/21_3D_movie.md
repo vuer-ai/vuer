@@ -52,7 +52,7 @@ async def on_camera(event: ClientEvent, session):
     assert event == "CAMERA_MOVE", "the event type should be correct"
     print("camera event", event.etype, event.value)
 
-@app.spawn
+@app.spawn(start=True)
 async def show_heatmap(session):
     session.set @ Scene()
 
@@ -98,7 +98,3 @@ async def show_heatmap(session):
 
 - [ ] Add layers support to the virtual cameras.
 
-
-```python
-app.run()
-```

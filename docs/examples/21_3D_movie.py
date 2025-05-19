@@ -35,7 +35,7 @@ on all of the cameras.
 
 """
 
-with doc:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
 
     import imageio as iio
@@ -60,7 +60,7 @@ with doc:
         assert event == "CAMERA_MOVE", "the event type should be correct"
         print("camera event", event.etype, event.value)
 
-    @app.spawn
+    @app.spawn(start=True)
     async def show_heatmap(session):
         session.set @ Scene()
 
@@ -108,7 +108,5 @@ doc @ """
 - [ ] Add layers support to the virtual cameras.
 
 """
-with doc, doc.skip if MAKE_DOCS else nullcontext():
-    app.run()
 
 doc.flush()
