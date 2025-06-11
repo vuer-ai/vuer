@@ -274,6 +274,29 @@ class LumaSplats(SceneElement):
 
 
 class Pcd(SceneElement):
+    """
+    Represents a PCD (Point Cloud Data) element in a scene.
+
+    The Pcd class serves as a specialized scene element to handle
+    PCD data. It inherits from the base SceneElement class and is
+    used to define and represent point cloud data within the scene
+    structure. The tag attribute is predefined as "Pcd" to denote its
+    type in the scene representation.
+
+    Attributes:
+        tag (str): A constant representing the tag for this specific
+        type of scene element, set to "Pcd".
+        src (str): path or a base64 encoded string of the point cloud data.
+        data (Points): Optional point cloud data to be displayed.
+        buff
+        hide (bool): Optional flag to hide the point cloud. Defaults to False.
+        color (str): Optional color specification for the point cloud.
+        matrix (tuple): Optional 4x4 transformation matrix (16 values) to position and orient the point cloud.
+        text
+        encoding = 'ascii',
+        hide
+    """
+
     tag = "Pcd"
 
 
