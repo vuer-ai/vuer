@@ -283,18 +283,20 @@ class Pcd(SceneElement):
     structure. The tag attribute is predefined as "Pcd" to denote its
     type in the scene representation.
 
-    Attributes:
-        tag (str): A constant representing the tag for this specific
-        type of scene element, set to "Pcd".
-        src (str): path or a base64 encoded string of the point cloud data.
-        data (Points): Optional point cloud data to be displayed.
-        buff
-        hide (bool): Optional flag to hide the point cloud. Defaults to False.
-        color (str): Optional color specification for the point cloud.
-        matrix (tuple): Optional 4x4 transformation matrix (16 values) to position and orient the point cloud.
-        text
-        encoding = 'ascii',
-        hide
+    :param src: The source of the PCD. Can be a url or a local file.
+    :type src: str, optional
+    :param text: The text content of the PCD, allow one to load a scene from a string.
+    :type  text: str, optional
+    :param buff: The binary content of the PCD file. This is the most efficient, because you are sending binaries..
+    :type  buff: bytes, optional
+    :param encoding: The encoding of the PCD file. Defaults to 'ascii'.
+    :type  encoding: str, optional
+    :param size: Optional float that sets the size of the points in the point cloud.
+    :type  size: float, optional
+    :param matrix: Optional 4x4 transformation matrix (16 values) to position and orient the point cloud.
+    :type matrix: tuple[float, ...]
+    :param hide: Optional flag to hide the point cloud. Defaults to False.
+    :type  hide: bool, optional
     """
 
     tag = "Pcd"
