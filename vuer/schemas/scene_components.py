@@ -272,6 +272,8 @@ class Splat(SceneElement):
 class LumaSplats(SceneElement):
     tag = "Splats"
 
+class SparkSplats(SceneElement):
+    tag = "SparkSplats"
 
 class Pcd(SceneElement):
     """

@@ -78,6 +78,7 @@ For a comprehensive list of data types, please refer to the [API documentation o
    Scene Generation (OpenAI Sora) <gaussian_splatting/openai_sora.md>
    Gaussian Splatting <gaussian_splatting/09_gaussian_splats.md>
    Gaussian Splatting (VR) <gaussian_splatting/10_gaussian_splats_vr.md>
+   SplatMesh(sparkjs) <examples/23_spark.md>
    
 .. toctree::
    :maxdepth: 3
