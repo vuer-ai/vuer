@@ -43,6 +43,13 @@ hand movement! Otherwise the event will not be triggered. This is to avoid
 unnecessary clogging up the uplink from the client.
 ```
 
+```{admonition} Warning
+:class: warning
+The WebXR Hand Input API is currently unsupported in the Pico browser. For more
+information, please refer to the official Pico [website](https://developer.picoxr.com/document/web/development-platform/). 
+We will monitor updates and integrate support as soon as it becomes available.
+```
+
 ```python
 from vuer import Vuer, VuerSession
 from vuer.schemas import Hands

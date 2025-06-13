@@ -687,14 +687,10 @@ class MotionControllers(SceneElement):
     :type eventTypes: tuple or list, optional
     :param stream: Whether to enable streaming of controller data.
     :type stream: bool, optional
-    :param left: Boolean indicating if the left controller should be tracked.
+    :param left: Boolean indicating if the left controller should be tracked. defaults to None.
     :type left: bool, optional
-    :param right: Boolean indicating if the right controller should be tracked.
+    :param right: Boolean indicating if the right controller should be tracked.defaults to None
     :type right: bool, optional
-    :param showLeft: Boolean indicating if the left controller visualization should be shown.
-    :type showLeft: bool, optional
-    :param showRight: Boolean indicating if the right controller visualization should be shown.
-    :type showRight: bool, optional
     """
 
     tag = "MotionControllers"
@@ -706,8 +702,6 @@ class MotionControllers(SceneElement):
         stream=True,
         left=None,
         right=None,
-        showLeft=True,
-        showRight=True,
         **kwargs,
     ):
         super().__init__(
@@ -716,8 +710,6 @@ class MotionControllers(SceneElement):
             stream=stream,
             left=left,
             right=right,
-            showLeft=showLeft,
-            showRight=showRight,
             **kwargs,
         )
 
