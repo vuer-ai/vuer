@@ -48,6 +48,13 @@ Make sure that you set the `stream` option to `True` to start streaming the
 hand movement! Otherwise the event will not be triggered. This is to avoid
 unnecessary clogging up the uplink from the client.
 ```
+
+```{admonition} Warning
+:class: warning
+The WebXR Hand Input API is currently unsupported in the Pico browser. For more
+information, please refer to the official Pico [website](https://developer.picoxr.com/document/web/development-platform/). 
+We will monitor updates and integrate support as soon as it becomes available.
+```
 """
 
 with doc, doc.skip if MAKE_DOCS else nullcontext():

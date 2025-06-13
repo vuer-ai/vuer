@@ -46,7 +46,7 @@ async def handler(event, session):
 async def main(session: VuerSession):
     # Important: You need to set the `stream` option to `True` to start
     # streaming the controller movement.
-    session.upsert @ MotionControllers(stream=True, key="motion-controller")
+    session.upsert @ MotionControllers(stream=True, key="motion-controller", left=True, right=True)
 
     while True:
         await sleep(1)
