@@ -1,0 +1,20 @@
+{
+  "children": [
+    {
+      "key": "spark-splats",
+      "tag": "SparkSplats",
+      "src": "https://docs.vuer.ai/en/latest/_static/live_demo/spark/butterfly.spz",
+      "position": [
+        0,
+        0.2,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        3.14
+      ],
+      "scale": 0.5
+    }
+  ]
+}
