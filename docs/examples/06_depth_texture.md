@@ -14,7 +14,6 @@ from vuer.schemas import Scene, Box, Sphere, group, SceneBackground
 
 app = Vuer()
 
-
 @app.spawn(start=True)
 async def show_heatmap(proxy):
     scene = Scene(

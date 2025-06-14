@@ -1,7 +1,7 @@
 import os
 from contextlib import nullcontext
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", True)
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 from cmx import doc
 

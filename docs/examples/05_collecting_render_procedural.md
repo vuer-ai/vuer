@@ -30,7 +30,7 @@ async def show_heatmap(sess: VuerSession):
             position=[0, 0, 0],
             rotation=[0, 0, 0],
             materialType="depth",
-            meterial=dict(color="green", side=2),
+            material=dict(color="green", side=2),
         ),
         Sphere(
             key="sphere",

@@ -23,6 +23,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             reconnect=True,
             grid=False,
             backgroundColor="black",
+            
         ),
     )
 

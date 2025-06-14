@@ -1,4 +1,8 @@
+import os
+from contextlib import nullcontext
 from cmx import doc
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 doc @ """
 # Depth Texture
@@ -8,7 +12,7 @@ There are two types of depth: range and metric depth. Range depth is the distanc
 I have implemented range depth in the deformable image plane. I will add metric depth soon. Please consider adding a GitHub issueto upvote this feature, or contribute via a PR.
 """
 
-with doc, doc.skip:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
 
     from vuer import Vuer

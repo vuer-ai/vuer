@@ -7,6 +7,7 @@ You should expect to see a scene that looks like the following:
 ![pointcloud](figures/pointcloud_pcd.png)
 
 ```python
+import os
 from asyncio import sleep
 
 from vuer import Vuer, VuerSession

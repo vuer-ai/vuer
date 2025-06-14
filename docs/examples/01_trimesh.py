@@ -4,6 +4,7 @@ from contextlib import nullcontext
 
 MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
+
 doc @ """
 # Trimesh
 
@@ -35,7 +36,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         data = f.read()
         text = trimesh.util.decode_text(data)
 
-    app = Vuer(static_root=assets_folder, port=8013)
+    app = Vuer(static_root=assets_folder)
 
     print(f"Loaded mesh with {mesh.vertices.shape} vertices and {mesh.faces.shape} faces")
 
@@ -43,6 +44,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     # use `start=True` to start the app immediately
     @app.spawn(start=True)
     async def main(session):
+
         session @ Set(
             DefaultScene(
                 SceneBackground(),
@@ -57,7 +59,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                     text=text,
                     position=[1, 0, 1],
                     scale=0.3,
-                    materialType="depth",
                 ),
                 TriMesh(
                     key="trimesh",

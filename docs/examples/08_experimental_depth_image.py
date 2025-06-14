@@ -1,5 +1,11 @@
 from cmx import doc
 
+import os
+
+from contextlib import nullcontext
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
+
 doc @ """
 # RGB-D Visualization
 
@@ -11,7 +17,7 @@ make
 ```
 And this should download a pair of RGB and depth image.
 """
-with doc, doc.skip:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
     from pathlib import Path
 
@@ -36,7 +42,7 @@ with doc, doc.skip:
 
         return file_buffer
 
-    @app.spawn
+    @app.spawn(start=True)
     async def show_heatmap(proxy):
         rgb = get_buffer(assets_folder / "images/cubic_rgb.jpg")
         depth = get_buffer(assets_folder / "images/cubic_depth.jpg")

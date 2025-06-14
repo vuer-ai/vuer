@@ -1,4 +1,10 @@
 from cmx import doc
+from pathlib import Path
+from cmx import doc
+import os
+from contextlib import nullcontext
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 doc @ """
 # Showing 360 Views with a Sky Ball
@@ -15,7 +21,7 @@ try to load from the url `http://localhost:8012/static/farm_house.jpg`.
 Here is the expected result:
 ![marker light](figures/17_sky_ball.png)
 """
-with doc, doc.skip:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
     import numpy as np
 

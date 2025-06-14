@@ -1,4 +1,8 @@
 from cmx import doc
+from contextlib import nullcontext
+import os
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 doc @ """
 # Background Image
@@ -11,7 +15,7 @@ This is useful for teleoperating robots with a single camera view.
 ![heads up display (HUD) in VR](figures/07b_vr_hud.png)
 """
 
-with doc, doc.skip:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
 
     import imageio as iio

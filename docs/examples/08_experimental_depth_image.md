@@ -28,15 +28,13 @@ app = Vuer(
     static_root=assets_folder,
 )
 
-
 def get_buffer(file_path):
     with open(file_path, "rb") as f:
         file_buffer = f.read()
 
     return file_buffer
 
-
-@app.spawn
+@app.spawn(start=True)
 async def show_heatmap(proxy):
     rgb = get_buffer(assets_folder / "images/cubic_rgb.jpg")
     depth = get_buffer(assets_folder / "images/cubic_depth.jpg")
@@ -57,7 +55,6 @@ async def show_heatmap(proxy):
 
     while True:
         await sleep(10.0)
-
 
 async def on_camera(event: ClientEvent, send_fn):
     assert event == "CAMERA_MOVE", "the event type should be correct"

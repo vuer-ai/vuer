@@ -1,7 +1,7 @@
 
 # Showing 360 Views with a Sky Ball
 
-This example requires a equirectangular image (show below), which is then
+This example requires a equirectangular image (shown below), which is then
 mapped to a sphere as a texture. 
 
 ![equirectangular image](figures/farm_house.jpg)
