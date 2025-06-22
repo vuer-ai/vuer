@@ -4,7 +4,6 @@ from datetime import datetime
 
 from cmx import doc
 
-
 MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 doc @ """
@@ -41,12 +40,10 @@ unnecessary clogging up the uplink from the client.
 
 MOTION_CONTROLLER_SYNTHETIC_EVENTS = [
     "left-trigger",
-    "left-trigger",
     "left-squeeze",
     "left-touchpad",
     "left-abutton",
     "left-bbutton",
-    "right-trigger",
     "right-trigger",
     "right-squeeze",
     "right-touchpad",
@@ -74,7 +71,13 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         bstate = event.value.leftState["aButton"]
 
         if prev_bstate != bstate and bstate:
-            session.upsert @ MotionControllers(pulseLeftStrength=1.0, pulseLeftDuration=1000, puseLeftHash=datetime.now())
+            # pulse the controller gamepad
+            session.upsert @ MotionControllers(
+                key="motion-controller",
+                pulseLeftStrength=1.0,
+                pulseLeftDuration=1000,
+                puseLeftHash=datetime.now(),
+            )
 
         prev_bstate = bstate
 
