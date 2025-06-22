@@ -36,11 +36,28 @@ from asyncio import sleep
 
 app = Vuer()
 
+prev_bstate = None
 
 @app.add_handler("CONTROLLER_MOVE")
-async def handler(event, session):
-    print(f"Movement Event: key-{event.key}", event.value)
+async def handler(
+    event,
+    session: VuerSession,
+):
+    global prev_bstate
+    bstate = event.value["leftState"]["aButton"]
 
+    if prev_bstate != bstate and bstate:
+        # pulse the controller gamepad for one second
+        session.upsert @ MotionControllers(
+            key="motion-controller",
+            left=True,
+            right=True,
+            pulseLeftStrength=1.0,
+            pulseLeftDuration=1000,
+            puseLeftHash=f"{datetime.now()}:0.3f",
+        )
+
+    prev_bstate = bstate
 
 @app.spawn(start=True)
 async def main(session: VuerSession):

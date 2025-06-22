@@ -65,18 +65,18 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         event,
         session: VuerSession,
     ):
-        nonlocal prev_bstate
-        print(f"Movement Event: key-{event.key}", event.value)
-
-        bstate = event.value.leftState["aButton"]
+        global prev_bstate
+        bstate = event.value["leftState"]["aButton"]
 
         if prev_bstate != bstate and bstate:
-            # pulse the controller gamepad
+            # pulse the controller gamepad for one second
             session.upsert @ MotionControllers(
                 key="motion-controller",
+                left=True,
+                right=True,
                 pulseLeftStrength=1.0,
                 pulseLeftDuration=1000,
-                puseLeftHash=datetime.now(),
+                puseLeftHash=f"{datetime.now()}:0.3f",
             )
 
         prev_bstate = bstate
