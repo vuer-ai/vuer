@@ -1,5 +1,7 @@
 import os
+from collections import defaultdict
 from contextlib import nullcontext
+from datetime import datetime
 
 from cmx import doc
 
@@ -35,7 +37,7 @@ Make sure that you set the `stream` option to `True` to start streaming the
 controller movement! Otherwise the event will not be triggered. This is to avoid
 unnecessary clogging up the uplink from the client.
 ```
-"""
+"""  # noqa: F704, B018
 
 with doc, doc.skip if MAKE_DOCS else nullcontext():
     from vuer import Vuer, VuerSession
@@ -44,11 +46,50 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
     app = Vuer()
 
+    @app.add_handler("CONTROLLER_LEFT_TRIGGER_PRESS")
+    async def handler(event, session):
+        session.upsert @ MotionControllers(
+            stream=True,
+            key="motion-controller",
+            leftPulseStrength=1.0,
+            leftPulseDuration=1000,
+            leftPulseHash=datetime.now(),
+        )
+
+    mc_states = defaultdict(lambda: None)
 
     @app.add_handler("CONTROLLER_MOVE")
     async def handler(event, session):
+        nonlocal mc_states
         print(f"Movement Event: key-{event.key}", event.value)
 
+        for k in [
+            "left-trigger",
+            "left-trigger",
+            "left-squeeze",
+            "left-touchpad",
+            "left-abutton",
+            "left-bbutton",
+            "right-trigger",
+            "right-trigger",
+            "right-squeeze",
+            "right-touchpad",
+            "right-abutton",
+            "right-bbutton",
+        ]:
+            side, bname = k.split("-")
+            value = getattr(event.value, f"{side}State").get(bname, None)
+            if mc_states[k] != value:
+                postfix = "_PRESS" if value else "_RELEASE"
+                session.downstream.publish(
+                    k,
+                    dict(
+                        etype="CONTROLLER_" + side.upper() + "_" + bname.upper() + postfix,
+                        value=value,
+                    ),
+                )
+
+                mc_states[k] = value
 
     @app.spawn(start=True)
     async def main(session: VuerSession):
@@ -58,6 +99,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
         while True:
             await sleep(1)
+
 
 doc @ """
 
@@ -159,6 +201,6 @@ the matrix looks like this:
 
 For details, refer to the MDN documentation on [XR Rigid Body Transformation](https://developer.mozilla.org/en-US/docs/Web/API/XRRigidTransform/matrix)
 
-"""
+"""  # noqa: F704, B018
 
 doc.flush()
