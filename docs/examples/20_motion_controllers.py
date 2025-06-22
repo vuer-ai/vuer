@@ -26,9 +26,14 @@ or localtunnel before preceding.
 
 ## Motion Controller API
 
-You can get the full pose of the motion controllers by listening to the `CONTROLLER_MOVE` event.
-You can add flags `left` and `right` to specify which side you want to track.
-
+**Getting the motion controller states**: You can get the full pose of the motion controllers 
+by listening to the `CONTROLLER_MOVE` event. You can add flags `left` and `right` to specify
+ which side you want to track.
+ 
+**Haptic Feedback via pulsing**: You can pulse the gamepad using the following keys: `pulseLeftStrength`, 
+`pulseLeftDuration`, `puseLeftHash`. The `pulseLeftStrength` is a number between 0 and 1, 
+and the `pulseLeftDuration` is the duration of the pulse in milliseconds. The `puseLeftHash` is a unique 
+identifier for the pulse, that once changed, will trigger a new pulse.
 
 ```{admonition} Warning
 :class: warning
@@ -36,6 +41,13 @@ Make sure that you set the `stream` option to `True` to start streaming the
 controller movement! Otherwise the event will not be triggered. This is to avoid
 unnecessary clogging up the uplink from the client.
 ```
+
+### Example Script: Haptic Trigger Pull
+
+The example below shows how to trigger a haptic pulse to 
+reflect the trigger pull value. The user should experience
+a stronger vibration when the trigger is pulled further.
+
 """  # noqa: F704, B018
 
 MOTION_CONTROLLER_SYNTHETIC_EVENTS = [
