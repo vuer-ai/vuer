@@ -44,16 +44,16 @@ async def handler(
     session: VuerSession,
 ):
     global prev_bstate
-    bstate = event.value["leftState"]["aButton"]
+    bstate = event.value["leftState"]["triggerValue"]
 
     if prev_bstate != bstate and bstate:
-        # pulse the controller gamepad for one second
+        # pulse the gamepad according to the trigger value
         session.upsert @ MotionControllers(
             key="motion-controller",
             left=True,
             right=True,
-            pulseLeftStrength=1.0,
-            pulseLeftDuration=1000,
+            pulseLeftStrength=bstate,
+            pulseLeftDuration=100,
             puseLeftHash=f"{datetime.now()}:0.3f",
         )
 
