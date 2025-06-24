@@ -151,3 +151,28 @@ the matrix looks like this:
 
 For details, refer to the MDN documentation on [XR Rigid Body Transformation](https://developer.mozilla.org/en-US/docs/Web/API/XRRigidTransform/matrix)
 
+
+### Tacile FeedBack Visualization
+
+
+```python
+from vuer import Vuer, VuerSession
+from vuer.schemas import MotionControllers
+from asyncio import sleep
+
+app = Vuer()
+
+@app.add_handler("CONTROLLER_MOVE")
+async def handler(event, session):
+    print(f"Movement Event: key-{event.key}", event.value)
+
+@app.spawn(start=True)
+async def main(session: VuerSession):
+    # Important: You need to set the `stream` option to `True` to start
+    # streaming the controller movement.
+    session.upsert @ MotionControllers(stream=True, key="motion-controller",
+                                       left=True, right=True, showVectorFieldLeft=True, showVectorFieldRight=True)
+
+    while True:
+        await sleep(1)
+```
