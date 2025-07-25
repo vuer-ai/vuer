@@ -66,3 +66,32 @@ class MotionControllerActuator(SceneElement):
     high: float = 1.0
     cond: str = "right-trigger"
     scale: float = 1.0
+
+class MjCameraView(SceneElement):
+    """MjCameraView for rendering from arbitrary camera poses.
+
+    :param fov: The vertical field of view of the camera. Defaults to 50.
+    :type fov: float, optional
+    :param width: The width of the camera image. Defaults to 320.
+    :type width: int, optional
+    :param height: The height of the camera image. Defaults to 240.
+    :type height: int, optional
+    :param key: The key of the camera view. Defaults to "ego".
+    :type key: str, optional
+    :param position: The position of the camera. Defaults to [0, 0, 0].
+    :type position: List[float], optional
+    :param rotation: The rotation of the camera. Defaults to [0, 0, 0]
+    :type rotation: List[float], optional
+    :param fps: The frames per second of the camera. Defaults to 30.
+    :type fps: int, optional
+    :param near: The near field of the camera. Defaults to 0.1.
+    :type near: float, optional
+    :param far: The far field of the camera. Defaults to 20.
+    :type far: float, optional
+    :param downsample: The downsample rate. Defaults to 1.
+    :type downsample: int, optional
+    :param distanceToCamera: The distance to the camera. Defaults to 2.
+    :type distanceToCamera: float, optional
+    """
+
+    tag = "MjCameraView"
