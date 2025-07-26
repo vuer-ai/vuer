@@ -112,6 +112,49 @@ class VuerSession:
 
         return await self.vuer.rpc(self.CURRENT_WS_ID, event, ttl=ttl)
 
+    def send(self, event: ServerEvent) -> None:
+        """
+        Sending the event through the uplink queue.
+        """
+        assert self.CURRENT_WS_ID is not None, "Websocket session is missing. CURRENT_WS_ID is None."
+
+        event_obj = event.serialize()
+        event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
+
+        return self.uplink_queue.append(event_bytes)
+
+    async def rpc(self, event: ServerRPC, ttl=2.0) -> Union[ClientEvent, None]:
+        """
+        Send a ServerRPC event to the client and wait for a response through the session queue
+
+        :param event: The ServerRPC event to send.
+        :param ttl: The time to live for the handler. If the handler is not called within the time it gets removed from the handler list.
+        :return: ClientEvent
+        """
+        rtype = event.rtype
+
+        rpc_event = asyncio.Event()
+        response = None
+
+        async def response_handler(response_event: ClientEvent, _: "VuerSession") -> None:
+            nonlocal response
+
+            response = response_event
+            rpc_event.set()
+
+        # handle timeout
+        clean = self.vuer.add_handler(rtype, response_handler, once=True)
+
+        self.send(event)
+        # await sleep(0.5)
+        try:
+            await asyncio.wait_for(rpc_event.wait(), ttl)
+        except asyncio.TimeoutError as e:
+            clean()
+            raise e
+
+        return response
+
     @property
     def set(self) -> At:
         """Used exclusively to set the scene.

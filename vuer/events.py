@@ -305,6 +305,29 @@ class GrabRender(ServerRPC):
         self.key = key
         self.rtype = f"GRAB_RENDER_RESPONSE@{self.uuid}"
 
+class MjStep(ServerRPC):
+    """
+    A higher-level ServerEvent that wraps other ServerEvents
+    """
+
+    etype = "MJ_STEP"
+
+    def __init__(self, *, key: str = "DEFAULT", **kwargs):
+        super().__init__(data=kwargs)
+        self.key = key
+        self.rtype = f"MJ_STEP_RESPONSE@{self.uuid}"
+
+class MjRender(ServerRPC):
+    """
+    A higher-level ServerEvent that wraps other ServerEvents
+    """
+
+    etype = "MJ_RENDER"
+
+    def __init__(self, *, key: str = "DEFAULT", **kwargs):
+        super().__init__(data=kwargs)
+        self.key = key
+        self.rtype = f"MJ_RENDER_RESPONSE@{self.uuid}"
 
 if __name__ == "__main__":
     # e = Frame @ {"hey": "yo"}
