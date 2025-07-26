@@ -5,7 +5,7 @@ This example shows you how to use the MuJoCo component in Vuer to create an inte
 
 
 ```python
-from asyncio import sleep, Queue, create_task, gather
+from asyncio import sleep, Queue, create_task
 from pathlib import Path
 
 import numpy as np
@@ -22,7 +22,7 @@ app = Vuer(static_root=f"{Path(__file__).parent}/../_static/mujoco_scenes")
 
 asset_pref = "http://localhost:8012/static/"
 
-IS_MUJOCO_LOAD = False
+IS_MUJOCO_LOAD = True
 
 @app.add_handler("ON_MUJOCO_LOAD")
 async def handler(event, session):
@@ -36,7 +36,7 @@ async def process_results():
     while True:
         result = await (await result_queue.get())
         try:
-            if hasattr(result, 'value') and isinstance(result.value, dict):
+            if hasattr(result, "value") and isinstance(result.value, dict):
                 frame = result.value.get("depthFrame") or result.value.get("frame")
                 if frame:
                     pil_image = PImage.open(BytesIO(frame))
@@ -63,7 +63,10 @@ async def main(session):
                 src=asset_pref + "car/car.mjcf.xml",
                 pause=False,
                 useLights=True,
-                dragAble=False,
+                unpauseOnDrag=False, # Whether to unpause the simulation when dragging the object
+                dragForceScale=1.0, # Scale of the drag force applied to the object when dragging
+                showDragArrow=True, # Whether to show the drag arrow when dragging the object
+                showDragForceText=True, # Whether to show the drag force text when dragging the object
             ),
             MjCameraView(
                 key="cam1",
@@ -71,12 +74,12 @@ async def main(session):
                 rotation=[-0.4, 0, 0],
                 width=640,
                 height=480,
-                stream="ondemand",
                 distanceToCamera=0.1,
+                movable=True, # Whether the camera can be moved by the user
+                showCameraFrustum=True, # Whether to show the camera  in the scene
             ),
-
             up=[0, 1, 0],
-            show_helper=False
+            show_helper=False,
         ),
     )
     await sleep(2)
@@ -91,20 +94,40 @@ async def main(session):
             await sleep(1)
             continue
 
-        await session.rpc(MjStep(
-            key="simple",
-            sim_steps=5,
-            ctrl=[np.clip(np.sin(i * 0.1), -1, 1), 1]
-        ), ttl=5)
+        await session.rpc(
+            MjStep(key="le-cart", sim_steps=10, ctrl=[1, -1]),
+            ttl=5,
+        )
 
         """
-        Instead of waiting for the rendering result, we can use a queue to handle the rendering tasks like the code below.
-        Or you can using 
-            `await session.rpc_no_wait(MjRender(key="cam1"))`
-        to send the rendering task without waiting for the result directly. It is the same as the direct "send" event.
+        Instead of waiting for the rendering result, we can use a queue to handle the 
+        rendering tasks as follows:
         """
-        result_task = session.rpc(MjRender(key="cam1"))
-        await result_queue.put(result_task)
+        with doc:
+            promise = session.rpc(MjRender(key="cam1"))
+            await result_queue.put(promise)
 
         await sleep(1 / 30)
 ```
+
+Alternatively, you can use
+```python
+result = await session.rpc(MjRender(key="cam1"), ttl=5)
+try:
+    if hasattr(result, "value") and isinstance(result.value, dict):
+        frame = result.value.get("depthFrame") or result.value.get("frame")
+        if frame:
+            pil_image = PImage.open(BytesIO(frame))
+            img = np.array(pil_image)
+            img_bgr = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            cv2.imshow("monitor", img_bgr)
+            if cv2.waitKey(1) == ord("q"):
+                exit()
+        else:
+            print("No valid frame data found in result.")
+    else:
+        print("Invalid result structure or missing 'value' attribute.")
+except Exception as e:
+    print(f"Error processing result: {e}")
+```
+to waiting for the rendering result directly, but using a queue is more efficient for handling multiple rendering tasks.

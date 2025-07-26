@@ -112,33 +112,21 @@ class VuerSession:
 
         return await self.vuer.rpc(self.CURRENT_WS_ID, event, ttl=ttl)
 
-    async def rpc_no_wait(self, event: ServerRPC, immediately=False) -> None:
+    def send(self, event: ServerEvent) -> None:
         """
-        Send a ServerRPC event to the client without waiting for a response.
-
-        :param immediately: If True, send the event immediately without waiting for the uplink queue.
-        :param event: The ServerRPC event to send.
-        :return: None
+        Sending the event through the uplink queue.
         """
         assert self.CURRENT_WS_ID is not None, "Websocket session is missing. CURRENT_WS_ID is None."
-
-        if event.rtype:
-            event.rtype = None
 
         event_obj = event.serialize()
         event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
 
-        # note: by-pass the uplink message queue entirely, rendering it immune
-        #   to the effects of queue length.
-        if immediately:
-            return await self.vuer.send(self.CURRENT_WS_ID, event_bytes=event_bytes)
-        else:
-            return self.uplink_queue.append(event_bytes)
+        return self.uplink_queue.append(event_bytes)
 
-    async def rpc(self, event: ServerRPC, ttl=2.0, immediately=False) -> Union[ClientEvent, None]:
+    async def rpc(self, event: ServerRPC, ttl=2.0) -> Union[ClientEvent, None]:
         """
-        Send a ServerRPC event to the client and wait for a response.
-        :param immediately: If True, send the event immediately without waiting for the uplink queue.
+        Send a ServerRPC event to the client and wait for a response through the session queue
+
         :param event: The ServerRPC event to send.
         :param ttl: The time to live for the handler. If the handler is not called within the time it gets removed from the handler list.
         :return: ClientEvent
@@ -157,14 +145,7 @@ class VuerSession:
         # handle timeout
         clean = self.vuer.add_handler(rtype, response_handler, once=True)
 
-        event_obj = event.serialize()
-        event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
-        # note: by-pass the uplink message queue entirely, rendering it immune
-        #   to the effects of queue length.
-        if immediately:
-            await self.vuer.send(self.CURRENT_WS_ID, event_bytes=event_bytes)
-        else:
-            self.uplink_queue.append(event_bytes)
+        self.send(event)
         # await sleep(0.5)
         try:
             await asyncio.wait_for(rpc_event.wait(), ttl)
