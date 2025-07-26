@@ -24,9 +24,12 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     from io import BytesIO
     import cv2
 
-    app = Vuer(static_root=f"{Path(__file__).parent}/../_static/mujoco_scenes")
+    app = Vuer(static_root=f"{Path(__file__).parent}/../_static")
 
-    asset_pref = "http://localhost:8012/static/"
+    # asset_pref = "http://localhost:8012/static/"
+    asset_pref = "https://docs.vuer.ai/en/latest/_static/"
+
+    fileName = "mujoco_scenes/car/car.mjcf.xml"
 
     IS_MUJOCO_LOAD = True
 
@@ -66,7 +69,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 SceneBackground(),
                 MuJoCo(
                     key="simple",
-                    src=asset_pref + "car/car.mjcf.xml",
+                    src=asset_pref + fileName,
                     pause=False,
                     useLights=True,
                     unpauseOnDrag=False, # Whether to unpause the simulation when dragging the object
