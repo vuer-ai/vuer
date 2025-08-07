@@ -1,5 +1,5 @@
 from datetime import datetime as Datetime, timedelta as Timedelta
-from typing import List, Union
+from typing import List, Union, Optional, TypedDict
 from uuid import uuid4
 
 from vuer.schemas import Scene, Element
@@ -247,6 +247,29 @@ class Remove(ServerEvent):
         super().__init__(data={"keys": keys}, **kwargs)
 
 
+class HapticActuatorPulse(ServerEvent):
+    """
+    Haptic Actuator Pulse event to trigger haptic feedback on the client side.
+    """
+
+    etype = "HAPTIC_ACTUATOR_PULSE"
+
+    def __init__(
+        self,
+        left: Optional[TypedDict("ActuatorData", {"strength": float, "duration": float})] = None,
+        right: Optional[TypedDict("ActuatorData", {"strength": float, "duration": float})] = None,
+        **kwargs
+    ):
+        """
+        Haptic Actuator Pulse event to trigger haptic feedback on the client side.
+
+        :param left: Optional dictionary with 'strength' and 'duration' for left actuator.
+        :param right: Optional dictionary with 'strength' and 'duration' for right actuator.
+        :param kwargs: Additional keyword arguments.
+        """
+        data = {"left": left, "right": right}
+        super().__init__(data=data, **kwargs)
+
 class Frame(ServerEvent):
     """
     A higher-level ServerEvent that wraps other ServerEvents
@@ -265,7 +288,6 @@ class Frame(ServerEvent):
         """
         super().__init__(data, **kwargs)
         self.frame_rate = frame_rate
-
 
 class End(ServerEvent):
     """
