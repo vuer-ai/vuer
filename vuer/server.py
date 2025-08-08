@@ -3,7 +3,7 @@ from asyncio import sleep
 from collections import defaultdict, deque
 from functools import partial
 from pathlib import Path
-from typing import Callable, Dict, Union, cast
+from typing import Callable, Dict, Union, cast, Deque
 from uuid import uuid4
 
 from aiohttp.hdrs import UPGRADE
@@ -56,8 +56,8 @@ class VuerSession:
 
         que_maker = partial(deque, maxlen=queue_len)
 
-        self.downlink_queue = que_maker()
-        self.uplink_queue = que_maker()
+        self.downlink_queue: Deque[ClientEvent] = que_maker()
+        self.uplink_queue: Deque[ServerEvent] = que_maker()
 
     @property
     def socket(self):

@@ -18,9 +18,14 @@ or localtunnel before preceding.
 
 ## Motion Controller API
 
-You can get the full pose of the motion controllers by listening to the `CONTROLLER_MOVE` event.
-You can add flags `left` and `right` to specify which side you want to track.
-
+**Getting the motion controller states**: You can get the full pose of the motion controllers 
+by listening to the `CONTROLLER_MOVE` event. You can add flags `left` and `right` to specify
+ which side you want to track.
+ 
+**Haptic Feedback via pulsing**: You can pulse the gamepad using the following keys: `pulseLeftStrength`, 
+`pulseLeftDuration`, `puseLeftHash`. The `pulseLeftStrength` is a number between 0 and 1, 
+and the `pulseLeftDuration` is the duration of the pulse in milliseconds. The `puseLeftHash` is a unique 
+identifier for the pulse, that once changed, will trigger a new pulse.
 
 ```{admonition} Warning
 :class: warning
@@ -29,6 +34,13 @@ controller movement! Otherwise the event will not be triggered. This is to avoid
 unnecessary clogging up the uplink from the client.
 ```
 
+### Example Script: Haptic Trigger Pull
+
+The example below shows how to trigger a haptic pulse to 
+reflect the trigger pull value. The user should experience
+a stronger vibration when the trigger is pulled further.
+
+
 ```python
 from vuer import Vuer, VuerSession
 from vuer.schemas import MotionControllers
@@ -36,11 +48,28 @@ from asyncio import sleep
 
 app = Vuer()
 
+prev_bstate = None
 
 @app.add_handler("CONTROLLER_MOVE")
-async def handler(event, session):
-    print(f"Movement Event: key-{event.key}", event.value)
+async def handler(
+    event,
+    session: VuerSession,
+):
+    global prev_bstate
+    bstate = event.value["leftState"]["triggerValue"]
 
+    if prev_bstate != bstate and bstate:
+        # pulse the gamepad according to the trigger value
+        session.upsert @ MotionControllers(
+            key="motion-controller",
+            left=True,
+            right=True,
+            pulseLeftStrength=bstate,
+            pulseLeftDuration=100,
+            puseLeftHash=f"{datetime.now()}:0.3f",
+        )
+
+    prev_bstate = bstate
 
 @app.spawn(start=True)
 async def main(session: VuerSession):
