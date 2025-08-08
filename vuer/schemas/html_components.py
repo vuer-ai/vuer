@@ -6,6 +6,7 @@ from vuer.serdes import IMAGE_FORMATS
 
 element_count = 0
 
+_UNSET = object()
 
 class Element:
     """
@@ -23,8 +24,10 @@ class Element:
             key = str(element_count)
             element_count += 1
 
-        self.__dict__.update(tag=self.tag, key=key, **kwargs)
-        self.__post_init__(**{k: v for k, v in kwargs.items() if k.startswith("_")})
+        clean_kwargs = {k: v for k, v in kwargs.items() if v is not _UNSET}
+
+        self.__dict__.update(tag=self.tag, key=key, **clean_kwargs)
+        self.__post_init__(**{k: v for k, v in clean_kwargs.items() if k.startswith("_")})
 
     def serialize(self):
         """
@@ -44,7 +47,6 @@ class Element:
                 output[k] = v
 
         return output
-
 
 class BlockElement(Element):
     def __init__(self, *children, **kwargs):
