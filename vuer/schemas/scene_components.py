@@ -1,9 +1,9 @@
-from typing import List, Literal
+from typing import List, Literal, Optional, Union
 
 import numpy as np
 from numpy.typing import NDArray
 
-from .html_components import BlockElement, Element, Image
+from .html_components import BlockElement, Element, Image, _UNSET
 
 
 class SceneElement(BlockElement):
@@ -995,6 +995,186 @@ class Center(SceneElement):
 
     tag = "Center"
 
+class Billboard(SceneElement):
+    """
+    Renders its children as a billboard that always faces the camera.
+
+    :param follow: Whether the billboard should follow the camera position (default: True)
+    :type follow: bool, optional
+    :param lockX: Lock rotation on the X axis (default: False)
+    :type lockX: bool, optional
+    :param lockY: Lock rotation on the Y axis (default: False)
+    :type lockY: bool, optional
+    :param lockZ: Lock rotation on the Z axis (default: False)
+    :type lockZ: bool, optional
+
+    Example Usage::
+
+        Billboard(
+            follow=True,
+            lockX=False,
+            lockY=True,
+            children=[mesh]
+        )
+    """
+    tag = "Billboard"
+
+    def __init__(
+        self,
+        *children,
+        follow: bool = True,
+        lockX: bool = False,
+        lockY: bool = False,
+        lockZ: bool = False,
+        **kwargs
+    ):
+        super().__init__(
+            *children,
+            follow=follow,
+            lockX=lockX,
+            lockY=lockY,
+            lockZ=lockZ,
+            **kwargs
+        )
+
+class Text(SceneElement):
+    """
+    Renders 2D text in the scene with extensive styling and layout options.
+
+    :param children: The text content to render.
+    :type children: str
+    :param characters: Restrict the set of characters to use for glyph generation.
+    :type characters: str, optional
+    :param color: Text color.
+    :type color: str, optional
+    :param fontSize: Font size in world units.
+    :type fontSize: float, optional
+    :param fontWeight: Font weight (number or string, e.g. 'bold').
+    :type fontWeight: int or str, optional
+    :param fontStyle: Font style, either 'italic' or 'normal'.
+    :type fontStyle: str, optional
+    :param maxWidth: Maximum width of the text block before wrapping.
+    :type maxWidth: float, optional
+    :param lineHeight: Line height as a multiple of fontSize.
+    :type lineHeight: float, optional
+    :param letterSpacing: Additional spacing between letters.
+    :type letterSpacing: float, optional
+    :param textAlign: Text alignment: 'left', 'right', 'center', or 'justify'.
+    :type textAlign: str, optional
+    :param font: Font URL or name.
+    :type font: str, optional
+    :param anchorX: Horizontal anchor: number or 'left', 'center', 'right'.
+    :type anchorX: float or str, optional
+    :param anchorY: Vertical anchor: number or 'top', 'top-baseline', 'middle', 'bottom-baseline', 'bottom'.
+    :type anchorY: float or str, optional
+    :param clipRect: Rectangle [minX, minY, maxX, maxY] to clip text rendering.
+    :type clipRect: list[float], optional
+    :param depthOffset: Offset in Z to avoid z-fighting.
+    :type depthOffset: float, optional
+    :param direction: Text direction: 'auto', 'ltr', or 'rtl'.
+    :type direction: str, optional
+    :param overflowWrap: Wrapping behavior: 'normal' or 'break-word'.
+    :type overflowWrap: str, optional
+    :param whiteSpace: White space handling: 'normal', 'overflowWrap', or 'nowrap'.
+    :type whiteSpace: str, optional
+    :param outlineWidth: Outline width (number or string, e.g. '2px').
+    :type outlineWidth: float or str, optional
+    :param outlineOffsetX: Outline X offset (number or string).
+    :type outlineOffsetX: float or str, optional
+    :param outlineOffsetY: Outline Y offset (number or string).
+    :type outlineOffsetY: float or str, optional
+    :param outlineBlur: Outline blur radius (number or string).
+    :type outlineBlur: float or str, optional
+    :param outlineColor: Outline color.
+    :type outlineColor: str, optional
+    :param outlineOpacity: Outline opacity (0-1).
+    :type outlineOpacity: float, optional
+    :param strokeWidth: Stroke width (number or string).
+    :type strokeWidth: float or str, optional
+    :param strokeColor: Stroke color.
+    :type strokeColor: str, optional
+    :param strokeOpacity: Stroke opacity (0-1).
+    :type strokeOpacity: float, optional
+    :param fillOpacity: Fill opacity (0-1).
+    :type fillOpacity: float, optional
+    :param sdfGlyphSize: SDF glyph size for rendering quality.
+    :type sdfGlyphSize: int, optional
+    :param debugSDF: Show SDF debug overlay.
+    :type debugSDF: bool, optional
+    :param glyphGeometryDetail: Level of detail for glyph geometry.
+    :type glyphGeometryDetail: int, optional
+    """
+    tag = "Text"
+
+    def __init__(
+        self,
+        *children,
+        characters: Union[str, None, object] = _UNSET,
+        color: Union[str, None, object] = _UNSET,
+        fontSize: Union[float, None, object] = _UNSET,
+        fontWeight: Union[int, str, None, object] = _UNSET,
+        fontStyle: Union[str, None, object] = _UNSET,
+        maxWidth: Union[float, None, object] = _UNSET,
+        lineHeight: Union[float, None, object] = _UNSET,
+        letterSpacing: Union[float, None, object] = _UNSET,
+        textAlign: Union[str, None, object] = _UNSET,
+        font: Union[str, None, object] = _UNSET,
+        anchorX: Union[float, str, None, object] = _UNSET,
+        anchorY: Union[float, str, None, object] = _UNSET,
+        clipRect: Union[list, None, object] = _UNSET,
+        depthOffset: Union[float, None, object] = _UNSET,
+        direction: Union[str, None, object] = _UNSET,
+        overflowWrap: Union[str, None, object] = _UNSET,
+        whiteSpace: Union[str, None, object] = _UNSET,
+        outlineWidth: Union[float, str, None, object] = _UNSET,
+        outlineOffsetX: Union[float, str, None, object] = _UNSET,
+        outlineOffsetY: Union[float, str, None, object] = _UNSET,
+        outlineBlur: Union[float, str, None, object] = _UNSET,
+        outlineColor: Union[str, None, object] = _UNSET,
+        outlineOpacity: Union[float, None, object] = _UNSET,
+        strokeWidth: Union[float, str, None, object] = _UNSET,
+        strokeColor: Union[str, None, object] = _UNSET,
+        strokeOpacity: Union[float, None, object] = _UNSET,
+        fillOpacity: Union[float, None, object] = _UNSET,
+        sdfGlyphSize: Union[int, None, object] = _UNSET,
+        debugSDF: Union[bool, None, object] = _UNSET,
+        glyphGeometryDetail: Union[int, None, object] = _UNSET,
+        **kwargs
+    ):
+        super().__init__(
+            *children,
+            characters=characters,
+            color=color,
+            fontSize=fontSize,
+            fontWeight=fontWeight,
+            fontStyle=fontStyle,
+            maxWidth=maxWidth,
+            lineHeight=lineHeight,
+            letterSpacing=letterSpacing,
+            textAlign=textAlign,
+            font=font,
+            anchorX=anchorX,
+            anchorY=anchorY,
+            clipRect=clipRect,
+            depthOffset=depthOffset,
+            direction=direction,
+            overflowWrap=overflowWrap,
+            whiteSpace=whiteSpace,
+            outlineWidth=outlineWidth,
+            outlineOffsetX=outlineOffsetX,
+            outlineOffsetY=outlineOffsetY,
+            outlineBlur=outlineBlur,
+            outlineColor=outlineColor,
+            outlineOpacity=outlineOpacity,
+            strokeWidth=strokeWidth,
+            strokeColor=strokeColor,
+            strokeOpacity=strokeOpacity,
+            fillOpacity=fillOpacity,
+            sdfGlyphSize=sdfGlyphSize,
+            debugSDF=debugSDF,
+            glyphGeometryDetail=glyphGeometryDetail,
+            **kwargs
+        )
 
 class Text3D(SceneElement):
     """Renders 3D text using ThreeJS's TextGeometry.
