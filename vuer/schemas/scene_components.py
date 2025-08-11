@@ -713,6 +713,45 @@ class MotionControllers(SceneElement):
             **kwargs,
         )
 
+class Bodies(SceneElement):
+    """
+    Bodies component for tracking full-body XR poses using the WebXR Body Tracking API.
+
+    :param key: Unique identifier for the body tracking instance.
+    :type key: str, optional
+    :param stream: Whether to enable streaming of body pose data to the server.
+    :type stream: bool, optional
+    :param fps: Frames per second at which body pose data should be sent.
+    :type fps: int, optional
+    :param hideIndicate: Whether to hide all visual indicators for tracked joints while still tracking data.
+    :type hideIndicate: bool, optional
+    :param showFrame: Whether to display coordinate frames at each joint position.
+    :type showFrame: bool, optional
+    :param frameScale: Scale factor for the coordinate frames or joint markers.
+    :type frameScale: float, optional
+    """
+
+    tag = "Bodies"
+
+    def __init__(
+        self,
+        key="body_tracking",
+        stream=True,
+        fps=30,
+        hideIndicate=False,
+        showFrame=True,
+        frameScale=0.02,
+        **kwargs,
+    ):
+        super().__init__(
+            key=key,
+            stream=stream,
+            fps=fps,
+            hideIndicate=hideIndicate,
+            showFrame=showFrame,
+            frameScale=frameScale,
+            **kwargs,
+        )
 
 class Obj(SceneElement):
     tag = "Obj"
