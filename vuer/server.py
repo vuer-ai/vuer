@@ -90,12 +90,8 @@ class VuerSession:
         """
         assert isinstance(event, ServerEvent), "msg must be a ServerEvent type object."
         assert not isinstance(event, Frame), "Frame event is only used in vuer.bind method."
-        assert self.CURRENT_WS_ID in self.vuer.ws, "Websocket session is missing."
 
-        event_obj = event.serialize()
-        event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
-
-        self.uplink_queue.append(event_bytes)
+        self.send(event)
         return None
 
     async def grab_render(self, ttl=2.0, **kwargs) -> ClientEvent:
@@ -119,6 +115,12 @@ class VuerSession:
         assert self.CURRENT_WS_ID is not None, "Websocket session is missing. CURRENT_WS_ID is None."
 
         event_obj = event.serialize()
+
+        # Since ts is a float, using use_single_float=True may cause precision loss.
+        # Also, browsers only support millisecond precision for timestamps.
+        # Therefore, convert ts to an integer in milliseconds before sending to the frontend.
+        if "ts" in event_obj and isinstance(event_obj["ts"], float):
+            event_obj["ts"] = int(event_obj["ts"] * 1000)
         event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
 
         return self.uplink_queue.append(event_bytes)
@@ -550,6 +552,11 @@ class Vuer(PrefixProto, Server):
         if event_bytes is None:
             assert isinstance(event, ServerEvent), "event must be a ServerEvent type object."
             event_obj = event.serialize()
+            # Since ts is a float, using use_single_float=True may cause precision loss.
+            # Also, browsers only support millisecond precision for timestamps.
+            # Therefore, convert ts to an integer in milliseconds before sending to the frontend.
+            if "ts" in event_obj and isinstance(event_obj["ts"], float):
+                event_obj["ts"] = int(event_obj["ts"] * 1000)
             event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
         else:
             assert event is None, "Can not pass in both at the same time."
