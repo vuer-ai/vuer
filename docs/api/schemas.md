@@ -4,7 +4,7 @@
 to the various components of the system.
 
 For detailed view of how these components are implemented, please refer to the typescript source code
-at [https://github.com/vuer-ai/vuer-ts/tree/master/src/schemas](https://github.com/vuer-ai/vuer-ts/tree/master/src/schemas).
+at [https://docs.vuer.ai/en/latest/api/schemas.html](https://docs.vuer.ai/en/latest/api/schemas.html).
 
 **Example Usage:**
 
