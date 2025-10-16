@@ -160,82 +160,659 @@ p = PointCloud
 
 
 class Box(SceneElement):
+    """Box geometry primitive.
+
+    Creates a rectangular box (cuboid) with customizable dimensions and segmentation.
+
+    :param args: Geometry construction arguments [width, height, depth, widthSegments, heightSegments, depthSegments].
+                 Defaults to [1, 1, 1, 1, 1, 1].
+    :type args: List[float], optional
+    :param position: Box position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Box rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Box scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties (color, opacity, etc.).
+    :type material: dict, optional
+    :param materialType: Material type (basic, standard, physical, etc.). Defaults to 'physical'.
+    :type materialType: str, optional
+
+    Example Usage::
+
+        Box(
+            args=[2, 1, 1, 1, 1, 1],
+            position=[0, 0, 0],
+            material={"color": "red"},
+        )
+    """
     tag = "Box"
+    key = "box"
 
 
 class Capsule(SceneElement):
+    """Capsule geometry primitive.
+
+    Creates a capsule shape (cylinder with hemispherical ends).
+
+    :param args: Geometry construction arguments [radius, height, capSegments, radialSegments, heightSegments].
+                 Defaults to [1, 1, 4, 8, 1].
+    :type args: List[float], optional
+    :param position: Capsule position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Capsule rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Capsule scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+    :param materialType: Material type. Defaults to 'physical'.
+    :type materialType: str, optional
+
+    Example Usage::
+
+        Capsule(
+            args=[0.5, 2, 4, 8, 1],
+            position=[0, 1, 0],
+        )
+    """
     tag = "Capsule"
+    key = "capsule"
 
 
 class Cone(SceneElement):
+    """Cone geometry primitive.
+
+    Creates a cone with customizable base radius, height, and segmentation.
+
+    :param args: Geometry construction arguments [radius, height, radialSegments, heightSegments, openEnded, thetaStart, thetaLength].
+                 Defaults to [1, 1, 8, 1, False, 0, Math.PI*2].
+    :type args: List, optional
+    :param position: Cone position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Cone rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Cone scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+
+    Args breakdown:
+        - radius: Radius of cone base
+        - height: Height of cone
+        - radialSegments: Number of segments around circumference (min 3)
+        - heightSegments: Number of segments along height (min 1)
+        - openEnded: Whether cone base is open (True) or closed (False)
+        - thetaStart: Starting angle for partial cone (radians)
+        - thetaLength: Central angle for partial cone (radians, max 2π)
+
+    Example Usage::
+
+        Cone(
+            args=[1, 2, 16, 1, False, 0, 6.283],
+            position=[0, 0, 0],
+        )
+    """
     tag = "Cone"
 
 
 class Circle(SceneElement):
+    """Circle geometry primitive.
+
+    Creates a flat circular disc with customizable radius and segmentation.
+
+    :param args: Geometry construction arguments [radius, segments, thetaStart, thetaLength].
+                 Defaults to [1, 8, 0, Math.PI*2].
+    :type args: List[float], optional
+    :param position: Circle position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Circle rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Circle scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+
+    Args breakdown:
+        - radius: Radius of circle
+        - segments: Number of triangular segments (min 3)
+        - thetaStart: Starting angle (radians)
+        - thetaLength: Central angle (radians, max 2π)
+
+    Example Usage::
+
+        Circle(
+            args=[2, 32, 0, 6.283],
+            position=[0, 0, 0],
+        )
+    """
     tag = "Circle"
 
 
 class Cylinder(SceneElement):
+    """Cylinder geometry primitive.
+
+    Creates a cylinder with independent top and bottom radii (can create tapered cylinders).
+
+    :param args: Geometry construction arguments [radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded, thetaStart, thetaLength].
+                 Defaults to [1, 1, 1, 8, 1, False, 0, Math.PI*2].
+    :type args: List, optional
+    :param position: Cylinder position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Cylinder rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Cylinder scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+
+    Args breakdown:
+        - radiusTop: Radius of cylinder at top
+        - radiusBottom: Radius of cylinder at bottom
+        - height: Height of cylinder
+        - radialSegments: Number of segments around circumference (min 3)
+        - heightSegments: Number of segments along height (min 1)
+        - openEnded: Whether ends are open (True) or closed (False)
+        - thetaStart: Starting angle (radians)
+        - thetaLength: Central angle (radians, max 2π)
+
+    Example Usage::
+
+        Cylinder(
+            args=[1, 1, 2, 32, 1, False, 0, 6.283],
+            position=[0, 0, 0],
+        )
+    """
     tag = "Cylinder"
 
 
 class Dodecahedron(SceneElement):
+    """Dodecahedron geometry primitive.
+
+    Creates a regular dodecahedron (12-sided polyhedron with pentagonal faces).
+
+    :param args: Geometry construction arguments [radius, detail].
+                 Defaults to [1, 0].
+    :type args: List[float], optional
+    :param position: Dodecahedron position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Dodecahedron rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Dodecahedron scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+
+    Args breakdown:
+        - radius: Radius of dodecahedron
+        - detail: Subdivision level (0-5, higher = more faces)
+
+    Example Usage::
+
+        Dodecahedron(
+            args=[1, 0],
+            position=[0, 0, 0],
+        )
+    """
     tag = "Dodecahedron"
 
 
 class Edges(SceneElement):
+    """Edges geometry helper.
+
+    Generates edge lines from another geometry based on angle threshold.
+
+    :param args: Geometry construction arguments [geometry, thresholdAngle].
+                 Defaults to [None, 1].
+    :type args: List, optional
+    :param position: Position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+
+    Args breakdown:
+        - geometry: Source geometry object to extract edges from
+        - thresholdAngle: Angle in degrees - edges with greater angle between faces are drawn
+
+    Example Usage::
+
+        Edges(
+            args=[sourceGeometry, 30],
+            material={"color": "black"},
+        )
+    """
     tag = "Edges"
 
 
 class Extrude(SceneElement):
+    """Extrude geometry primitive.
+
+    Extrudes a 2D shape into 3D with optional beveling.
+
+    :param args: Geometry construction arguments [shapes, options].
+                 Defaults to [None, {curveSegments: 12, steps: 1, depth: 1, bevelEnabled: True, ...}].
+    :type args: List, optional
+    :param position: Position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+
+    Args breakdown:
+        - shapes: Shape or array of shapes to extrude
+        - options: Dictionary with curveSegments, steps, depth, bevelEnabled, bevelThickness, bevelSize, bevelOffset, bevelSegments
+
+    Example Usage::
+
+        Extrude(
+            args=[shape, {"depth": 2, "bevelEnabled": True, "bevelThickness": 0.1}],
+            position=[0, 0, 0],
+        )
+    """
     tag = "Extrude"
 
 
 class Icosahedron(SceneElement):
+    """Icosahedron geometry primitive.
+
+    Creates a regular icosahedron (20-sided polyhedron with triangular faces).
+
+    :param args: Geometry construction arguments [radius, detail].
+                 Defaults to [1, 0].
+    :type args: List[float], optional
+    :param position: Icosahedron position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Icosahedron rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Icosahedron scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+
+    Args breakdown:
+        - radius: Radius of icosahedron
+        - detail: Subdivision level (0-5, higher = more faces)
+
+    Example Usage::
+
+        Icosahedron(
+            args=[1, 2],
+            position=[0, 0, 0],
+        )
+    """
     tag = "Icosahedron"
 
 
 class Lathe(SceneElement):
+    """Lathe geometry primitive.
+
+    Creates geometry by rotating a set of points around an axis.
+
+    :param args: Geometry construction arguments [points, segments, phiStart, phiLength].
+                 Defaults to [[], 12, 0, Math.PI*2].
+    :type args: List, optional
+    :param position: Position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+
+    Args breakdown:
+        - points: Array of Vector2 points defining the profile curve
+        - segments: Number of segments around rotation axis (min 3)
+        - phiStart: Starting angle (radians)
+        - phiLength: Rotation angle (radians, max 2π)
+
+    Example Usage::
+
+        Lathe(
+            args=[points, 32, 0, 6.283],
+            position=[0, 0, 0],
+        )
+    """
     tag = "Lathe"
 
 
 class Octahedron(SceneElement):
+    """Octahedron geometry primitive.
+
+    Creates a regular octahedron (8-sided polyhedron with triangular faces).
+
+    :param args: Geometry construction arguments [radius, detail].
+                 Defaults to [1, 0].
+    :type args: List[float], optional
+    :param position: Octahedron position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Octahedron rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Octahedron scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+
+    Args breakdown:
+        - radius: Radius of octahedron
+        - detail: Subdivision level (0-5, higher = more faces)
+
+    Example Usage::
+
+        Octahedron(
+            args=[1, 1],
+            position=[0, 0, 0],
+        )
+    """
     tag = "Octahedron"
 
 
 class Plane(SceneElement):
+    """Plane geometry primitive.
+
+    Creates a flat rectangular plane with customizable dimensions and segmentation.
+
+    :param args: Geometry construction arguments [width, height, widthSegments, heightSegments].
+                 Defaults to [1, 1, 1, 1].
+    :type args: List[float], optional
+    :param position: Plane position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Plane rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Plane scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+
+    Args breakdown:
+        - width: Width along X axis
+        - height: Height along Y axis
+        - widthSegments: Number of segments along width (min 1)
+        - heightSegments: Number of segments along height (min 1)
+
+    Example Usage::
+
+        Plane(
+            args=[10, 10, 10, 10],
+            rotation=[Math.PI/2, 0, 0],  # Horizontal plane
+            material={"color": "green"},
+        )
+    """
     tag = "Plane"
 
 
 class Polyhedron(SceneElement):
+    """Polyhedron geometry primitive.
+
+    Creates a custom polyhedron from vertices and face indices.
+
+    :param args: Geometry construction arguments [vertices, indices, radius, detail].
+                 Defaults to [[], [], 1, 0].
+    :type args: List, optional
+    :param position: Position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+
+    Args breakdown:
+        - vertices: Flat array of vertex coordinates [x1, y1, z1, x2, y2, z2, ...]
+        - indices: Flat array of face indices (3 per triangle)
+        - radius: Scale factor for vertices
+        - detail: Subdivision level (0-5)
+
+    Example Usage::
+
+        Polyhedron(
+            args=[vertices, indices, 1, 0],
+            position=[0, 0, 0],
+        )
+    """
     tag = "Polyhedron"
 
 
 class Ring(SceneElement):
+    """Ring geometry primitive.
+
+    Creates a flat 2D ring (annulus) with customizable radii and segmentation.
+
+    :param args: Geometry construction arguments [innerRadius, outerRadius, thetaSegments, phiSegments, thetaStart, thetaLength].
+                 Defaults to [0.5, 1, 8, 1, 0, Math.PI*2].
+    :type args: List[float], optional
+    :param position: Ring position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Ring rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Ring scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+
+    Args breakdown:
+        - innerRadius: Inner radius of ring
+        - outerRadius: Outer radius of ring
+        - thetaSegments: Number of segments around ring (min 3)
+        - phiSegments: Number of segments along ring width (min 1)
+        - thetaStart: Starting angle (radians)
+        - thetaLength: Central angle (radians, max 2π)
+
+    Example Usage::
+
+        Ring(
+            args=[0.5, 1, 32, 8, 0, 6.283],
+            position=[0, 0, 0],
+        )
+    """
     tag = "Ring"
 
 
 class Shape(SceneElement):
+    """Shape geometry primitive.
+
+    Creates geometry from a 2D shape path.
+
+    :param args: Geometry construction arguments [shapes, curveSegments].
+                 Defaults to [None, 12].
+    :type args: List, optional
+    :param position: Position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+
+    Args breakdown:
+        - shapes: Shape or array of shapes to render
+        - curveSegments: Number of segments for curved paths (min 1)
+
+    Example Usage::
+
+        Shape(
+            args=[shape, 12],
+            position=[0, 0, 0],
+        )
+    """
     tag = "Shape"
 
 
 class Sphere(SceneElement):
+    """Sphere geometry primitive.
+
+    Creates a sphere with customizable radius and segmentation.
+
+    :param args: Geometry construction arguments [radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength].
+                 Defaults to [1, 32, 16, 0, Math.PI*2, 0, Math.PI].
+    :type args: List[float], optional
+    :param position: Sphere position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Sphere rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Sphere scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+
+    Args breakdown:
+        - radius: Radius of sphere
+        - widthSegments: Number of horizontal segments (min 3)
+        - heightSegments: Number of vertical segments (min 2)
+        - phiStart: Horizontal starting angle (radians)
+        - phiLength: Horizontal sweep angle (radians, max 2π)
+        - thetaStart: Vertical starting angle (radians)
+        - thetaLength: Vertical sweep angle (radians, max π)
+
+    Example Usage::
+
+        Sphere(
+            args=[1, 32, 16, 0, 6.283, 0, 3.142],
+            position=[0, 0, 0],
+            material={"color": "blue"},
+        )
+    """
     tag = "Sphere"
 
 
 class Tetrahedron(SceneElement):
+    """Tetrahedron geometry primitive.
+
+    Creates a regular tetrahedron (4-sided polyhedron with triangular faces).
+
+    :param args: Geometry construction arguments [radius, detail].
+                 Defaults to [1, 0].
+    :type args: List[float], optional
+    :param position: Tetrahedron position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Tetrahedron rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Tetrahedron scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+
+    Args breakdown:
+        - radius: Radius of tetrahedron
+        - detail: Subdivision level (0-5, higher = more faces)
+
+    Example Usage::
+
+        Tetrahedron(
+            args=[1, 0],
+            position=[0, 0, 0],
+        )
+    """
     tag = "Tetrahedron"
 
 
 class Torus(SceneElement):
+    """Torus geometry primitive.
+
+    Creates a torus (donut shape) with customizable radii and segmentation.
+
+    :param args: Geometry construction arguments [radius, tube, radialSegments, tubularSegments, arc].
+                 Defaults to [1, 0.4, 8, 6, Math.PI*2].
+    :type args: List[float], optional
+    :param position: Torus position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Torus rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Torus scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+
+    Args breakdown:
+        - radius: Radius from center of torus to center of tube
+        - tube: Radius of tube
+        - radialSegments: Number of segments along tube (min 3)
+        - tubularSegments: Number of segments around torus (min 3)
+        - arc: Central angle (radians, max 2π)
+
+    Example Usage::
+
+        Torus(
+            args=[1, 0.4, 16, 48, 6.283],
+            position=[0, 0, 0],
+        )
+    """
     tag = "Torus"
 
 
 class TorusKnot(SceneElement):
+    """TorusKnot geometry primitive.
+
+    Creates a torus knot with customizable winding parameters.
+
+    :param args: Geometry construction arguments [radius, tube, tubularSegments, radialSegments, p, q].
+                 Defaults to [1, 0.4, 64, 8, 2, 3].
+    :type args: List, optional
+    :param position: Torus knot position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Torus knot rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Torus knot scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+
+    Args breakdown:
+        - radius: Radius of torus
+        - tube: Radius of tube
+        - tubularSegments: Number of segments along knot path (min 3)
+        - radialSegments: Number of segments along tube (min 3)
+        - p: Number of times knot winds around torus axis
+        - q: Number of times knot winds through torus hole
+
+    Example Usage::
+
+        TorusKnot(
+            args=[1, 0.4, 128, 16, 2, 3],
+            position=[0, 0, 0],
+        )
+    """
     tag = "TorusKnot"
 
 
 class Tube(SceneElement):
+    """Tube geometry primitive.
+
+    Creates a tube that follows a 3D path curve.
+
+    :param args: Geometry construction arguments [path, tubularSegments, radius, radialSegments, closed].
+                 Defaults to [None, 64, 1, 8, False].
+    :type args: List, optional
+    :param position: Position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param material: Material properties.
+    :type material: dict, optional
+
+    Args breakdown:
+        - path: 3D curve path for tube to follow
+        - tubularSegments: Number of segments along path (min 2)
+        - radius: Radius of tube
+        - radialSegments: Number of segments around tube (min 2)
+        - closed: Whether tube forms closed loop
+
+    Example Usage::
+
+        Tube(
+            args=[path, 64, 0.5, 8, False],
+            position=[0, 0, 0],
+        )
+    """
     tag = "Tube"
 
 
@@ -299,9 +876,143 @@ class Pcd(SceneElement):
     :type matrix: tuple[float, ...]
     :param hide: Optional flag to hide the point cloud. Defaults to False.
     :type  hide: bool, optional
+    :param onLoad: Callback function or event name to trigger when point cloud loads.
+    :type onLoad: callable or str, optional
     """
 
     tag = "Pcd"
+
+
+class PerspectiveCamera(SceneElement):
+    """Perspective camera with FOV-based projection.
+
+    This camera uses a perspective projection where objects appear smaller as they
+    get further from the camera, mimicking how human eyes perceive the world.
+
+    :param fov: Field of view in degrees. Defaults to 75.
+    :type fov: float, optional
+    :param zoom: Camera zoom factor. Defaults to 1.
+    :type zoom: float, optional
+    :param near: Near clipping plane distance. Objects closer than this won't be rendered. Defaults to 0.1.
+    :type near: float, optional
+    :param far: Far clipping plane distance. Objects further than this won't be rendered. Defaults to 1000.
+    :type far: float, optional
+    :param position: Camera position in 3D space [x, y, z]. Defaults to [0, 0, 5].
+    :type position: List[float], optional
+    :param rotation: Camera rotation as Euler angles [x, y, z] in radians. Defaults to [0, 0, 0].
+    :type rotation: List[float], optional
+    :param lookAt: Point in 3D space [x, y, z] for the camera to look at. Overrides rotation if set.
+    :type lookAt: List[float], optional
+    :param makeDefault: Whether this camera should be the default rendering camera. Defaults to False.
+    :type makeDefault: bool, optional
+    :param active: Whether this camera is currently active. Defaults to False.
+    :type active: bool, optional
+
+    Example Usage::
+
+        PerspectiveCamera(
+            position=[5, 2, 5],
+            lookAt=[0, 0, 0],
+            fov=75,
+            near=0.1,
+            far=1000,
+            makeDefault=True,
+        )
+    """
+    tag = "PerspectiveCamera"
+
+
+class OrthographicCamera(SceneElement):
+    """Orthographic camera for parallel projection.
+
+    This camera uses orthographic projection where objects maintain their size
+    regardless of distance from the camera. Useful for technical drawings, CAD,
+    and 2D-style games.
+
+    :param zoom: Camera zoom factor. Higher values zoom in. Defaults to 200.
+    :type zoom: float, optional
+    :param left: Left plane of view frustum. Defaults to -window.width/2.
+    :type left: float, optional
+    :param right: Right plane of view frustum. Defaults to window.width/2.
+    :type right: float, optional
+    :param top: Top plane of view frustum. Defaults to window.height/2.
+    :type top: float, optional
+    :param bottom: Bottom plane of view frustum. Defaults to -window.height/2.
+    :type bottom: float, optional
+    :param near: Near clipping plane distance. Defaults to 0.001.
+    :type near: float, optional
+    :param far: Far clipping plane distance. Defaults to 1000.
+    :type far: float, optional
+    :param position: Camera position in 3D space [x, y, z]. Defaults to [0, 0, 5].
+    :type position: List[float], optional
+    :param rotation: Camera rotation as Euler angles [x, y, z] in radians. Defaults to [0, 0, 0].
+    :type rotation: List[float], optional
+    :param lookAt: Point in 3D space [x, y, z] for the camera to look at. Overrides rotation if set.
+    :type lookAt: List[float], optional
+    :param makeDefault: Whether this camera should be the default rendering camera. Defaults to False.
+    :type makeDefault: bool, optional
+    :param active: Whether this camera is currently active. Defaults to False.
+    :type active: bool, optional
+
+    Example Usage::
+
+        OrthographicCamera(
+            position=[0, 10, 0],
+            lookAt=[0, 0, 0],
+            zoom=100,
+            makeDefault=True,
+        )
+    """
+    tag = "OrthographicCamera"
+
+
+class OrbitControls(SceneElement):
+    """Orbit controls for interactive camera manipulation.
+
+    Provides mouse/touch controls for rotating (orbiting) around a target point,
+    panning, and zooming. Essential for 3D scene navigation.
+
+    :param enableDamping: Enable smooth damping (inertia) for camera movement. Defaults to False.
+    :type enableDamping: bool, optional
+    :param enablePan: Enable panning (moving the camera parallel to the view plane). Defaults to True.
+    :type enablePan: bool, optional
+    :param enableRotate: Enable rotation (orbiting around the target). Defaults to True.
+    :type enableRotate: bool, optional
+    :param enableZoom: Enable zooming (moving closer/further from target). Defaults to True.
+    :type enableZoom: bool, optional
+    :param screenSpacePanning: Pan in screen space instead of world space. Defaults to True.
+    :type screenSpacePanning: bool, optional
+    :param makeDefault: Make these the default controls for the scene. Defaults to True.
+    :type makeDefault: bool, optional
+    :param maxPolarAngle: Maximum vertical rotation angle in degrees. Defaults to 135.
+    :type maxPolarAngle: float, optional
+    :param minPolarAngle: Minimum vertical rotation angle in degrees. Defaults to 0.
+    :type minPolarAngle: float, optional
+    :param maxDistance: Maximum zoom distance from target. Defaults to 1000. Set to 0 for infinity.
+    :type maxDistance: float, optional
+    :param minDistance: Minimum zoom distance from target. Defaults to 0.
+    :type minDistance: float, optional
+    :param zoomSpeed: Zoom speed multiplier. Defaults to 1.0.
+    :type zoomSpeed: float, optional
+    :param rotateSpeed: Rotation speed multiplier. Defaults to 1.0.
+    :type rotateSpeed: float, optional
+    :param panSpeed: Pan speed multiplier. Defaults to 1.0.
+    :type panSpeed: float, optional
+
+    Example Usage::
+
+        OrbitControls(
+            enableDamping=True,
+            enablePan=True,
+            enableRotate=True,
+            enableZoom=True,
+            makeDefault=True,
+            maxPolarAngle=90,
+            minPolarAngle=0,
+            zoomSpeed=1.0,
+        )
+    """
+    tag = "OrbitControls"
 
 
 class CameraView(SceneElement):
@@ -418,35 +1129,188 @@ class Group(SceneElement):
 
 
 class HemisphereLight(SceneElement):
+    """Hemisphere light with sky and ground colors.
+
+    Provides ambient lighting from two different colored hemispheres (sky and ground),
+    simulating natural outdoor lighting where light comes from above and reflects from below.
+
+    :param skyColor: Color of the sky (top hemisphere). Defaults to '#ffffff'.
+    :type skyColor: str, optional
+    :param groundColor: Color of the ground (bottom hemisphere). Defaults to '#000000'.
+    :type groundColor: str, optional
+    :param intensity: Light intensity (0-10). Defaults to 1.
+    :type intensity: float, optional
+    :param hide: Hide the light. Defaults to False.
+    :type hide: bool, optional
+    :param helper: Show light helper visualization. Defaults to False.
+    :type helper: bool, optional
+    :param position: Light position [x, y, z].
+    :type position: List[float], optional
+    """
     tag = "HemisphereLight"
 
 
 class RectAreaLight(SceneElement):
+    """Rectangular area light.
+
+    Emits light uniformly across a rectangular surface. Useful for simulating
+    windows, light panels, or other large light sources with defined shape.
+
+    :param color: Light color. Defaults to '#ffffff'.
+    :type color: str, optional
+    :param intensity: Light intensity (0-10). Defaults to 1.
+    :type intensity: float, optional
+    :param lookAt: Point the light should face [x, y, z].
+    :type lookAt: List[float], optional
+    :param width: Width of the light rectangle. Defaults to 10.
+    :type width: float, optional
+    :param height: Height of the light rectangle. Defaults to 10.
+    :type height: float, optional
+    :param hide: Hide the light. Defaults to False.
+    :type hide: bool, optional
+    :param helper: Show light helper visualization. Defaults to False.
+    :type helper: bool, optional
+    :param position: Light position [x, y, z].
+    :type position: List[float], optional
+    """
     tag = "RectAreaLight"
 
 
 class Stage(SceneElement):
+    """Scene composition utility from drei.
+
+    Provides preset lighting and arrangement for displaying 3D models. Not a light itself,
+    but a scene layout helper that configures multiple lights and effects automatically.
+
+    :param intensity: Overall light intensity multiplier. Defaults to 1.
+    :type intensity: float, optional
+    :param environment: Environment preset name ('sunset', 'dawn', 'night', etc.).
+    :type environment: str, optional
+    :param shadows: Whether to enable shadows. Defaults to True.
+    :type shadows: bool, optional
+    :param adjustCamera: Whether to auto-adjust camera position. Defaults to True.
+    :type adjustCamera: bool, optional
+    :param preset: Stage preset ('rembrandt', 'portrait', 'upfront', 'soft').
+    :type preset: str, optional
+    """
     tag = "Stage"
+    key = "stage"
 
 
 class Gamepads(SceneElement):
+    """Gamepad input handler for XR and browser gamepad APIs.
+
+    Provides access to gamepad button and axis events for game controller input.
+
+    :param stream: Enable streaming of gamepad state. Defaults to True.
+    :type stream: bool, optional
+    :param fps: Frames per second for gamepad updates. Defaults to 30.
+    :type fps: int, optional
+    """
     tag = "Gamepads"
+    key = "gamepads"
 
 
 class DirectionalLight(SceneElement):
+    """Directional light with parallel rays.
+
+    Simulates distant light sources like the sun, where all light rays are parallel.
+    Useful for outdoor scenes and casting shadows.
+
+    :param color: Light color. Defaults to '#ffffff'.
+    :type color: str, optional
+    :param intensity: Light intensity (0-10). Defaults to 1.
+    :type intensity: float, optional
+    :param hide: Hide the light. Defaults to False.
+    :type hide: bool, optional
+    :param helper: Show light helper visualization with target. Defaults to False.
+    :type helper: bool, optional
+    :param castShadow: Whether this light casts shadows. Defaults to False.
+    :type castShadow: bool, optional
+    :param position: Light position [x, y, z]. Defaults to [0, 0, 1].
+    :type position: List[float], optional
+    :param target: Target position the light points at [x, y, z].
+    :type target: List[float], optional
+    """
     tag = "DirectionalLight"
+    key = "directionallight"
 
 
 class PointLight(SceneElement):
+    """Point light radiating in all directions.
+
+    Emits light equally in all directions from a single point, like a light bulb.
+
+    :param color: Light color. Defaults to '#ffffff'.
+    :type color: str, optional
+    :param intensity: Light intensity (0-10). Defaults to 1.
+    :type intensity: float, optional
+    :param distance: Maximum distance the light reaches. 0 = infinite. Defaults to 0.
+    :type distance: float, optional
+    :param decay: Amount light dims along distance. Defaults to 2 (physically correct).
+    :type decay: float, optional
+    :param radius: Light radius for soft shadows. Defaults to 0.
+    :type radius: float, optional
+    :param showSphere: Show a sphere at the light position. Defaults to False.
+    :type showSphere: bool, optional
+    :param hide: Hide the light. Defaults to False.
+    :type hide: bool, optional
+    :param helper: Show light helper visualization. Defaults to False.
+    :type helper: bool, optional
+    :param position: Light position [x, y, z].
+    :type position: List[float], optional
+    """
     tag = "PointLight"
+    key = "pointlight"
 
 
 class SpotLight(SceneElement):
+    """Spot light with cone-shaped beam.
+
+    Emits light in a cone from a point, like a flashlight or stage spotlight.
+
+    :param color: Light color. Defaults to '#ffffff'.
+    :type color: str, optional
+    :param intensity: Light intensity (0-10). Defaults to 1.
+    :type intensity: float, optional
+    :param distance: Maximum distance the light reaches. 0 = infinite. Defaults to 0.
+    :type distance: float, optional
+    :param angle: Maximum spotlight cone angle in radians. Defaults to Math.PI/3.
+    :type angle: float, optional
+    :param penumbra: Softness of the spotlight edge (0-1). Defaults to 0.
+    :type penumbra: float, optional
+    :param decay: Amount light dims along distance. Defaults to 2 (physically correct).
+    :type decay: float, optional
+    :param hide: Hide the light. Defaults to False.
+    :type hide: bool, optional
+    :param helper: Show light helper visualization with cone. Defaults to False.
+    :type helper: bool, optional
+    :param castShadow: Whether this light casts shadows. Defaults to False.
+    :type castShadow: bool, optional
+    :param position: Light position [x, y, z].
+    :type position: List[float], optional
+    :param target: Target position the light points at [x, y, z].
+    :type target: List[float], optional
+    """
     tag = "SpotLight"
+    key = "spotlight"
 
 
 class AmbientLight(SceneElement):
+    """Ambient light illuminating all objects equally.
+
+    Provides uniform lighting from all directions with no shadows. Useful as base
+    lighting to ensure no objects are completely black.
+
+    :param color: Light color. Defaults to '#ffffff'.
+    :type color: str, optional
+    :param intensity: Light intensity (0-10). Defaults to 1.
+    :type intensity: float, optional
+    :param hide: Hide the light. Defaults to False.
+    :type hide: bool, optional
+    """
     tag = "AmbientLight"
+    key = "ambientlight"
 
 
 class Html(SceneElement):
@@ -758,18 +1622,39 @@ class Obj(SceneElement):
 
     def __init__(self, src=None, mtl=None, text=None, buff=None, materials=None, **kwargs):
         """
-        :param src: The source of the obj file. Can be a url or a local file.
-        :type  src: str
-        :param mtl: The source of the mtl file. Can be a url or a local file.
-        :type  mtl: str
-        :param text: The text content of the obj file, allow one to load a scene from a string.
-        :type  text: str
-        :param buff: The binary content of the obj file. This is the most efficient, because you are sending binaries..
-        :type  buff: bytes
-        :param materials: A list of materials to be used for the obj file.
-        :type  materials: List[String]
+        :param src: URL to the OBJ file.
+        :type  src: str, optional
+        :param mtl: URL to the MTL (material) file. Defaults to same name as OBJ with .mtl extension.
+        :type  mtl: str, optional
+        :param text: OBJ file content as text string.
+        :type  text: str, optional
+        :param buff: OBJ file content as binary data.
+        :type  buff: bytes, optional
+        :param materials: List of material names to use from the MTL file.
+        :type  materials: List[str], optional
+        :param assets: Asset mapping for resolving relative texture paths in MTL file.
+        :type  assets: dict, optional
+        :param encoding: Text encoding for binary data. Defaults to 'ascii'.
+        :type  encoding: str, optional
+        :param hide: Hide the model without removing it from scene. Defaults to False.
+        :type  hide: bool, optional
+        :param onLoad: Callback function or event name to trigger when model loads.
+        :type  onLoad: callable or str, optional
+        :param position: Model position [x, y, z].
+        :type  position: List[float], optional
+        :param rotation: Model rotation [x, y, z] in radians.
+        :type  rotation: List[float], optional
+        :param scale: Model scale factor or [x, y, z] scale.
+        :type  scale: float or List[float], optional
 
-        todo: In the future we probably want to enable the loading of multiple material files.
+        Example Usage::
+
+            Obj(
+                src="http://localhost:8012/static/model.obj",
+                mtl="http://localhost:8012/static/model.mtl",
+                position=[0, 0, 0],
+                scale=1.0,
+            )
         """
         self.src = src
         self.mtl = mtl
@@ -811,24 +1696,144 @@ class Arrow(SceneElement):
 
 
 class Ply(SceneElement):
+    """PLY (Polygon File Format) model loader.
+
+    Loads and displays PLY 3D model files, commonly used for storing 3D scan data
+    and point cloud information. Supports both ASCII and binary formats.
+
+    :param src: URL to the PLY file.
+    :type src: str, optional
+    :param text: PLY file content as text string.
+    :type text: str, optional
+    :param buff: PLY file content as binary data.
+    :type buff: bytes, optional
+    :param assets: Asset mapping for resolving relative paths in multi-file models.
+    :type assets: dict, optional
+    :param hide: Hide the model without removing it from scene. Defaults to False.
+    :type hide: bool, optional
+    :param encoding: Text encoding for binary data. Defaults to 'ascii'.
+    :type encoding: str, optional
+    :param onLoad: Callback function or event name to trigger when model loads.
+    :type onLoad: callable or str, optional
+    :param position: Model position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Model rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Model scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+
+    Example Usage::
+
+        Ply(
+            src="http://localhost:8012/static/model.ply",
+            position=[0, 0, 0],
+            scale=1.0,
+        )
+    """
     tag = "Ply"
 
 
 class Glb(SceneElement):
-    """Glb Component
+    """GLB/GLTF model file loader.
 
-    # this follows the material type
+    Loads and displays GLB (binary glTF) or GLTF 3D model files. Supports
+    animations, materials, textures, and PBR rendering. GLTF is the standard
+    format for 3D content on the web.
 
-    :param materialType: Literal["basic", ...]
-    :param material: {
-      side=0: inside, side=1: outsie, side=2: both.
-    }
+    :param src: URL to the GLB/GLTF file.
+    :type src: str, optional
+    :param text: GLTF file content as JSON text string (for .gltf files).
+    :type text: str, optional
+    :param buff: GLB file content as binary data (for .glb files).
+    :type buff: bytes, optional
+    :param hide: Hide the model without removing it from scene. Defaults to False.
+    :type hide: bool, optional
+    :param encoding: Text encoding for text-based GLTF. Defaults to 'ascii'.
+    :type encoding: str, optional
+    :param onLoad: Callback function or event name to trigger when model loads.
+    :type onLoad: callable or str, optional
+    :param position: Model position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Model rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Model scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param materialType: Override material type (basic, standard, physical, depth, normal, etc.).
+    :type materialType: str, optional
+    :param material: Material properties override. Use side=0 (inside), 1 (outside), 2 (both).
+    :type material: dict, optional
+
+    Example Usage::
+
+        Glb(
+            src="http://localhost:8012/static/model.glb",
+            position=[0, 0, 0],
+            scale=0.1,
+            materialType="physical",
+        )
+
+    Note: GLB format includes animations which are automatically extracted and available.
     """
 
     tag = "Glb"
 
 
 class Urdf(SceneElement):
+    """URDF (Unified Robot Description Format) model loader.
+
+    Loads and displays robot models in URDF format, commonly used in robotics
+    for defining robot kinematics, dynamics, and visual/collision geometry.
+
+    :param src: URL to the URDF file.
+    :type src: str, optional
+    :param text: URDF file content as XML text string.
+    :type text: str, optional
+    :param buff: URDF file content as binary data.
+    :type buff: bytes, optional
+    :param assets: Asset mapping for resolving relative paths to meshes and textures.
+    :type assets: dict, optional
+    :param hide: Hide the model without removing it from scene. Defaults to False.
+    :type hide: bool, optional
+    :param encoding: Text encoding for binary data. Defaults to 'ascii'.
+    :type encoding: str, optional
+    :param jointValues: Dictionary mapping joint names to their position values.
+    :type jointValues: dict, optional
+    :param workingPath: Base path for resolving relative file references.
+    :type workingPath: str, optional
+    :param fetchOptions: Options to pass to fetch() when loading files.
+    :type fetchOptions: dict, optional
+    :param parseVisual: Whether to parse and display visual geometry. Defaults to True.
+    :type parseVisual: bool, optional
+    :param parseCollision: Whether to parse collision geometry. Defaults to False.
+    :type parseCollision: bool, optional
+    :param packages: ROS package path mappings (package:// URLs).
+    :type packages: dict, optional
+    :param onLoad: Callback function or event name to trigger when model loads.
+    :type onLoad: callable or str, optional
+    :param color: Override color for all robot links.
+    :type color: str, optional
+    :param material: Material properties to apply to robot geometry.
+    :type material: dict, optional
+    :param materialType: Material type (basic, standard, physical, etc.).
+    :type materialType: str, optional
+    :param position: Robot position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Robot rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Robot scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+
+    Example Usage::
+
+        Urdf(
+            src="http://localhost:8012/static/robot.urdf",
+            jointValues={"joint1": 0.5, "joint2": -0.3},
+            packages={"my_robot": "http://localhost:8012/robot_meshes/"},
+            position=[0, 0, 0],
+        )
+
+    Note: URDF loader supports dynamic joint updates by modifying jointValues.
+    """
     tag = "Urdf"
 
 
@@ -859,6 +1864,155 @@ class TimelineControls(SceneElement):
 class PointerControls(SceneElement):
     tag = "PointerControls"
     # todo: consider adding default component keys here.
+
+
+class KeyboardControls(SceneElement):
+    """Keyboard controls for camera navigation using WASD + QE keys.
+
+    Provides keyboard input for camera movement. Works in conjunction with OrbitControls.
+    - W/S: Move forward/backward
+    - A/D: Move left/right
+    - Q/E: Move down/up
+    - Hold Shift: Move 10x faster
+
+    :param controls: Reference to the orbit controls instance. Required.
+    :type controls: object, optional
+    :param panSpeed: Base pan speed multiplier. Defaults to 0.016.
+    :type panSpeed: float, optional
+    :param viewHeight: View height for speed calculation. Defaults to camera-dependent.
+    :type viewHeight: float, optional
+
+    Example Usage::
+
+        KeyboardControls(
+            panSpeed=0.02,
+        )
+
+    Note: This component must be used alongside OrbitControls to function properly.
+    """
+    tag = "KeyboardControls"
+
+
+class Fbx(SceneElement):
+    """FBX model file loader.
+
+    Loads and displays Autodesk FBX 3D model files. Supports animations and
+    can load from URL, text content, or binary data.
+
+    :param src: URL to the FBX file.
+    :type src: str, optional
+    :param text: FBX file content as text string.
+    :type text: str, optional
+    :param buff: FBX file content as binary data.
+    :type buff: bytes, optional
+    :param encoding: Text encoding for binary data. Defaults to 'ascii'.
+    :type encoding: str, optional
+    :param hide: Hide the model without removing it from scene. Defaults to False.
+    :type hide: bool, optional
+    :param onLoad: Callback function or event name to trigger when model loads.
+    :type onLoad: callable or str, optional
+    :param position: Model position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Model rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Model scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+
+    Example Usage::
+
+        Fbx(
+            src="http://localhost:8012/static/model.fbx",
+            position=[0, 0, 0],
+            scale=0.01,
+        )
+    """
+    tag = "Fbx"
+
+
+class Stl(SceneElement):
+    """STL model file loader.
+
+    Loads and displays STL (Stereolithography) 3D model files, commonly used
+    for 3D printing and CAD applications.
+
+    :param src: URL to the STL file.
+    :type src: str, optional
+    :param text: STL file content as text string.
+    :type text: str, optional
+    :param buff: STL file content as binary data.
+    :type buff: bytes, optional
+    :param encoding: Text encoding for binary data. Defaults to 'ascii'.
+    :type encoding: str, optional
+    :param hide: Hide the model without removing it from scene. Defaults to False.
+    :type hide: bool, optional
+    :param onLoad: Callback function or event name to trigger when model loads.
+    :type onLoad: callable or str, optional
+    :param position: Model position [x, y, z].
+    :type position: List[float], optional
+    :param rotation: Model rotation [x, y, z] in radians.
+    :type rotation: List[float], optional
+    :param scale: Model scale factor or [x, y, z] scale.
+    :type scale: float or List[float], optional
+    :param color: Model color.
+    :type color: str, optional
+    :param materialType: Material type (basic, standard, physical, etc.).
+    :type materialType: str, optional
+
+    Example Usage::
+
+        Stl(
+            src="http://localhost:8012/static/part.stl",
+            position=[0, 0, 0],
+            color="silver",
+            scale=1.0,
+        )
+    """
+    tag = "Stl"
+
+
+class ImageSphere(SceneElement):
+    """360-degree image sphere for immersive image display.
+
+    Creates a spherical surface that displays an image, useful for 360° photos,
+    VR environments, and panoramic content. The sphere follows the camera position
+    by default, creating an immersive effect.
+
+    :param rgb: RGB texture for the sphere surface.
+    :type rgb: Texture, optional
+    :param alpha: Alpha/transparency texture.
+    :type alpha: Texture, optional
+    :param depth: Depth map texture for displacement.
+    :type depth: Texture, optional
+    :param depthScale: Scale factor for depth displacement. Defaults to 1.
+    :type depthScale: float, optional
+    :param depthBias: Bias offset for depth displacement. Defaults to 0.
+    :type depthBias: float, optional
+    :param distanceToCamera: Distance from camera to sphere surface. Defaults to 1.0.
+    :type distanceToCamera: float, optional
+    :param opacity: Sphere opacity (0-1). Defaults to 1.0.
+    :type opacity: float, optional
+    :param fixed: Whether sphere stays fixed or follows camera. Defaults to False.
+    :type fixed: bool, optional
+    :param layers: Rendering layer index for XR. Defaults to None.
+    :type layers: int, optional
+    :param side: Which side to render (0=front, 1=back, 2=both). Defaults to 2.
+    :type side: int, optional
+    :param wireframe: Render as wireframe. Defaults to False.
+    :type wireframe: bool, optional
+    :param material: Additional material properties.
+    :type material: dict, optional
+
+    Example Usage::
+
+        ImageSphere(
+            src="panorama.jpg",
+            distanceToCamera=100,
+            opacity=1.0,
+        )
+
+    Note: Only works with perspective cameras.
+    """
+    tag = "ImageSphere"
 
 
 class RandomizedLight(SceneElement):
@@ -1387,6 +2541,8 @@ class DefaultScene(Scene):
             bgChildren=[
                 # skey spec here is a little redundant.
                 GrabRender(key="DEFAULT"),
+                PerspectiveCamera(position=[2, 2, 2], lookAt=[0, 0, 0], fov=75, makeDefault=True, key="default_camera"),
+                OrbitControls(makeDefault=True, key="default_orbit_controls"),
                 *[
                     # we use a key here so that we can replace the timeline controls via update
                     TimelineControls(start=startStep, end=endStep, key="timeline") if endStep else None,

@@ -169,3 +169,53 @@ class Facemesh(SceneElement):
     """
 
     tag = "Facemesh"
+
+
+class Environment(SceneElement):
+    """Environment lighting and background from drei.
+
+    Creates an HDR environment map for realistic lighting and optional background.
+    This component wraps @react-three/drei's Environment component and provides
+    various presets for quick setup or custom HDRI loading.
+
+    :param preset: Preset environment name (e.g., 'sunset', 'dawn', 'night', 'warehouse', 'forest', 'apartment', 'studio', 'city', 'park', 'lobby').
+    :type preset: str, optional
+    :param files: Path or array of paths to HDRI files. Can be a single equirectangular image or 6 cube faces.
+    :type files: str or List[str], optional
+    :param path: Base path for HDRI files. Defaults to '/'.
+    :type path: str, optional
+    :param background: Whether to use the environment as scene background. Defaults to False.
+    :type background: bool, optional
+    :param blur: Blur factor for the environment (0-1). Defaults to 0.
+    :type blur: float, optional
+    :param intensity: Light intensity multiplier. Defaults to 1.
+    :type intensity: float, optional
+    :param resolution: Resolution of the environment map (e.g., 256, 512, 1024). Defaults to 256.
+    :type resolution: int, optional
+    :param near: Near clipping plane. Defaults to 1.
+    :type near: float, optional
+    :param far: Far clipping plane. Defaults to 1000.
+    :type far: float, optional
+    :param frames: Number of frames to render if using children as environment source. Defaults to 1.
+    :type frames: int, optional
+
+    Example Usage::
+
+        # Using a preset
+        Environment(
+            preset="sunset",
+            background=True,
+        )
+
+        # Using custom HDRI
+        Environment(
+            files="studio.hdr",
+            path="/textures/",
+            background=False,
+            intensity=1.5,
+        )
+
+    Note: This component uses three-stdlib's RGBELoader to load HDR images.
+    Environment maps provide realistic lighting and reflections for 3D scenes.
+    """
+    tag = "Environment"
