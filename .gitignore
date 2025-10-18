@@ -10,6 +10,7 @@
 # Setuptools distribution and build folders.
 dist
 build
+*.egg-info
 
 __pycache__
 
@@ -17,8 +18,11 @@ __pycache__
 # Python egg metadata, regenerated from source files by setuptools.
 .ipynb_checkpoints
 .cache
-*.egg-info
 MUJOCO_LOG.txt
+
+# uv
+.venv
+uv.lock
 
 *out
 *.npy

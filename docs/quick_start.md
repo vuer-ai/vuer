@@ -109,12 +109,25 @@ Follow the instructions in the command line to view the visualization. Enjoy!
 
 If you want to develop vuer, you can install it in editable mode plus dependencies
 relevant for building the documentations:
+
+**Using uv (recommended):**
 ```shell
 cd vuer
-pip install -e '.[all]'
+uv sync --group dev
+source .venv/bin/activate
 ```
-To build the documentations, run
+
+**Using pip:**
 ```shell
-make docs
+cd vuer
+pip install -e '.[dev]'
 ```
+
+To build the documentation:
+```shell
+make docs          # Build HTML documentation
+make preview-docs  # Live preview with auto-reload
+```
+
+For more information on contributing, see [CONTRIBUTING.md](https://github.com/vuer-ai/vuer/blob/main/CONTRIBUTING.md).
 

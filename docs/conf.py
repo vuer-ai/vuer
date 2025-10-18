@@ -9,14 +9,14 @@
 project = "Vuer"
 copyright = "2023, Ge Yang"
 author = "Ge Yang"
-with open("../VERSION", "r") as f:
-    version = f.read()
-    version = version.strip()
 
 import sys
 import os
+from importlib.metadata import version as get_version
 
-sys.path.insert(0, os.path.abspath("../"))
+version = get_version("vuer")
+
+sys.path.insert(0, os.path.abspath("../src"))
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
