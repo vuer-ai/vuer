@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "vuer"
@@ -8,7 +8,7 @@ version = "0.0.67"
 description = ""
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: Python",
@@ -24,15 +24,15 @@ dependencies = [
 [project.optional-dependencies]
 # add the cors package, not needed in pyScript
 all = [
-    "aiohttp==3.10.5",
+    "aiohttp>=3.10.5",
     "aiohttp-cors",
     "killport",
 ]
 example = [
-    "aiohttp==3.10.5",
+    "aiohttp>=3.10.5",
     "aiohttp-cors",
     "killport",
-    "open3d>=0.15.0,<0.16.0",
+    "open3d>=0.18.0",
     "trimesh",
     "cmx",
     "functional_notations",
@@ -41,16 +41,16 @@ example = [
 ]
 dev = [
     "cmx",
-    "aiohttp==3.10.5",
+    "aiohttp>=3.10.5",
     "aiohttp-cors",
     "killport",
-    "pylint==2.13.4",
-    "pytest==7.1.2",
-    "sphinx==7.1.2",
+    "pylint>=2.13.4",
+    "pytest>=7.1.2",
+    "sphinx>=7.1.2",
     "furo",
     "sphinx-autobuild",
     "sphinx_copybutton",
-    "sphinxcontrib-video",
+    "sphinxcontrib-video @ git+https://github.com/QuLogic/sphinxcontrib-video.git@634ce982244ae9fee29958524536f5288b49c5d5",
     "myst_parser",
     # these are very optional but needed for the doc site
     "trimesh",
@@ -60,14 +60,99 @@ dev = [
 [project.scripts]
 # Note, add the entrypoint name to scripts/completions/install.py to include CLI percentage
 vuer = "vuer:entrypoint"
+vuer-docs = "sphinx_autobuild.__main__:main"
+vuer-docs-build = "sphinx.cmd.build:main"
 
-[tool.setuptools.packages.find]
-include = ["vuer*"]
+[tool.hatch.metadata]
+allow-direct-references = true
 
-[tool.setuptools.package-data]
-"*" = ["*.json"]
+[tool.hatch.build]
+packages = ["src"]
 
-# black
+[tool.hatch.build.targets.wheel]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src",
+    "*.md",
+    "*.toml",
+    "LICENSE",
+]
+
+[dependency-groups]
+dev = [
+    "cmx",
+    "aiohttp>=3.10.5",
+    "aiohttp-cors",
+    "killport",
+    "pylint>=2.13.4",
+    "pytest>=7.1.2",
+    "sphinx>=7.1.2",
+    "furo",
+    "sphinx-autobuild",
+    "sphinx_copybutton",
+    "sphinxcontrib-video @ git+https://github.com/QuLogic/sphinxcontrib-video.git@634ce982244ae9fee29958524536f5288b49c5d5",
+    "myst_parser",
+    "trimesh",
+    "tqdm",
+]
+
+[tool.uv]
+# Force newer versions with pre-built wheels to avoid compilation issues
+override-dependencies = [
+    "multidict>=6.0",  # Older versions need compilation
+]
+
+# ruff
+[tool.ruff]
+line-length = 140
+indent-width = 4
+target-version = "py311"
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+ignore = []
+fixable = ["ALL"]
+unfixable = []
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = false
+docstring-code-line-length = "dynamic"
+
+# black (keeping for backward compatibility)
 [tool.black]
 line-length = 120
 
@@ -100,7 +185,7 @@ disable = [
 
 # pyright
 [tool.pyright]
-include = ["vuer"]
+include = ["src/vuer"]
 exclude = ["**/node_modules", "**/__pycache__", ]
 #ignore = ["nerf_vuer"]
 defineConstant = { DEBUG = true }

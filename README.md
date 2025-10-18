@@ -9,20 +9,15 @@
 </a>
 </h2>
 <p>
-<strong><code>pip install vuer</code></strong>
+<strong><code>pip install 'vuer[all]'</code></strong>
 &nbsp;&nbsp;⬝&nbsp;&nbsp;
-visit &ensp;<a href="https://docs.vuer.ai">https://docs.vuer.ai</a>&ensp; for documentation
+<a href="https://docs.vuer.ai">docs</a>
+&nbsp;&nbsp;⬝&nbsp;&nbsp;
+<a href="#development">development</a>
 </p>
 
 Vuer is a light-weight visualization toolkit for interacting with dynamic 3D and robotics data. It is
 VR and AR ready, and can be run on mobile devices.
-
-Our features include:
-
-- light-weight and performant
-- VR and AR ready
-- Hackable and extensible
-- Open source, licensed under MIT
 
 ## Installation
 
@@ -81,15 +76,37 @@ cd vuer/examples/vuer
 python 01_trimesh.py
 ```
 
-## Contributing to Documentation and Features
+## Development
 
-Documentation is a crucial part of the `vuer` ecosystem. To contribute to documentation and usage examples, simply:
+### Setup
+
+**Using uv (recommended):**
+```bash
+uv sync --group dev
+source .venv/bin/activate
+```
+
+**Using pip:**
+```bash
+pip install -e '.[dev]'
+```
+
+### Common Tasks
 
 ```bash
-pip install -e '.[all]'
-make docs
+make docs          # Build documentation
+make preview-docs  # Live preview at http://0.0.0.0:8000
+make test          # Run tests
+make clean         # Clean build artifacts
 ```
-This should fire up an http server at the port `8888`, and you can view the documentation at `http://localhost:8888`.
+
+### Contributing
+
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on:
+- Setting up your development environment
+- Code quality standards (ruff formatting and linting)
+- Documentation workflow
+- Publishing releases
 
 ## To Cite
 
