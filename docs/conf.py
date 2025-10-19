@@ -131,5 +131,6 @@ html_theme_options: Dict[str, Any] = {
     "source_directory": "docs/",
 }
 html_static_path = ["_static"]
+html_css_files = ["title_resize.css"]
 
 html_context = {}

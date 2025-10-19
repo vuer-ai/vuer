@@ -142,7 +142,7 @@ async def show_heatmap(proxy):
 
 
 ```{admonition} The code below is also needed!
-Remember to add the `app.run()` at the end to launch the vuer session!
+Remember to add the `app.start()` at the end to launch the vuer session!
 all of the code snippets in this example, including the ones below, are
 parts of the script.
 ```
@@ -209,5 +209,5 @@ async def track_movement(event: ClientEvent, sess: VuerSession):
 Now finally, you can start the vuer app:
 
 ```python
-app.run()
+app.start()
 ```

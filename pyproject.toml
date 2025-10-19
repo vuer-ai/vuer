@@ -67,7 +67,7 @@ vuer-docs-build = "sphinx.cmd.build:main"
 allow-direct-references = true
 
 [tool.hatch.build]
-packages = ["src"]
+packages = ["src/vuer"]
 
 [tool.hatch.build.targets.wheel]
 

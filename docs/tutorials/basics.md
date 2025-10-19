@@ -1,4 +1,4 @@
-# Vuer Basics
+# Key Vuer Concepts
 
 `vuer.ai` has two main components: a server written in Python and a client app that runs in the web browser.
 
@@ -13,8 +13,8 @@ In other words, [`vuer.ai`](https://vuer.ai) offers a powerful, component-based 
     :maxdepth: 1
     :hidden:
 
-    Setting Up Your First Scene <basics/setting_a_scene.md>
-    Async Programming 101 <basics/async_programming.md>
+    Intro to Async Python<basics/async_programming.md>
+    Your First `vuer` Scene <basics/setting_a_scene.md>
     Simpe Life-Cycle <basics/simple_life_cycle.md>
     Setting Up SSL Proxy for WebSocket <basics/ssl_proxy_webxr.md>
     Serviing Dynamic Content <basics/adding_html_handler.md>

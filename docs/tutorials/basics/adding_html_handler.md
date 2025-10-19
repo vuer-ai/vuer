@@ -32,7 +32,7 @@ app.add_route("/dynamic", dynamic_html_handler, method="GET")
 pass
 
 # now run the server
-app.run()
+app.start()
 ```
 
 Now, if you visit the path [http://localhost:8012/dynamic](http://localhost:8012/dynamic)

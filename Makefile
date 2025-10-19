@@ -1,4 +1,4 @@
-.PHONY: docs preview-docs test clean
+.PHONY: docs preview-docs test clean clear
 
 docs:
 	sphinx-build -M html docs docs/_build
@@ -11,3 +11,6 @@ test:
 
 clean:
 	rm -rf docs/_build build dist *.egg-info
+
+clear:
+	rm -rf docs/_build
