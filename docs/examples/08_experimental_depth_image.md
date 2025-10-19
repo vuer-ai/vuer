@@ -63,5 +63,5 @@ async def on_camera(event: ClientEvent, send_fn):
 
 ```python
 app.add_handler("CAMERA_MOVE", on_camera)
-app.run()
+app.start()
 ```

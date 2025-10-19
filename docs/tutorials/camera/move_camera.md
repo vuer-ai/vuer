@@ -163,5 +163,5 @@ async def track_movement(event: ClientEvent, sess: VuerSession):
 ```python
 app.add_handler("CAMERA_VIEW", collect_render)
 app.add_handler("CAMERA_MOVE", track_movement)
-app.run()
+app.start()
 ```

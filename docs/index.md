@@ -1,4 +1,5 @@
-<h1 class="full-width" style="font-size: 49px">Welcome to <code style="font-size: 1.3em; background-clip: text; color: transparent; background-image: linear-gradient(to right, rgb(0,140,220), rgb(226,213,79), rgb(210,0,12));">vuer</code><span style="font-size: 0.3em; margin-left: -0.5em; margin-right:-0.4em;">｣</span></h1>
+<h1 class="full-width" style="font-size: 28px"><code style="font-size: 1.3em; margin-right:-0.4em; background-clip: text; color: transparent; background-image: linear-gradient(to right, rgb(0,140,220), rgb(226,213,79), rgb(210,0,12));">vuer</code>, An Event-Driven, Declarative Visualization Framework for Physical AI
+</h1>
 
 <link rel="stylesheet" href="_static/title_resize.css">
 
@@ -50,7 +51,7 @@ Vuer is built by researchers at MIT and UCSD in fields including robotics, compu
 To get a quick overview of what you can do with  <code style="font-size: 1.3em; background-clip: text; color: transparent; background-image: linear-gradient(to right, rgb(0,140,220), rgb(226,213,79), rgb(210,0,12));">vuer</code>, check out the following:
 
 - take a look at the basic tutorial or the tutorial for robotics:
-  - [Vuer Basics](tutorials/basics)
+  - [Introduction to Key Vuer Concepts](tutorials/basics)
   - [Tutorial for Roboticists](tutorials/robotics)
 - or try to take a look at the example gallery [here](examples/01_trimesh)
 

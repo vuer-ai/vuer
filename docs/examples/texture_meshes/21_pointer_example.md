@@ -55,5 +55,5 @@ async def on_add_marker(event: ClientEvent, sess: VuerSession):
     )
 
 
-# app.run()
+# app.start()
 ```
