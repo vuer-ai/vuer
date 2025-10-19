@@ -1,9 +1,9 @@
-.PHONY: docs preview-docs test clean clear
+.PHONY: docs preview test clean clear
 
 docs:
 	sphinx-build -M html docs docs/_build
 
-preview-docs:
+preview: docs
 	sphinx-autobuild --host 0.0.0.0 docs docs/_build/html
 
 test:

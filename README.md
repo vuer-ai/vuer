@@ -94,9 +94,9 @@ pip install -e '.[dev]'
 ### Common Tasks
 
 ```bash
-make docs          # Build documentation
-make preview-docs  # Live preview at http://0.0.0.0:8000
-make test          # Run tests
+make docs     # Build documentation
+make preview  # Build and live preview at http://0.0.0.0:8000
+make test     # Run tests
 make clean         # Clean build artifacts
 ```
 
@@ -113,11 +113,11 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed gu
 ```bibtex
 @software{vuer,
   author = {Ge Yang},
-  title = {{VUER}: A 3D Visualization and Data Collection Environment for Robot Learning},
+  title = {{VUER}: An Event-Driven, Declarative Visualization Toolkit for Robotics},
   version = {},
   publisher = {GitHub},
   url = {https://github.com/vuer-ai/vuer},
-  year = {2024}
+  year = {2025}
 }
 ```
 
