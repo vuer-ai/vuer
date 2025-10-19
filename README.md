@@ -1,4 +1,4 @@
-<h2>Vuer: Modern High-Performance Visualization for AI & Robotics in VR
+<h2>Vuer: An Event-Driven, Declarative Visualization Toolkit for GenAI and Robotics
 <br/>
 <img src="https://api.netlify.com/api/v1/badges/2df7f3ba-1a26-4047-b76a-d7401f907bb5/deploy-status" alt="Production">
 <a href="https://pypi.org/project/vuer/">
@@ -113,7 +113,7 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed gu
 ```bibtex
 @software{vuer,
   author = {Ge Yang},
-  title = {{VUER}: An Event-Driven, Declarative Visualization Toolkit for Robotics},
+  title = {{VUER}: An Event-Driven, Declarative Visualization Toolkit for GenAI and Robotics},
   version = {},
   publisher = {GitHub},
   url = {https://github.com/vuer-ai/vuer},
