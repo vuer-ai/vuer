@@ -12,12 +12,20 @@ class Event:
   An event is a message sent from the server to the client.
   """
 
-  ts: float
-  """
-    timestamp is a float representing the UTC datetime. Msgpack natively
-    supports this. `datetime`'s Datetime class is significantly more 
-    complex as it includes timezone information.
-    """
+  ts: float  #
+  # Timestamp is a float representing the UTC datetime. Msgpack natively
+  # supports this. `datetime`'s Datetime class is significantly more complex
+  # as it includes timezone information.
+
+  value: Optional[dict]  # value for client events
+
+  data: Optional[dict]  # data for server-side events
+
+  def __init__(self, ts: Optional[float] = None, **kwargs):
+    self.ts = Datetime.timestamp(Datetime.now()) if ts is None else ts / 1000
+
+    for key, value in kwargs.items():
+      setattr(self, key, value)
 
   def __eq__(self, etype):
     """
@@ -29,19 +37,13 @@ class Event:
 
 
 class ClientEvent(Event):
-  value = None
+  value: Optional[dict]  # client-side event payloads.
 
   def __repr__(self):
     return f"client<{self.etype}>({self.value})"
 
-  def __init__(self, etype=None, ts=None, **kwargs):
-    if ts is None:
-      self.ts = Datetime.timestamp(Datetime.now())
-    else:
-      self.ts = Datetime.fromtimestamp(ts / 1000)
-
-    self.etype = etype
-    self.__dict__.update(kwargs)
+  def __init__(self, **kwargs):
+    super().__init__(**kwargs)
 
     if self == "UPLOAD":
       import base64
@@ -62,25 +64,23 @@ INIT = InitEvent()
 
 
 class NullEvent(ClientEvent):
+  etype = "NULL"
+
   def __init__(self, **kwargs):
-    super().__init__(etype="NULL", **kwargs)
+    super().__init__(ts=None, **kwargs)
 
 
 NULL = NullEvent()
 
 
 class ServerEvent(Event):
-  def __init__(self, data, etype=None, ts: Union[Datetime, Timedelta] = None, **kwargs):
-    if ts is None:
-      self.ts = Datetime.timestamp(Datetime.now())
-    else:
-      self.ts = Datetime.fromtimestamp(ts / 1000)
-    self.data = data
+  data: Optional[dict]  # server-side event payloads
 
+  def __init__(self, data, etype: Optional[str] = None, ts: Optional[float] = None, **kwargs):
+    super().__init__(ts=ts, **kwargs)
+    self.data = data
     if etype is not None:
       self.etype = etype
-
-    self.__dict__.update(etype=self.etype, **kwargs)
 
   def _serialize(self):
     """
@@ -137,9 +137,8 @@ class Update(ServerEvent):
 
   etype = "UPDATE"
 
-  def __init__(self, *elements: Element, strict=False):
-    # tuple is not serializable
-    super().__init__({"nodes": elements}, strict=strict)
+  def __init__(self, *elements: Element, strict: bool = False):
+    super().__init__(data={"nodes": elements}, strict=strict)
 
   def _serialize(self):
     return {
@@ -171,13 +170,8 @@ class Add(ServerEvent):
 
   etype = "ADD"
 
-  def __init__(self, *elements: List[Element], to: str = None):
-    # tuple is not serializable
-    event_data = dict(
-      nodes=elements,
-      to=to,
-    )
-    super().__init__(data=event_data)
+  def __init__(self, *elements: Element, to: Optional[str] = None):
+    super().__init__(data={"nodes": elements, "to": to})
 
   def _serialize(self):
     return {
@@ -209,14 +203,8 @@ class Upsert(ServerEvent):
 
   etype = "UPSERT"
 
-  def __init__(self, *elements: List[Element], to: str = None, strict=False):
-    # tuple is not serializable
-    event_data = dict(
-      nodes=elements,
-      to=to,
-      strict=strict,
-    )
-    super().__init__(data=event_data)
+  def __init__(self, *elements: Element, to: Optional[str] = None, strict: bool = False):
+    super().__init__(data={"nodes": elements, "to": to, "strict": strict})
 
   def _serialize(self):
     return {
@@ -230,14 +218,12 @@ class Upsert(ServerEvent):
 
 class Remove(ServerEvent):
   """
-  An Update ServerEvent is sent to the client when the server wants to update the client's state.
-  It appends the data sent in the Update ServerEvent to the client's current state.
+  REMOVE Operator is used to remove nodes from the scene graph by their keys.
   """
 
   etype = "REMOVE"
 
-  def __init__(self, *keys: List[str], **kwargs):
-    # tuple is not serializable
+  def __init__(self, *keys: str, **kwargs):
     super().__init__(data={"keys": keys}, **kwargs)
 
 
@@ -274,10 +260,9 @@ class Frame(ServerEvent):
   A higher-level ServerEvent that wraps other ServerEvents
   """
 
-  ServerEvent: ServerEvent
   etype = "FRAME"
 
-  def __init__(self, data: ServerEvent, frame_rate=60.0, **kwargs):
+  def __init__(self, data: ServerEvent, frame_rate: float = 60.0, **kwargs):
     """Frame object returns a NOOP client event, to keep the on_socket generator
     running at a constant rate.
 
@@ -310,8 +295,8 @@ class ServerRPC(ServerEvent):
   # we can override this in the constructor to control the behavior on the front end.
   rtype = "RPC_RESPONSE@{uuid}"
 
-  def __init__(self, data, uuid=None, **kwargs):
-    self.uuid = uuid or str(uuid4())
+  def __init__(self, data, uuid: Optional[str] = None, **kwargs):
+    self.uuid = uuid if uuid is not None else str(uuid4())
     super().__init__(data, **kwargs)
 
 
