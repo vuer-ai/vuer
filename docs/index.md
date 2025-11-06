@@ -122,6 +122,7 @@ For a comprehensive list of data types, please refer to the [API documentation o
    Movable Handles <examples/18_movable.md>
    Hand Tracking <examples/19_hand_tracking.md>
    Body Tracking <examples/25_body_tracking.md>
+   WebXR Mesh Detection <examples/26_webxr_mesh.md>
    Quest 3 Controllers <examples/20_motion_controllers.md>
    3D Movie <examples/21_3D_movie.md>
    2D/3D Text <examples/22_3d_text.md>

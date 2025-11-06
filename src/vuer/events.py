@@ -354,6 +354,37 @@ class MjRender(ServerRPC):
     self.rtype = f"MJ_RENDER_RESPONSE@{self.uuid}"
 
 
+class GetWebXRMesh(ServerRPC):
+  """
+  Request WebXR mesh data from the client.
+
+  This RPC event is used to request real-world mesh detection data
+  from WebXR AR sessions. The client will respond with mesh data
+  including vertices, indices, semantic labels, and transformation matrices.
+
+  Example Usage::
+
+      # Request mesh data from the client
+      mesh_data = await session.get_webxr_mesh(key="webxr-mesh")
+
+      # Access the mesh data
+      for mesh in mesh_data.value['meshes']:
+          vertices = mesh['vertices']
+          indices = mesh['indices']
+          semantic_label = mesh.get('semanticLabel')
+          matrix = mesh['matrix']
+
+  :param key: The key of the WebXRMesh component to query (default: "webxr-mesh")
+  :param kwargs: Additional keyword arguments
+  """
+
+  etype = "GET_WEBXR_MESH"
+
+  def __init__(self, *, key: str = "webxr-mesh", **kwargs):
+    super().__init__(data=kwargs)
+    self.key = key
+    self.rtype = f"GET_WEBXR_MESH_RESPONSE@{self.uuid}"
+
 if __name__ == "__main__":
   # e = Frame @ {"hey": "yo"}
   # print(e)
