@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <link rel="stylesheet" type="text/css" href="/assets/static/pages_index-c6b9ae3c.C9RsCuIc.css">
+        <meta charset="UTF-8" />
+        
+    <title>Vuer UIKit | FortyFive Labs</title><meta property="og:title" content="Vuer UIKit | FortyFive Labs" />
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    
+    
+    <meta name="description" content="Powering the world&#039;s most advanced Physical AI research and education" /><meta property="og:description" content="Powering the world&#039;s most advanced Physical AI research and education" />
+    
+  
+      </head>
+      <body>
+        
+        <div id="root"><script>((defaultBaseTheme, defaultIsLiquid, storageKey, attribute, themes, value, forcedTheme, enableSystem, enableColorScheme) => {
+  const el = document.documentElement;
+  function updateDOM(theme) {
+    const attributes = Array.isArray(attribute) ? attribute : [attribute];
+    attributes.forEach((attr) => {
+      const isClass = attr === "class";
+      const classes = isClass && value ? themes.map((t) => value[t] || t) : themes;
+      if (isClass) {
+        el.classList.remove(...classes);
+        el.classList.add(value && value[theme] ? value[theme] : theme);
+      } else {
+        el.setAttribute(attr, theme);
+      }
+    });
+    setColorScheme(theme);
+  }
+  function setColorScheme(theme) {
+    if (enableColorScheme) {
+      const isDark = theme.includes("dark");
+      el.style.colorScheme = isDark ? "dark" : "light";
+    }
+  }
+  function computeTheme2(baseTheme, isLiquid, systemIsDark) {
+    let resolvedBase;
+    if (baseTheme === "system") {
+      resolvedBase = systemIsDark ? "dark" : "light";
+    } else {
+      resolvedBase = baseTheme;
+    }
+    return isLiquid ? `liquid-${resolvedBase}` : resolvedBase;
+  }
+  function getStoredState() {
+    try {
+      const storedBase = localStorage.getItem(`${storageKey}-base`);
+      const storedLiquid = localStorage.getItem(`${storageKey}-liquid`);
+      if (storedBase !== null && storedLiquid !== null) {
+        return {
+          baseTheme: storedBase,
+          isLiquid: storedLiquid === "true"
+        };
+      }
+      return {
+        baseTheme: defaultBaseTheme,
+        isLiquid: defaultIsLiquid
+      };
+    } catch {
+      return {
+        baseTheme: "system",
+        isLiquid: true
+      };
+    }
+  }
+  if (forcedTheme) {
+    updateDOM(forcedTheme);
+  } else {
+    const { baseTheme, isLiquid } = getStoredState();
+    const hasStoredBase = localStorage.getItem(`${storageKey}-base`) !== null;
+    const hasStoredLiquid = localStorage.getItem(`${storageKey}-liquid`) !== null;
+    if (!hasStoredBase || !hasStoredLiquid) {
+      try {
+        if (!hasStoredBase) {
+          localStorage.setItem(`${storageKey}-base`, baseTheme);
+        }
+        if (!hasStoredLiquid) {
+          localStorage.setItem(`${storageKey}-liquid`, String(isLiquid));
+        }
+      } catch {
+      }
+    }
+    const systemIsDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const computedTheme = computeTheme2(baseTheme, isLiquid, systemIsDark);
+    updateDOM(computedTheme);
+  }
+})("system",true,"vuer-web-theme","class",["light","dark","liquid-light","liquid-dark"],null,null,true,false)</script><div class="space-y-xl"><div class="flex items-center gap-4"><h1 class="flex-1 text-uk-lg leading-uk-lg font-medium text-text-highlight">Community</h1><div data-input="true" class="flex gap-md items-center overflow-hidden bg-bg-secondary hover:bg-bg-secondary/80 has-[input:focus]:bg-bg-secondary h-8 text-uk-md rounded-[11px] [&amp;_.input-slot&gt;svg:not([class*=&#x27;size-&#x27;])]:size-4 px-md"><input spellCheck="false" placeholder="Search" class="w-full h-full outline-none data-[side=right]:text-right data-[side=center]:text-center [input[type=number]]:font-number-input [&amp;::-webkit-inner-spin-button]:appearance-none [&amp;::-webkit-outer-spin-button]:appearance-none disabled:cursor-not-allowed" name="text"/><div data-side="left" class="input-slot cursor-text shrink-0 order-[0] text-text-tertiary data-[side=left]:-order-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg></div></div></div><div class="grid w-full grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4"><div data-slot="card" class="relative flex flex-col rounded-uk-xl bg-bg-primary liquid-dark:liquid-dark-bg liquid-dark:border-[0.9px] liquid-dark:border-[rgba(85,85,85,100)] liquid-light:liquid-light-bg liquid-light:border-[0.8px] liquid-light:border-[white] p-0 w-full transition-all duration-200 border border-transparent" style="height:240px;max-width:520px"><div class="relative w-full h-43 overflow-hidden rounded-uk-md bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse"></div><div data-slot="card-content" class="p-lg flex flex-col gap-md"><div class="flex flex-row justify-between"><div class="h-5 bg-gray-200 rounded animate-pulse flex-1 mr-4"></div><div class="w-4 h-4 bg-gray-200 rounded animate-pulse"></div></div><div class="flex flex-row justify-between"><div class="h-4 bg-gray-200 rounded animate-pulse w-20"></div><div class="h-4 bg-gray-200 rounded animate-pulse w-24"></div></div></div></div><div data-slot="card" class="relative flex flex-col rounded-uk-xl bg-bg-primary liquid-dark:liquid-dark-bg liquid-dark:border-[0.9px] liquid-dark:border-[rgba(85,85,85,100)] liquid-light:liquid-light-bg liquid-light:border-[0.8px] liquid-light:border-[white] p-0 w-full transition-all duration-200 border border-transparent" style="height:240px;max-width:520px"><div class="relative w-full h-43 overflow-hidden rounded-uk-md bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse"></div><div data-slot="card-content" class="p-lg flex flex-col gap-md"><div class="flex flex-row justify-between"><div class="h-5 bg-gray-200 rounded animate-pulse flex-1 mr-4"></div><div class="w-4 h-4 bg-gray-200 rounded animate-pulse"></div></div><div class="flex flex-row justify-between"><div class="h-4 bg-gray-200 rounded animate-pulse w-20"></div><div class="h-4 bg-gray-200 rounded animate-pulse w-24"></div></div></div></div><div data-slot="card" class="relative flex flex-col rounded-uk-xl bg-bg-primary liquid-dark:liquid-dark-bg liquid-dark:border-[0.9px] liquid-dark:border-[rgba(85,85,85,100)] liquid-light:liquid-light-bg liquid-light:border-[0.8px] liquid-light:border-[white] p-0 w-full transition-all duration-200 border border-transparent" style="height:240px;max-width:520px"><div class="relative w-full h-43 overflow-hidden rounded-uk-md bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse"></div><div data-slot="card-content" class="p-lg flex flex-col gap-md"><div class="flex flex-row justify-between"><div class="h-5 bg-gray-200 rounded animate-pulse flex-1 mr-4"></div><div class="w-4 h-4 bg-gray-200 rounded animate-pulse"></div></div><div class="flex flex-row justify-between"><div class="h-4 bg-gray-200 rounded animate-pulse w-20"></div><div class="h-4 bg-gray-200 rounded animate-pulse w-24"></div></div></div></div><div data-slot="card" class="relative flex flex-col rounded-uk-xl bg-bg-primary liquid-dark:liquid-dark-bg liquid-dark:border-[0.9px] liquid-dark:border-[rgba(85,85,85,100)] liquid-light:liquid-light-bg liquid-light:border-[0.8px] liquid-light:border-[white] p-0 w-full transition-all duration-200 border border-transparent" style="height:240px;max-width:520px"><div class="relative w-full h-43 overflow-hidden rounded-uk-md bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse"></div><div data-slot="card-content" class="p-lg flex flex-col gap-md"><div class="flex flex-row justify-between"><div class="h-5 bg-gray-200 rounded animate-pulse flex-1 mr-4"></div><div class="w-4 h-4 bg-gray-200 rounded animate-pulse"></div></div><div class="flex flex-row justify-between"><div class="h-4 bg-gray-200 rounded animate-pulse w-20"></div><div class="h-4 bg-gray-200 rounded animate-pulse w-24"></div></div></div></div><div data-slot="card" class="relative flex flex-col rounded-uk-xl bg-bg-primary liquid-dark:liquid-dark-bg liquid-dark:border-[0.9px] liquid-dark:border-[rgba(85,85,85,100)] liquid-light:liquid-light-bg liquid-light:border-[0.8px] liquid-light:border-[white] p-0 w-full transition-all duration-200 border border-transparent" style="height:240px;max-width:520px"><div class="relative w-full h-43 overflow-hidden rounded-uk-md bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse"></div><div data-slot="card-content" class="p-lg flex flex-col gap-md"><div class="flex flex-row justify-between"><div class="h-5 bg-gray-200 rounded animate-pulse flex-1 mr-4"></div><div class="w-4 h-4 bg-gray-200 rounded animate-pulse"></div></div><div class="flex flex-row justify-between"><div class="h-4 bg-gray-200 rounded animate-pulse w-20"></div><div class="h-4 bg-gray-200 rounded animate-pulse w-24"></div></div></div></div><div data-slot="card" class="relative flex flex-col rounded-uk-xl bg-bg-primary liquid-dark:liquid-dark-bg liquid-dark:border-[0.9px] liquid-dark:border-[rgba(85,85,85,100)] liquid-light:liquid-light-bg liquid-light:border-[0.8px] liquid-light:border-[white] p-0 w-full transition-all duration-200 border border-transparent" style="height:240px;max-width:520px"><div class="relative w-full h-43 overflow-hidden rounded-uk-md bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse"></div><div data-slot="card-content" class="p-lg flex flex-col gap-md"><div class="flex flex-row justify-between"><div class="h-5 bg-gray-200 rounded animate-pulse flex-1 mr-4"></div><div class="w-4 h-4 bg-gray-200 rounded animate-pulse"></div></div><div class="flex flex-row justify-between"><div class="h-4 bg-gray-200 rounded animate-pulse w-20"></div><div class="h-4 bg-gray-200 rounded animate-pulse w-24"></div></div></div></div><div data-slot="card" class="relative flex flex-col rounded-uk-xl bg-bg-primary liquid-dark:liquid-dark-bg liquid-dark:border-[0.9px] liquid-dark:border-[rgba(85,85,85,100)] liquid-light:liquid-light-bg liquid-light:border-[0.8px] liquid-light:border-[white] p-0 w-full transition-all duration-200 border border-transparent" style="height:240px;max-width:520px"><div class="relative w-full h-43 overflow-hidden rounded-uk-md bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse"></div><div data-slot="card-content" class="p-lg flex flex-col gap-md"><div class="flex flex-row justify-between"><div class="h-5 bg-gray-200 rounded animate-pulse flex-1 mr-4"></div><div class="w-4 h-4 bg-gray-200 rounded animate-pulse"></div></div><div class="flex flex-row justify-between"><div class="h-4 bg-gray-200 rounded animate-pulse w-20"></div><div class="h-4 bg-gray-200 rounded animate-pulse w-24"></div></div></div></div><div data-slot="card" class="relative flex flex-col rounded-uk-xl bg-bg-primary liquid-dark:liquid-dark-bg liquid-dark:border-[0.9px] liquid-dark:border-[rgba(85,85,85,100)] liquid-light:liquid-light-bg liquid-light:border-[0.8px] liquid-light:border-[white] p-0 w-full transition-all duration-200 border border-transparent" style="height:240px;max-width:520px"><div class="relative w-full h-43 overflow-hidden rounded-uk-md bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse"></div><div data-slot="card-content" class="p-lg flex flex-col gap-md"><div class="flex flex-row justify-between"><div class="h-5 bg-gray-200 rounded animate-pulse flex-1 mr-4"></div><div class="w-4 h-4 bg-gray-200 rounded animate-pulse"></div></div><div class="flex flex-row justify-between"><div class="h-4 bg-gray-200 rounded animate-pulse w-20"></div><div class="h-4 bg-gray-200 rounded animate-pulse w-24"></div></div></div></div></div></div></div>
+        
+        <script id="vike_pageContext" type="application/json">{"_urlRewrite":null,"pageId":"!/pages/community","routeParams":{},"data":{"theme":"!undefined"}}</script>
+        <script id="vike_globalContext" type="application/json">{}</script>
+        <script src="/assets/entries/entry-client-routing.B7ypNdPe.js" type="module" async></script>
+        <link rel="modulepreload" href="/assets/entries/pages_community.D6xPEiVr.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-Bxh3mmdk.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-liTnN7pR.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-DIdyZ80t.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-hCkhtlld.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-CdabVADL.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-DK86WuFI.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-BY7XLEYA.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-B3ucfPx8.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-D9z31qZm.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-BXl3LOEh.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-CkhHjPPW.js" as="script" type="text/javascript">
+      </body>
+    </html>
