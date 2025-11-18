@@ -38,7 +38,7 @@ async def main(session: VuerSession):
     await session.sleep(0.1)
 ```
 
-<iframe src="https://vuer.ai/?background=131416,fff&collapseMenu=true&initCamPos=2.8,2.2,2.5&scene=3gAEqGNoaWxkcmVukt4AB6hjaGlsZHJlbpCjdGFnpFVyZGaja2V5rHBlcnNldmVyYW5jZaNzcmPZRGh0dHBzOi8vZG9jcy52dWVyLmFpL2VuL2xhdGVzdC9fc3RhdGljL3BlcnNldmVyYW5jZS9yb3Zlci9tMjAyMC51cmRmq2pvaW50VmFsdWVz3gAAqHJvdGF0aW9uk8s%2F%2BR64YAAAAAAAqHBvc2l0aW9ukwAAy7%2F4AAAAAAAA3gAHqGNoaWxkcmVukKN0YWekVXJkZqNrZXmvbWFycy1oZWxpY29wdGVyo3NyY9lAaHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvcGVyc2V2ZXJhbmNlL21ocy9NSFMudXJkZqtqb2ludFZhbHVlc94AAKhyb3RhdGlvbpPLP%2FkeuGAAAAAAAKhwb3NpdGlvbpMAyz%2FR64UgAAAAyz%2FgAAAAAAAArGh0bWxDaGlsZHJlbpCrcmF3Q2hpbGRyZW6QqmJnQ2hpbGRyZW6Q" width="100%" height="400px" frameborder="0"></iframe>
+<iframe src="https://vuer.ai/?background=131416,fff&collapseMenu=true&initCamPos=2.8,2.2,2.5&scene=gahjaGlsZHJlbpKHqGNoaWxkcmVukKN0YWekVXJkZqNrZXmscGVyc2V2ZXJhbmNlo3NyY9lEaHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvcGVyc2V2ZXJhbmNlL3JvdmVyL20yMDIwLnVyZGaram9pbnRWYWx1ZXOAqHJvdGF0aW9uk8s%2F%2BR64YAAAAAAAqHBvc2l0aW9ukwAAy7%2F4AAAAAAAAh6hjaGlsZHJlbpCjdGFnpFVyZGaja2V5r21hcnMtaGVsaWNvcHRlcqNzcmPZQGh0dHBzOi8vZG9jcy52dWVyLmFpL2VuL2xhdGVzdC9fc3RhdGljL3BlcnNldmVyYW5jZS9taHMvTUhTLnVyZGaram9pbnRWYWx1ZXOAqHJvdGF0aW9uk8s%2F%2BR64YAAAAAAAqHBvc2l0aW9ukwDLP9HrhSAAAADLP%2BAAAAAAAAA%3D" width="100%" height="400px" frameborder="0"></iframe>
 
 Vuer is built by researchers at MIT and UCSD in fields including robotics, computer vision, and computer graphics.
 
@@ -122,6 +122,7 @@ For a comprehensive list of data types, please refer to the [API documentation o
    Movable Handles <examples/18_movable.md>
    Hand Tracking <examples/19_hand_tracking.md>
    Body Tracking <examples/25_body_tracking.md>
+   WebXR Mesh Detection <examples/26_webxr_mesh.md>
    Quest 3 Controllers <examples/20_motion_controllers.md>
    3D Movie <examples/21_3D_movie.md>
    2D/3D Text <examples/22_3d_text.md>

@@ -148,6 +148,63 @@ class VuerSession:
 
     return await self.vuer.rpc(self.CURRENT_WS_ID, event, ttl=ttl)
 
+  async def get_webxr_mesh(self, key: str = "webxr-mesh", ttl=2.0) -> ClientEvent:
+    """
+    Request WebXR mesh data from the client.
+
+    This method sends a GET_WEBXR_MESH RPC request to the client and waits for
+    a response containing the detected environmental meshes from the WebXR AR session.
+
+    The response contains mesh data including vertices, indices, semantic labels,
+    and transformation matrices for each detected mesh.
+
+    Usage Example::
+
+        from vuer import Vuer, VuerSession
+        from vuer.schemas import WebXRMesh, Scene
+        from asyncio import sleep
+
+        app = Vuer()
+
+        @app.spawn(start=True)
+        async def main(session: VuerSession):
+            session.set @ Scene(
+                children=[WebXRMesh(key="webxr-mesh", stream=False)]
+            )
+
+            await sleep(2)  # Wait for meshes to be detected
+
+            # Request mesh data on-demand
+            mesh_data = await session.get_webxr_mesh(key="webxr-mesh")
+
+            meshes = mesh_data.value.get('meshes', [])
+            print(f"Retrieved {len(meshes)} meshes")
+
+            for mesh in meshes:
+                vertices = mesh['vertices']
+                indices = mesh['indices']
+                semantic_label = mesh.get('semanticLabel', 'unknown')
+                matrix = mesh['matrix']
+
+                print(f"Mesh: {len(vertices)/3:.0f} vertices, label={semantic_label}")
+
+    :param key: The key of the WebXRMesh component to query (default: "webxr-mesh")
+    :param ttl: The time to live for the handler in seconds. If no response is received
+                within this time, a TimeoutError is raised (default: 2.0)
+    :return: ClientEvent containing mesh data in event.value['meshes']
+    :raises asyncio.TimeoutError: If the client doesn't respond within ttl seconds
+    :raises AssertionError: If websocket session is missing
+    """
+    assert self.CURRENT_WS_ID is not None, (
+      "Websocket session is missing. CURRENT_WS_ID is None."
+    )
+
+    from vuer.events import GetWebXRMesh
+
+    event = GetWebXRMesh(key=key)
+
+    return await self.vuer.rpc(self.CURRENT_WS_ID, event, ttl=ttl)
+
   def send(self, event: ServerEvent) -> None:
     """
     Sending the event through the uplink queue.
