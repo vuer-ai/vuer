@@ -3,28 +3,32 @@ from contextlib import nullcontext
 
 from cmx import doc
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", None)
+MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
 doc @ """
 # Showing Point Clouds Programmatically and Fast💨
 
-This example shows you two ways to load a point cloud. In the first example, you serve the point cloud as an `ply` file, and have the webclient read directly from your file system. This approach, however can be a bit slow, and won't work with point cloud data that are updated at real time. In the second example, you load the point cloud into python and then send the parsed vertices and the color information via the `PointCloud` component.
+This example demonstrates **two methods** for displaying point clouds in Vuer.
 
-We apply a few tricks to make the point cloud transmit faster. See the [Why is it so much faster?](#why-is-it-so-much-faster) section for more details.
-
-You should expect to see a scene that looks like the following:
 ![pointcloud](figures/pointcloud.png)
 
-The second point cloud should load **significantly** faster than the first one, due to its smaller size. We use half-precision for the vertices, and Uint8 for the colors. This cuts the overall size by half.
+| Method | Component | Use Case |
+|--------|-----------|----------|
+| PLY file | `Ply(src=...)` | Static files served from disk |
+| Programmatic | `PointCloud(vertices=..., colors=...)` | Real-time streaming, dynamic data |
 
-## Why is it so much faster?
 
 ```{admonition} Why is it so much faster?
 :class: tip
 We accelerate point cloud view by using a custom, half-precision format for the vertices, and Uint8 for the colors. This cuts the overall size by half.
-
-Alternative is to use compression algorithms designed specifically for geometric data (such as [Draco](https://google.github.io/draco/), or just simple LZ4 (or LZW). For depth images, LZW tend to work well due to near-by pixels being highly correlated.
 ```
+
+```{admonition} Alternative Compression
+:class: note
+For even better compression, consider geometric compression algorithms like [Draco](https://google.github.io/draco/) or general-purpose algorithms like LZ4. For depth images, LZW works well due to spatial correlation between neighboring pixels.
+```
+
+## Code Example
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
@@ -35,12 +39,12 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
     from vuer import Vuer
     from vuer.events import Set
-    from vuer.schemas import DefaultScene, Ply, PointCloud
+    from vuer.schemas import DefaultScene, Ply, PointCloud, OrbitControls
 
     assets_folder = Path(__file__).parent / "../../../assets"
     test_file = "static_3d/porsche.ply"
 
-    # trimesh has issue loading large point clouds.
+    # Load point cloud using Open3D (better for large files than trimesh)
     pcd = o3d.io.read_point_cloud(str(assets_folder / test_file))
 
     app = Vuer(static_root=assets_folder)
@@ -49,11 +53,13 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     async def main(proxy):
         proxy @ Set(
             DefaultScene(
+                # Method 1: Load PLY file from static server
                 Ply(
                     src="http://localhost:8012/static/" + test_file,
                     size=0.008,
                     position=[0, 0, 5],
                 ),
+                # Method 2: Send vertices and colors directly via websocket
                 PointCloud(
                     key="pointcloud",
                     vertices=np.array(pcd.points),
@@ -61,8 +67,10 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                     position=[0, 0, 0],
                     size=0.008,
                 ),
-                # y-up
                 up=[0, 1, 0],
+                bgChildren=[
+                    OrbitControls(key="OrbitControls")
+                ],
             ),
         )
 

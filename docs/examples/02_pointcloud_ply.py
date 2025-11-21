@@ -8,7 +8,7 @@ MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 doc @ """
 # Point Cloud via Ply Component
 
-This example shows you how to load a `pcd` file.
+This example shows you how to load a `ply` file.
 
 You should expect to see a scene that looks like the following:
 ![pointcloud](figures/pointcloud_ply.png)
@@ -32,7 +32,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     import numpy as np
 
     from vuer import Vuer, VuerSession
-    from vuer.schemas import Ply, Scene
+    from vuer.schemas import Ply, Scene, OrbitControls
 
     pixelnerf = "pointclouds/pixelnerf.ply"
 
@@ -41,9 +41,18 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     @app.spawn(start=True)
     async def main(sess: VuerSession):
         # setting the toneMappingExposure to a lower value to make the color look nicer.
-        sess.set @ Scene(toneMappingExposure=0.4)
+        sess.set @ Scene(
+            toneMappingExposure=0.4,
+            bgChildren=[
+                OrbitControls(key="OrbitControls")
+            ],
+        )
 
-        sess.upsert @ Ply(src="http://localhost:8012/static/" + pixelnerf, size=0.008, rotation=[-0.5 * np.pi, 0, -0.5 * np.pi])
+        sess.upsert @ Ply(
+            src="http://localhost:8012/static/" + pixelnerf,
+            size=0.008,
+            rotation=[-0.5 * np.pi, 0, -0.5 * np.pi]
+        )
 
         while True:
             await sleep(1)

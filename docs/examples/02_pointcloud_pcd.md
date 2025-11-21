@@ -11,14 +11,12 @@ import os
 from asyncio import sleep
 
 from vuer import Vuer, VuerSession
+from vuer.schemas import Pcd
 
 f3rm_ycb_1 = "pointclouds/f3rm_ycb_1.pcd"
 f3rm_ycb_2 = "pointclouds/f3rm_ycb_2.pcd"
 
-app = Vuer(
-    static_root=os.getcwd() + "/../../../assets"
-)
-
+app = Vuer(static_root=os.getcwd() + "/../../../assets")
 
 @app.spawn(start=True)
 async def main(sess: VuerSession):
