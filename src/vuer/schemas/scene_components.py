@@ -1307,7 +1307,7 @@ class DefaultScene(Scene):
         show_helper=True,
         startStep=0,
         endStep=None,
-        # default to z-up
+        # default to y-up
         up=[0, 1, 0],
         grid=True,
         **kwargs,
