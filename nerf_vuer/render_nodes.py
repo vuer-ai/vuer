@@ -2,6 +2,7 @@
 RenderComponents are view components that respond to camera movements in the frontend
 that returns rendered images
 """
+
 import base64
 from abc import abstractmethod
 from collections import deque
@@ -147,6 +148,7 @@ class RGBA(Singleton):
             **pipeline,
         }
 
+
 def hash_safe(func):
     def wrap(*args, **kwargs):
         _args = []
@@ -161,6 +163,7 @@ def hash_safe(func):
         return func(*_args, **kwargs)
 
     return wrap
+
 
 @hash_safe
 @lru_cache(maxsize=1)
@@ -177,7 +180,6 @@ def _get_colormap(colormap, invert=False, useClip=True, clip: tuple = None, gain
     cmap = cm.get_cmap(colormap + "_r" if invert else colormap)
 
     def map_color(x, mask=None):
-
         if normalize:
             if mask is None or mask.sum() == 0:
                 min, max = x.min(), x.max()
@@ -274,7 +276,6 @@ class FeatA(Singleton):
         return {"raw_features": raw_features, **pipeline}
 
     def features_heatmap(self, raw_features, raw_accumulation, settings, **pipeline):
-
         print("raw_features.shape:", raw_features.shape)
         print(settings)
 

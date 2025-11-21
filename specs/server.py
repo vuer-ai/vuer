@@ -6,14 +6,14 @@ from pandas import DataFrame
 
 from vuer import Vuer
 from vuer.events import Set, Update, Frame
-from vuer.schemas import Scene, Ply, Gripper, SkeletalGripper, Movable, Urdf
+from vuer.schemas import Scene, Urdf
 
 doc = Vuer(
     "ws://localhost:8012",
     domain="https://dash.ml/demos/vqn-dash/three",
     reconnect=True,
     debug=True,
-    static_root="/Users/ge/mit/cmx-python/examples/three/gabe_go1/"
+    static_root="/Users/ge/mit/cmx-python/examples/three/gabe_go1/",
 )
 
 joint_mapping = {
@@ -39,10 +39,10 @@ def row2dict(row):
 import pickle
 
 with open("log.pkl", "rb") as f:
-    cfg, traj = pickle.load(f)['hardware_closed_loop']
+    cfg, traj = pickle.load(f)["hardware_closed_loop"]
     df = DataFrame(traj[:-1])
 
-    df_joint = np.concatenate(df['joint_pos_target'].values)
+    df_joint = np.concatenate(df["joint_pos_target"].values)
 
 
 @doc.bind(start=True)
@@ -64,7 +64,7 @@ async def show_heatmap():
                 "RL_thigh_joint": 0.7853981634,
                 "RR_calf_joint": -1.5707963268,
                 "RR_hip_joint": -0.0,
-                "RR_thigh_joint": 0.7853981634
+                "RR_thigh_joint": 0.7853981634,
             },
             position=[0, 0.4, 0],
             rotation=[-0.5 * np.pi, 0, -0.5 * np.pi],
@@ -79,7 +79,7 @@ async def show_heatmap():
         i += 1
         phase = 0.1 * np.pi * i / 50
         pinch = 0.033 * (i % 30)
-        position = [0.2 * np.sin(phase), .2, 0.2 * np.cos(phase)]
+        position = [0.2 * np.sin(phase), 0.2, 0.2 * np.cos(phase)]
         jointValues = row2dict(df_joint[i % len(df_joint)])
         print(jointValues)
 

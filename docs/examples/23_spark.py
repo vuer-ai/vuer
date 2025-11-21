@@ -21,15 +21,13 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
 
     from vuer import Vuer, VuerSession
-    from vuer.events import Set, ClientEvent
-    from vuer.schemas import DefaultScene, Obj, SparkSplats
+    from vuer.schemas import SparkSplats
 
     app = Vuer(static_root=f"{Path(__file__).parent}/../_static/live_demo/spark")
 
     # use `start=True` to start the app immediately
     @app.spawn(start=True)
     async def main(session: VuerSession):
-
         session.upsert(
             SparkSplats(
                 key="spark-splats",
@@ -42,7 +40,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
         while True:
             await sleep(1)
-
 
 
 doc.flush()

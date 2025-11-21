@@ -36,21 +36,14 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
     pixelnerf = "pointclouds/pixelnerf.ply"
 
-    app = Vuer(
-        static_root=os.getcwd() + "/../../../assets"
-    )
-
+    app = Vuer(static_root=os.getcwd() + "/../../../assets")
 
     @app.spawn(start=True)
     async def main(sess: VuerSession):
         # setting the toneMappingExposure to a lower value to make the color look nicer.
         sess.set @ Scene(toneMappingExposure=0.4)
 
-        sess.upsert @ Ply(
-            src="http://localhost:8012/static/" + pixelnerf,
-            size=0.008,
-            rotation=[- 0.5 * np.pi, 0, -0.5 * np.pi]
-        )
+        sess.upsert @ Ply(src="http://localhost:8012/static/" + pixelnerf, size=0.008, rotation=[-0.5 * np.pi, 0, -0.5 * np.pi])
 
         while True:
             await sleep(1)

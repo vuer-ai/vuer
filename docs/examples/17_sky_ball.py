@@ -1,6 +1,4 @@
 from cmx import doc
-from pathlib import Path
-from cmx import doc
 import os
 from contextlib import nullcontext
 
@@ -26,7 +24,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     import numpy as np
 
     from vuer import Vuer, VuerSession
-    from vuer.schemas import DefaultScene, Arrow, Sphere
+    from vuer.schemas import DefaultScene, Sphere
 
     app = Vuer(static_root="figures")
 
@@ -41,7 +39,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         rotation=[0.5 * np.pi, 0, 0],
     )
 
-
     @app.spawn(start=True)
     async def main(proxy: VuerSession):
         proxy.set @ DefaultScene(sphere)
@@ -49,5 +46,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         # keep the main session alive.
         while True:
             await sleep(10)
+
 
 doc.flush()

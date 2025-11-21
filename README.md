@@ -95,9 +95,9 @@ pip install -e '.[dev]'
 
 ```bash
 make docs     # Build documentation
-make preview  # Build and live preview at http://0.0.0.0:8000
+make preview  # Build and live preview at http://localhost:8000/
 make test     # Run tests
-make clean         # Clean build artifacts
+make clean    # Clean build artifacts
 ```
 
 ### Contributing

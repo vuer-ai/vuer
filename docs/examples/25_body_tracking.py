@@ -71,7 +71,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
     app = Vuer()
 
-
     @app.add_handler("BODY_TRACKING_MOVE")
     async def on_body_move(event, session):
         """
@@ -89,7 +88,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 "matrix_len=",
                 len(first_data.get("matrix", [])) if first_data else None,
             )
-
 
     @app.spawn(start=True)
     async def main(session: VuerSession):
@@ -111,6 +109,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         # Keep the session alive
         while True:
             await sleep(1)
+
 
 doc @ """
 

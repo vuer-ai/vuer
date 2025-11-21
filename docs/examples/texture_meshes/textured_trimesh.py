@@ -17,7 +17,7 @@ with doc, doc.skip:
 
     from vuer import Vuer
     from vuer.events import Set
-    from vuer.schemas import Obj, DefaultScene, TriMesh, SceneBackground
+    from vuer.schemas import DefaultScene, TriMesh, SceneBackground
 
     assets_folder = Path(__file__).parent / "../../../../assets"
     test_file = "static_3d/armadillo_midres.obj"
@@ -38,7 +38,6 @@ with doc, doc.skip:
     uv = xyz[:, :2]  # take the x, y coordinates
     uv -= uv.min(axis=0)  # normalize the uv coordinates to 0 - 1
     uv /= uv.max(axis=0)
-
 
     # use `start=True` to start the app immediately
     @app.spawn(start=True)
@@ -64,6 +63,7 @@ with doc, doc.skip:
 
         while True:
             await sleep(0.016)
+
 
 doc @ """
 Now, by passing in a repeat parameter, you can repeat the texture on the mesh.

@@ -29,11 +29,13 @@ we offer the synchronous `grab_render` RPC api. This api is only available in th
 This should not print anything because we set the `CameraView` to stream="ondemand" mode.
 """
 with doc, doc.skip:
+
     @app.add_handler("CAMERA_VIEW")
     async def collect_render(event: ClientEvent, sess: VuerSession):
         global counter
         print("return render event with keys: [", end="")
         print(*event.value.keys(), sep=", ", end="]\r")
+
 
 doc @ """
 ## Render `ondemand`
@@ -62,7 +64,7 @@ with doc:
                     height=240,
                     key="ego",
                     position=[0, 0, 2],
-                    rotation=[0, 0, - 0.5 * np.pi],
+                    rotation=[0, 0, -0.5 * np.pi],
                     stream="ondemand",
                     fps=30,
                     near=0.45,
@@ -70,7 +72,7 @@ with doc:
                     renderDepth=True,
                     showFrustum=True,
                     downsample=1,
-                    distanceToCamera=2
+                    distanceToCamera=2,
                     # dpr=1,
                 ),
             ],
@@ -109,5 +111,6 @@ with doc:
 
             except TimeoutError:
                 print("timed out.")
+
 
 doc.flush()

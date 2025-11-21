@@ -1,6 +1,5 @@
 from cmx import doc
 from contextlib import nullcontext
-from pathlib import Path
 import os
 
 MAKE_DOCS = os.getenv("MAKE_DOCS", None)

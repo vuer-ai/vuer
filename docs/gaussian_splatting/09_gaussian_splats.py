@@ -18,7 +18,7 @@ with doc:
 
     from vuer import Vuer
     from vuer.events import Set
-    from vuer.schemas import DefaultScene, Splat, Movable
+    from vuer.schemas import DefaultScene, Splat
 
     # https://twitter.com/alexcarliera
     cakewalk = "https://huggingface.co/cakewalk/splat-data/resolve/main"
@@ -46,7 +46,7 @@ with doc:
                 # ),
                 # Movable(
                 Splat(
-                    src=f"http://localhost:8012/static/splats/garden_table.splat",
+                    src="http://localhost:8012/static/splats/garden_table.splat",
                     # src=arial,
                     scale=0.5,
                     position=[0, 1.32, 0],

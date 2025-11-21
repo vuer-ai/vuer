@@ -67,7 +67,7 @@ with doc, nullcontext() if True else doc.skip:
                     far=1.8,
                     showFrustum=True,
                     downsample=1,
-                    distanceToCamera=2
+                    distanceToCamera=2,
                     # dpr=1,
                 ),
             ],

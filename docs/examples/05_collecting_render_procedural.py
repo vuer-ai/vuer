@@ -89,7 +89,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 if cv2.waitKey(1) == ord("q"):
                     exit()
 
-            except asyncio.TimeoutError as e:
+            except asyncio.TimeoutError:
                 print("render grab timed out.")
 
 

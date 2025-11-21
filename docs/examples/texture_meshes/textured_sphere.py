@@ -16,7 +16,6 @@ with doc, doc.skip:
     from vuer.events import Set
     from vuer.schemas import DefaultScene, Sphere
 
-
     app = Vuer()
 
     # use `start=True` to start the app immediately
@@ -42,6 +41,7 @@ with doc, doc.skip:
 
         while True:
             await sleep(0.016)
+
 
 doc @ """
 Now, by passing in a repeat parameter, you can repeat the texture on the mesh.

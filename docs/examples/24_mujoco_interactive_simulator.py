@@ -72,10 +72,10 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                     src=asset_pref + fileName,
                     pause=False,
                     useLights=True,
-                    unpauseOnDrag=False, # Whether to unpause the simulation when dragging the object
-                    dragForceScale=1.0, # Scale of the drag force applied to the object when dragging
-                    showDragArrow=True, # Whether to show the drag arrow when dragging the object
-                    showDragForceText=True, # Whether to show the drag force text when dragging the object
+                    unpauseOnDrag=False,  # Whether to unpause the simulation when dragging the object
+                    dragForceScale=1.0,  # Scale of the drag force applied to the object when dragging
+                    showDragArrow=True,  # Whether to show the drag arrow when dragging the object
+                    showDragForceText=True,  # Whether to show the drag force text when dragging the object
                 ),
                 MjCameraView(
                     key="cam1",
@@ -84,8 +84,8 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                     width=640,
                     height=480,
                     distanceToCamera=0.1,
-                    movable=True, # Whether the camera can be moved by the user
-                    showCameraFrustum=True, # Whether to show the camera  in the scene
+                    movable=True,  # Whether the camera can be moved by the user
+                    showCameraFrustum=True,  # Whether to show the camera  in the scene
                 ),
                 up=[0, 1, 0],
                 show_helper=False,
@@ -117,6 +117,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 await result_queue.put(promise)
 
             await sleep(1 / 30)
+
 
 doc @ """
 Alternatively, you can use

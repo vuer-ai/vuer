@@ -7,6 +7,7 @@ MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 from pathlib import Path
 from asyncio import sleep
 
+
 async def save_doc():
     await sleep(10.0)
 

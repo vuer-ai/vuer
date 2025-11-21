@@ -40,11 +40,9 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
     print(f"Loaded mesh with {mesh.vertices.shape} vertices and {mesh.faces.shape} faces")
 
-
     # use `start=True` to start the app immediately
     @app.spawn(start=True)
     async def main(session):
-
         session @ Set(
             DefaultScene(
                 SceneBackground(),

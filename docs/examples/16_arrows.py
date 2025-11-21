@@ -21,7 +21,7 @@ with doc:
 
     arrow = Arrow(
         position=[0, 0.25, 0],
-        rotation=[0, - 0.5 * 3.14, 0],
+        rotation=[0, -0.5 * 3.14, 0],
         scale=0.25,
     )
 

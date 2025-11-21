@@ -18,7 +18,6 @@ with doc, doc.skip:
 
     app = Vuer()
 
-
     @app.spawn(start=True)
     async def main(proxy: VuerSession):
         proxy.upsert @ Urdf(
@@ -40,5 +39,6 @@ with doc, doc.skip:
         # keep the session alive.
         while True:
             await sleep(10)
+
 
 doc.flush()

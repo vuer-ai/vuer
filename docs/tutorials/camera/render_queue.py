@@ -116,7 +116,7 @@ with doc, doc.skip:
         try:
             print(f"I took job-{key}.")
             print(""" Put your work over here. """)
-            for step in trange(100, desc=f"iterate through job steps"):
+            for step in trange(100, desc="iterate through job steps"):
                 # update scene with params:
                 await sleep(0.02)
                 # uncomment the following line to grab the rendering result.

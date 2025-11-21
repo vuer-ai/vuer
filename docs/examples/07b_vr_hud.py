@@ -42,10 +42,8 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             # use the upsert(..., to="bgChildren") syntax, so it is in global frame.
             sess.upsert(
                 ImageBackground(
-
                     # Can scale the images down.
                     frame[::1, ::1, :],
-
                     # One of ['b64png', 'png', 'b64jpeg', 'jpeg']
                     # 'b64png' does not work for some reason, but works for the nerf demo.
                     # 'jpeg' encoding is significantly faster than 'png'.
@@ -55,7 +53,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                     interpolate=True,
                     fixed=True,
                     distanceToCamera=1,
-
                     # can test with matrix
                     # matrix=[
                     #     1.2418025750411799, 0, 0, 0,

@@ -13,15 +13,14 @@ with doc:
     from typing import Tuple
     import numpy as np
 
-
     def sample_camera_frustum_batch(
-            fov: float,
-            width: float,
-            height: float,
-            near: float,
-            far: float,
-            num_samples=1,
-            **_,
+        fov: float,
+        width: float,
+        height: float,
+        near: float,
+        far: float,
+        num_samples=1,
+        **_,
     ) -> Tuple[np.ndarray]:
         """Sample Camera Frustum
 
@@ -51,6 +50,7 @@ with doc:
         x = np.random.uniform(-x_range, x_range, size=num_samples)
 
         return np.stack([x, y, -d]).T
+
 
 with doc, doc.skip:
     import asyncio
@@ -95,9 +95,8 @@ with doc, doc.skip:
             return
         new_matrix = np.array(event.value["matrix"]).reshape(4, 4)
         if not np.allclose(new_matrix, matrix):
-            print('matrix has changed')
+            print("matrix has changed")
             matrix = new_matrix
-
 
     def transform_points(pts, matrix):
         # Convert the list of points to a numpy array with an additional dimension for the homogeneous coordinate
@@ -109,7 +108,6 @@ with doc, doc.skip:
         # Convert back to 3D points from homogeneous coordinates
         transformed_pts = transformed_pts[:, :3]
         return transformed_pts
-
 
     # We don't auto start the vuer app because we need to bind a handler.
     @app.spawn(start=True)
@@ -131,7 +129,7 @@ with doc, doc.skip:
                     far=1.8,
                     showFrustum=True,
                     downsample=1,
-                    distanceToCamera=2
+                    distanceToCamera=2,
                 ),
             ],
             # hide the helper to only render the objects.
@@ -140,7 +138,6 @@ with doc, doc.skip:
         )
         last_id = None
         while True:
-
             if last_id and id(matrix) == last_id:
                 await asyncio.sleep(0.016)
                 continue

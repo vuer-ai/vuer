@@ -37,6 +37,7 @@ with doc:
     app = Vuer()
 
 with doc, doc.skip:
+
     @app.spawn(start=True)
     async def main(proxy):
         proxy.upsert @ Splat(
@@ -44,11 +45,12 @@ with doc, doc.skip:
             scale=0.5,
             position=[-0.7, 0.75, 1.58],
             rotation=[75 / 180 * pi, -3.92 / 180 * pi, 25 / 180 * pi],
-            key="big_sur"
+            key="big_sur",
         )
 
         while True:
             await sleep(10.0)
+
 
 doc @ """
 
@@ -63,6 +65,7 @@ Or click on this <a href="https://vuer.ai/?collapseMenu=True&fov=50&scene=3gAEqG
 You can also run the following code to load the construction scene.
 """
 with doc, doc.skip:
+
     @app.spawn(start=True)
     async def main(proxy):
         proxy.upsert @ Splat(
@@ -75,6 +78,7 @@ with doc, doc.skip:
 
         while True:
             await sleep(10.0)
+
 
 scene = "3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tleadiaWdfc3Vyo3NyY9lDaHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvZ2F1c3NpYW5fc3BsYXR0aW5nL2FydC5zcGxhdKVzY2FsZQWocG9zaXRpb26TAMs%2F4zMzQAAAAACocm90YXRpb26Tyz%2F5HRTgAAAAy7%2Bqya%2FgAAAAAKxodG1sQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVukKpiZ0NoaWxkcmVukA%3D%3D"
 doc @ f"""
@@ -89,18 +93,20 @@ Or click on this <a href="https://vuer.ai/?collapseMenu=True&grid=False&fov=50&s
 You can also run the following code to load the construction scene.
 """
 with doc, doc.skip:
+
     @app.spawn(start=True)
     async def main(proxy):
         proxy.upsert @ Splat(
             src="https://docs.vuer.ai/en/{VERSION}/_static/gaussian_splatting/art.splat",
             scale=5,
-            position=[0., 0.6, 0.],
+            position=[0.0, 0.6, 0.0],
             rotation=[90 * 0.01744, -3 * 0.01744, 0 * 0.01744],
             key="big_sur",
         )
 
         while True:
             await sleep(10.0)
+
 
 scene = "3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tlealtaW5lY3JhZnSjc3Jj2UlodHRwczovL2RvY3MudnVlci5haS9lbi9sYXRlc3QvX3N0YXRpYy9nYXVzc2lhbl9zcGxhdHRpbmcvbWluZWNyYWZ0LnNwbGF0pXNjYWxlyz%2FgAAAAAAAAqHBvc2l0aW9uk8u%2FtHrhQAAAAMs%2F09cKQAAAAMu%2FseuFIAAAAKhyb3RhdGlvbpPLP%2FSmIkAAAADLv8iONoAAAADLP%2FV8b8AAAACsaHRtbENoaWxkcmVukKtyYXdDaGlsZHJlbpCqYmdDaGlsZHJlbpA%3D"
 doc @ f"""
@@ -115,6 +121,7 @@ Or click on this <a href="https://vuer.ai/?collapseMenu=True&fov=50&grid=False&s
 You can also run the following code to load the construction scene.
 """
 with doc, doc.skip:
+
     @app.spawn(start=True)
     async def main(proxy):
         proxy.upsert @ Splat(

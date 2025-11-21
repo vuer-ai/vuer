@@ -1,5 +1,4 @@
 from asyncio import sleep
-from collections import defaultdict
 from copy import deepcopy
 
 import numpy as np

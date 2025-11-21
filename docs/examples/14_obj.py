@@ -39,7 +39,7 @@ with doc:
     from asyncio import sleep
 
     from vuer import Vuer
-    from vuer.events import Set, ClientEvent
+    from vuer.events import ClientEvent
     from vuer.schemas import DefaultScene, Obj
 
     app = Vuer(static_root=f"{Path(__file__).parent}/assets")
@@ -59,6 +59,7 @@ with doc:
     @app.add_handler("LOAD")
     async def onLoad(event: ClientEvent, _):
         print(f"mesh has been loaded: {event.value}")
+
 
 doc @ """
 This should print out the following message:

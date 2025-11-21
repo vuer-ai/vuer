@@ -21,10 +21,9 @@ with doc, doc.skip:
     from asyncio import sleep
 
     from vuer import Vuer
-    from vuer.schemas import Scene, Box, Plane, Sphere
+    from vuer.schemas import Scene, Plane, Sphere
 
     app = Vuer(static_root=f"{Path(__file__).parent}/assets")
-
 
     # use `start=True` to start the app immediately
     @app.spawn(start=True)
@@ -36,6 +35,7 @@ with doc, doc.skip:
 
         while True:
             await sleep(1.0)
+
 
 doc @ """
 """

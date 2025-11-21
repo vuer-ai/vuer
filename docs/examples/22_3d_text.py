@@ -33,7 +33,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
     app = Vuer()
 
-
     @app.spawn(start=True)
     async def show_3d_text(session):
         # Create a scene with some basic elements
@@ -52,10 +51,10 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 scale=0.15,
                 key="welcome",
             ),
-            Text('Fixed Text', color='green', fontSize=0.1, position=[0, 0.3, -1], key="fixed-text"),
+            Text("Fixed Text", color="green", fontSize=0.1, position=[0, 0.3, -1], key="fixed-text"),
             Billboard(
                 Text(
-                    'Billboard Text',
+                    "Billboard Text",
                     color="red",
                     fontSize=0.1,
                     scale=0.5,
@@ -74,24 +73,29 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         while True:
             angle += 0.01
 
-            session.update([
-                Text3D(
-                    "Hello Vuer!",
-                    MeshNormalMaterial(),
-                    font="https://threejs.org/examples/fonts/helvetiker_bold.typeface.json",
-                    bevelEnabled=True,
-                    bevelSize=0.04,
-                    bevelThickness=0.1,
-                    size=1,
-                    letterSpacing=-0.025,
-                    color="red",
-                    scale=0.1,
-                    key="welcome",
-                    rotation=[0, angle, 0]
+            (
+                session.update(
+                    [
+                        Text3D(
+                            "Hello Vuer!",
+                            MeshNormalMaterial(),
+                            font="https://threejs.org/examples/fonts/helvetiker_bold.typeface.json",
+                            bevelEnabled=True,
+                            bevelSize=0.04,
+                            bevelThickness=0.1,
+                            size=1,
+                            letterSpacing=-0.025,
+                            color="red",
+                            scale=0.1,
+                            key="welcome",
+                            rotation=[0, angle, 0],
+                        ),
+                        Text("Angle: " + f"{angle:.2f}", key="fixed-text"),
+                    ]
                 ),
-                Text('Angle: ' + f'{angle:.2f}', key="fixed-text"),
-            ]),
+            )
             await sleep(0.032)
+
 
 doc @ """
 # 3D Text, 2D Text, and Billboard in Vuer

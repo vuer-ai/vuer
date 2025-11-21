@@ -11,10 +11,12 @@ reader = iio.get_reader("../../../../assets/movies/disney.webm")
 
 app = Vuer()
 
+
 @app.add_handler("CAMERA_MOVE")
 async def on_camera(event: ClientEvent, sess: VuerSession):
     assert event == "CAMERA_MOVE", "the event type should be correct"
     print("camera event", event.etype, event.value)
+
 
 @app.spawn(start=True)
 async def show_heatmap(sess: VuerSession):
@@ -24,10 +26,8 @@ async def show_heatmap(sess: VuerSession):
         # use the upsert(..., to="bgChildren") syntax, so it is in global frame.
         sess.upsert(
             ImageBackground(
-
                 # Can scale the images down.
                 frame[::1, ::1, :],
-
                 # One of ['b64png', 'png', 'b64jpeg', 'jpeg']
                 # 'b64png' does not work for some reason, but works for the nerf demo.
                 # 'jpeg' encoding is significantly faster than 'png'.

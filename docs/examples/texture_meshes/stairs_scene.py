@@ -25,7 +25,6 @@ with doc, doc.skip:
 
     app = Vuer(static_root=f"{Path(__file__).parent}/assets")
 
-
     # use `start=True` to start the app immediately
     @app.spawn(start=True)
     async def main(session):
@@ -36,6 +35,7 @@ with doc, doc.skip:
 
         while True:
             await sleep(1.0)
+
 
 doc @ """
 """

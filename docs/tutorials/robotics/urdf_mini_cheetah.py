@@ -39,7 +39,7 @@ with doc, doc.skip:
     from asyncio import sleep
 
     from vuer import Vuer, VuerSession
-    from vuer.schemas import Scene, Urdf, Movable, PointLight, AmbientLight, Obj
+    from vuer.schemas import Scene, Urdf, Movable, PointLight, AmbientLight
 
     pi = 3.1415
 
@@ -55,7 +55,7 @@ with doc, doc.skip:
                 Movable(PointLight(intensity=3), position=[0, 1, 2]),
             ],
             grid=True,
-            up=[0, 0, 1]
+            up=[0, 0, 1],
         )
         await sleep(0.1)
 
@@ -82,6 +82,8 @@ with doc, doc.skip:
             )
             await sleep(0.016)
             i += 1
+
+
 doc @ """
 Now, if your script runs correctly, the robot should show up in the following view:
 

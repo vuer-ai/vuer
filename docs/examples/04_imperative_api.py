@@ -23,7 +23,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             reconnect=True,
             grid=False,
             backgroundColor="black",
-            
         ),
     )
 
@@ -41,14 +40,17 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             outlines=dict(angle=0, thickness=0.005, color="white"),
         )
 
-        sess.add @ Sphere(
-            key="sphere",
-            args=[0.1, 200, 200],
-            position=[0.2, 0, 0.1],
-            rotation=[0, 0, 0],
-            materialType="standard",
-            outlines=dict(angle=0, thickness=0.002, color="white"),
-        ),
+        (
+            sess.add
+            @ Sphere(
+                key="sphere",
+                args=[0.1, 200, 200],
+                position=[0.2, 0, 0.1],
+                rotation=[0, 0, 0],
+                materialType="standard",
+                outlines=dict(angle=0, thickness=0.002, color="white"),
+            ),
+        )
 
         i = 0
         while True:
@@ -57,11 +59,14 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             position = [0.2, 0, 0.1 + h]
             # phase = 2 * np.pi * i / 240
             # position = [0.15 + 0.25 * np.sin(phase), 0.1, 0.2 * np.cos(phase)]
-            sess.update @ Sphere(
-                key="sphere",
-                args=[0.1, 20, 20],
-                position=position,
-                rotation=[0, 0, 0],
-                materialType="standard",
-            ),
+            (
+                sess.update
+                @ Sphere(
+                    key="sphere",
+                    args=[0.1, 20, 20],
+                    position=position,
+                    rotation=[0, 0, 0],
+                    materialType="standard",
+                ),
+            )
             await sleep(0.014)

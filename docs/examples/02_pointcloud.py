@@ -45,7 +45,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
     app = Vuer(static_root=assets_folder)
 
-
     @app.spawn(start=True)
     async def main(proxy):
         proxy @ Set(

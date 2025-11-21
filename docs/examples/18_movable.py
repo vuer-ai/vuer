@@ -33,15 +33,18 @@ a specific movable object for a more compact API.
 """
 
 with doc, doc.skip if MAKE_DOCS else nullcontext():
+
     @app.add_handler("OBJECT_MOVE")
     async def handler(event, session):
         print(f"Movement Event: key-{event.key}", event.value)
+
 
 doc @ """
 As usual, we spawn the main session:
 """
 
 with doc, doc.skip if MAKE_DOCS else nullcontext():
+
     @app.spawn(start=True)
     async def main(session: VuerSession):
         session.set @ DefaultScene()
@@ -53,5 +56,5 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             # We move the gripper at a const speed around the origin.
             x = np.sin(i / 60) / 2
             y = np.cos(i / 60) / 2
-            session.upsert @ Movable(Gripper(), position=[x, y, 0], key='moving-one')
+            session.upsert @ Movable(Gripper(), position=[x, y, 0], key="moving-one")
             await sleep(0.016)

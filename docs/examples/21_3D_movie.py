@@ -49,7 +49,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     mary_file = "movies/mary.webm"
     reader_file = assets_folder / mary_file
 
-
     reader = iio.get_reader(reader_file)
 
     app = Vuer()
