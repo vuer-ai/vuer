@@ -101,11 +101,12 @@ For a comprehensive list of data types, please refer to the [API documentation o
    Programmatic PointCloud <examples/02_pointcloud.md>
    ┣→ pcd files <examples/02_pointcloud_pcd.md>
    ┗→ ply files <examples/02_pointcloud_ply.md>
+   URDF <examples/03_urdf.md>
+   ┣→ urls <examples/03_urdf_url.md>
+   ┗→ local <examples/03_urdf_local.md>
    Simpe Plane <examples/13_plane_primitive.md>
    Obj Files <examples/14_obj.md>
    Frustum and Spline <examples/15_spline_frustum.md>
-   URDF <examples/03_urdf.md>
-   URDF (local) <examples/03_urdf_local.md>
    Imperative API <examples/04_imperative_api.md>
    Virtual Camera <examples/05_collecting_render.md>
    Render Images <examples/05_collecting_render_procedural.md>
