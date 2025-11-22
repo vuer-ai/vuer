@@ -1,6 +1,25 @@
 
 # Imperative API
 
+This example demonstrates Vuer's **imperative API** for dynamically manipulating 3D scenes. Unlike declarative approaches where you define the entire scene upfront, the imperative API lets you add, update, and remove objects on-the-fly.
+
+![](figures/04_imperative_api.png)
+
+### Session Operations
+
+| Operation | Syntax | Description |
+|-----------|--------|-------------|
+| `set` | `sess.set @ Component(...)` | Replace the entire scene |
+| `add` | `sess.add @ Component(...)` | Add a new object to the scene |
+| `update` | `sess.update @ Component(key=...)` | Update an existing object by key |
+| `remove` | `sess.remove @ Component(key=...)` | Remove an object by key |
+
+```{admonition} Key Requirement
+:class: warning
+When using `update` or `remove`, objects **must have a unique `key`** so Vuer knows which object to modify.
+```
+
+## Code Example
 
 ```python
 from asyncio import sleep
@@ -10,6 +29,7 @@ from vuer.schemas import (
     Box,
     Sphere,
     DefaultScene,
+    OrbitControls
 )
 
 app = Vuer(
@@ -17,13 +37,16 @@ app = Vuer(
         reconnect=True,
         grid=False,
         backgroundColor="black",
-        
     ),
 )
 
 @app.spawn(start=True)
 async def show_heatmap(sess: VuerSession):
-    sess.set @ DefaultScene()
+    sess.set @ DefaultScene(
+        bgChildren=[
+            OrbitControls(key="OrbitControls"),
+        ],
+    )
 
     sess.add @ Box(
         key="box",
@@ -51,12 +74,15 @@ async def show_heatmap(sess: VuerSession):
         position = [0.2, 0, 0.1 + h]
         # phase = 2 * np.pi * i / 240
         # position = [0.15 + 0.25 * np.sin(phase), 0.1, 0.2 * np.cos(phase)]
-        sess.update @ Sphere(
-            key="sphere",
-            args=[0.1, 20, 20],
-            position=position,
-            rotation=[0, 0, 0],
-            materialType="standard",
-        ),
+        (
+            sess.update
+            @ Sphere(
+                key="sphere",
+                args=[0.1, 20, 20],
+                position=position,
+                rotation=[0, 0, 0],
+                materialType="standard",
+            ),
+        )
         await sleep(0.014)
 ```

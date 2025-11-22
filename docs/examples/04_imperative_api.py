@@ -7,6 +7,25 @@ MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 doc @ """
 # Imperative API
 
+This example demonstrates Vuer's **imperative API** for dynamically manipulating 3D scenes. Unlike declarative approaches where you define the entire scene upfront, the imperative API lets you add, update, and remove objects on-the-fly.
+
+![](figures/04_imperative_api.png)
+
+### Session Operations
+
+| Operation | Syntax | Description |
+|-----------|--------|-------------|
+| `set` | `sess.set @ Component(...)` | Replace the entire scene |
+| `add` | `sess.add @ Component(...)` | Add a new object to the scene |
+| `update` | `sess.update @ Component(key=...)` | Update an existing object by key |
+| `remove` | `sess.remove @ Component(key=...)` | Remove an object by key |
+
+```{admonition} Key Requirement
+:class: warning
+When using `update` or `remove`, objects **must have a unique `key`** so Vuer knows which object to modify.
+```
+
+## Code Example
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
@@ -16,6 +35,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         Box,
         Sphere,
         DefaultScene,
+        OrbitControls
     )
 
     app = Vuer(
@@ -28,7 +48,11 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
     @app.spawn(start=True)
     async def show_heatmap(sess: VuerSession):
-        sess.set @ DefaultScene()
+        sess.set @ DefaultScene(
+            bgChildren=[
+                OrbitControls(key="OrbitControls"),
+            ],
+        )
 
         sess.add @ Box(
             key="box",
@@ -40,17 +64,14 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             outlines=dict(angle=0, thickness=0.005, color="white"),
         )
 
-        (
-            sess.add
-            @ Sphere(
-                key="sphere",
-                args=[0.1, 200, 200],
-                position=[0.2, 0, 0.1],
-                rotation=[0, 0, 0],
-                materialType="standard",
-                outlines=dict(angle=0, thickness=0.002, color="white"),
-            ),
-        )
+        sess.add @ Sphere(
+            key="sphere",
+            args=[0.1, 200, 200],
+            position=[0.2, 0, 0.1],
+            rotation=[0, 0, 0],
+            materialType="standard",
+            outlines=dict(angle=0, thickness=0.002, color="white"),
+        ),
 
         i = 0
         while True:
