@@ -7,26 +7,37 @@ MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 doc @ """
 # Showing 360 Views with a Sky Ball
 
-This example requires a equirectangular image (shown below), which is then
-mapped to a sphere as a texture. 
+This example demonstrates how to create a 360-degree panoramic view using an
+equirectangular image mapped to a sphere as a texture.
 
 ![equirectangular image](figures/farm_house.jpg)
 
-Place the `[farm_house.jpg](figures/farm_house.jpg)` in the path pointed to
-by the `static_root` argument of the `Vuer` class. The vuer front end will
-try to load from the url `http://localhost:8012/static/farm_house.jpg`.
+The example uses a `Sphere` component with `materialType="standard"` and applies
+the equirectangular image as a texture map. The sphere is configured with `side: 1`
+to render the inside of the sphere, allowing the viewer to see the panorama from
+within.
+
+Place the image file (e.g., `images/farm_house.jpg`) in the folder specified by
+the `static_root` argument of the `Vuer` class. The Vuer frontend will load the
+texture from `http://localhost:8012/static/images/farm_house.jpg`.
 
 Here is the expected result:
-![marker light](figures/17_sky_ball.png)
+![sky ball result](figures/17_sky_ball.png)
+
+## Code Example
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
+    from pathlib import Path
     from asyncio import sleep
     import numpy as np
 
     from vuer import Vuer, VuerSession
-    from vuer.schemas import DefaultScene, Sphere
+    from vuer.schemas import DefaultScene, Sphere, OrbitControls
 
-    app = Vuer(static_root="figures")
+    assets_folder = Path(__file__).parent / "../../../assets"
+    test_file = "images/farm_house.jpg"
+
+    app = Vuer(static_root=assets_folder)
 
     n = 10
     N = 1000
@@ -34,14 +45,17 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     sphere = Sphere(
         args=[1, 32, 32],
         materialType="standard",
-        material={"map": "http://localhost:8012/static/farm_house.jpg", "side": 1},
+        material={"map": "http://localhost:8012/static/" + test_file, "side": 1},
         position=[0, 0, 0],
         rotation=[0.5 * np.pi, 0, 0],
     )
 
     @app.spawn(start=True)
     async def main(proxy: VuerSession):
-        proxy.set @ DefaultScene(sphere)
+        proxy.set @ DefaultScene(
+            sphere,
+            bgChildren=[OrbitControls(key="OrbitControls")],
+        )
 
         # keep the main session alive.
         while True:
