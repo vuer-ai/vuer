@@ -4,14 +4,6 @@
 This example shows how to use background images + layers
 to play a 3D movie in the VisionPro and the Quest 3.
 
-Before you start, first run the following script:
-
-```shell
-# From the Mary Project: https://www.meryproject.com/
-# 360 Stereo from http://pedrofe.com/rendering-for-oculus-rift-with-arnold/
-wget -O mary.webm https://threejs.org/examples/textures/MaryOculus.webm
-```
-
 ![Side view of the 3D movie screen](figures/21_3D_movie.png)
 
 The underlying rendering engine supported a layer binary bitmask
@@ -35,12 +27,11 @@ from tqdm import tqdm
 
 from vuer import Vuer
 from vuer.events import ClientEvent
-from vuer.schemas import Scene, ImageBackground
+from vuer.schemas import Scene, ImageBackground, OrbitControls
 
 assets_folder = Path(__file__).parent / "../../../assets"
 mary_file = "movies/mary.webm"
 reader_file = assets_folder / mary_file
-
 
 reader = iio.get_reader(reader_file)
 
@@ -54,7 +45,8 @@ async def on_camera(event: ClientEvent, session):
 
 @app.spawn(start=True)
 async def show_heatmap(session):
-    session.set @ Scene()
+    session.set @ Scene(
+    )
 
     while True:
         for i, frame in tqdm(enumerate(reader), desc="playing video"):
@@ -93,8 +85,3 @@ async def show_heatmap(session):
             # 'jpeg' encoding should give you about 30fps with a 16ms wait in-between.
             await sleep(0.016 * 2)
 ```
-
-## Next Steps
-
-- [ ] Add layers support to the virtual cameras.
-
