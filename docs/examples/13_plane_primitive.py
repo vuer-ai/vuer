@@ -18,7 +18,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
     from vuer import Vuer
     from vuer.events import Set
-    from vuer.schemas import DefaultScene, Plane
+    from vuer.schemas import DefaultScene, Plane, OrbitControls
 
     app = Vuer()
 
@@ -28,6 +28,9 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         session @ Set(
             DefaultScene(
                 Plane(material=dict(side=2)),
+                bgChildren=[
+                    OrbitControls(key="OrbitControls")
+                ],
             ),
         )
 

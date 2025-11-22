@@ -24,7 +24,7 @@ import trimesh
 
 from vuer import Vuer
 from vuer.events import Set
-from vuer.schemas import Obj, DefaultScene, TriMesh, SceneBackground, OrbitControls
+from vuer.schemas import Obj, DefaultScene, TriMesh, OrbitControls
 
 # First, we load the mesh using trimesh and prepare the data in different formats:
 
