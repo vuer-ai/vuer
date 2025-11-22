@@ -12,6 +12,8 @@ This example shows you how to load `pcd` files.
 
 You should expect to see a scene that looks like the following:
 ![pointcloud](figures/pointcloud_pcd.png)
+
+## Code Example
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
     import os

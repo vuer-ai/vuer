@@ -26,6 +26,8 @@ This usually happens because your realsense camera is overexposed. You need
 to adjust the exposure settings on the camera to make the point cloud look 
 nicer.
 ```
+
+## Code Example
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
