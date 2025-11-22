@@ -20,6 +20,8 @@ to adjust the exposure settings on the camera to make the point cloud look
 nicer.
 ```
 
+## Code Example
+
 ```python
 from asyncio import sleep
 import numpy as np

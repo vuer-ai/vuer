@@ -6,6 +6,8 @@ This example shows you how to load `pcd` files.
 You should expect to see a scene that looks like the following:
 ![pointcloud](figures/pointcloud_pcd.png)
 
+## Code Example
+
 ```python
 import os
 from asyncio import sleep
