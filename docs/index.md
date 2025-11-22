@@ -118,7 +118,7 @@ For a comprehensive list of data types, please refer to the [API documentation o
    Depth Image <examples/08_experimental_depth_image.md>
    Coordinate Markers <examples/11_coordinates_markers.md>
    Arrows <examples/16_arrows.md>
-   Virtual Camera <examples/12_camera.md>
+   Camera Frustums <examples/12_camera.md>
    360 Image <examples/17_sky_ball.md>
    Movable Handles <examples/18_movable.md>
    Hand Tracking <examples/19_hand_tracking.md>

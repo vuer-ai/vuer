@@ -4,13 +4,13 @@
 You can programmatically insert camera frustums into the scene. Here
 we stress-test vuer by inserting 1728 frustums.
 
-![figures/12_camera.jpg](figures/12_camera.jpg)
+![](figures/12_camera.jpg)
 
-Simply run the following script:
+## Code Example
 
 ```python
 from vuer import Vuer, VuerSession
-from vuer.schemas import DefaultScene, Frustum
+from vuer.schemas import DefaultScene, Frustum, OrbitControls
 
 n, N = 12, 12**3
 
@@ -30,7 +30,11 @@ async def main(sess: VuerSession):
                 rotation=[0.5 * 3.14, 0, 0],
             )
             for i in range(N)
-        ]
+        ],
+        up=[0, 0, 1],
+        bgChildren=[
+            OrbitControls(key="OrbitControls")
+        ],
     )
 
     while True:
