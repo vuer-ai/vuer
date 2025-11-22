@@ -1,16 +1,16 @@
 
 # Arrows
 
-This example visualizes a large number of coordinates markers.
+This example visualizes a red arrow.
 
-![marker light](figures/16_arrows.png)
+![marker light](figures/16_arrow.png)
 
 
 ```python
 from asyncio import sleep
 
 from vuer import Vuer, VuerSession
-from vuer.schemas import DefaultScene, Arrow
+from vuer.schemas import DefaultScene, Arrow, OrbitControls
 
 app = Vuer()
 
@@ -19,13 +19,19 @@ N = 1000
 
 arrow = Arrow(
     position=[0, 0.25, 0],
-    rotation=[0, - 0.5 * 3.14, 0],
-    scale=0.25,
+    rotation=[0, -0.5 * 3.14, 0],
+    scale=1,
 )
 
 @app.spawn(start=True)
 async def main(proxy: VuerSession):
-    proxy.set @ DefaultScene(arrow)
+    proxy.set @ DefaultScene(
+        arrow,
+        up=(0, 0, 1),
+        bgChildren=[
+            OrbitControls(key="OrbitControls")
+        ],
+    )
 
     # keep the main session alive.
     while True:

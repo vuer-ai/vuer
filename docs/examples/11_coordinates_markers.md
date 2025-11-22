@@ -5,13 +5,12 @@ This example visualizes a large number of coordinates markers.
 
 ![marker light](figures/coord_markers/marker_light.png)
 
-Live demo: TBD
 
 ```python
 from asyncio import sleep
 
 from vuer import Vuer, VuerSession
-from vuer.schemas import DefaultScene, CoordsMarker
+from vuer.schemas import DefaultScene, CoordsMarker, OrbitControls
 
 app = Vuer()
 
@@ -28,7 +27,12 @@ markers = [
 
 @app.spawn(start=True)
 async def main(proxy: VuerSession):
-    proxy.set @ DefaultScene(*markers)
+    proxy.set @ DefaultScene(
+        *markers,
+        bgChildren=[
+            OrbitControls(key="OrbitControls")
+        ],
+    )
 
     i = 0
     while True:
