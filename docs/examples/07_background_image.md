@@ -5,6 +5,9 @@ This example shows how to set a background image. This is useful for
 relaying from a rendering model such as NeRFs, Gaussian Splatting, or 
 GANs.
 
+![](figures/07_background_image.png)
+
+
 ```python
 from asyncio import sleep
 
@@ -36,7 +39,6 @@ async def show_heatmap(session):
     session.set @ Scene()
 
     for i, frame in tqdm(enumerate(reader), desc="playing video"):
-
         # use the upsert(..., to="bgChildren") syntax, so it is in global frame.
         session.upsert(
             SceneBackground(
@@ -51,7 +53,6 @@ async def show_heatmap(session):
                 interpolate=True,
             ),
             to="bgChildren",
-            
         )
         # 'jpeg' encoding should give you about 30fps with a 16ms wait in-between.
         await sleep(0.016)

@@ -1,21 +1,14 @@
 
 # RGB-D Visualization
 
-Demo for rendering an RGB and depth pair. First run the makefile in the assets/images folder.
-
-```shell
-cd examples/vuer/assets/images
-make
-```
-And this should download a pair of RGB and depth image.
+Demo for rendering an RGB and depth pair. 
 
 ```python
 from asyncio import sleep
 from pathlib import Path
 
 from vuer import Vuer
-from vuer.events import ClientEvent
-from vuer.schemas import ImageBackground, DefaultScene
+from vuer.schemas import DefaultScene, ImageBackground
 
 assets_folder = Path(__file__).parent / "../../../assets"
 
@@ -55,13 +48,4 @@ async def show_heatmap(proxy):
 
     while True:
         await sleep(10.0)
-
-async def on_camera(event: ClientEvent, send_fn):
-    assert event == "CAMERA_MOVE", "the event type should be correct"
-    print("camera event", event.etype, event.value)
-```
-
-```python
-app.add_handler("CAMERA_MOVE", on_camera)
-app.start()
 ```

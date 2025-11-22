@@ -5,7 +5,7 @@ import os
 MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 doc @ """
-# Background Image
+# Heads Up Display
 
 This example shows how to display a heads-up-display (HUD) in VR using
 the ImageBackground component.
@@ -23,7 +23,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
     from vuer import Vuer, VuerSession
     from vuer.events import ClientEvent
-    from vuer.schemas import Scene, ImageBackground
+    from vuer.schemas import Scene, ImageBackground, OrbitControls
 
     reader = iio.get_reader("../../../assets/movies/disney.webm")
 
@@ -36,7 +36,11 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
     @app.spawn(start=True)
     async def show_heatmap(sess: VuerSession):
-        sess.set @ Scene()
+        sess.set @ Scene(
+            bgChildren=[
+                OrbitControls(key="OrbitControls")
+            ],
+        )
 
         for i, frame in tqdm(enumerate(reader), desc="playing video"):
             # use the upsert(..., to="bgChildren") syntax, so it is in global frame.

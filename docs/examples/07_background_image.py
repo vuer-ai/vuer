@@ -3,7 +3,7 @@ from cmx import doc
 import os
 from contextlib import nullcontext
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", None)
+MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
 
 doc @ """
@@ -12,6 +12,9 @@ doc @ """
 This example shows how to set a background image. This is useful for
 relaying from a rendering model such as NeRFs, Gaussian Splatting, or 
 GANs.
+
+![](figures/07_background_image.png)
+
 """
 
 with doc, doc.skip if MAKE_DOCS else nullcontext():

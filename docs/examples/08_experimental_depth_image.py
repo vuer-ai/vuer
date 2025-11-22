@@ -3,25 +3,18 @@ from contextlib import nullcontext
 
 from cmx import doc
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", None)
+MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
 doc @ """
 # RGB-D Visualization
 
-Demo for rendering an RGB and depth pair. First run the makefile in the assets/images folder.
-
-```shell
-cd examples/vuer/assets/images
-make
-```
-And this should download a pair of RGB and depth image.
+Demo for rendering an RGB and depth pair. 
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
     from pathlib import Path
 
     from vuer import Vuer
-    from vuer.events import ClientEvent
     from vuer.schemas import DefaultScene, ImageBackground
 
     assets_folder = Path(__file__).parent / "../../../assets"
@@ -62,17 +55,5 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
         while True:
             await sleep(10.0)
-
-    async def on_camera(event: ClientEvent, send_fn):
-        assert event == "CAMERA_MOVE", "the event type should be correct"
-        print("camera event", event.etype, event.value)
-
-
-doc @ """
-```python
-app.add_handler("CAMERA_MOVE", on_camera)
-app.start()
-```
-"""
 
 doc.flush()

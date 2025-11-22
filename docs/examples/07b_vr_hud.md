@@ -1,5 +1,5 @@
 
-# Background Image
+# Heads Up Display
 
 This example shows how to display a heads-up-display (HUD) in VR using
 the ImageBackground component.
@@ -16,7 +16,7 @@ from tqdm import tqdm
 
 from vuer import Vuer, VuerSession
 from vuer.events import ClientEvent
-from vuer.schemas import Scene, ImageBackground
+from vuer.schemas import Scene, ImageBackground, OrbitControls
 
 reader = iio.get_reader("../../../assets/movies/disney.webm")
 
@@ -29,16 +29,18 @@ async def on_camera(event: ClientEvent, sess: VuerSession):
 
 @app.spawn(start=True)
 async def show_heatmap(sess: VuerSession):
-    sess.set @ Scene()
+    sess.set @ Scene(
+        bgChildren=[
+            OrbitControls(key="OrbitControls")
+        ],
+    )
 
     for i, frame in tqdm(enumerate(reader), desc="playing video"):
         # use the upsert(..., to="bgChildren") syntax, so it is in global frame.
         sess.upsert(
             ImageBackground(
-
                 # Can scale the images down.
                 frame[::1, ::1, :],
-
                 # One of ['b64png', 'png', 'b64jpeg', 'jpeg']
                 # 'b64png' does not work for some reason, but works for the nerf demo.
                 # 'jpeg' encoding is significantly faster than 'png'.
@@ -48,7 +50,6 @@ async def show_heatmap(sess: VuerSession):
                 interpolate=True,
                 fixed=True,
                 distanceToCamera=1,
-
                 # can test with matrix
                 # matrix=[
                 #     1.2418025750411799, 0, 0, 0,
