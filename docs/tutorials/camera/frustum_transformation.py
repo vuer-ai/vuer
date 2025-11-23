@@ -1,13 +1,44 @@
+import os
 from cmx import doc
+from contextlib import nullcontext
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 doc @ """
-# Transforming Points using Camera Matrix
-
-This example shows how to transform points using the camera matrix.
+# Transforming Points Using Camera Matrix
 
 ![red spheres in the frustum of a camera, close to the image plane](figures/frustum_transformation.png)
 
-first, we make a function to sample points in the camera frustum. This is a helper function that we will use later.
+This tutorial shows how to transform points from camera space to world space using
+the camera's transformation matrix. This is useful when you need to:
+- Place objects relative to the camera's view
+- Visualize the camera frustum with sample points
+- Project points between coordinate systems
+
+This tutorial will teach you how to:
+- Sample random points within a camera frustum
+- Transform points using homogeneous coordinates
+- Update scene objects in response to camera movement
+"""
+
+doc @ """
+## Step 1: Define Frustum Sampling Function
+
+First, we create a helper function to sample random points within the camera frustum.
+The frustum is the visible volume between the near and far clipping planes.
+
+```
+        near plane    far plane
+           │             │
+     ┌─────┼─────┐ ┌─────┼─────┐
+     │  ·  │  ·  │ │  ·  │  ·  │
+     │  ·  │  ·  │ │  ·  │  ·  │
+     └─────┼─────┘ └─────┼─────┘
+           │             │
+        camera ─────────────────▶ Z (backward)
+```
+
+Points are sampled in view space where X is right, Y is up, and Z points backward.
 """
 with doc:
     from typing import Tuple
@@ -51,16 +82,49 @@ with doc:
 
         return np.stack([x, y, -d]).T
 
+doc @ """
+## Step 2: Define Point Transformation Function
 
-with doc, doc.skip:
+To transform points from camera space to world space, we use the camera's 4x4
+transformation matrix. We convert 3D points to homogeneous coordinates (adding a
+fourth component of 1), multiply by the matrix, and extract the 3D result.
+"""
+with doc:
+
+    def transform_points(pts, matrix):
+        """Transform 3D points using a 4x4 transformation matrix.
+
+        Args:
+            pts: Array of shape (N, 3) containing 3D points
+            matrix: 4x4 transformation matrix
+
+        Returns:
+            Transformed points as array of shape (N, 3)
+        """
+        # Add homogeneous coordinate (w=1) to each point
+        pts_homogeneous = np.hstack((pts, np.ones((len(pts), 1))))
+
+        # Apply the transformation matrix
+        transformed_pts = pts_homogeneous @ matrix
+
+        # Extract 3D coordinates (drop the w component)
+        return transformed_pts[:, :3]
+
+doc @ """
+## Step 3: Set Up the Scene and Camera Movement Handler
+
+We create a scene with a movable `CameraView` and register a handler to track
+when the camera is moved. When the camera matrix changes, we'll update the
+positions of the sample points.
+"""
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     import asyncio
-    import os
 
-    from ml_logger import ML_Logger
     from vuer import Vuer, VuerSession
     from vuer.events import ClientEvent
-    from vuer.schemas import DefaultScene, CameraView, Sphere
+    from vuer.schemas import DefaultScene, CameraView, Sphere, OrbitControls
 
+    # Sample 100 random points within the camera frustum
     ball_pts = sample_camera_frustum_batch(
         fov=50,
         width=320,
@@ -70,10 +134,9 @@ with doc, doc.skip:
         num_samples=100,
     )
 
-    logger = ML_Logger(root=os.getcwd(), prefix="assets")
-
     app = Vuer()
 
+    # Initial camera transformation matrix (4x4, column-major format)
     # fmt: off
     matrix = np.array([
         -0.9403771820302098, -0.33677144289058686, 0.04770482963301034, 0,
@@ -81,37 +144,27 @@ with doc, doc.skip:
         -0.30901700268934784, 0.9045085048953463, 0.2938925936815643, 0,
         -0.47444114213044175, 1.2453493553603068, 0.5411873913841395, 1,
     ]).reshape(4, 4)
-
-
     # fmt: on
 
     @app.add_handler("CAMERA_MOVE")
-    async def track_movement(event: ClientEvent, sess: VuerSession):
+    async def track_camera_movement(event: ClientEvent, sess: VuerSession):
+        """Update the global matrix when the camera is moved."""
         global matrix
-        # only intercept the ego camera.
+
+        # Only respond to the "ego" camera
         if event.key != "ego":
             return
         if event.value["matrix"] is None:
             return
+
         new_matrix = np.array(event.value["matrix"]).reshape(4, 4)
         if not np.allclose(new_matrix, matrix):
-            print("matrix has changed")
+            print("Camera matrix changed")
             matrix = new_matrix
 
-    def transform_points(pts, matrix):
-        # Convert the list of points to a numpy array with an additional dimension for the homogeneous coordinate
-        pts_homogeneous = np.hstack((pts, np.ones((len(pts), 1))))
-
-        # Apply the transformation matrix to each point
-        transformed_pts = pts_homogeneous @ matrix
-
-        # Convert back to 3D points from homogeneous coordinates
-        transformed_pts = transformed_pts[:, :3]
-        return transformed_pts
-
-    # We don't auto start the vuer app because we need to bind a handler.
     @app.spawn(start=True)
-    async def show_heatmap(proxy):
+    async def main(proxy):
+        # Set up the scene with a movable camera
         proxy.set @ DefaultScene(
             rawChildren=[
                 CameraView(
@@ -119,10 +172,7 @@ with doc, doc.skip:
                     width=320,
                     height=240,
                     key="ego",
-                    # position=[-0.5, 1.25, 0.5],
-                    # rotation=[-0.4 * np.pi, -0.1 * np.pi, 0.15 + np.pi],
                     matrix=matrix.flatten().tolist(),
-                    # movable=False,
                     stream="ondemand",
                     fps=30,
                     near=0.4,
@@ -132,29 +182,54 @@ with doc, doc.skip:
                     distanceToCamera=2,
                 ),
             ],
-            # hide the helper to only render the objects.
             grid=False,
             show_helper=False,
+            bgChildren=[
+                OrbitControls(key="OrbitControls")
+            ],
         )
-        last_id = None
+
+        last_matrix_id = None
         while True:
-            if last_id and id(matrix) == last_id:
+            # Only update when the matrix changes
+            if last_matrix_id and id(matrix) == last_matrix_id:
                 await asyncio.sleep(0.016)
                 continue
 
-            last_id = id(matrix)
-            pts = transform_points(ball_pts, matrix)
-            print("update balls")
+            last_matrix_id = id(matrix)
 
+            # Transform sample points from camera space to world space
+            world_pts = transform_points(ball_pts, matrix)
+            print("Updating ball positions")
+
+            # Create spheres at the transformed positions
             proxy.upsert @ [
                 Sphere(
                     args=[0.01],
-                    position=(pts[i]).tolist(),
+                    position=world_pts[i].tolist(),
                     material=dict(color="red"),
                     materialType="phong",
                     key=f"ball-{i}",
                 )
-                for i, p in enumerate(ball_pts)
+                for i in range(len(ball_pts))
             ]
 
             await asyncio.sleep(0.01)
+
+doc @ """
+## Step 4: Running the Tutorial
+
+Paste the code into `frustum_transformation.py` and run:
+
+```bash
+python frustum_transformation.py
+```
+
+Open the URL printed in the terminal (usually `https://vuer.ai`).
+
+You should see 100 red spheres positioned within the camera frustum, close to
+the near plane. When you drag the camera to move it, the spheres will update
+their positions to stay within the camera's view volume.
+"""
+
+doc.flush()

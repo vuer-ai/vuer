@@ -11,5 +11,6 @@ You can add and move virtual camera objects. See the following two examples:
    grab_render_virtual_camera.md
    render_queue.md
    frustum_transformation.md
+   grab_heightmap.md
 
 ```

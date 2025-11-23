@@ -1,33 +1,62 @@
 import os
+from contextlib import nullcontext
 
 from cmx import doc
 
-from vuer import VuerSession
-from vuer.events import ClientEvent
+MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
 doc @ """
-# Manipulating the Camera Pose
+# Replaying Camera Movements
 
-This example requires saving and loading data from the local disk. 
+This tutorial shows you how to programmatically control the camera using
+previously recorded camera movements. This is the companion tutorial to
+[Recording Camera Movements](record_camera_movement.md).
 
-Let's first instantiate a local ML-Logger instance.
+This tutorial will teach you how to:
+- Load recorded camera movement data from a pickle file
+- Set up a scene with 3D objects (box, plane, sphere)
+- Animate the camera by replaying the recorded trajectory
+- (Optional) Capture rendered frames from the virtual camera
+
+**Prerequisites:** Run the [Recording Camera Movements](record_camera_movement.md) tutorial first to generate
+the `assets/camera_movement.pkl` file.
+"""
+
+doc @ """
+## Step 1: Load the Recorded Camera Matrices
+
+First, we load the camera matrices that were saved in the previous tutorial.
+Each matrix represents a camera pose (position + orientation) at a point in time.
 """
 with doc:
+    import cv2
+    from io import BytesIO
+    import PIL.Image as PImage
     from ml_logger import ML_Logger
     from pandas import DataFrame
 
     logger = ML_Logger(root=os.getcwd(), prefix="assets")
-    doc.print(logger)
 
-    matrices = logger.load_pkl("metrics.pkl")
+    # Load the recorded camera movement data
+    matrices = logger.load_pkl("camera_movement.pkl")
+    # Extract just the matrix column as a list
     matrices = DataFrame(matrices)["matrix"].values.tolist()
 
-with doc, doc.skip:
+doc @ """
+## Step 2: Create the Scene with 3D Objects
+
+We set up a scene with some objects to observe as the camera moves:
+- A `Box` in the center
+- A `Plane` as the ground
+- A `Sphere` that bounces up and down (for visual interest)
+
+The `CameraView` component represents our virtual camera with `showFrustum=True`
+to visualize the camera's field of view.
+"""
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
-    from io import BytesIO
 
     import numpy as np
-    import PIL.Image as PImage
 
     from vuer import Vuer, VuerSession
     from vuer.events import ClientEvent
@@ -35,9 +64,11 @@ with doc, doc.skip:
 
     app = Vuer()
 
-    # We don't auto start the vuer app because we need to bind a handler.
-    @app.spawn
-    async def show_heatmap(proxy):
+    # We use start=False here because we need to register the CAMERA_VIEW handler
+    # before starting the app. The app will be started later with app.start().
+    @app.spawn(start=False)
+    async def main(proxy):
+        # Set up the initial scene with a camera view
         proxy.set @ DefaultScene(
             rawChildren=[
                 CameraView(
@@ -54,14 +85,13 @@ with doc, doc.skip:
                     showFrustum=True,
                     downsample=1,
                     distanceToCamera=2,
-                    # dpr=1,
                 ),
             ],
-            # hide the helper to only render the objects.
             grid=False,
             show_helper=False,
         )
 
+        # Add a box to the scene
         proxy.add @ Box(
             key="box",
             args=[0.2, 0.2, 0.2],
@@ -72,6 +102,7 @@ with doc, doc.skip:
             outlines=dict(angle=0, thickness=0.005, color="white"),
         )
 
+        # Add a ground plane
         proxy.add @ Plane(
             key="ground-plane",
             args=[10, 10, 10],
@@ -81,26 +112,28 @@ with doc, doc.skip:
             material=dict(color="green", side=2),
         )
 
-        (
-            proxy.add
-            @ Sphere(
-                key="sphere",
-                args=[0.1, 200, 200],
-                position=[0.2, 0, 0.1],
-                rotation=[0, 0, 0],
-                materialType="depth",
-                outlines=dict(angle=0, thickness=0.002, color="white"),
-            ),
+        # Add a sphere that will bounce
+        proxy.add @ Sphere(
+            key="sphere",
+            args=[0.1, 200, 200],
+            position=[0.2, 0, 0.1],
+            rotation=[0, 0, 0],
+            materialType="depth",
+            outlines=dict(angle=0, thickness=0.002, color="white"),
         )
 
         await sleep(0.0)
 
+        # Animation loop: replay camera trajectory and animate the sphere
         i = 0
         while True:
             i += 1
+
+            # Calculate bouncing sphere position
             h = 0.25 - (0.00866 * (i % 120 - 60)) ** 2
             position = [0.2, 0.0, 0.1 + h]
 
+            # Update both the sphere position and camera pose
             proxy.update @ [
                 Sphere(
                     key="sphere",
@@ -114,6 +147,7 @@ with doc, doc.skip:
                     width=320,
                     height=240,
                     key="ego",
+                    # Use the recorded matrix to set the camera pose
                     matrix=matrices[i % len(matrices)],
                     stream="frame",
                     fps=30,
@@ -122,52 +156,63 @@ with doc, doc.skip:
                     showFrustum=True,
                     downsample=1,
                     distanceToCamera=2,
+                    # Disable user interaction since we're controlling programmatically
                     movable=False,
-                    # dpr=1,
                 ),
             ]
 
             await sleep(0.014)
 
+doc @ """
+## Step 3: Capture Rendered Frames
+
+You can also capture the frames rendered by the virtual camera. This is useful
+for generating datasets or recording videos. The handler receives `CAMERA_VIEW`
+events containing the rendered frame as a buffer.
+"""
+with doc, doc.skip if MAKE_DOCS else nullcontext():
+
     counter = 0
 
     async def collect_render(event: ClientEvent, sess: VuerSession):
         global counter
-        import cv2
-
-        # add you render saving logic here.
         counter += 1
-        if counter % 1 == 0:
-            value = event.value
 
-            buff = value["frame"]
-            pil_image = PImage.open(BytesIO(buff))
-            img = np.array(pil_image)
-            img_bgr = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            cv2.imshow("frame", img_bgr)
-            if cv2.waitKey(1) == ord("q"):
-                exit()
+        # Extract the frame buffer from the event
+        value = event.value
+        buff = value["frame"]
 
+        # Convert to PIL Image, then to numpy array for OpenCV
+        pil_image = PImage.open(BytesIO(buff))
+        img = np.array(pil_image)
+        img_bgr = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+        # Display the frame (press 'q' to quit)
+        cv2.imshow("frame", img_bgr)
+        if cv2.waitKey(1) == ord("q"):
+            exit()
+
+    # Register the handler for camera view events
+    app.add_handler("CAMERA_VIEW", collect_render)
+
+    # Now start the app. This must be called after registering all handlers.
+    # app.start() is blocking, so it should be the last line in your script.
+    app.start()
 
 doc @ """
-## Collecting User Camera Movement
+## Step 4: Running the Tutorial
 
-here is a simple example for logging the camera movement.
+Paste the code into `move_camera.py` and run:
+
+```bash
+python move_camera.py
+```
+
+Open the URL printed in the terminal (usually `https://vuer.ai`).
+
+You should see the camera automatically moving through the recorded trajectory,
+while a sphere bounces in the scene. The camera frustum visualization shows
+where the virtual camera is looking.
 """
-with doc, doc.skip:
-
-    async def track_movement(event: ClientEvent, sess: VuerSession):
-        # only intercept the ego camera.
-        if event.key != "ego":
-            return
-        print("camera moved", event.value["matrix"])
-        logger.log(**event.value, flush=True, silent=True)
-
-
-# won't run, unless the skip is commented out.
-with doc, doc.skip:
-    app.add_handler("CAMERA_VIEW", collect_render)
-    app.add_handler("CAMERA_MOVE", track_movement)
-    app.start()
 
 doc.flush()
