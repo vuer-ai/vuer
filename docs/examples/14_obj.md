@@ -76,3 +76,19 @@ async def main(session):
     while True:
         await sleep(1.0)
 ```
+
+## Expected Output
+
+When the assets finish loading, the handler prints:
+```
+mesh has been loaded: textured stairs are loaded
+mesh has been loaded: wireframe stairs are loaded
+mesh has been loaded: red stairs are loaded
+```
+
+![wireframe](figures/object_files/wireframe.png)
+
+![textured](figures/object_files/textured_mesh.png)
+
+![colored mesh](figures/object_files/colored_mesh.png)
+

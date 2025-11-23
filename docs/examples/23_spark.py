@@ -4,7 +4,7 @@ from cmx import doc
 from contextlib import nullcontext
 
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", None)
+MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
 
 doc @ """

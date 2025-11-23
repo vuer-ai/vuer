@@ -38,6 +38,6 @@ async def main(session: VuerSession):
         # We move the gripper at a const speed around the origin.
         x = np.sin(i / 60) / 2
         y = np.cos(i / 60) / 2
-        session.upsert @ Movable(Gripper(), position=[x, y, 0], key='moving-one')
+        session.upsert @ Movable(Gripper(), position=[x, y, 0], key="moving-one")
         await sleep(0.016)
 ```

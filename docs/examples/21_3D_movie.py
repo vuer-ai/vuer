@@ -3,7 +3,7 @@ import os
 from contextlib import nullcontext
 from pathlib import Path
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", None)
+MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
 doc @ """
 # Playing 3D Movie in VisionPro and Quest 3

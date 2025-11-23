@@ -6,7 +6,7 @@ This section covers loading and animating URDF robot models in Vuer.
 .. toctree::
     :maxdepth: 1
 
-    URDF <03_urdf.md>
     URDF from URLs <03_urdf_url.md>
     URDF from Local Files <03_urdf_local.md>
+    Unitree Go1 (With Stairs) <03_urdf_go1_stairs.md>
 ```

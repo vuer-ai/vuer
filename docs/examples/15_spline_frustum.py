@@ -2,7 +2,7 @@ from cmx import doc
 from contextlib import nullcontext
 import os
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", None)
+MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
 doc @ """
 # Spline and Frustums

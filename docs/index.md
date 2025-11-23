@@ -88,7 +88,6 @@ For a comprehensive list of data types, please refer to the [API documentation o
    :hidden:
 
    tutorials/basics.md
-   tutorials/robotics.md
    tutorials/camera/README.md
    tutorials/physics.md
    Imperative API <examples/04_imperative_api.md>

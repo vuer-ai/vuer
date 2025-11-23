@@ -10,7 +10,7 @@ doc @ """
 
 This example shows how to load a **URDF file from your local filesystem** and animate joint values in real-time.
 
-![](figures/urdf_local.png)
+![](figures/mini_cheetah.png)
 
 ## Code Example
 """

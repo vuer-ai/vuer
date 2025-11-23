@@ -1,4 +1,9 @@
+import os
+from contextlib import nullcontext
+
 from cmx import doc
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
 doc @ """
 # Scene with An Unitree Go1 and 3D Mesh of a Stair Way
@@ -12,7 +17,7 @@ This tutorial shows you how to setup a scene with the following components:
 ![Unitree Go1 Robot in front of a flight of stairs](figures/go1_stairs.png)
 """
 
-with doc, doc.skip:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     import math
     from asyncio import sleep
 

@@ -4,7 +4,7 @@ from datetime import datetime
 
 from cmx import doc
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", None)
+MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
 doc @ """
 # Quest 3 Motion Controller States

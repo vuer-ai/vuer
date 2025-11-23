@@ -1,11 +1,15 @@
+import os
 from cmx import doc
+from contextlib import nullcontext
+
+MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
 doc @ """
 # Point Cloud Animation (Upsert)
 
 """
 
-with doc:
+with doc, doc.skip if MAKE_DOCS else nullcontext():
     import asyncio
 
     import numpy as np

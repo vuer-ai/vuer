@@ -9,8 +9,8 @@ I have implemented range depth in the deformable image plane. I will add metric 
 from asyncio import sleep
 
 from vuer import Vuer
-from vuer.events import Set, Update
-from vuer.schemas import Scene, Box, Sphere, group, SceneBackground
+from vuer.events import Set
+from vuer.schemas import Scene, Box, Sphere, group
 
 app = Vuer()
 

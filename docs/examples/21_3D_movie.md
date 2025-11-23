@@ -85,3 +85,8 @@ async def show_heatmap(session):
             # 'jpeg' encoding should give you about 30fps with a 16ms wait in-between.
             await sleep(0.016 * 2)
 ```
+
+## Next Steps
+
+- [ ] Add layers support to the virtual cameras.
+

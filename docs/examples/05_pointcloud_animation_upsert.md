@@ -4,14 +4,13 @@
 
 ```python
 import asyncio
-from pathlib import Path
 
 import numpy as np
 import open3d as o3d
 
 from vuer import Vuer, VuerSession
-from vuer.events import Set, ClientEvent
-from vuer.schemas import DefaultScene, TriMesh, PointCloud, TimelineControls
+from vuer.events import ClientEvent
+from vuer.schemas import DefaultScene, PointCloud, TimelineControls
 
 mesh = o3d.io.read_triangle_mesh("assets/suzanne.ply")
 vertices = np.asarray(mesh.vertices)
@@ -46,4 +45,9 @@ async def frame_handle(e: ClientEvent, proxy: VuerSession):
         ),
     )
     print("updated the scene")
+```
+
+```python
+app.add_handler("TIMELINE_STEP", frame_handle)
+app.start()
 ```

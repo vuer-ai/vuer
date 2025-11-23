@@ -64,7 +64,6 @@ from asyncio import sleep
 
 app = Vuer()
 
-
 @app.add_handler("BODY_TRACKING_MOVE")
 async def on_body_move(event, session):
     """
@@ -82,7 +81,6 @@ async def on_body_move(event, session):
             "matrix_len=",
             len(first_data.get("matrix", [])) if first_data else None,
         )
-
 
 @app.spawn(start=True)
 async def main(session: VuerSession):

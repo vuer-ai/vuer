@@ -20,20 +20,25 @@ pi = 3.1415
 
 app = Vuer(static_root="assets")
 
-
 @app.spawn(start=True)
 async def main(app: VuerSession):
     # Note: you can only use `set` operator with Scene objects. This is a special operator.
     app.set @ Scene(
         rawChildren=[
-            Plane(args=[100, 100], position=[0, 0, -0.15], rotation=[0, 0, 0], key="ground", materialType="standard",
-                  material={"color": "#eee"}),
+            Plane(
+                args=[100, 100],
+                position=[0, 0, -0.15],
+                rotation=[0, 0, 0],
+                key="ground",
+                materialType="standard",
+                material={"color": "#eee"},
+            ),
             Fog(color="black", near="3", far="7"),
             AmbientLight(intensity=1),
             Movable(PointLight(intensity=1), position=[0, 0, 2]),
             Movable(PointLight(intensity=3), position=[0, 1, 2]),
         ],
-        up=[0, 0, 1]
+        up=[0, 0, 1],
     )
     await sleep(0.1)
 
@@ -50,10 +55,10 @@ async def main(app: VuerSession):
         app.upsert @ Urdf(
             src="http://localhost:8012/static/go1/urdf/go1.urdf",
             jointValues={
-                'FL_hip_joint': -0.1,
-                'RL_hip_joint': -0.1,
-                'FR_hip_joint': 0.1,
-                'RR_hip_joint': 0.1,
+                "FL_hip_joint": -0.1,
+                "RL_hip_joint": -0.1,
+                "FR_hip_joint": 0.1,
+                "RR_hip_joint": 0.1,
                 "FL_thigh_joint": 0.785,
                 "RL_thigh_joint": 0.785,
                 "FR_thigh_joint": 0.785 - 0.25 * math.sin(i * 0.1),

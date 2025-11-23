@@ -3,7 +3,7 @@ from asyncio import sleep
 import os
 from contextlib import nullcontext
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", None)
+MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
 doc @ """
 # Visualizing Camera Frustums
