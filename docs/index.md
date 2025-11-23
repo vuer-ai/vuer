@@ -70,17 +70,13 @@ For a comprehensive list of data types, please refer to the [API documentation o
 
    Quick Start <quick_start>
    Report Issues <https://github.com/vuer-ai/vuer/issues?q=is:issue+is:closed>
-   CHANGE LOG <CHANGE_LOG.md>
    
 .. toctree::
    :maxdepth: 3
    :caption: NEW FEATURES 🔥
    :hidden:
-   
-   Scene Generation (OpenAI Sora) <gaussian_splatting/openai_sora.md>
-   Gaussian Splatting <gaussian_splatting/09_gaussian_splats.md>
-   Gaussian Splatting (VR) <gaussian_splatting/10_gaussian_splats_vr.md>
-   SplatMesh(sparkjs) <examples/23_spark.md>
+
+   SplatMesh(sparkjs) <examples/gaussian_splatting/spark.md>
    
 .. toctree::
    :maxdepth: 3
@@ -90,9 +86,9 @@ For a comprehensive list of data types, please refer to the [API documentation o
    tutorials/basics.md
    tutorials/camera/README.md
    tutorials/physics.md
-   Imperative API <examples/04_imperative_api.md>
-   Detecting When Assets Have Been Loaded <examples/14_obj.md>
-   MuJoCo Interactive Simulator <examples/24_mujoco_interactive_simulator.md>
+   Imperative API <tutorials/imperative_api.md>
+   Detecting When Assets Have Been Loaded <tutorials/obj_loading.md>
+   MuJoCo Interactive Simulator <tutorials/mujoco_interactive_simulator.md>
 
 .. toctree::
    :maxdepth: 3
@@ -101,21 +97,43 @@ For a comprehensive list of data types, please refer to the [API documentation o
 
    examples/meshes.md
    examples/point_clouds.md
-   examples/robotics_urdf.md
+   examples/urdf_go1_stairs.md
+   examples/spline_frustum.md
    examples/visualization_utilities.md
-   examples/camera_rendering.md
    examples/background_environment.md
-   examples/interaction.md
+   examples/pointer.md
    examples/vr_ar_xr.md
-
+   examples/gaussian_splatting.md
+   
 .. toctree::
    :maxdepth: 3
-   :caption: Textures and Meshes
+   :caption: Components
    :hidden:
 
-   Sphere Scene <examples/texture_meshes/ball_scene.md>
-   Stairs Scene <examples/texture_meshes/stairs_scene.md>
-   Adding UV and Texture Map to Trimesh <examples/texture_meshes/textured_trimesh.md>
+   Arrow <components/arrow.md>
+   Billboard <components/billboard.md>
+   Box <components/box.md>
+   CameraView <components/camera_views.md>
+   CoordsMarker <components/coords_marker.md>
+   Frustum <components/frustum.md>
+   Gripper <components/gripper.md>
+   Hands <components/hands.md>
+   ImageBackground <components/image_background.md>
+   Line <components/line.md>
+   MotionControllers <components/motion_controllers.md>
+   Movable <components/movable.md>
+   Obj <components/obj.md>
+   Plane <components/plane.md>
+   Ply <components/ply.md>
+   Pcd <components/pcd.md>
+   PointCloud <components/pointcloud.md>
+   SceneBackground <components/scene_background.md>
+   Sphere <components/sphere.md>
+   Splat <components/splat.md>
+   Text <components/text.md>
+   Text3D <components/text3d.md>
+   TriMesh <components/trimesh.md>
+   Urdf <components/urdf.md>
 
 .. toctree::
    :maxdepth: 3

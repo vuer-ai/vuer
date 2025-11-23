@@ -6,9 +6,7 @@ This section covers displaying point cloud data in Vuer, including loading from 
 .. toctree::
     :maxdepth: 1
 
-    Programmatic PointCloud <02_pointcloud.md>
-    pcd files <02_pointcloud_pcd.md>
-    ply files <02_pointcloud_ply.md>
-    Animation <05_pointcloud_animation.md>
-    Upsert <05_pointcloud_animation_upsert.md>
+    Programmatic PointCloud <point_clouds/pointcloud.md>
+    PointCloud Animation <point_clouds/animation.md>
+    PointCloud Animation (Upsert) <point_clouds/animation_upsert.md>
 ```
