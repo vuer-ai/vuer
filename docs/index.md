@@ -71,12 +71,25 @@ For a comprehensive list of data types, please refer to the [API documentation o
    Quick Start <quick_start>
    Report Issues <https://github.com/vuer-ai/vuer/issues?q=is:issue+is:closed>
    CHANGE LOG <CHANGE_LOG.md>
-   
+
+.. toctree::
+   :maxdepth: 3
+   :caption: 📖 Your First 3D Scene (NEW!)
+   :hidden:
+
+   Constructing A Scene <guides/first_3d_scene/01_constructing_a_scene.md>
+   Component Index <guides/first_3d_scene/02_component_index.md>
+   Materials & Textures <guides/first_3d_scene/03_materials_and_textures.md>
+   Camera Control <guides/first_3d_scene/04_camera_control.md>
+   Lights <guides/first_3d_scene/05_lights.md>
+   Post-processing <guides/first_3d_scene/06_post_processing.md>
+   Path Tracing <guides/first_3d_scene/07_path_tracing.md>
+
 .. toctree::
    :maxdepth: 3
    :caption: NEW FEATURES 🔥
    :hidden:
-   
+
    Scene Generation (OpenAI Sora) <gaussian_splatting/openai_sora.md>
    Gaussian Splatting <gaussian_splatting/09_gaussian_splats.md>
    Gaussian Splatting (VR) <gaussian_splatting/10_gaussian_splats_vr.md>
@@ -136,6 +149,36 @@ For a comprehensive list of data types, please refer to the [API documentation o
    Sphere Scene <examples/texture_meshes/ball_scene.md>
    Stairs Scene <examples/texture_meshes/stairs_scene.md>
    Adding UV and Texture Map to Trimesh <examples/texture_meshes/textured_trimesh.md>
+
+.. toctree::
+   :hidden:
+
+   guides/first_3d_scene/02_primitives.md
+   guides/first_3d_scene/02_trimesh.md
+   guides/first_3d_scene/02_pointcloud.md
+   guides/first_3d_scene/02_ply.md
+   guides/first_3d_scene/02_pcd.md
+   guides/first_3d_scene/02_obj.md
+   guides/first_3d_scene/02_glb.md
+   guides/first_3d_scene/02_urdf.md
+   guides/first_3d_scene/02_splat.md
+   guides/first_3d_scene/02_luma_splats.md
+   guides/first_3d_scene/02_spark_splats.md
+   guides/first_3d_scene/02_movable.md
+   guides/first_3d_scene/02_gripper.md
+   guides/first_3d_scene/02_camera_view.md
+   guides/first_3d_scene/02_frustum.md
+   guides/first_3d_scene/02_grid.md
+   guides/first_3d_scene/02_coords_marker.md
+   guides/first_3d_scene/02_arrow.md
+   guides/first_3d_scene/02_text.md
+   guides/first_3d_scene/02_text3d.md
+   guides/first_3d_scene/02_billboard.md
+   guides/first_3d_scene/02_scene_background.md
+   guides/first_3d_scene/02_image_background.md
+   guides/first_3d_scene/02_group.md
+   guides/first_3d_scene/02_pivot.md
+   guides/first_3d_scene/02_center.md
 
 .. toctree::
    :maxdepth: 3
