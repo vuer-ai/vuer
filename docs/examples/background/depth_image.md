@@ -8,9 +8,9 @@ from asyncio import sleep
 from pathlib import Path
 
 from vuer import Vuer
-from vuer.schemas import DefaultScene, ImageBackground
+from vuer.schemas import DefaultScene, ImageBackground, OrbitControls
 
-assets_folder = Path(__file__).parent / "../../../assets"
+assets_folder = Path(__file__).parent / "../../../../assets"
 
 app = Vuer(
     queries=dict(
@@ -39,11 +39,15 @@ async def show_heatmap(proxy):
                 depthSrc=depth,
                 distanceToCamera=1.0,
                 key="background",
+                fixed=True,
             ),
+            OrbitControls(key="OrbitControls")
+
         ],
         # hide the helper to only render the objects.
         up=[0, 1, 0],
         show_helper=False,
+
     )
 
     while True:
