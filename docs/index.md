@@ -52,7 +52,6 @@ To get a quick overview of what you can do with  <code style="font-size: 1.3em; 
 
 - take a look at the basic tutorial or the tutorial for robotics:
   - [Introduction to Key Vuer Concepts](tutorials/basics)
-  - [Tutorial for Roboticists](tutorials/robotics)
 - or try to take a look at the example gallery [here](examples/01_trimesh)
 
 For a comprehensive list of visualization components, please refer to
@@ -68,7 +67,7 @@ For a comprehensive list of data types, please refer to the [API documentation o
    :maxdepth: 1
    :titlesonly:
 
-   Quick Start <quick_start>
+   Quick Start <quick_start.md>
    Report Issues <https://github.com/vuer-ai/vuer/issues?q=is:issue+is:closed>
    
 .. toctree::

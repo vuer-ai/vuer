@@ -1,4 +1,3 @@
-from pathlib import Path
 import os
 from contextlib import nullcontext
 
@@ -34,6 +33,7 @@ The `onLoad` string you provide will be passed to your handler as `event.value`,
 
 with doc, doc.skip if MAKE_DOCS else nullcontext():
     from asyncio import sleep
+    from pathlib import Path
 
     from vuer import Vuer
     from vuer.events import ClientEvent
