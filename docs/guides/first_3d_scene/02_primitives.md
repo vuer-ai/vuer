@@ -3,16 +3,11 @@
 
 ## Overview
 
-Primitive geometries are the building blocks of 3D scenes. Vuer provides 14 fundamental geometric shapes that can be combined, transformed, and styled to create complex visualizations. These primitives are perfect for:
+Primitive geometries are the building blocks of 3D scenes. Vuer provides 14 fundamental geometric shapes that can be combined, transformed, and styled to create complex visualizations.
 
-- **Rapid prototyping**: Quickly mock up ideas without 3D modeling
-- **Scientific visualization**: Represent data points, markers, and structures
-- **Game development**: Build levels and objects procedurally
-- **UI elements**: Create buttons, indicators, and interactive controls in 3D space
+<iframe src="https://vuer.ai/?hideUI=true&reconnect=True&scene=hqN0YWelU2NlbmWja2V5oTCidXCTAAEAqmJnQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVulISoY2hpbGRyZW6Qo3RhZ6xBbWJpZW50TGlnaHSja2V5p2FtYmllbnSpaW50ZW5zaXR5yz%2FgAAAAAAAAhahjaGlsZHJlbpCjdGFnsERpcmVjdGlvbmFsTGlnaHSja2V5o3N1bqlpbnRlbnNpdHkBqHBvc2l0aW9ukwMDA4WoY2hpbGRyZW6Qo3RhZ7FQZXJzcGVjdGl2ZUNhbWVyYaNrZXmycGVyc3BlY3RpdmUtY2FtZXJhq21ha2VEZWZhdWx0w6hwb3NpdGlvbpP8AgSDqGNoaWxkcmVukKN0YWetT3JiaXRDb250cm9sc6NrZXmrb3JiLWNvbnRyb2yoY2hpbGRyZW6YhqhjaGlsZHJlbpCjdGFnqEN5bGluZGVyo2tleahjeWxpbmRlcqRhcmdzlMs%2F6ZmZmZmZmss%2F6ZmZmZmZmss%2F4AAAAAAAACCocG9zaXRpb26Ty8AMAAAAAAAAyz%2FQAAAAAAAA%2F6xtYXRlcmlhbFR5cGWlYmFzaWOGqGNoaWxkcmVukKN0YWemU3BoZXJlo2tleahzcGhlcmUtMaRhcmdzk8s%2F5mZmZmZmZiAgqHBvc2l0aW9uk8vADAAAAAAAAMs%2F8ZmZmZmZmv%2BsbWF0ZXJpYWxUeXBlpWJhc2ljh6hjaGlsZHJlbpCjdGFnqk9jdGFoZWRyb26ja2V5qm9jdGFoZWRyb26kYXJnc5LLP%2BzMzMzMzM0AqHBvc2l0aW9uk8u%2F%2FMzMzMzMzcs%2F%2BAAAAAAAAMs%2F0zMzMzMzM6hyb3RhdGlvbpMAAMs%2F2SbpeNT99KxtYXRlcmlhbFR5cGWlYmFzaWOHqGNoaWxkcmVukKN0YWelVG9ydXOja2V5pXRvcnVzpGFyZ3OUyz%2FgAAAAAAAAyz%2FDMzMzMzMzIECocG9zaXRpb26TAMs%2F2ZmZmZmZmss%2F6ZmZmZmZmqhyb3RhdGlvbpPLP%2Fki0OVgQYkAAKxtYXRlcmlhbFR5cGWlYmFzaWOHqGNoaWxkcmVukKN0YWejQm94o2tleaNib3ikYXJnc5PLP%2FMzMzMzMzPLP%2FMzMzMzMzPLP%2FMzMzMzMzOocG9zaXRpb26Tyz%2FZmZmZmZmayz%2FgAAAAAAAA%2Fqhyb3RhdGlvbpMAAACsbWF0ZXJpYWxUeXBlpWJhc2ljhqhjaGlsZHJlbpCjdGFnplNwaGVyZaNrZXmoc3BoZXJlLTKkYXJnc5PLP%2BTMzMzMzM0gIKhwb3NpdGlvbpPLP%2FzMzMzMzM3LP%2BZmZmZmZmYArG1hdGVyaWFsVHlwZaViYXNpY4eoY2hpbGRyZW6Qo3RhZ6VQbGFuZaNrZXmlZmxvb3KkYXJnc5IUFKhwb3NpdGlvbpMAAACocm90YXRpb26Ty7%2F5HrhR64UfAACsbWF0ZXJpYWxUeXBlp2xhbWJlcnSGqGNoaWxkcmVukKN0YWelUGxhbmWja2V5qGJhY2tkcm9wpGFyZ3OSFBSocG9zaXRpb26TAAD9rG1hdGVyaWFsVHlwZadsYW1iZXJ0" width="100%" height="400px" frameborder="0"></iframe>
 
-<iframe src="https://vuer.ai/?grid=False&collapseMenu=True&initCamPos=-4%2C2%2C4&reconnect=True&scene=hqN0YWelU2NlbmWja2V5oTCidXCTAAEApGdyaWTCq3Jhd0NoaWxkcmVukoSoY2hpbGRyZW6Qo3RhZ6xBbWJpZW50TGlnaHSja2V5p2FtYmllbnSpaW50ZW5zaXR5yz%2FTMzMzMzMzhahjaGlsZHJlbpCjdGFnsERpcmVjdGlvbmFsTGlnaHSja2V5o3N1bqlpbnRlbnNpdHnLP%2B5mZmZmZmaocG9zaXRpb26TBQUFqGNoaWxkcmVumIaoY2hpbGRyZW6Qo3RhZ6hDeWxpbmRlcqNrZXmubWF0dGUtY3lsaW5kZXKkYXJnc5TLP%2BmZmZmZmZrLP%2BmZmZmZmZrLP%2BAAAAAAAAAgqHBvc2l0aW9uk8vADAAAAAAAAMs%2F0AAAAAAAAP%2BsbWF0ZXJpYWxUeXBlpWJhc2ljhqhjaGlsZHJlbpCjdGFnplNwaGVyZaNrZXmsbWF0dGUtc3BoZXJlpGFyZ3OTyz%2FmZmZmZmZmICCocG9zaXRpb26Ty8AMAAAAAAAAyz%2FxmZmZmZma%2F6xtYXRlcmlhbFR5cGWlYmFzaWOHqGNoaWxkcmVukKN0YWeqT2N0YWhlZHJvbqNrZXmwZ2xhc3Mtb2N0YWhlZHJvbqRhcmdzkss%2F7MzMzMzMzQCocG9zaXRpb26Ty7%2F8zMzMzMzNyz%2F4AAAAAAAAyz%2FTMzMzMzMzqHJvdGF0aW9ukwAAyz%2FZJul41P30rG1hdGVyaWFsVHlwZaViYXNpY4eoY2hpbGRyZW6Qo3RhZ6VUb3J1c6NrZXmrZ2xhc3MtdG9ydXOkYXJnc5TLP%2BAAAAAAAADLP8MzMzMzMzMgQKhwb3NpdGlvbpMAyz%2FZmZmZmZmayz%2FpmZmZmZmaqHJvdGF0aW9uk8s%2F%2BSLQ5WBBiQAArG1hdGVyaWFsVHlwZaViYXNpY4eoY2hpbGRyZW6Qo3RhZ6NCb3ija2V5qmdsb3NzeS1ib3ikYXJnc5PLP%2FMzMzMzMzPLP%2FMzMzMzMzPLP%2FMzMzMzMzOocG9zaXRpb26Tyz%2FZmZmZmZmayz%2FgAAAAAAAA%2Fqhyb3RhdGlvbpMAAACsbWF0ZXJpYWxUeXBlpWJhc2ljhqhjaGlsZHJlbpCjdGFnplNwaGVyZaNrZXmtZ2xvc3N5LXNwaGVyZaRhcmdzk8s%2F5MzMzMzMzSAgqHBvc2l0aW9uk8s%2F%2FMzMzMzMzcs%2F5mZmZmZmZgCsbWF0ZXJpYWxUeXBlpWJhc2ljh6hjaGlsZHJlbpCjdGFnpVBsYW5lo2tleaVmbG9vcqRhcmdzkhQUqHBvc2l0aW9ukwAAAKhyb3RhdGlvbpPLv%2FkeuFHrhR8AAKxtYXRlcmlhbFR5cGWnbGFtYmVydIaoY2hpbGRyZW6Qo3RhZ6VQbGFuZaNrZXmoYmFja2Ryb3CkYXJnc5IUFKhwb3NpdGlvbpMAAP2sbWF0ZXJpYWxUeXBlp2xhbWJlcnQ%3D" width="100%" height="400px" frameborder="0"></iframe>
-
-*Expanding our first scene: adding cylinder, spheres, octahedron, and torus to demonstrate different primitive shapes and material types*
+*Expanding our first scene: adding cylinder, spheres, octahedron, and torus to demonstrate different primitive shapes*
 
 ## Common Properties
 
@@ -56,13 +51,13 @@ A rectangular cuboid, the most versatile primitive.
 
 ```python
 from vuer import Vuer, VuerSession
-from vuer.schemas import DefaultScene, Box
+from vuer.schemas import Scene, Box
 
 app = Vuer()
 
 @app.spawn(start=True)
 async def main(session: VuerSession):
-    session.set @ DefaultScene(
+    session.set @ Scene(
         # Simple cube
         Box(
             args=[1, 1, 1],
@@ -429,7 +424,6 @@ Here's the complete code for the showcase scene at the top of this page:
 ```python
 from vuer import Vuer, VuerSession
 from vuer.schemas import Scene, Box, Sphere, Cylinder, Octahedron, Torus, Plane, OrbitControls
-from vuer.schemas import AmbientLight, DirectionalLight
 
 app = Vuer()
 
@@ -440,14 +434,14 @@ async def main(session: VuerSession):
             args=[0.8, 0.8, 0.5, 32],
             position=[-3.5, 0.25, -1],
             materialType="basic",
-            key="matte-cylinder",
+            key="cylinder",
         ),
 
         Sphere(
-            args=[0.6, 64, 64],
+            args=[0.7, 32, 32],
             position=[-3.5, 1.1, -1],
             materialType="basic",
-            key="matte-sphere",
+            key="sphere-1",
         ),
 
         Octahedron(
@@ -455,7 +449,7 @@ async def main(session: VuerSession):
             position=[-1.8, 1.5, 0.3],
             rotation=[0, 0, 0.393],
             materialType="basic",
-            key="glass-octahedron",
+            key="octahedron",
         ),
 
         Torus(
@@ -463,22 +457,22 @@ async def main(session: VuerSession):
             position=[0, 0.4, 0.8],
             rotation=[1.571, 0, 0],
             materialType="basic",
-            key="glass-torus",
+            key="torus",
         ),
 
         Box(
-            args=[1.4, 1.4, 1.4],
+            args=[1.2, 1.2, 1.2],
             position=[0.4, 0.5, -2],
             rotation=[0, 0, 0],
             materialType="basic",
-            key="glossy-box",
+            key="box",
         ),
 
         Sphere(
-            args=[0.4, 64, 64],
+            args=[0.65, 32, 32],
             position=[1.8, 0.7, 0],
             materialType="basic",
-            key="glossy-sphere",
+            key="sphere-2",
         ),
 
         Plane(
@@ -497,11 +491,6 @@ async def main(session: VuerSession):
 
         up=[0, 1, 0],
         grid=False,
-        rawChildren=[
-            AmbientLight(key="ambient", intensity=0.3),
-            DirectionalLight(key="sun", intensity=0.9, position=[5, 5, 5]),
-            OrbitControls(key="controls"),
-        ],
     )
 
     await session.forever()

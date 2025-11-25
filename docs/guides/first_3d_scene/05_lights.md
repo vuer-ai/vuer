@@ -2,9 +2,9 @@
 
 ## Overview
 
-Lighting transforms flat 3D scenes into vibrant, realistic visuals. In the previous chapter, we used basic lighting with `AmbientLight` and `DirectionalLight`. This chapter will show you how to upgrade that simple setup to professional, cinematic lighting like this:
+Lighting transforms flat 3D scenes into vibrant, realistic visuals. In previous chapters, we did not explicitly set the lights because Vuer provides default lights. This chapter will show you how to upgrade that simple setup to professional, cinematic lighting like this:
 
-<iframe src="https://vuer.ai/?grid=False&collapseMenu=True&initCamPos=-4%2C2%2C4&reconnect=True&scene=h6N0YWelU2NlbmWja2V5oTCidXCTAAEApGdyaWTCqmJnQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVulYqoY2hpbGRyZW6Qo3RhZ6lTcG90TGlnaHSja2V5qWtleS1saWdodKhwb3NpdGlvbpP7AwWpaW50ZW5zaXR5UKVhbmdsZcs%2F4AAAAAAAAKhwZW51bWJyYcs%2F6ZmZmZmZmqVjb2xvcqcjZmY5ZjVhqmNhc3RTaGFkb3fDoioqg65zaGFkb3ctbWFwU2l6ZZLNCADNCACyc2hhZG93LWNhbWVyYS1uZWFyyz%2FgAAAAAAAAsXNoYWRvdy1jYW1lcmEtZmFyMoqoY2hpbGRyZW6Qo3RhZ6lTcG90TGlnaHSja2V5qXJpbS1saWdodKhwb3NpdGlvbpMEBfqpaW50ZW5zaXR5MqVhbmdsZcs%2F4zMzMzMzM6hwZW51bWJyYcs%2F7mZmZmZmZqVjb2xvcqcjNWFhMGZmqmNhc3RTaGFkb3fDoioqg65zaGFkb3ctbWFwU2l6ZZLNCADNCACyc2hhZG93LWNhbWVyYS1uZWFyyz%2FgAAAAAAAAsXNoYWRvdy1jYW1lcmEtZmFyMoioY2hpbGRyZW6Qo3RhZ61SZWN0QXJlYUxpZ2h0o2tleapmaWxsLWxpZ2h0qHBvc2l0aW9ukwYCBKlpbnRlbnNpdHkIpXdpZHRoBKZoZWlnaHQEpWNvbG9ypyNlOGQ1ZmaFqGNoaWxkcmVukKN0YWesQW1iaWVudExpZ2h0o2tleadhbWJpZW50qWludGVuc2l0ecs%2FwzMzMzMzM6Vjb2xvcqcjNGE1NTY4g6hjaGlsZHJlbpCjdGFnrU9yYml0Q29udHJvbHOja2V5q29yYi1jb250cm9sqGNoaWxkcmVumIioY2hpbGRyZW6Qo3RhZ6hDeWxpbmRlcqNrZXmubWF0dGUtY3lsaW5kZXKkYXJnc5TLP%2BmZmZmZmZrLP%2BmZmZmZmZrLP%2BAAAAAAAAAgqHBvc2l0aW9uk8vADAAAAAAAAMs%2F0AAAAAAAAP%2BsbWF0ZXJpYWxUeXBlqHN0YW5kYXJkqG1hdGVyaWFsg6Vjb2xvcqcjNGEzNDI4qXJvdWdobmVzc8s%2F7rhR64UeuKltZXRhbG5lc3MAqmNhc3RTaGFkb3fDiKhjaGlsZHJlbpCjdGFnplNwaGVyZaNrZXmsbWF0dGUtc3BoZXJlpGFyZ3OTyz%2FmZmZmZmZmICCocG9zaXRpb26Ty8AMAAAAAAAAyz%2FxmZmZmZma%2F6xtYXRlcmlhbFR5cGWoc3RhbmRhcmSobWF0ZXJpYWyDpWNvbG9ypyM2YjRlM2Spcm91Z2huZXNzAaltZXRhbG5lc3MAqmNhc3RTaGFkb3fDiahjaGlsZHJlbpCjdGFnqk9jdGFoZWRyb26ja2V5sGdsYXNzLW9jdGFoZWRyb26kYXJnc5LLP%2BzMzMzMzM0AqHBvc2l0aW9uk8u%2F%2FMzMzMzMzcs%2F%2BAAAAAAAAMs%2F0zMzMzMzM6hyb3RhdGlvbpMAAMs%2F2SbpeNT99KxtYXRlcmlhbFR5cGWocGh5c2ljYWyobWF0ZXJpYWyFpWNvbG9ypyNmZmZmZmasdHJhbnNtaXNzaW9uAal0aGlja25lc3PLP%2BmZmZmZmZqpcm91Z2huZXNzAKNpb3LLP%2FgAAAAAAACqY2FzdFNoYWRvd8OJqGNoaWxkcmVukKN0YWelVG9ydXOja2V5q2dsYXNzLXRvcnVzpGFyZ3OUyz%2FgAAAAAAAAyz%2FDMzMzMzMzIECocG9zaXRpb26TAMs%2F2ZmZmZmZmss%2F6ZmZmZmZmqhyb3RhdGlvbpPLP%2Fki0OVgQYkAAKxtYXRlcmlhbFR5cGWocGh5c2ljYWyobWF0ZXJpYWyFpWNvbG9ypyNkNWU4ZmasdHJhbnNtaXNzaW9uyz%2Ftwo9cKPXDqXRoaWNrbmVzc8s%2F4AAAAAAAAKlyb3VnaG5lc3PLP7R64UeuFHujaW9yyz%2F3MzMzMzMzqmNhc3RTaGFkb3fDiahjaGlsZHJlbpCjdGFno0JveKNrZXmqZ2xvc3N5LWJveKRhcmdzk8s%2F8zMzMzMzM8s%2F8zMzMzMzM8s%2F8zMzMzMzM6hwb3NpdGlvbpPLP9mZmZmZmZrLP%2BAAAAAAAAD%2BqHJvdGF0aW9ukwAAAKxtYXRlcmlhbFR5cGWoc3RhbmRhcmSobWF0ZXJpYWyDpWNvbG9ypyNhMTdjNTCpcm91Z2huZXNzyz%2FUeuFHrhR7qW1ldGFsbmVzc8s%2F6AAAAAAAAKpjYXN0U2hhZG93w4ioY2hpbGRyZW6Qo3RhZ6ZTcGhlcmWja2V5rWdsb3NzeS1zcGhlcmWkYXJnc5PLP%2BTMzMzMzM0gIKhwb3NpdGlvbpPLP%2FzMzMzMzM3LP%2BZmZmZmZmYArG1hdGVyaWFsVHlwZahzdGFuZGFyZKhtYXRlcmlhbIOlY29sb3KnI2I4OTI1Zqlyb3VnaG5lc3PLP7wo9cKPXCmpbWV0YWxuZXNzyz%2FoAAAAAAAAqmNhc3RTaGFkb3fDiahjaGlsZHJlbpCjdGFnpVBsYW5lo2tleaVmbG9vcqRhcmdzkhQUqHBvc2l0aW9ukwAAAKhyb3RhdGlvbpPLv%2FkeuFHrhR8AAKxtYXRlcmlhbFR5cGWoc3RhbmRhcmSobWF0ZXJpYWyCo21hcNlNaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3Z1ZXItYWkvdnVlci9tYWluL2RvY3MvX3N0YXRpYy8wM19mbG9vci5qcGepcm91Z2huZXNzyz%2FszMzMzMzNrXJlY2VpdmVTaGFkb3fDiKhjaGlsZHJlbpCjdGFnpVBsYW5lo2tleahiYWNrZHJvcKRhcmdzkhQUqHBvc2l0aW9ukwAA%2FaxtYXRlcmlhbFR5cGWoc3RhbmRhcmSobWF0ZXJpYWyCo21hcNlQaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3Z1ZXItYWkvdnVlci9tYWluL2RvY3MvX3N0YXRpYy8wM19iYWNrZHJvcC5qcGepcm91Z2huZXNzyz%2FuZmZmZmZmrXJlY2VpdmVTaGFkb3fD" width="100%" height="400px" frameborder="0"></iframe>
+<iframe src="https://vuer.ai/?hideUI=true&reconnect=True&scene=h6N0YWelU2NlbmWja2V5oTCidXCTAAEApGdyaWTCqmJnQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVuloyoY2hpbGRyZW6Qo3RhZ6lTcG90TGlnaHSja2V5qWtleS1saWdodKhwb3NpdGlvbpP7AwWpaW50ZW5zaXR5UKVhbmdsZcs%2F4AAAAAAAAKhwZW51bWJyYcs%2F6ZmZmZmZmqVjb2xvcqcjZmY5ZjVhqGRpc3RhbmNlAKVkZWNheQKqY2FzdFNoYWRvd8OiKiqDrnNoYWRvdy1tYXBTaXplks0IAM0IALJzaGFkb3ctY2FtZXJhLW5lYXLLP%2BAAAAAAAACxc2hhZG93LWNhbWVyYS1mYXIyiqhjaGlsZHJlbpCjdGFnqVNwb3RMaWdodKNrZXmpcmltLWxpZ2h0qHBvc2l0aW9ukwQF%2BqlpbnRlbnNpdHkypWFuZ2xlyz%2FjMzMzMzMzqHBlbnVtYnJhyz%2FuZmZmZmZmpWNvbG9ypyM1YWEwZmaqY2FzdFNoYWRvd8OiKiqDrnNoYWRvdy1tYXBTaXplks0IAM0IALJzaGFkb3ctY2FtZXJhLW5lYXLLP%2BAAAAAAAACxc2hhZG93LWNhbWVyYS1mYXIyiKhjaGlsZHJlbpCjdGFnrVJlY3RBcmVhTGlnaHSja2V5qmZpbGwtbGlnaHSocG9zaXRpb26TBgIEqWludGVuc2l0eQild2lkdGgEpmhlaWdodASlY29sb3KnI2U4ZDVmZoWoY2hpbGRyZW6Qo3RhZ6xBbWJpZW50TGlnaHSja2V5p2FtYmllbnSpaW50ZW5zaXR5yz%2FDMzMzMzMzpWNvbG9ypyM0YTU1NjiFqGNoaWxkcmVukKN0YWexUGVyc3BlY3RpdmVDYW1lcmGja2V5snBlcnNwZWN0aXZlLWNhbWVyYattYWtlRGVmYXVsdMOocG9zaXRpb26T%2FAIEg6hjaGlsZHJlbpCjdGFnrU9yYml0Q29udHJvbHOja2V5q29yYi1jb250cm9sqGNoaWxkcmVumIioY2hpbGRyZW6Qo3RhZ6hDeWxpbmRlcqNrZXmubWF0dGUtY3lsaW5kZXKkYXJnc5TLP%2BmZmZmZmZrLP%2BmZmZmZmZrLP%2BAAAAAAAAAgqHBvc2l0aW9uk8vADAAAAAAAAMs%2F0AAAAAAAAP%2BsbWF0ZXJpYWxUeXBlqHN0YW5kYXJkqG1hdGVyaWFsg6Vjb2xvcqcjNGEzNDI4qXJvdWdobmVzc8s%2F7rhR64UeuKltZXRhbG5lc3MAqmNhc3RTaGFkb3fDiKhjaGlsZHJlbpCjdGFnplNwaGVyZaNrZXmsbWF0dGUtc3BoZXJlpGFyZ3OTyz%2FmZmZmZmZmICCocG9zaXRpb26Ty8AMAAAAAAAAyz%2FxmZmZmZma%2F6xtYXRlcmlhbFR5cGWoc3RhbmRhcmSobWF0ZXJpYWyDpWNvbG9ypyM2YjRlM2Spcm91Z2huZXNzAaltZXRhbG5lc3MAqmNhc3RTaGFkb3fDiahjaGlsZHJlbpCjdGFnqk9jdGFoZWRyb26ja2V5sGdsYXNzLW9jdGFoZWRyb26kYXJnc5LLP%2BzMzMzMzM0AqHBvc2l0aW9uk8u%2F%2FMzMzMzMzcs%2F%2BAAAAAAAAMs%2F0zMzMzMzM6hyb3RhdGlvbpMAAMs%2F2SbpeNT99KxtYXRlcmlhbFR5cGWocGh5c2ljYWyobWF0ZXJpYWyFpWNvbG9ypyNmZmZmZmasdHJhbnNtaXNzaW9uAal0aGlja25lc3PLP%2BmZmZmZmZqpcm91Z2huZXNzAKNpb3LLP%2FgAAAAAAACqY2FzdFNoYWRvd8OJqGNoaWxkcmVukKN0YWelVG9ydXOja2V5q2dsYXNzLXRvcnVzpGFyZ3OUyz%2FgAAAAAAAAyz%2FDMzMzMzMzIECocG9zaXRpb26TAMs%2F2ZmZmZmZmss%2F6ZmZmZmZmqhyb3RhdGlvbpPLP%2Fki0OVgQYkAAKxtYXRlcmlhbFR5cGWocGh5c2ljYWyobWF0ZXJpYWyFpWNvbG9ypyNkNWU4ZmasdHJhbnNtaXNzaW9uyz%2Ftwo9cKPXDqXRoaWNrbmVzc8s%2F4AAAAAAAAKlyb3VnaG5lc3PLP7R64UeuFHujaW9yyz%2F3MzMzMzMzqmNhc3RTaGFkb3fDiahjaGlsZHJlbpCjdGFno0JveKNrZXmqZ2xvc3N5LWJveKRhcmdzk8s%2F8zMzMzMzM8s%2F8zMzMzMzM8s%2F8zMzMzMzM6hwb3NpdGlvbpPLP9mZmZmZmZrLP%2BAAAAAAAAD%2BqHJvdGF0aW9ukwAAAKxtYXRlcmlhbFR5cGWoc3RhbmRhcmSobWF0ZXJpYWyDpWNvbG9ypyNhMTdjNTCpcm91Z2huZXNzyz%2FUeuFHrhR7qW1ldGFsbmVzc8s%2F6AAAAAAAAKpjYXN0U2hhZG93w4ioY2hpbGRyZW6Qo3RhZ6ZTcGhlcmWja2V5rWdsb3NzeS1zcGhlcmWkYXJnc5PLP%2BTMzMzMzM0gIKhwb3NpdGlvbpPLP%2FzMzMzMzM3LP%2BZmZmZmZmYArG1hdGVyaWFsVHlwZahzdGFuZGFyZKhtYXRlcmlhbIOlY29sb3KnI2I4OTI1Zqlyb3VnaG5lc3PLP7wo9cKPXCmpbWV0YWxuZXNzyz%2FoAAAAAAAAqmNhc3RTaGFkb3fDiahjaGlsZHJlbpCjdGFnpVBsYW5lo2tleaVmbG9vcqRhcmdzkhQUqHBvc2l0aW9ukwAAAKhyb3RhdGlvbpPLv%2FkeuFHrhR8AAKxtYXRlcmlhbFR5cGWoc3RhbmRhcmSobWF0ZXJpYWyCo21hcNlNaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3Z1ZXItYWkvdnVlci9tYWluL2RvY3MvX3N0YXRpYy8wM19mbG9vci5qcGepcm91Z2huZXNzyz%2FszMzMzMzNrXJlY2VpdmVTaGFkb3fDiKhjaGlsZHJlbpCjdGFnpVBsYW5lo2tleahiYWNrZHJvcKRhcmdzkhQUqHBvc2l0aW9ukwAA%2FaxtYXRlcmlhbFR5cGWoc3RhbmRhcmSobWF0ZXJpYWyCo21hcNlQaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3Z1ZXItYWkvdnVlci9tYWluL2RvY3MvX3N0YXRpYy8wM19iYWNrZHJvcC5qcGepcm91Z2huZXNzyz%2FuZmZmZmZmrXJlY2VpdmVTaGFkb3fD" width="100%" height="400px" frameborder="0"></iframe>
 
 The above scene uses a sophisticated four-light setup with warm/cool color contrast and soft shadows. We'll learn how to build this step by step, starting with the fundamentals.
 
@@ -18,12 +18,22 @@ Let's start by understanding the two fundamental light types: ambient and direct
 
 ### AmbientLight - Global Base Lighting
 
-Ambient light illuminates all objects uniformly from all directions, providing a base level of brightness. In the optimized scene above, we use a very low-intensity ambient light (0.15) with a gray tone (#4a5568) to prevent completely black areas while maintaining dramatic contrast:
+Ambient light illuminates all objects uniformly from all directions, providing a base level of brightness. In the optimized scene above, we use a very low-intensity ambient light (0.15) with a gray tone (#4a5568) to prevent completely black areas while maintaining dramatic contrast.
+
+```{admonition} Why defaultLights=False in These Examples?
+:class: tip
+
+You'll notice `defaultLights=False` in the code examples throughout this chapter. By default, Vuer adds a `HemisphereLight` and `DirectionalLight` to help you see objects immediately.
+
+Setting `defaultLights=False` disables this automatic lighting, ensuring that only the lights you explicitly define affect the scene. This allows you to see the precise effect of each light type without interference from Vuer's default lighting.
+
+**Note:** Default lights are part of `bgChildren`, which also includes Grid, OrbitControls, VR devices, etc. Using `bgChildren=[]` clears everything, while `defaultLights=False` only removes the lighting.
+```
 
 ```python
 from vuer import Vuer, VuerSession
 from vuer.schemas import Scene, Box, Sphere
-from vuer.schemas import AmbientLight, OrbitControls
+from vuer.schemas import AmbientLight
 
 app = Vuer()
 
@@ -33,21 +43,22 @@ async def main(session: VuerSession):
         # ... your scene objects ...
 
         up=[0, 1, 0],
-        grid=True,
-        bgChildren=[],
+        grid=False,
+        defaultLights=False,  # Disable default lights
         rawChildren=[
             # Only ambient light - notice how flat it looks
             AmbientLight(
                  intensity=0.15,
                  color="#4a5568",
                  key="ambient",
-             ),
-            OrbitControls(key="controls"),
+             )
         ],
     )
 
     await session.forever()
 ```
+
+**Key parameters:** `color` (default: `"#ffffff"`), `intensity` (default: `0.5`)
 
 **Key characteristics:**
 - No shadows or direction
@@ -57,18 +68,18 @@ async def main(session: VuerSession):
 
 ### DirectionalLight - Adding Depth with Shadows
 
+Directional light simulates distant light sources like the sun, casting parallel rays across the entire scene:
+
 ```python
-rawChildren=[
-    DirectionalLight(
-        intensity=1.0,
-        color="white",
-        position=[5, 5, 5],   # Light comes from this direction
-        castShadow=True,      # Enable shadows
-        key="sun",
-    ),
-    OrbitControls(key="controls"),
-],
+DirectionalLight(
+    intensity=1.0,
+    color="#ffffff",
+    position=[0, 5, 5],   # Light comes from this direction
+    key="directional",
+)
 ```
+
+**Key parameters:** `color`, `intensity` (default: `0.5`), `position`, `castShadow` (enable shadows)
 
 **Key characteristics:**
 - Creates parallel rays like sunlight
@@ -84,14 +95,16 @@ Point lights emit in all directions from a single point, like a light bulb:
 
 ```python
 PointLight(
-    intensity=1.0,
+    intensity=20,
     color="#ffaa00",
-    position=[0, 2, 0],       # Actual position in space
-    distance=10,              # Range (0 = infinite)
-    decay=2,                  # Light falloff rate
+    position=[0, 5, 5],       # Actual position in space
+    radius=0.1,               # Size of debug sphere
+    showSphere=True,          # Show sphere at light position
     key="bulb",
 )
 ```
+
+**Key parameters:** `color`, `intensity` (default: `20`), `position`, `showSphere` (display sphere at light position), `castShadow` (enable shadows)
 
 **Use cases:** Light bulbs, torches, candles, magical orbs
 
@@ -101,16 +114,18 @@ Spotlight creates a cone of light, perfect for dramatic focused illumination. Th
 
 ```python
 SpotLight(
-    intensity=1.0,
-    color="white",
-    position=[0, 3, 0],       # Light position
-    angle=0.5,                # Cone angle (radians)
-    penumbra=0.2,             # Edge softness (0-1)
-    distance=20,              # Range
-    castShadow=True,
+    intensity=80,
+    color="#ff9f5a",
+    position=[-5, 3, 5],      # Light position
+    angle=0.5,                # Cone angle in radians (Math.PI/3 ≈ 1.047)
+    penumbra=0.8,             # Edge softness (0-1), 0=sharp, 1=soft
+    distance=0,               # Range (0 = infinite)
+    decay=2,                  # Light falloff rate
     key="spotlight",
 )
 ```
+
+**Key parameters:** `color`, `intensity`, `position`, `angle` (cone angle in radians, default: π/3), `penumbra` (edge softness 0-1, default: 0), `distance` (range, 0=infinite), `decay` (falloff rate, default: 2), `castShadow`
 
 **Use cases:** Flashlights, stage lighting, dramatic effects
 
@@ -122,10 +137,15 @@ Hemisphere light simulates natural outdoor lighting with different sky and groun
 HemisphereLight(
     skyColor="#87ceeb",       # Sky (top) color
     groundColor="#8b4513",    # Ground (bottom) color
-    intensity=0.6,
+    intensity=1.0,
+    helper=True,              # Show helper for debugging
     key="hemisphere",
 )
 ```
+
+**Key parameters:** `skyColor` (top hemisphere color), `groundColor` (bottom hemisphere color), `intensity` (default: 1.0), `helper`
+
+**Note:** Cannot cast shadows.
 
 **Use cases:** Outdoor scenes, natural ambient light
 
@@ -135,17 +155,20 @@ Rectangular area lights emit from a surface, creating soft, realistic lighting. 
 
 ```python
 RectAreaLight(
-    color="white",
-    intensity=5.0,
-    width=2,                  # Rectangle width
-    height=1,                 # Rectangle height
-    position=[0, 3, 0],
-    rotation=[-1.57, 0, 0],   # Face downward
+    color="#e8d5ff",
+    intensity=8,
+    width=4,                  # Rectangle width
+    height=4,                 # Rectangle height
+    position=[6, 2, 4],
+    lookAt=[0, 0, 0],         # Direction the light faces
+    helper=True,              # Show helper for debugging
     key="area-light",
 )
 ```
 
-**Important**: Only works with `standard` and `physical` materials, and cannot cast shadows.
+**Key parameters:** `color`, `intensity` (default: 1.0), `width`, `height`, `position`, `lookAt` (direction to face), `helper`
+
+**Important:** Only works with `standard` and `physical` materials. Cannot cast shadows.
 
 **Use cases:** Softboxes, windows, studio lighting
 
@@ -229,7 +252,7 @@ Let's put everything together. The scene shown at the beginning of this chapter 
 ```python
 from vuer import Vuer, VuerSession
 from vuer.schemas import Scene, Cylinder, Sphere, Octahedron, Torus, Box, Plane
-from vuer.schemas import AmbientLight, SpotLight, RectAreaLight, OrbitControls
+from vuer.schemas import AmbientLight, SpotLight, RectAreaLight
 
 app = Vuer()
 
@@ -241,16 +264,23 @@ async def main(session: VuerSession):
             args=[0.8, 0.8, 0.5, 32],
             position=[-3.5, 0.25, -1],
             materialType="standard",
-            material=dict(color="#4a3428", roughness=0.95, metalness=0.0),
+            material=dict(
+                color="#4a3428",
+                roughness=0.96,
+                metalness=0
+            ),
             castShadow=True,
             key="matte-cylinder",
         ),
         Sphere(
-            args=[0.6, 64, 64],
+            args=[0.7, 32, 32],
             position=[-3.5, 1.1, -1],
             materialType="standard",
-            material=dict(color="#6b4e3d", roughness=1.0, metalness=0.0),
-            castShadow=True,
+            material=dict(
+                color="#6b4e3d",
+                roughness=1,
+                metalness=0,
+            ),            castShadow=True,
             key="matte-sphere",
         ),
         Octahedron(
@@ -260,9 +290,9 @@ async def main(session: VuerSession):
             materialType="physical",
             material=dict(
                 color="#ffffff",
-                transmission=1.0,
+                transmission=1,
                 thickness=0.8,
-                roughness=0.0,
+                roughness=0,
                 ior=1.5,
             ),
             castShadow=True,
@@ -275,27 +305,35 @@ async def main(session: VuerSession):
             materialType="physical",
             material=dict(
                 color="#d5e8ff",
-                transmission=0.92,
+                transmission=0.93,
                 thickness=0.5,
-                roughness=0.05,
+                roughness=0.08,
                 ior=1.45,
             ),
             castShadow=True,
             key="glass-torus",
         ),
         Box(
-            args=[1.4, 1.4, 1.4],
+            args=[1.2, 1.2, 1.2],
             position=[0.4, 0.5, -2],
             materialType="standard",
-            material=dict(color="#a17c50", roughness=0.2, metalness=0.9),
+            material=dict(
+                color="#a17c50",
+                roughness=0.32,
+                metalness=0.75,
+            ),
             castShadow=True,
             key="glossy-box",
         ),
         Sphere(
-            args=[0.4, 64, 64],
+            args=[0.65, 32, 32],
             position=[1.8, 0.7, 0],
             materialType="standard",
-            material=dict(color="#b8925f", roughness=0.18, metalness=0.9),
+            material=dict(
+                color="#b8925f",
+                roughness=0.11,
+                metalness=0.75,
+            ),
             castShadow=True,
             key="glossy-sphere",
         ),
@@ -327,7 +365,7 @@ async def main(session: VuerSession):
 
         up=[0, 1, 0],
         grid=False,
-        bgChildren=[],
+        defaultLights=False,  # Disable default lights to use custom lighting
         rawChildren=[
             # Four-light setup with shadows
             AmbientLight(
@@ -341,6 +379,8 @@ async def main(session: VuerSession):
                 angle=0.5,
                 penumbra=0.8,
                 color="#ff9f5a",
+                distance=0,
+                decay=2,   
                 castShadow=True,
                 **{
                     "shadow-mapSize": [2048, 2048],
@@ -370,8 +410,7 @@ async def main(session: VuerSession):
                 height=4,
                 color="#e8d5ff",
                 key="fill-light",
-            ),
-            OrbitControls(key="controls"),
+            )
         ],
     )
 

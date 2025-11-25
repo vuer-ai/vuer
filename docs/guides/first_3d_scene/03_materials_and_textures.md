@@ -12,7 +12,7 @@ Vuer supports three simple material types that are easy to use and perform well:
 
 These materials are perfect for most visualization needs.
 
-<iframe src="https://vuer.ai/?grid=False&collapseMenu=True&initCamPos=-4%2C2%2C4&reconnect=True&scene=hahjaGlsZHJlbpiHqGNoaWxkcmVukKNrZXmubWF0dGUtY3lsaW5kZXKjdGFnqEN5bGluZGVypGFyZ3OUyj9MzM3KP0zMzco%2FAAAAIKhwb3NpdGlvbpPKwGAAAMo%2BgAAA%2F6xtYXRlcmlhbFR5cGWlcGhvbmeobWF0ZXJpYWyBpWNvbG9ypyM0YTM0MjiHqGNoaWxkcmVukKNrZXmsbWF0dGUtc3BoZXJlo3RhZ6ZTcGhlcmWkYXJnc5PKPxmZmkBAqHBvc2l0aW9uk8rAYAAAyj%2BMzM3%2FrG1hdGVyaWFsVHlwZadsYW1iZXJ0qG1hdGVyaWFsgaVjb2xvcqcjNmI0ZTNkiKhjaGlsZHJlbpCja2V5sGdsYXNzLW9jdGFoZWRyb26jdGFnqk9jdGFoZWRyb26kYXJnc5LKP2ZmZgCocG9zaXRpb26Tyr%2FmZmbKP8AAAMo%2BmZmaqHJvdGF0aW9ukwAAyj7JN0ysbWF0ZXJpYWxUeXBlpWJhc2ljqG1hdGVyaWFsgaVjb2xvcqcjZmZmZmZmiKhjaGlsZHJlbpCja2V5q2dsYXNzLXRvcnVzo3RhZ6VUb3J1c6RhcmdzlMo%2FAAAAyj4ZmZogQKhwb3NpdGlvbpMAyj7MzM3KP0zMzahyb3RhdGlvbpPKP8kWhwAArG1hdGVyaWFsVHlwZaVwaG9uZ6htYXRlcmlhbIKlY29sb3KnI2Q1ZThmZqlzaGluaW5lc3Nkh6hjaGlsZHJlbpCja2V5qmdsb3NzeS1ib3ijdGFno0JveKRhcmdzk8o%2FszMzyj%2BzMzPKP7MzM6hwb3NpdGlvbpPKPszMzco%2FAAAA%2FqxtYXRlcmlhbFR5cGWnbGFtYmVydKhtYXRlcmlhbIGlY29sb3KnI2ExN2M1MIeoY2hpbGRyZW6Qo2tlea1nbG9zc3ktc3BoZXJlo3RhZ6ZTcGhlcmWkYXJnc5PKPszMzUBAqHBvc2l0aW9uk8o%2F5mZmyj8zMzMArG1hdGVyaWFsVHlwZaVwaG9uZ6htYXRlcmlhbIGlY29sb3KnI2I4OTI1ZoeoY2hpbGRyZW6Qo2tleaVmbG9vcqN0YWelUGxhbmWkYXJnc5IUFKhwb3NpdGlvbpMAAACocm90YXRpb26Tyr%2FI9cMAAKxtYXRlcmlhbFR5cGWnbGFtYmVydIaoY2hpbGRyZW6Qo2tleahiYWNrZHJvcKN0YWelUGxhbmWkYXJnc5IUFKhwb3NpdGlvbpMAAP2sbWF0ZXJpYWxUeXBlp2xhbWJlcnSja2V5oTCjdGFnpVNjZW5lonVwkwABAKtyYXdDaGlsZHJlbpOEqGNoaWxkcmVukKNrZXmnYW1iaWVudKN0YWesQW1iaWVudExpZ2h0qWludGVuc2l0eco%2BmZmahahjaGlsZHJlbpCja2V5o3N1bqN0YWewRGlyZWN0aW9uYWxMaWdodKlpbnRlbnNpdHnKP4AAAKhwb3NpdGlvbpMFBQWDqGNoaWxkcmVukKNrZXmoY29udHJvbHOjdGFnrU9yYml0Q29udHJvbHM%3D" width="100%" height="400px" frameborder="0"></iframe>
+<iframe src="https://vuer.ai/?hideUI=true&reconnect=True&scene=hqNrZXmhMKN0YWelU2NlbmWidXCTAAEAqmJnQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVulISoY2hpbGRyZW6Qo3RhZ6xBbWJpZW50TGlnaHSja2V5p2FtYmllbnSpaW50ZW5zaXR5yz%2FgAAAAAAAAhahjaGlsZHJlbpCjdGFnsERpcmVjdGlvbmFsTGlnaHSja2V5o3N1bqlpbnRlbnNpdHkBqHBvc2l0aW9ukwMDA4WoY2hpbGRyZW6Qo3RhZ7FQZXJzcGVjdGl2ZUNhbWVyYaNrZXmycGVyc3BlY3RpdmUtY2FtZXJhq21ha2VEZWZhdWx0w6hwb3NpdGlvbpP8AgSDqGNoaWxkcmVukKN0YWetT3JiaXRDb250cm9sc6NrZXmrb3JiLWNvbnRyb2yoY2hpbGRyZW6Yh6hjaGlsZHJlbpCja2V5rnBob25nLWN5bGluZGVyo3RhZ6hDeWxpbmRlcqRhcmdzlMs%2F6ZmZmZmZmss%2F6ZmZmZmZmss%2F4AAAAAAAACCocG9zaXRpb26Ty8AMAAAAAAAAyz%2FQAAAAAAAA%2F6xtYXRlcmlhbFR5cGWlcGhvbmeobWF0ZXJpYWyBpWNvbG9ypyM0YTM0MjiHqGNoaWxkcmVukKNrZXmubGFtYmVydC1zcGhlcmWjdGFnplNwaGVyZaRhcmdzk8s%2F5mZmZmZmZiAgqHBvc2l0aW9uk8vADAAAAAAAAMs%2F8ZmZmZmZmv%2BsbWF0ZXJpYWxUeXBlp2xhbWJlcnSobWF0ZXJpYWyBpWNvbG9ypyM2YjRlM2SIqGNoaWxkcmVukKNrZXmwYmFzaWMtb2N0YWhlZHJvbqN0YWeqT2N0YWhlZHJvbqRhcmdzkss%2F7MzMzMzMzQCocG9zaXRpb26Ty7%2F8zMzMzMzNyz%2F4AAAAAAAAyz%2FTMzMzMzMzqHJvdGF0aW9ukwAAyz%2FZJul41P30rG1hdGVyaWFsVHlwZaViYXNpY6htYXRlcmlhbIGlY29sb3KnI2ZmZmZmZoioY2hpbGRyZW6Qo2tleatwaG9uZy10b3J1c6N0YWelVG9ydXOkYXJnc5TLP%2BAAAAAAAADLP8MzMzMzMzMgQKhwb3NpdGlvbpMAyz%2FZmZmZmZmayz%2FpmZmZmZmaqHJvdGF0aW9uk8s%2F%2BSLQ5WBBiQAArG1hdGVyaWFsVHlwZaVwaG9uZ6htYXRlcmlhbIKlY29sb3KnI2Q1ZThmZqlzaGluaW5lc3NkiKhjaGlsZHJlbpCja2V5q2xhbWJlcnQtYm94o3RhZ6NCb3ikYXJnc5PLP%2FMzMzMzMzPLP%2FMzMzMzMzPLP%2FMzMzMzMzOocG9zaXRpb26Tyz%2FZmZmZmZmayz%2FgAAAAAAAA%2Fqhyb3RhdGlvbpMAAACsbWF0ZXJpYWxUeXBlp2xhbWJlcnSobWF0ZXJpYWyBpWNvbG9ypyNhMTdjNTCHqGNoaWxkcmVukKNrZXmscGhvbmctc3BoZXJlo3RhZ6ZTcGhlcmWkYXJnc5PLP%2BTMzMzMzM0gIKhwb3NpdGlvbpPLP%2FzMzMzMzM3LP%2BZmZmZmZmYArG1hdGVyaWFsVHlwZaVwaG9uZ6htYXRlcmlhbIGlY29sb3KnI2I4OTI1ZoeoY2hpbGRyZW6Qo2tleaVmbG9vcqN0YWelUGxhbmWkYXJnc5IUFKhwb3NpdGlvbpMAAACocm90YXRpb26Ty7%2F5HrhR64UfAACsbWF0ZXJpYWxUeXBlp2xhbWJlcnSGqGNoaWxkcmVukKNrZXmoYmFja2Ryb3CjdGFnpVBsYW5lpGFyZ3OSFBSocG9zaXRpb26TAAD9rG1hdGVyaWFsVHlwZadsYW1iZXJ0" width="100%" height="400px" frameborder="0"></iframe>
 
 *Simple materials in action: phong, lambert, and basic materials with the same geometry as the PBR example below*
 
@@ -23,7 +23,6 @@ The `materialType` parameter determines how an object interacts with lights:
 ```python
 from vuer import Vuer, VuerSession
 from vuer.schemas import Scene, Cylinder, Sphere, Octahedron, Torus, Box, Plane
-from vuer.schemas import AmbientLight, DirectionalLight, OrbitControls
 
 app = Vuer()
 
@@ -36,16 +35,16 @@ async def main(session: VuerSession):
             position=[-3.5, 0.25, -1],
             materialType="phong",
             material=dict(color="#4a3428"),
-            key="matte-cylinder",
+            key="phong-cylinder",
         ),
 
         # Lambert material - simple matte
         Sphere(
-            args=[0.6, 64, 64],
+            args=[0.7, 32, 32],
             position=[-3.5, 1.1, -1],
             materialType="lambert",
             material=dict(color="#6b4e3d"),
-            key="matte-sphere",
+            key="lambert-sphere",
         ),
 
         # Basic material - unlit, always bright
@@ -54,8 +53,7 @@ async def main(session: VuerSession):
             position=[-1.8, 1.5, 0.3],
             rotation=[0, 0, 0.393],
             materialType="basic",
-            material=dict(color="#ffffff"),
-            key="glass-octahedron",
+            key="basic-octahedron",
         ),
 
         # Phong with material dict for shininess
@@ -68,25 +66,25 @@ async def main(session: VuerSession):
                 color="#d5e8ff",
                 shininess=100,       # Sharper specular highlights
             ),
-            key="glass-torus",
+            key="phong-torus",
         ),
 
         # Lambert material
         Box(
-            args=[1.4, 1.4, 1.4],
+            args=[1.2, 1.2, 1.2],
             position=[0.4, 0.5, -2],
             materialType="lambert",
             material=dict(color="#a17c50"),
-            key="glossy-box",
+            key="lambert-box",
         ),
 
         # Phong material
         Sphere(
-            args=[0.4, 64, 64],
+            args=[0.65, 32, 32],
             position=[1.8, 0.7, 0],
             materialType="phong",
             material=dict(color="#b8925f"),
-            key="glossy-sphere",
+            key="phong-sphere",
         ),
 
         # Floor
@@ -108,11 +106,6 @@ async def main(session: VuerSession):
 
         up=[0, 1, 0],
         grid=False,
-        rawChildren=[
-            AmbientLight(key="ambient", intensity=0.3),
-            DirectionalLight(key="sun", intensity=1.0, position=[5, 5, 5]),
-            OrbitControls(key="controls"),
-        ],
     )
 
     await session.forever()
@@ -132,50 +125,13 @@ async def main(session: VuerSession):
 
 For photorealistic rendering, Vuer provides Physically-Based Rendering (PBR) materials: **standard** and **physical**. These materials require the `material` parameter with properties like `roughness`, `metalness`, and `transmission`:
 
-<iframe src="https://vuer.ai/?grid=False&collapseMenu=True&initCamPos=-4%2C2%2C4&reconnect=True&scene=hahjaGlsZHJlbpiHqGNoaWxkcmVukKNrZXmubWF0dGUtY3lsaW5kZXKjdGFnqEN5bGluZGVypGFyZ3OUyj9MzM3KP0zMzco%2FAAAAIKhwb3NpdGlvbpPKwGAAAMo%2BgAAA%2F6xtYXRlcmlhbFR5cGWoc3RhbmRhcmSobWF0ZXJpYWyDpWNvbG9ypyM0YTM0Mjipcm91Z2huZXNzyj9zMzOpbWV0YWxuZXNzygAAAACHqGNoaWxkcmVukKNrZXmsbWF0dGUtc3BoZXJlo3RhZ6ZTcGhlcmWkYXJnc5PKPxmZmkBAqHBvc2l0aW9uk8rAYAAAyj%2BMzM3%2FrG1hdGVyaWFsVHlwZahzdGFuZGFyZKhtYXRlcmlhbIOlY29sb3KnIzZiNGUzZKlyb3VnaG5lc3PKP4AAAKltZXRhbG5lc3PKAAAAAIioY2hpbGRyZW6Qo2tlebBnbGFzcy1vY3RhaGVkcm9uo3RhZ6pPY3RhaGVkcm9upGFyZ3OSyj9mZmYAqHBvc2l0aW9uk8q%2F5mZmyj%2FAAADKPpmZmqhyb3RhdGlvbpMAAMo%2ByTdMrG1hdGVyaWFsVHlwZahwaHlzaWNhbKhtYXRlcmlhbIWlY29sb3KnI2ZmZmZmZqx0cmFuc21pc3Npb27KP4AAAKl0aGlja25lc3PKP0zMzalyb3VnaG5lc3PKAAAAAKNpb3LKP8AAAIioY2hpbGRyZW6Qo2tleatnbGFzcy10b3J1c6N0YWelVG9ydXOkYXJnc5TKPwAAAMo%2BGZmaIECocG9zaXRpb26TAMo%2BzMzNyj9MzM2ocm90YXRpb26Tyj%2FJFocAAKxtYXRlcmlhbFR5cGWocGh5c2ljYWyobWF0ZXJpYWyFpWNvbG9ypyNkNWU4ZmasdHJhbnNtaXNzaW9uyj9rhR%2BpdGhpY2tuZXNzyj8AAACpcm91Z2huZXNzyj1MzM2jaW9yyj%2B5mZqHqGNoaWxkcmVukKNrZXmqZ2xvc3N5LWJveKN0YWejQm94pGFyZ3OTyj%2BzMzPKP7MzM8o%2FszMzqHBvc2l0aW9uk8o%2BzMzNyj8AAAD%2BrG1hdGVyaWFsVHlwZahzdGFuZGFyZKhtYXRlcmlhbIOlY29sb3KnI2ExN2M1MKlyb3VnaG5lc3PKPkzMzaltZXRhbG5lc3PKP2ZmZoeoY2hpbGRyZW6Qo2tlea1nbG9zc3ktc3BoZXJlo3RhZ6ZTcGhlcmWkYXJnc5PKPszMzUBAqHBvc2l0aW9uk8o%2F5mZmyj8zMzMArG1hdGVyaWFsVHlwZahzdGFuZGFyZKhtYXRlcmlhbIOlY29sb3KnI2I4OTI1Zqlyb3VnaG5lc3PKPjhR7KltZXRhbG5lc3PKP2ZmZoeoY2hpbGRyZW6Qo2tleaVmbG9vcqN0YWelUGxhbmWkYXJnc5IUFKhwb3NpdGlvbpMAAACocm90YXRpb26Tyr%2FI9cMAAKxtYXRlcmlhbFR5cGWnbGFtYmVydIaoY2hpbGRyZW6Qo2tleahiYWNrZHJvcKN0YWelUGxhbmWkYXJnc5IUFKhwb3NpdGlvbpMAAP2sbWF0ZXJpYWxUeXBlp2xhbWJlcnSja2V5oTCjdGFnpVNjZW5lonVwkwABAKtyYXdDaGlsZHJlbpOEqGNoaWxkcmVukKNrZXmnYW1iaWVudKN0YWesQW1iaWVudExpZ2h0qWludGVuc2l0eco%2BmZmahahjaGlsZHJlbpCja2V5o3N1bqN0YWewRGlyZWN0aW9uYWxMaWdodKlpbnRlbnNpdHnKP4AAAKhwb3NpdGlvbpMFBQWDqGNoaWxkcmVukKNrZXmoY29udHJvbHOjdGFnrU9yYml0Q29udHJvbHM%3D" width="100%" height="400px" frameborder="0"></iframe>
+<iframe src="https://vuer.ai/?hideUI=true&reconnect=True&scene=hqNrZXmhMKN0YWelU2NlbmWidXCTAAEAqmJnQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVulISoY2hpbGRyZW6Qo3RhZ6xBbWJpZW50TGlnaHSja2V5p2FtYmllbnSpaW50ZW5zaXR5yz%2FgAAAAAAAAhahjaGlsZHJlbpCjdGFnsERpcmVjdGlvbmFsTGlnaHSja2V5o3N1bqlpbnRlbnNpdHkBqHBvc2l0aW9ukwMDA4WoY2hpbGRyZW6Qo3RhZ7FQZXJzcGVjdGl2ZUNhbWVyYaNrZXmycGVyc3BlY3RpdmUtY2FtZXJhq21ha2VEZWZhdWx0w6hwb3NpdGlvbpP8AgSDqGNoaWxkcmVukKN0YWetT3JiaXRDb250cm9sc6NrZXmrb3JiLWNvbnRyb2yoY2hpbGRyZW6Yh6hjaGlsZHJlbpCjdGFnqEN5bGluZGVyo2tlea5tYXR0ZS1jeWxpbmRlcqRhcmdzlMs%2F6ZmZmZmZmss%2F6ZmZmZmZmss%2F4AAAAAAAACCocG9zaXRpb26Ty8AMAAAAAAAAyz%2FQAAAAAAAA%2F6xtYXRlcmlhbFR5cGWoc3RhbmRhcmSobWF0ZXJpYWyDpWNvbG9ypyM0YTM0Mjipcm91Z2huZXNzyz%2FuuFHrhR64qW1ldGFsbmVzcwCHqGNoaWxkcmVukKN0YWemU3BoZXJlo2tleaxtYXR0ZS1zcGhlcmWkYXJnc5PLP%2BZmZmZmZmYgIKhwb3NpdGlvbpPLwAwAAAAAAADLP%2FGZmZmZmZr%2FrG1hdGVyaWFsVHlwZahzdGFuZGFyZKhtYXRlcmlhbIOlY29sb3KnIzZiNGUzZKlyb3VnaG5lc3MBqW1ldGFsbmVzcwCIqGNoaWxkcmVukKN0YWeqT2N0YWhlZHJvbqNrZXmwZ2xhc3Mtb2N0YWhlZHJvbqRhcmdzkss%2F7MzMzMzMzQCocG9zaXRpb26Ty7%2F8zMzMzMzNyz%2F4AAAAAAAAyz%2FTMzMzMzMzqHJvdGF0aW9ukwAAyz%2FZJul41P30rG1hdGVyaWFsVHlwZahwaHlzaWNhbKhtYXRlcmlhbIWlY29sb3KnI2ZmZmZmZqx0cmFuc21pc3Npb24BqXRoaWNrbmVzc8s%2F6ZmZmZmZmqlyb3VnaG5lc3MAo2lvcss%2F%2BAAAAAAAAIioY2hpbGRyZW6Qo3RhZ6VUb3J1c6NrZXmrZ2xhc3MtdG9ydXOkYXJnc5TLP%2BAAAAAAAADLP8MzMzMzMzMgQKhwb3NpdGlvbpMAyz%2FZmZmZmZmayz%2FpmZmZmZmaqHJvdGF0aW9uk8s%2F%2BSLQ5WBBiQAArG1hdGVyaWFsVHlwZahwaHlzaWNhbKhtYXRlcmlhbIWlY29sb3KnI2Q1ZThmZqx0cmFuc21pc3Npb27LP%2B3Cj1wo9cOpdGhpY2tuZXNzyz%2FgAAAAAAAAqXJvdWdobmVzc8s%2FtHrhR64Ue6Npb3LLP%2FczMzMzMzOIqGNoaWxkcmVukKN0YWejQm94o2tleapnbG9zc3ktYm94pGFyZ3OTyz%2FzMzMzMzMzyz%2FzMzMzMzMzyz%2FzMzMzMzMzqHBvc2l0aW9uk8s%2F2ZmZmZmZmss%2F4AAAAAAAAP6ocm90YXRpb26TAAAArG1hdGVyaWFsVHlwZahzdGFuZGFyZKhtYXRlcmlhbIOlY29sb3KnI2ExN2M1MKlyb3VnaG5lc3PLP9R64UeuFHupbWV0YWxuZXNzyz%2FoAAAAAAAAh6hjaGlsZHJlbpCjdGFnplNwaGVyZaNrZXmtZ2xvc3N5LXNwaGVyZaRhcmdzk8s%2F5MzMzMzMzSAgqHBvc2l0aW9uk8s%2F%2FMzMzMzMzcs%2F5mZmZmZmZgCsbWF0ZXJpYWxUeXBlqHN0YW5kYXJkqG1hdGVyaWFsg6Vjb2xvcqcjYjg5MjVmqXJvdWdobmVzc8s%2FvCj1wo9cKaltZXRhbG5lc3PLP%2BgAAAAAAACHqGNoaWxkcmVukKNrZXmlZmxvb3KjdGFnpVBsYW5lpGFyZ3OSFBSocG9zaXRpb26TAAAAqHJvdGF0aW9uk8u%2F%2BR64UeuFHwAArG1hdGVyaWFsVHlwZadsYW1iZXJ0hqhjaGlsZHJlbpCja2V5qGJhY2tkcm9wo3RhZ6VQbGFuZaRhcmdzkhQUqHBvc2l0aW9ukwAA%2FaxtYXRlcmlhbFR5cGWnbGFtYmVydA%3D%3D" width="100%" height="400px" frameborder="0"></iframe>
 
 *PBR materials with fine-tuned properties: matte (high roughness), glass (transmission), and glossy (low roughness) finishes*
 
 ### Using the material Parameter
 
-The `material` parameter accepts a dictionary of properties for fine-grained control:
-
-```python
-# Matte finish - high roughness, no metalness
-Cylinder(
-    materialType="standard",
-    material=dict(
-        color="#4a3428",
-        roughness=0.95,      # Very rough (0.0 = mirror, 1.0 = completely matte)
-        metalness=0.0,       # Not metallic
-    ),
-    key="matte-cylinder",
-)
-
-# Glass effect - transmission for see-through
-Octahedron(
-    materialType="physical",   # Only "physical" supports transmission
-    material=dict(
-        color="#ffffff",
-        transmission=1.0,      # Full transparency
-        thickness=0.8,         # Glass thickness
-        roughness=0.0,         # Crystal clear
-        ior=1.5,               # Index of refraction (glass ~ 1.5)
-    ),
-    key="glass-octahedron",
-)
-
-# Glossy finish - low roughness with some metal
-Box(
-    materialType="standard",
-    material=dict(
-        color="#a17c50",
-        roughness=0.2,        # Very smooth
-        metalness=0.9,        # Highly metallic
-    ),
-    key="glossy-box",
-)
-```
+The `material` parameter accepts a dictionary of properties for fine-grained control.
 
 ### Key Material Properties
 
@@ -207,7 +163,6 @@ Box(
 ```python
 from vuer import Vuer, VuerSession
 from vuer.schemas import Scene, Cylinder, Sphere, Octahedron, Torus, Box, Plane
-from vuer.schemas import AmbientLight, DirectionalLight, OrbitControls
 
 app = Vuer()
 
@@ -221,21 +176,21 @@ async def main(session: VuerSession):
             materialType="standard",
             material=dict(
                 color="#4a3428",
-                roughness=0.95,
-                metalness=0.0,
+                roughness=0.96,
+                metalness=0,
             ),
             key="matte-cylinder",
         ),
 
         # Matte sphere
         Sphere(
-            args=[0.6, 64, 64],
+            args=[0.7, 32, 32],
             position=[-3.5, 1.1, -1],
             materialType="standard",
             material=dict(
                 color="#6b4e3d",
-                roughness=1.0,
-                metalness=0.0,
+                roughness=1,
+                metalness=0,
             ),
             key="matte-sphere",
         ),
@@ -248,9 +203,9 @@ async def main(session: VuerSession):
             materialType="physical",
             material=dict(
                 color="#ffffff",
-                transmission=1.0,
+                transmission=1,
                 thickness=0.8,
-                roughness=0.0,
+                roughness=0,
                 ior=1.5,
             ),
             key="glass-octahedron",
@@ -264,9 +219,9 @@ async def main(session: VuerSession):
             materialType="physical",
             material=dict(
                 color="#d5e8ff",
-                transmission=0.92,
+                transmission=0.93,
                 thickness=0.5,
-                roughness=0.05,
+                roughness=0.08,
                 ior=1.45,
             ),
             key="glass-torus",
@@ -274,26 +229,26 @@ async def main(session: VuerSession):
 
         # Glossy box
         Box(
-            args=[1.4, 1.4, 1.4],
+            args=[1.2, 1.2, 1.2],
             position=[0.4, 0.5, -2],
             materialType="standard",
             material=dict(
                 color="#a17c50",
-                roughness=0.2,
-                metalness=0.9,
+                roughness=0.32,
+                metalness=0.75,
             ),
             key="glossy-box",
         ),
 
         # Glossy sphere
         Sphere(
-            args=[0.4, 64, 64],
+            args=[0.65, 32, 32],
             position=[1.8, 0.7, 0],
             materialType="standard",
             material=dict(
                 color="#b8925f",
-                roughness=0.18,
-                metalness=0.9,
+                roughness=0.11,
+                metalness=0.75,
             ),
             key="glossy-sphere",
         ),
@@ -317,11 +272,6 @@ async def main(session: VuerSession):
 
         up=[0, 1, 0],
         grid=False,
-        rawChildren=[
-            AmbientLight(key="ambient", intensity=0.3),
-            DirectionalLight(key="sun", intensity=1.0, position=[10, 10, 10]),
-            OrbitControls(key="controls"),
-        ],
     )
 
     await session.forever()
@@ -331,7 +281,7 @@ async def main(session: VuerSession):
 
 Finally, let's add texture maps to the floor and backdrop to create a more realistic environment:
 
-<iframe src="https://vuer.ai/?grid=False&collapseMenu=True&initCamPos=-4%2C2%2C4&reconnect=True&scene=hqN0YWelU2NlbmWja2V5oTCidXCTAAEApGdyaWTCq3Jhd0NoaWxkcmVukoSoY2hpbGRyZW6Qo3RhZ6xBbWJpZW50TGlnaHSja2V5p2FtYmllbnSpaW50ZW5zaXR5yz%2FTMzMzMzMzhahjaGlsZHJlbpCjdGFnsERpcmVjdGlvbmFsTGlnaHSja2V5o3N1bqlpbnRlbnNpdHnLP%2FAAAAAAAACocG9zaXRpb26Ty0AUAAAAAAAAy0AUAAAAAAAAy0AUAAAAAAAAqGNoaWxkcmVumIeoY2hpbGRyZW6Qo3RhZ6hDeWxpbmRlcqNrZXmubWF0dGUtY3lsaW5kZXKkYXJnc5TLP%2BmZmZmZmZrLP%2BmZmZmZmZrLP%2BAAAAAAAAAgqHBvc2l0aW9uk8vADAAAAAAAAMs%2F0AAAAAAAAMu%2F8AAAAAAAAKxtYXRlcmlhbFR5cGWoc3RhbmRhcmSobWF0ZXJpYWyDpWNvbG9ypyM0YTM0Mjipcm91Z2huZXNzyz%2FuuFHrhR64qW1ldGFsbmVzc8sAAAAAAAAAAIeoY2hpbGRyZW6Qo3RhZ6ZTcGhlcmWja2V5rG1hdHRlLXNwaGVyZaRhcmdzk8s%2F5mZmZmZmZiAgqHBvc2l0aW9uk8vADAAAAAAAAMs%2F8ZmZmZmZmsu%2F8AAAAAAAAKxtYXRlcmlhbFR5cGWoc3RhbmRhcmSobWF0ZXJpYWyDpWNvbG9ypyM2YjRlM2Spcm91Z2huZXNzyz%2FwAAAAAAAAqW1ldGFsbmVzc8sAAAAAAAAAAIioY2hpbGRyZW6Qo3RhZ6pPY3RhaGVkcm9uo2tlebBnbGFzcy1vY3RhaGVkcm9upGFyZ3OSyz%2FszMzMzMzNAKhwb3NpdGlvbpPLv%2FzMzMzMzM3LP%2FgAAAAAAADLP9MzMzMzMzOocm90YXRpb26TywAAAAAAAAAAywAAAAAAAAAAyz%2FZJul41P30rG1hdGVyaWFsVHlwZahwaHlzaWNhbKhtYXRlcmlhbIWlY29sb3KnI2ZmZmZmZqx0cmFuc21pc3Npb27LP%2FAAAAAAAACpdGhpY2tuZXNzyz%2FpmZmZmZmaqXJvdWdobmVzc8sAAAAAAAAAAKNpb3LLP%2FgAAAAAAACIqGNoaWxkcmVukKN0YWelVG9ydXOja2V5q2dsYXNzLXRvcnVzpGFyZ3OUyz%2FgAAAAAAAAyz%2FDMzMzMzMzIECocG9zaXRpb26TywAAAAAAAAAAyz%2FZmZmZmZmayz%2FpmZmZmZmaqHJvdGF0aW9uk8s%2F%2BSLQ5WBBicsAAAAAAAAAAMsAAAAAAAAAAKxtYXRlcmlhbFR5cGWocGh5c2ljYWyobWF0ZXJpYWyFpWNvbG9ypyNkNWU4ZmasdHJhbnNtaXNzaW9uyz%2Ftwo9cKPXDqXRoaWNrbmVzc8s%2F4AAAAAAAAKlyb3VnaG5lc3PLP7R64UeuFHujaW9yyz%2F3MzMzMzMziKhjaGlsZHJlbpCjdGFno0JveKNrZXmqZ2xvc3N5LWJveKRhcmdzk8s%2F8zMzMzMzM8s%2F8zMzMzMzM8s%2F8zMzMzMzM6hwb3NpdGlvbpPLP9mZmZmZmZrLP%2BAAAAAAAADLwAAAAAAAAACocm90YXRpb26TywAAAAAAAAAAywAAAAAAAAAAywAAAAAAAAAArG1hdGVyaWFsVHlwZahzdGFuZGFyZKhtYXRlcmlhbIOlY29sb3KnI2ExN2M1MKlyb3VnaG5lc3PLP9R64UeuFHupbWV0YWxuZXNzyz%2FoAAAAAAAAh6hjaGlsZHJlbpCjdGFnplNwaGVyZaNrZXmtZ2xvc3N5LXNwaGVyZaRhcmdzk8s%2F5MzMzMzMzSAgqHBvc2l0aW9uk8s%2F%2FMzMzMzMzcs%2F5mZmZmZmZssAAAAAAAAAAKxtYXRlcmlhbFR5cGWoc3RhbmRhcmSobWF0ZXJpYWyDpWNvbG9ypyNiODkyNWapcm91Z2huZXNzyz%2B8KPXCj1wpqW1ldGFsbmVzc8s%2F6AAAAAAAAIioY2hpbGRyZW6Qo3RhZ6VQbGFuZaNrZXmlZmxvb3KkYXJnc5IUFKhwb3NpdGlvbpPLAAAAAAAAAADLAAAAAAAAAADLAAAAAAAAAACocm90YXRpb26Ty7%2F5HrhR64UfywAAAAAAAAAAywAAAAAAAAAArG1hdGVyaWFsVHlwZahzdGFuZGFyZKhtYXRlcmlhbIKjbWFw2U1odHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vdnVlci1haS92dWVyL21haW4vZG9jcy9fc3RhdGljLzAzX2Zsb29yLmpwZ6lyb3VnaG5lc3PLP%2BzMzMzMzM2HqGNoaWxkcmVukKN0YWelUGxhbmWja2V5qGJhY2tkcm9wpGFyZ3OSFBSocG9zaXRpb26TywAAAAAAAAAAywAAAAAAAAAAy8AIAAAAAAAArG1hdGVyaWFsVHlwZahzdGFuZGFyZKhtYXRlcmlhbIKjbWFw2VBodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vdnVlci1haS92dWVyL21haW4vZG9jcy9fc3RhdGljLzAzX2JhY2tkcm9wLmpwZ6lyb3VnaG5lc3PLP%2B5mZmZmZmY%3D" width="100%" height="400px" frameborder="0"></iframe>
+<iframe src="https://vuer.ai/?hideUI=true&reconnect=True&scene=hqNrZXmhMKN0YWelU2NlbmWidXCTAAEAqmJnQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVulISoY2hpbGRyZW6Qo3RhZ6xBbWJpZW50TGlnaHSja2V5p2FtYmllbnSpaW50ZW5zaXR5yz%2FgAAAAAAAAhahjaGlsZHJlbpCjdGFnsERpcmVjdGlvbmFsTGlnaHSja2V5o3N1bqlpbnRlbnNpdHkBqHBvc2l0aW9ukwMDA4WoY2hpbGRyZW6Qo3RhZ7FQZXJzcGVjdGl2ZUNhbWVyYaNrZXmycGVyc3BlY3RpdmUtY2FtZXJhq21ha2VEZWZhdWx0w6hwb3NpdGlvbpP8AgSDqGNoaWxkcmVukKN0YWetT3JiaXRDb250cm9sc6NrZXmrb3JiLWNvbnRyb2yoY2hpbGRyZW6Yh6hjaGlsZHJlbpCjdGFnqEN5bGluZGVyo2tlea5tYXR0ZS1jeWxpbmRlcqRhcmdzlMs%2F6ZmZmZmZmss%2F6ZmZmZmZmss%2F4AAAAAAAACCocG9zaXRpb26Ty8AMAAAAAAAAyz%2FQAAAAAAAA%2F6xtYXRlcmlhbFR5cGWoc3RhbmRhcmSobWF0ZXJpYWyDpWNvbG9ypyM0YTM0Mjipcm91Z2huZXNzyz%2FuuFHrhR64qW1ldGFsbmVzcwCHqGNoaWxkcmVukKN0YWemU3BoZXJlo2tleaxtYXR0ZS1zcGhlcmWkYXJnc5PLP%2BZmZmZmZmYgIKhwb3NpdGlvbpPLwAwAAAAAAADLP%2FGZmZmZmZr%2FrG1hdGVyaWFsVHlwZahzdGFuZGFyZKhtYXRlcmlhbIOlY29sb3KnIzZiNGUzZKlyb3VnaG5lc3MBqW1ldGFsbmVzcwCIqGNoaWxkcmVukKN0YWeqT2N0YWhlZHJvbqNrZXmwZ2xhc3Mtb2N0YWhlZHJvbqRhcmdzkss%2F7MzMzMzMzQCocG9zaXRpb26Ty7%2F8zMzMzMzNyz%2F4AAAAAAAAyz%2FTMzMzMzMzqHJvdGF0aW9ukwAAyz%2FZJul41P30rG1hdGVyaWFsVHlwZahwaHlzaWNhbKhtYXRlcmlhbIWlY29sb3KnI2ZmZmZmZqx0cmFuc21pc3Npb24BqXRoaWNrbmVzc8s%2F6ZmZmZmZmqlyb3VnaG5lc3MAo2lvcss%2F%2BAAAAAAAAIioY2hpbGRyZW6Qo3RhZ6VUb3J1c6NrZXmrZ2xhc3MtdG9ydXOkYXJnc5TLP%2BAAAAAAAADLP8MzMzMzMzMgQKhwb3NpdGlvbpMAyz%2FZmZmZmZmayz%2FpmZmZmZmaqHJvdGF0aW9uk8s%2F%2BSLQ5WBBiQAArG1hdGVyaWFsVHlwZahwaHlzaWNhbKhtYXRlcmlhbIWlY29sb3KnI2Q1ZThmZqx0cmFuc21pc3Npb27LP%2B3Cj1wo9cOpdGhpY2tuZXNzyz%2FgAAAAAAAAqXJvdWdobmVzc8s%2FtHrhR64Ue6Npb3LLP%2FczMzMzMzOIqGNoaWxkcmVukKN0YWejQm94o2tleapnbG9zc3ktYm94pGFyZ3OTyz%2FzMzMzMzMzyz%2FzMzMzMzMzyz%2FzMzMzMzMzqHBvc2l0aW9uk8s%2F2ZmZmZmZmss%2F4AAAAAAAAP6ocm90YXRpb26TAAAArG1hdGVyaWFsVHlwZahzdGFuZGFyZKhtYXRlcmlhbIOlY29sb3KnI2ExN2M1MKlyb3VnaG5lc3PLP9R64UeuFHupbWV0YWxuZXNzyz%2FoAAAAAAAAh6hjaGlsZHJlbpCjdGFnplNwaGVyZaNrZXmtZ2xvc3N5LXNwaGVyZaRhcmdzk8s%2F5MzMzMzMzSAgqHBvc2l0aW9uk8s%2F%2FMzMzMzMzcs%2F5mZmZmZmZgCsbWF0ZXJpYWxUeXBlqHN0YW5kYXJkqG1hdGVyaWFsg6Vjb2xvcqcjYjg5MjVmqXJvdWdobmVzc8s%2FvCj1wo9cKaltZXRhbG5lc3PLP%2BgAAAAAAACIqGNoaWxkcmVukKN0YWelUGxhbmWja2V5pWZsb29ypGFyZ3OSFBSocG9zaXRpb26TAAAAqHJvdGF0aW9uk8u%2F%2BR64UeuFHwAArG1hdGVyaWFsVHlwZahzdGFuZGFyZKhtYXRlcmlhbIKjbWFw2U1odHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vdnVlci1haS92dWVyL21haW4vZG9jcy9fc3RhdGljLzAzX2Zsb29yLmpwZ6lyb3VnaG5lc3PLP%2BzMzMzMzM2HqGNoaWxkcmVukKN0YWelUGxhbmWja2V5qGJhY2tkcm9wpGFyZ3OSFBSocG9zaXRpb26TAAD9rG1hdGVyaWFsVHlwZahzdGFuZGFyZKhtYXRlcmlhbIKjbWFw2VBodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vdnVlci1haS92dWVyL21haW4vZG9jcy9fc3RhdGljLzAzX2JhY2tkcm9wLmpwZ6lyb3VnaG5lc3PLP%2B5mZmZmZmY%3D" width="100%" height="400px" frameborder="0"></iframe>
 
 *Enhancing realism: adding texture maps to floor and backdrop for environmental detail*
 
