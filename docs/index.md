@@ -38,7 +38,7 @@ async def main(session: VuerSession):
     await session.sleep(0.1)
 ```
 
-<iframe src="https://vuer.ai/?background=131416,fff&collapseMenu=true&initCamPos=2.8,2.2,2.5&scene=3gAEqGNoaWxkcmVukt4AB6hjaGlsZHJlbpCjdGFnpFVyZGaja2V5rHBlcnNldmVyYW5jZaNzcmPZRGh0dHBzOi8vZG9jcy52dWVyLmFpL2VuL2xhdGVzdC9fc3RhdGljL3BlcnNldmVyYW5jZS9yb3Zlci9tMjAyMC51cmRmq2pvaW50VmFsdWVz3gAAqHJvdGF0aW9uk8s%2F%2BR64YAAAAAAAqHBvc2l0aW9ukwAAy7%2F4AAAAAAAA3gAHqGNoaWxkcmVukKN0YWekVXJkZqNrZXmvbWFycy1oZWxpY29wdGVyo3NyY9lAaHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvcGVyc2V2ZXJhbmNlL21ocy9NSFMudXJkZqtqb2ludFZhbHVlc94AAKhyb3RhdGlvbpPLP%2FkeuGAAAAAAAKhwb3NpdGlvbpMAyz%2FR64UgAAAAyz%2FgAAAAAAAArGh0bWxDaGlsZHJlbpCrcmF3Q2hpbGRyZW6QqmJnQ2hpbGRyZW6Q" width="100%" height="400px" frameborder="0"></iframe>
+<iframe src="https://vuer.ai//?hideUI=true&reconnect=True&scene=h6hjaGlsZHJlbpGEqGNoaWxkcmVukYaoY2hpbGRyZW6Qo3RhZ6RVcmRmo2tleaExo3NyY9lSaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL25hc2EtanBsL20yMDIwLXVyZGYtbW9kZWxzL21haW4vcm92ZXIvbTIwMjAudXJkZqtqb2ludFZhbHVlc4Cocm90YXRpb26Ty0AJHrhR64UfAACjdGFnp01vdmFibGWja2V5oTKocG9zaXRpb26TAADLP8MzMzMzMzOjdGFnpVNjZW5lo2tleaEzonVwkwAAAahzaG93TGV2YcKqYmdDaGlsZHJlbpCrcmF3Q2hpbGRyZW6VhKhjaGlsZHJlbpCjdGFnrEFtYmllbnRMaWdodKNrZXmnYW1iaWVudKlpbnRlbnNpdHnLP%2BAAAAAAAACFqGNoaWxkcmVukKN0YWewRGlyZWN0aW9uYWxMaWdodKNrZXmjc3VuqWludGVuc2l0eQGocG9zaXRpb26TAwMDhahjaGlsZHJlbpCjdGFnsVBlcnNwZWN0aXZlQ2FtZXJho2tlebJwZXJzcGVjdGl2ZS1jYW1lcmGrbWFrZURlZmF1bHTDqHBvc2l0aW9ukwADA4OoY2hpbGRyZW6Qo3RhZ61PcmJpdENvbnRyb2xzo2tleatvcmItY29udHJvbIOoY2hpbGRyZW6Qo3RhZ6RHcmlko2tleaRncmlk" width="100%" height="350px" frameborder="0"></iframe>
 
 Vuer is built by researchers at MIT and UCSD in fields including robotics, computer vision, and computer graphics.
 
@@ -69,13 +69,30 @@ For a comprehensive list of data types, please refer to the [API documentation o
 
    Quick Start <quick_start.md>
    Report Issues <https://github.com/vuer-ai/vuer/issues?q=is:issue+is:closed>
-   
+   CHANGE LOG <CHANGE_LOG.md>
+
+.. toctree::
+   :maxdepth: 3
+   :caption: 📖 Your First 3D Scene (NEW!)
+   :hidden:
+
+   Constructing A Scene <guides/first_3d_scene/01_constructing_a_scene.md>
+   Component Index <guides/first_3d_scene/02_component_index.md>
+   Materials & Textures <guides/first_3d_scene/03_materials_and_textures.md>
+   Camera Control <guides/first_3d_scene/04_camera_control.md>
+   Lights <guides/first_3d_scene/05_lights.md>
+   Post-processing <guides/first_3d_scene/06_post_processing.md>
+   Path Tracing <guides/first_3d_scene/07_path_tracing.md>
+
 .. toctree::
    :maxdepth: 3
    :caption: NEW FEATURES 🔥
    :hidden:
-
-   SplatMesh(sparkjs) <examples/gaussian_splatting/spark.md>
+   
+   Scene Generation (OpenAI Sora) <gaussian_splatting/openai_sora.md>
+   Gaussian Splatting <gaussian_splatting/09_gaussian_splats.md>
+   Gaussian Splatting (VR) <gaussian_splatting/10_gaussian_splats_vr.md>
+   SplatMesh(sparkjs) <examples/23_spark.md>
    
 .. toctree::
    :maxdepth: 3
@@ -83,6 +100,7 @@ For a comprehensive list of data types, please refer to the [API documentation o
    :hidden:
 
    tutorials/basics.md
+   tutorials/robotics.md
    tutorials/camera/README.md
    tutorials/physics.md
    Imperative API <tutorials/imperative_api.md>
@@ -106,33 +124,12 @@ For a comprehensive list of data types, please refer to the [API documentation o
    
 .. toctree::
    :maxdepth: 3
-   :caption: Components
+   :caption: Textuers and Meshes
    :hidden:
-
-   Arrow <components/arrow.md>
-   Billboard <components/billboard.md>
-   Box <components/box.md>
-   CameraView <components/camera_views.md>
-   CoordsMarker <components/coords_marker.md>
-   Frustum <components/frustum.md>
-   Gripper <components/gripper.md>
-   Hands <components/hands.md>
-   ImageBackground <components/image_background.md>
-   Line <components/line.md>
-   MotionControllers <components/motion_controllers.md>
-   Movable <components/movable.md>
-   Obj <components/obj.md>
-   Plane <components/plane.md>
-   Ply <components/ply.md>
-   Pcd <components/pcd.md>
-   PointCloud <components/pointcloud.md>
-   SceneBackground <components/scene_background.md>
-   Sphere <components/sphere.md>
-   Splat <components/splat.md>
-   Text <components/text.md>
-   Text3D <components/text3d.md>
-   TriMesh <components/trimesh.md>
-   Urdf <components/urdf.md>
+   
+   Sphere Scene <examples/texture_meshes/ball_scene.md>
+   Stairs Scene <examples/texture_meshes/stairs_scene.md>
+   Adding UV and Texture Map to Trimesh <examples/texture_meshes/textured_trimesh.md>
 
 .. toctree::
    :maxdepth: 3
