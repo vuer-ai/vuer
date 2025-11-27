@@ -2,7 +2,7 @@ import os
 from cmx import doc
 from contextlib import nullcontext
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", True)
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 doc @ """
 # Urdf
@@ -21,34 +21,17 @@ This is essential for:
 A minimal example that loads a URDF robot model directly from a URL:
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
-    from math import pi
     from vuer import Vuer
-    from vuer.schemas import DefaultScene, Movable, OrbitControls, Urdf
+    from vuer.schemas import DefaultScene, Urdf, OrbitControls
 
     app = Vuer()
-
 
     @app.spawn(start=True)
     async def main(sess):
         sess.set @ DefaultScene(
-            # Movable wrapper allows the user to drag and reposition the robot
-            Movable(
-                Urdf(
-                    # Load URDF directly from a URL
-                    src="https://raw.githubusercontent.com/nasa-jpl/m2020-urdf-models/main/rover/m2020.urdf",
-                    jointValues={},
-                    # Rotate to correct orientation (model is upside-down by default)
-                    rotation=[pi, 0, 0],
-                ),
-                position=[0, 0, 0.15],
-            ),
-            grid=True,
-            collapseMenu=True,
-            # Z-up coordinate system
-            up=[0, 0, 1],
-            bgChildren=[
-                OrbitControls(key="OrbitControls"),
-            ],
+    Urdf(src="https://raw.githubusercontent.com/nasa-jpl/m2020-urdf-models/main/rover/m2020.urdf"),
+            up=[0, 0, -1],  # Z-down coordinate system
+            bgChildren=[OrbitControls(key="OrbitControls")]
         )
 
         await sess.forever()
