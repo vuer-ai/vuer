@@ -28,7 +28,7 @@ import open3d as o3d
 
 from vuer import Vuer
 from vuer.events import Set
-from vuer.schemas import DefaultScene, Ply, PointCloud, OrbitControls
+from vuer.schemas import DefaultScene, Ply, PointCloud, Pcd, OrbitControls
 
 assets_folder = Path(__file__).parent / "../../../../assets"
 test_file = "pointclouds/porsche.ply"
@@ -58,11 +58,11 @@ async def main(proxy):
                 position=[0, 0, 10],
                 size=0.008,
             ),
-            Ply(
+            Pcd(
                 src="http://localhost:8012/static/" + f3rm_ycb_1,
                 size=0.001
             ),
-            Ply(
+            Pcd(
                 src="http://localhost:8012/static/" + f3rm_ycb_2,
                 size=0.001,
             ),

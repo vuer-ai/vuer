@@ -69,7 +69,6 @@ For a comprehensive list of data types, please refer to the [API documentation o
 
    Quick Start <quick_start.md>
    Report Issues <https://github.com/vuer-ai/vuer/issues?q=is:issue+is:closed>
-   CHANGE LOG <CHANGE_LOG.md>
 
 .. toctree::
    :maxdepth: 3
@@ -77,7 +76,7 @@ For a comprehensive list of data types, please refer to the [API documentation o
    :hidden:
 
    Constructing A Scene <guides/first_3d_scene/01_constructing_a_scene.md>
-   Component Index <guides/first_3d_scene/02_component_index.md>
+   Components <guides/first_3d_scene/02_component_index.md>
    Materials & Textures <guides/first_3d_scene/03_materials_and_textures.md>
    Camera Control <guides/first_3d_scene/04_camera_control.md>
    Lights <guides/first_3d_scene/05_lights.md>
@@ -103,7 +102,6 @@ For a comprehensive list of data types, please refer to the [API documentation o
    tutorials/robotics.md
    tutorials/camera/README.md
    tutorials/physics.md
-   Imperative API <tutorials/imperative_api.md>
    Detecting When Assets Have Been Loaded <tutorials/obj_loading.md>
    MuJoCo Interactive Simulator <tutorials/mujoco_interactive_simulator.md>
 
@@ -121,15 +119,6 @@ For a comprehensive list of data types, please refer to the [API documentation o
    examples/pointer.md
    examples/vr_ar_xr.md
    examples/gaussian_splatting.md
-   
-.. toctree::
-   :maxdepth: 3
-   :caption: Textuers and Meshes
-   :hidden:
-   
-   Sphere Scene <examples/texture_meshes/ball_scene.md>
-   Stairs Scene <examples/texture_meshes/stairs_scene.md>
-   Adding UV and Texture Map to Trimesh <examples/texture_meshes/textured_trimesh.md>
 
 .. toctree::
    :maxdepth: 3

@@ -367,6 +367,9 @@ Box(
 - `emissiveMap`: Self-illumination pattern
 - `mapRepeat`: Tile texture `[u, v]` times
 
+## MaterialType="normal"
+## MaterialType="depth"
+
 ## Performance Tips
 
 1. **Choose appropriate material complexity:**
