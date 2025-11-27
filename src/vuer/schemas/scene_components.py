@@ -784,6 +784,135 @@ class Bodies(SceneElement):
     )
 
 
+class WebXRMesh(SceneElement):
+  """
+  WebXR Mesh Detection component for real-world environment geometry detection in AR sessions.
+
+  This component enables detection and rendering of environmental geometry like walls, floors,
+  and furniture in WebXR AR sessions. It supports automatic mesh change detection and on-demand
+  RPC requests for mesh data.
+
+  **Requirements:**
+    - WebXR session must be initialized with 'mesh-detection' feature
+    - Only works in immersive-ar mode
+    - Device must support mesh detection API (e.g., Quest 3, ARCore)
+
+  **Data Upload Modes:**
+    1. **Auto-Update Mode** (when `autoUpdate=True`, default):
+       - Automatically detects mesh changes (new/updated/removed meshes)
+       - Pushes updates to server only when changes occur
+       - Server receives 'WEBXR_MESH_UPDATE' events with mesh data
+       - Efficient: Only sends data when needed, not continuously
+       - Set `autoUpdate=False` to disable automatic updates
+
+    2. **RPC Mode** (always active):
+       - Server can request mesh data on-demand using `session.get_webxr_mesh()`
+       - Component responds with latest mesh data immediately
+       - Useful for one-time queries or specific timing requirements
+       - Works regardless of `autoUpdate` setting
+
+  **Mesh Data Structure:**
+    Each detected mesh contains:
+      - vertices: Float32Array of vertex positions (x, y, z coordinates)
+      - indices: Uint32Array of triangle indices
+      - semanticLabel: Optional semantic classification (e.g., "wall", "floor")
+      - matrix: 16-element transformation matrix (4x4 in column-major order)
+
+  Usage Example (Auto-Update Mode):
+
+  .. code-block:: python
+
+      from vuer import Vuer, VuerSession
+      from vuer.schemas import WebXRMesh, Scene
+
+      app = Vuer()
+
+
+      @app.add_handler("WEBXR_MESH_UPDATE")
+      async def handle_mesh_update(event, session):
+          meshes = event.value.get('meshes', [])
+          print(f"Mesh update: {len(meshes)} meshes")
+          for mesh in meshes:
+              print(f"  Vertices: {len(mesh['vertices'])/3:.0f} points")
+              print(f"  Semantic: {mesh.get('semanticLabel', 'unknown')}")
+
+
+      @app.spawn(start=True)
+      async def main(session: VuerSession):
+          session.set @ Scene(
+              children=[
+                  WebXRMesh(
+                      key="webxr-mesh",
+                      autoUpdate=True,  # Enable auto-update (default)
+                      color="blue",
+                      opacity=0.15
+                  )
+              ]
+          )
+          await session.forever()
+
+  Usage Example (RPC Mode Only):
+
+  .. code-block:: python
+
+      from vuer import Vuer, VuerSession
+      from vuer.schemas import WebXRMesh, Scene
+      from asyncio import sleep
+
+      app = Vuer()
+
+
+      @app.spawn(start=True)
+      async def main(session: VuerSession):
+          session.set @ Scene(
+              children=[
+                  WebXRMesh(
+                      key="webxr-mesh",
+                      autoUpdate=False,  # Disable auto-update
+                      color="green",
+                      opacity=0.2
+                  )
+              ]
+          )
+
+          await sleep(2)  # Wait for meshes to be detected
+
+          # Request mesh data on-demand using RPC
+          mesh_data = await session.get_webxr_mesh(key="webxr-mesh")
+          meshes = mesh_data.value.get('meshes', [])
+          print(f"Retrieved {len(meshes)} meshes")
+
+  :param key: Unique identifier for the WebXR mesh component (default: "webxr-mesh")
+  :type key: str
+  :param color: Mesh material color (CSS color string or hex)
+  :type color: str, optional
+  :param opacity: Material opacity for solid mesh (default: 0.15, range: 0.0-1.0)
+  :type opacity: float
+  :param autoUpdate: Enable automatic updates when meshes change (default: True).
+                     When True, sends WEBXR_MESH_UPDATE events on changes.
+                     When False, only RPC mode is available.
+  :type autoUpdate: bool
+  """
+
+  tag = "WebXRMesh"
+
+  def __init__(
+    self,
+    key="webxr-mesh",
+    color=None,
+    opacity=0.15,
+    autoUpdate=True,
+    **kwargs,
+  ):
+    super().__init__(
+      key=key,
+      color=color,
+      opacity=opacity,
+      autoUpdate=autoUpdate,
+      **kwargs,
+    )
+
+
 class Obj(SceneElement):
   tag = "Obj"
 

@@ -12,7 +12,7 @@ are the generated 3D Gaussian Splatting models. This page includes four scenes:
 ## Big Sur
 
 Here is a live demo:
-<iframe src="https://vuer.ai/?collapseMenu=True&grid=False&fov=115&scene=3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tleadiaWdfc3Vyo3NyY9k7aHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvYXNzZXRzL2JpZ19zdXIuc3BsYXSlc2NhbGXLP%2BAAAAAAAACocG9zaXRpb26Ty7%2FmZmZgAAAAyz%2FoAAAAAAAAyz%2F5R64gAAAAqHJvdGF0aW9uk8s%2F9PGmwAAAAMu%2FsYPFQAAAAMs%2F2%2BzeYAAAAKxodG1sQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVukKpiZ0NoaWxkcmVukA%3D%3D" width="100%" height="400" frameborder="0"></iframe>
+<iframe src="https://vuer.ai/?collapseMenu=True&grid=False&fov=115&scene=gahjaGlsZHJlbpGHqGNoaWxkcmVukKN0YWelU3BsYXSja2V5p2JpZ19zdXKjc3Jj2TtodHRwczovL2RvY3MudnVlci5haS9lbi9sYXRlc3QvX3N0YXRpYy9hc3NldHMvYmlnX3N1ci5zcGxhdKVzY2FsZcs%2F4AAAAAAAAKhwb3NpdGlvbpPLv%2BZmZmAAAADLP%2BgAAAAAAADLP%2FlHriAAAACocm90YXRpb26Tyz%2F08abAAAAAy7%2Bxg8VAAAAAyz%2Fb7N5gAAAA" width="100%" height="400" frameborder="0"></iframe>
 
 can visit: <a href="https://vuer.ai/?collapseMenu=True&grid=False&fov=115&scene=3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tleadiaWdfc3Vyo3NyY9k7aHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvYXNzZXRzL2JpZ19zdXIuc3BsYXSlc2NhbGXLP%2BAAAAAAAACocG9zaXRpb26Ty7%2FmZmZgAAAAyz%2FoAAAAAAAAyz%2F5R64gAAAAqHJvdGF0aW9uk8s%2F9PGmwAAAAMu%2FsYPFQAAAAMs%2F2%2BzeYAAAAKxodG1sQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVukKpiZ0NoaWxkcmVukA%3D%3">link</a>
 
@@ -53,7 +53,7 @@ async def main(proxy):
 
 You can rotate, pan and dolly the camera to view the construction scene from different angles.
 
-<iframe src="https://vuer.ai/?collapseMenu=True&fov=50&scene=3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tleadiaWdfc3Vyo3NyY9lAaHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvYXNzZXRzL2NvbnN0cnVjdGlvbi5zcGxhdKVzY2FsZcs%2F4AAAAAAAAKhwb3NpdGlvbpPLv9UeuGAAAADLP9j1woAAAADLv7HrhSAAAACocm90YXRpb26Tyz%2F6P%2B%2FAAAAAy7%2FfRrugAAAAy0ACtb4AAAAArGh0bWxDaGlsZHJlbpCrcmF3Q2hpbGRyZW6QqmJnQ2hpbGRyZW6Q" width="100%" height="400" frameborder="0"></iframe>
+<iframe src="https://vuer.ai/?collapseMenu=True&fov=50&scene=gahjaGlsZHJlbpGHqGNoaWxkcmVukKN0YWelU3BsYXSja2V5p2JpZ19zdXKjc3Jj2UBodHRwczovL2RvY3MudnVlci5haS9lbi9sYXRlc3QvX3N0YXRpYy9hc3NldHMvY29uc3RydWN0aW9uLnNwbGF0pXNjYWxlyz%2FgAAAAAAAAqHBvc2l0aW9uk8u%2F1R64YAAAAMs%2F2PXCgAAAAMu%2FseuFIAAAAKhyb3RhdGlvbpPLP%2Fo%2F78AAAADLv99Gu6AAAADLQAK1vgAAAAA%3D" width="100%" height="400" frameborder="0"></iframe>
 
 Or click on this <a href="https://vuer.ai/?collapseMenu=True&fov=50&scene=3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tleadiaWdfc3Vyo3NyY9lAaHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvYXNzZXRzL2NvbnN0cnVjdGlvbi5zcGxhdKVzY2FsZcs%2F4AAAAAAAAKhwb3NpdGlvbpPLv9UeuGAAAADLP9j1woAAAADLv7HrhSAAAACocm90YXRpb26Tyz%2F6P%2B%2FAAAAAy7%2FfRrugAAAAy0ACtb4AAAAArGh0bWxDaGlsZHJlbpCrcmF3Q2hpbGRyZW6QqmJnQ2hpbGRyZW6Q">link</a> to visit the scene in full screen.
 
@@ -78,7 +78,7 @@ async def main(proxy):
 
 You can rotate, pan and dolly the camera to view this art gallery scene from different angles.
 
-<iframe src="https://vuer.ai/?collapseMenu=True&fov=50&grid=False&scene=3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tleadiaWdfc3Vyo3NyY9lDaHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvZ2F1c3NpYW5fc3BsYXR0aW5nL2FydC5zcGxhdKVzY2FsZQWocG9zaXRpb26TAMs%2F4zMzQAAAAACocm90YXRpb26Tyz%2F5HRTgAAAAy7%2Bqya%2FgAAAAAKxodG1sQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVukKpiZ0NoaWxkcmVukA%3D%3D" width="100%" height="400" frameborder="0"></iframe>
+<iframe src="https://vuer.ai/?collapseMenu=True&fov=50&grid=False&scene=gahjaGlsZHJlbpGHqGNoaWxkcmVukKN0YWelU3BsYXSja2V5p2JpZ19zdXKjc3Jj2UNodHRwczovL2RvY3MudnVlci5haS9lbi9sYXRlc3QvX3N0YXRpYy9nYXVzc2lhbl9zcGxhdHRpbmcvYXJ0LnNwbGF0pXNjYWxlBahwb3NpdGlvbpMAyz%2FjMzNAAAAAAKhyb3RhdGlvbpPLP%2FkdFOAAAADLv6rJr%2BAAAAAA" width="100%" height="400" frameborder="0"></iframe>
 
 Or click on this <a href="https://vuer.ai/?collapseMenu=True&grid=False&fov=50&scene=3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tleadiaWdfc3Vyo3NyY9lDaHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvZ2F1c3NpYW5fc3BsYXR0aW5nL2FydC5zcGxhdKVzY2FsZQWocG9zaXRpb26TAMs%2F4zMzQAAAAACocm90YXRpb26Tyz%2F5HRTgAAAAy7%2Bqya%2FgAAAAAKxodG1sQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVukKpiZ0NoaWxkcmVukA%3D%3D">link</a> to visit the scene in full screen.
 
@@ -103,7 +103,7 @@ async def main(proxy):
 
 You can rotate, pan and dolly the camera to view the minecraft scene from different angles.
 
-<iframe src="https://vuer.ai/?collapseMenu=True&fov=50&grid=False&scene=3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tlealtaW5lY3JhZnSjc3Jj2UlodHRwczovL2RvY3MudnVlci5haS9lbi9sYXRlc3QvX3N0YXRpYy9nYXVzc2lhbl9zcGxhdHRpbmcvbWluZWNyYWZ0LnNwbGF0pXNjYWxlyz%2FgAAAAAAAAqHBvc2l0aW9uk8u%2FtHrhQAAAAMs%2F09cKQAAAAMu%2FseuFIAAAAKhyb3RhdGlvbpPLP%2FSmIkAAAADLv8iONoAAAADLP%2FV8b8AAAACsaHRtbENoaWxkcmVukKtyYXdDaGlsZHJlbpCqYmdDaGlsZHJlbpA%3D" width="100%" height="400" frameborder="0"></iframe>
+<iframe src="https://vuer.ai/?collapseMenu=True&fov=50&grid=False&scene=gahjaGlsZHJlbpGHqGNoaWxkcmVukKN0YWelU3BsYXSja2V5qW1pbmVjcmFmdKNzcmPZSWh0dHBzOi8vZG9jcy52dWVyLmFpL2VuL2xhdGVzdC9fc3RhdGljL2dhdXNzaWFuX3NwbGF0dGluZy9taW5lY3JhZnQuc3BsYXSlc2NhbGXLP%2BAAAAAAAACocG9zaXRpb26Ty7%2B0euFAAAAAyz%2FT1wpAAAAAy7%2Bx64UgAAAAqHJvdGF0aW9uk8s%2F9KYiQAAAAMu%2FyI42gAAAAMs%2F9XxvwAAAAA%3D%3D" width="100%" height="400" frameborder="0"></iframe>
 
 Or click on this <a href="https://vuer.ai/?collapseMenu=True&fov=50&grid=False&scene=3gAEqGNoaWxkcmVukd4AB6hjaGlsZHJlbpCjdGFnpVNwbGF0o2tlealtaW5lY3JhZnSjc3Jj2UlodHRwczovL2RvY3MudnVlci5haS9lbi9sYXRlc3QvX3N0YXRpYy9nYXVzc2lhbl9zcGxhdHRpbmcvbWluZWNyYWZ0LnNwbGF0pXNjYWxlyz%2FgAAAAAAAAqHBvc2l0aW9uk8u%2FtHrhQAAAAMs%2F09cKQAAAAMu%2FseuFIAAAAKhyb3RhdGlvbpPLP%2FSmIkAAAADLv8iONoAAAADLP%2FV8b8AAAACsaHRtbENoaWxkcmVukKtyYXdDaGlsZHJlbpCqYmdDaGlsZHJlbpA%3D">link</a> to visit the scene in full screen.
 
