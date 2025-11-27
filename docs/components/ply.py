@@ -36,15 +36,15 @@ nicer.
 A minimal example that loads a PLY file from a URL:
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
-    from asyncio import sleep
+    import os
     import numpy as np
-
     from vuer import Vuer, VuerSession
     from vuer.schemas import Ply, Scene, OrbitControls
 
     pixelnerf = "pointclouds/pixelnerf.ply"
 
     app = Vuer(static_root=os.getcwd() + "/../../../assets")
+
 
     @app.spawn(start=True)
     async def main(sess: VuerSession):
@@ -62,8 +62,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             rotation=[-0.5 * np.pi, 0, -0.5 * np.pi]
         )
 
-        while True:
-            await sleep(1)
+        await sess.forever()
 
 doc @ """
 ## Key Parameters
@@ -76,19 +75,11 @@ doc @ """
 | `rotation` | list | `[0,0,0]` | Point cloud rotation |
 | `scale` | float/list | `1` | Point cloud scale |
 
-## Related Components
-
-| Component | Purpose |
-|-----------|---------|
-| `Pcd` | Load PCD format point clouds |
-| `PointCloud` | Programmatic point clouds from arrays |
-
 ## Learn More
 
 For detailed examples of using `Ply`, see:
 
-- [Loading PLY Files](../examples/point_clouds/pointcloud_ply.md) - PLY file loading tutorial
-- [Point Clouds](../examples/point_clouds/pointcloud.md) - Multiple point cloud methods
+- [Showing Point Clouds](../examples/point_clouds/pointcloud.md) - Programmatic point cloud display
 """
 
 doc.flush()

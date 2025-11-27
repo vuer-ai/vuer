@@ -19,18 +19,19 @@ This is ideal for:
 A minimal example that loads an OBJ file from a URL:
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
-    import asyncio
+    import os
     from vuer import Vuer
     from vuer.schemas import DefaultScene, Obj, OrbitControls
 
-    app = Vuer()
+    app = Vuer(static_root=os.getcwd() + "/../../../assets")
+    obj_file = "static_3d/armadillo_midres.obj"
 
     @app.spawn(start=True)
-    async def main(session):
-        session.set @ DefaultScene(
+    async def main(sess):
+        sess.set @ DefaultScene(
             Obj(
                 key="model",
-                src="http://localhost:8012/static/model.obj",
+                src="http://localhost:8012/static/" + obj_file,
                 position=[0, 0, 0],
                 scale=0.5,
             ),
@@ -39,46 +40,44 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             ],
         )
 
-        while True:
-            await asyncio.sleep(1.0)
+        await sess.forever()
 
 doc @ """
 ## Key Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `key` | str | - | Unique identifier for the model |
-| `src` | str | - | URL to the OBJ file |
-| `buff` | bytes | - | Binary OBJ data (alternative to src) |
-| `text` | str | - | OBJ file content as string (alternative to src) |
-| `position` | list | `[0,0,0]` | Model position in world coordinates |
-| `rotation` | list | `[0,0,0]` | Model rotation (Euler angles) |
-| `scale` | float/list | `1` | Uniform or per-axis scale |
+| Parameter | Type         | Default | Description |
+|-----------|--------------|---------|-------------|
+| `key` | str          | - | Unique identifier for the model |
+| `src` | str          | - | URL to the OBJ file |
+| `buff` | bytes        | - | Binary OBJ data (alternative to src) |
+| `text` | str          | - | OBJ file content as string (alternative to src) |
+| `mtl` | str          | `[0,0,0]` | The source of the mtl file. Can be a url or a local file. |
+| `materials` | list[string] | `[0,0,0]` | A list of materials to be used for the obj file. |
 
-## Loading Methods
+## OBJ with Materials (MTL)
 
-| Method | Parameter | Use Case |
-|--------|-----------|----------|
-| URL | `src=...` | Load from static server or CDN |
-| Binary | `buff=...` | Pre-loaded binary data |
-| Text | `text=...` | OBJ file as string |
-
-## Example: Multiple Loading Methods
+OBJ files often come with companion MTL (Material Template Library) files that define colors, textures, and material properties:
 
 ```python
-# Method 1: From URL
-Obj(key="url-loader", src="http://server/model.obj")
+from vuer import Vuer, VuerSession
+from vuer.schemas import DefaultScene, Obj
 
-# Method 2: From binary buffer
-with open("model.obj", "rb") as f:
-    data = f.read()
-Obj(key="buff-loader", buff=data)
+app = Vuer(static_root="./assets")
 
-# Method 3: From text content
-with open("model.obj", "r") as f:
-    text = f.read()
-Obj(key="text-loader", text=text)
+@app.spawn(start=True)
+async def main(session: VuerSession):
+    session.set @ DefaultScene(
+        Obj(
+            src="http://localhost:8012/static/textured_model.obj",
+            mtl="http://localhost:8012/static/textured_model.mtl",
+            position=[0, 0, 0],
+            key="textured",
+        ),
+    )
+    
+    await session.forever()
 ```
+
 
 ## Learn More
 

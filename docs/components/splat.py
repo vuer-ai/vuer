@@ -60,13 +60,6 @@ Vuer supports multiple Gaussian Splatting implementations:
 | `LumaSplats` | LumaAI implementation | VR-optimized rendering |
 | `SparkSplats` | SparkMesh renderer | Alternative rendering engine |
 
-## File Sources
-
-You can load splat files from:
-- **Static server**: Host .splat files on your own server
-- **HuggingFace**: Many pre-trained splats available
-- **Local files**: Serve via Vuer's static file server
-
 ## Learn More
 
 For detailed examples of using `Splat`, see:

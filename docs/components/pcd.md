@@ -16,8 +16,6 @@ A minimal example that loads a PCD file from a URL:
 
 ```python
 import os
-from asyncio import sleep
-
 from vuer import Vuer, VuerSession
 from vuer.schemas import Pcd
 
@@ -37,8 +35,7 @@ async def main(sess: VuerSession):
         size=0.001,
     )
 
-    while True:
-        await sleep(1)
+    await sess.forever()
 ```
 
 ## Key Parameters
@@ -51,16 +48,8 @@ async def main(sess: VuerSession):
 | `rotation` | list | `[0,0,0]` | Point cloud rotation |
 | `scale` | float/list | `1` | Point cloud scale |
 
-## Related Components
-
-| Component | Purpose |
-|-----------|---------|
-| `Ply` | Load PLY format point clouds |
-| `PointCloud` | Programmatic point clouds from arrays |
-
 ## Learn More
 
 For detailed examples of using `Pcd`, see:
 
-- [Loading PCD Files](../examples/point_clouds/pointcloud_pcd.md) - PCD file loading tutorial
-- [Point Clouds](../examples/point_clouds/pointcloud.md) - Multiple point cloud methods
+- [Showing Point Clouds](../examples/point_clouds/pointcloud.md) - Programmatic point cloud display

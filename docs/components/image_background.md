@@ -54,11 +54,14 @@ async def main(session):
 | `distanceToCamera` | float | `1.0` | Base distance from camera |
 | `position` | list | `[0,0,0]` | Background position offset |
 
-## Related Components
+## Comparison
 
-| Component | Purpose |
-|-----------|---------|
-| `SceneBackground` | Simple image backgrounds without depth |
+| Feature | ImageBackground | SceneBackground |
+|---------|----------------|-----------------|
+| **Update rate** | Static | Dynamic (30-60fps) |
+| **Use case** | Simple backdrop | Video/streaming |
+| **Performance** | Very fast | Moderate |
+| **Format** | URL | Numpy array |
 
 ## Learn More
 

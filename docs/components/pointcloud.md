@@ -13,7 +13,6 @@ This is ideal for:
 A minimal example that creates a point cloud from numpy arrays:
 
 ```python
-import asyncio
 import numpy as np
 from vuer import Vuer
 from vuer.schemas import DefaultScene, PointCloud, OrbitControls
@@ -39,8 +38,7 @@ async def main(session):
         ],
     )
 
-    while True:
-        await asyncio.sleep(1.0)
+    await session.forever()
 ```
 
 ## Key Parameters
@@ -49,20 +47,12 @@ async def main(session):
 |-----------|------|---------|-------------|
 | `key` | str | - | Unique identifier for the point cloud |
 | `vertices` | ndarray | - | Nx3 array of point positions |
-| `colors` | ndarray | - | Nx3 array of RGB colors (0-1 range) |
+| `colors` | ndarray | - | Nx3 array of RGB colors. Supports two formats: **Float32** (0-1 range, e.g., `np.array(pcd.colors, dtype=np.float32)`), or **Uint8** (0-255 range, recommended for performance, e.g., `(np.array(pcd.colors) * 255).astype(np.uint8)`) |
 | `size` | float | `0.01` | Point size |
 | `position` | list | `[0,0,0]` | Point cloud position in world coordinates |
 | `rotation` | list | `[0,0,0]` | Point cloud rotation (Euler angles) |
 | `scale` | float/list | `1` | Uniform or per-axis scale |
 
-## Performance Optimization
-
-Vuer uses a custom half-precision format for vertices and Uint8 for colors, cutting the overall data size by half compared to standard formats.
-
-For even better compression, consider:
-- **Draco**: Geometric compression for point clouds
-- **LZ4**: General-purpose compression for streaming
-- **LZW**: Good for depth images due to spatial correlation
 
 ## Learn More
 
@@ -70,5 +60,3 @@ For detailed examples of using `PointCloud`, see:
 
 - [Showing Point Clouds](../examples/point_clouds/pointcloud.md) - Programmatic point cloud display
 - [Point Cloud Animation](../examples/point_clouds/animation.md) - Animating point cloud sequences
-- [Loading PLY Files](../examples/point_clouds/pointcloud_ply.md) - Loading from PLY format
-- [Loading PCD Files](../examples/point_clouds/pointcloud_pcd.md) - Loading from PCD format

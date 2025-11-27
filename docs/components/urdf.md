@@ -15,17 +15,16 @@ This is essential for:
 A minimal example that loads a URDF robot model directly from a URL:
 
 ```python
-from asyncio import sleep
 from math import pi
-
 from vuer import Vuer
 from vuer.schemas import DefaultScene, Movable, OrbitControls, Urdf
 
 app = Vuer()
 
+
 @app.spawn(start=True)
-async def main(session):
-    session.set @ DefaultScene(
+async def main(sess):
+    sess.set @ DefaultScene(
         # Movable wrapper allows the user to drag and reposition the robot
         Movable(
             Urdf(
@@ -46,8 +45,7 @@ async def main(session):
         ],
     )
 
-    while True:
-        await sleep(16)
+    await sess.forever()
 ```
 
 ## Loading URDF from Local Files
@@ -57,20 +55,19 @@ async def main(session):
 This example shows how to load a URDF file from your local filesystem and animate joint values in real-time:
 
 ```python
+import os
 import math
 from asyncio import sleep
 from math import pi
-from pathlib import Path
 
 from vuer import Vuer, VuerSession
 from vuer.schemas import DefaultScene, Movable, OrbitControls, Urdf
 
 # Set up static file serving from the assets directory
-assets_folder = Path(__file__).parent / "assets"
-app = Vuer(static_root=assets_folder)
+app = Vuer(static_root=os.getcwd() + "/../../../assets")
 
 # URDF file path (served via Vuer's static file server)
-urdf_path = "http://localhost:8012/static/robots/mini_cheetah/mini_cheetah.urdf"
+urdf_path = "robots/mini_cheetah/mini_cheetah.urdf"
 
 # Initial joint configuration for the quadruped robot
 initial_joints = {
@@ -89,12 +86,12 @@ initial_joints = {
 }
 
 @app.spawn(start=True)
-async def main(session: VuerSession):
+async def main(sess: VuerSession):
     # Set up the initial scene with the robot
-    session.set @ DefaultScene(
+    sess.set @ DefaultScene(
         Movable(
             Urdf(
-                src=urdf_path,
+                src="http://localhost:8012/static/" + urdf_path,
                 jointValues=initial_joints,
                 key="robot",
             ),
@@ -119,7 +116,7 @@ async def main(session: VuerSession):
         animated_joints["FR_calf_joint"] = -0.5 * math.sin(i * 0.1) + 0.6 * pi
 
         # Update the robot with new joint values
-        session.update @ Urdf(
+        sess.update @ Urdf(
             src=urdf_path,
             jointValues=animated_joints,
             key="robot",

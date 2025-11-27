@@ -75,6 +75,55 @@ for i in range(1000):
     )
     await asyncio.sleep(0.016)
 ```
+## Detecting Movement
+
+Listen to `OBJECT_MOVE` events to track position:
+
+```python
+from vuer import Vuer, VuerSession
+from vuer.schemas import DefaultScene, Movable, Gripper
+
+app = Vuer()
+
+@app.add_handler("OBJECT_MOVE")
+async def on_move(event, session: VuerSession):
+    print(f"Moved {event.value['key']}: position={event.value['position']}")
+
+@app.spawn(start=True)
+async def main(session: VuerSession):
+    session.set @ DefaultScene(
+        Movable(
+            Gripper(key="gripper"),
+            position=[0, 1, 0],
+            key="movable-gripper",
+        ),
+    )
+    
+    await session.forever()
+```
+
+**Event structure:**
+```python
+{
+    "key": "movable-gripper",
+    "position": [x, y, z],
+    "rotation": [rx, ry, rz, rw],  # Quaternion
+}
+```
+
+## Wrapping Multiple Objects
+
+```python
+from vuer.schemas import Movable, Box, Sphere
+
+Movable(
+    Box(args=[0.3, 0.3, 0.3], color="red", position=[0, 0, 0], key="box"),
+    Sphere(args=[0.15], color="blue", position=[0.3, 0, 0], key="sphere"),
+    
+    position=[0, 1, 0],
+    key="group",
+)
+```
 
 ## Learn More
 
