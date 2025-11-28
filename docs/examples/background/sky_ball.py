@@ -10,7 +10,7 @@ doc @ """
 This example demonstrates how to create a 360-degree panoramic view using an
 equirectangular image mapped to a sphere as a texture.
 
-![equirectangular image](figures/farm_house.jpg)
+![equirectangular image](../figures/farm_house.jpg)
 
 The example uses a `Sphere` component with `materialType="standard"` and applies
 the equirectangular image as a texture map. The sphere is configured with `side: 1`
@@ -22,7 +22,7 @@ the `static_root` argument of the `Vuer` class. The Vuer frontend will load the
 texture from `http://localhost:8012/static/images/farm_house.jpg`.
 
 Here is the expected result:
-![sky ball result](figures/17_sky_ball.png)
+![sky ball result](../figures/17_sky_ball.png)
 
 ## Code Example
 """
@@ -55,6 +55,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     async def main(proxy: VuerSession):
         proxy.set @ DefaultScene(
             sphere,
+            show_helper=False,
             bgChildren=[OrbitControls(key="OrbitControls")],
         )
 

@@ -1,6 +1,8 @@
 
 # Interactive Pointer and Marker
 
+> **Warning**: This example is still under construction.
+
 This example demonstrates how to create an interactive 3D scene where users
 can click on objects to place markers. It shows:
 
@@ -13,13 +15,11 @@ can click on objects to place markers. It shows:
 from asyncio import sleep
 from pathlib import Path
 
-import numpy as np
-
 from vuer import Vuer, VuerSession
 from vuer.events import ClientEvent
 from vuer.schemas import Ply, Sphere
 
-assets_folder = Path(__file__).parent / "../../../../assets"
+assets_folder = Path(__file__).parent / "../../../assets"
 ply_file = "static_3d/porsche.ply"
 
 app = Vuer(static_root=assets_folder, port=8123)
@@ -34,8 +34,6 @@ async def main(sess: VuerSession):
         matrix=[1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1],
         key="porsche",
     )
-
-    t = np.pi
 
     while True:
         await sleep(0.016)  # ~60fps

@@ -1,7 +1,7 @@
 
 # Showing Point Clouds Programmatically and Fast💨
 
-This example demonstrates **three methods** for displaying point clouds in Vuer.
+This example demonstrates **two methods** for displaying point clouds in Vuer.
 
 ![pointcloud](../figures/pointcloud.png)
 ![pointcloud](../figures/pointcloud_pcd.png)
@@ -28,15 +28,12 @@ import open3d as o3d
 
 from vuer import Vuer
 from vuer.events import Set
-from vuer.schemas import DefaultScene, Ply, PointCloud, Pcd, OrbitControls
+from vuer.schemas import DefaultScene, Ply, PointCloud, OrbitControls
 
 assets_folder = Path(__file__).parent / "../../../../assets"
 test_file = "pointclouds/porsche.ply"
 # Load point cloud using Open3D (better for large files than trimesh)
 pcd = o3d.io.read_point_cloud(str(assets_folder / test_file))
-
-f3rm_ycb_1 = "pointclouds/f3rm_ycb_1.pcd"
-f3rm_ycb_2 = "pointclouds/f3rm_ycb_2.pcd"
 
 app = Vuer(static_root=assets_folder)
 
@@ -58,14 +55,7 @@ async def main(proxy):
                 position=[0, 0, 10],
                 size=0.008,
             ),
-            Pcd(
-                src="http://localhost:8012/static/" + f3rm_ycb_1,
-                size=0.001
-            ),
-            Pcd(
-                src="http://localhost:8012/static/" + f3rm_ycb_2,
-                size=0.001,
-            ),
+            show_helper=False,
             up=[0, 1, 0],
             bgChildren=[
                 OrbitControls(key="OrbitControls")

@@ -15,7 +15,6 @@ This is ideal for:
 A minimal example that creates a camera frustum:
 
 ```python
-from asyncio import sleep
 from vuer import Vuer, VuerSession
 from vuer.schemas import DefaultScene, Frustum, OrbitControls
 
@@ -38,28 +37,44 @@ async def main(sess: VuerSession):
             )
             for i in range(N)
         ],
+        show_helper=False,
         up=[0, 0, 1],
         bgChildren=[
             OrbitControls(key="OrbitControls")
         ],
     )
 
-    while True:
-        await sleep(0.01)
+    await sess.forever()
 ```
 
 ## Key Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `key` | str | - | Unique identifier for the frustum |
-| `fov` | float | `50` | Vertical field of view in degrees |
-| `aspect` | float | `1.33` | Aspect ratio (width/height) |
-| `near` | float | `0.1` | Near clipping plane distance |
-| `far` | float | `1.0` | Far clipping plane distance |
-| `position` | list | `[0,0,0]` | Frustum position (camera origin) |
-| `rotation` | list | `[0,0,0]` | Frustum rotation (Euler angles) |
-| `scale` | float | `1` | Frustum scale |
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `key` | str | Unique identifier for the frustum |
+| `position` | tuple[float, float, float] | Position of the frustum in 3D space |
+| `rotation` | tuple[float, float, float] | Rotation of the frustum (Euler angles) |
+| `matrix` | tuple[float, ...] | 16-element transformation matrix (overrides position and rotation) |
+| `aspect` | float | Aspect ratio (width/height) of the camera |
+| `focus` | float | Focus distance |
+| `fov` | float | Vertical field of view in degrees |
+| `near` | float | Near clipping plane distance |
+| `far` | float | Far clipping plane distance |
+| `scale` | float | Scale factor for the frustum visualization |
+| `upScale` | float | Scale factor for the up direction indicator |
+| `focalLength` | float | Focal length of the camera |
+| `showUp` | bool | Whether to show the up direction indicator |
+| `showFrustum` | bool | Whether to show the frustum wireframe |
+| `showFocalPlane` | bool | Whether to show the focal plane |
+| `showImagePlane` | bool | Whether to show the image plane |
+| `src` | str | Source image to display on the image plane |
+| `colorOrigin` | ColorRepresentation | Color of the camera origin marker |
+| `colorFrustum` | ColorRepresentation | Color of the frustum wireframe |
+| `colorCone` | ColorRepresentation | Color of the cone |
+| `colorFocalPlane` | ColorRepresentation | Color of the focal plane |
+| `colorUp` | ColorRepresentation | Color of the up direction indicator |
+| `colorTarget` | ColorRepresentation | Color of the target marker |
+| `colorCross` | ColorRepresentation | Color of the cross marker |
 
 ## Learn More
 

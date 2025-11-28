@@ -3,18 +3,19 @@ from contextlib import nullcontext
 
 from cmx import doc
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", None)
+MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
 doc @ """
 # RGB-D Visualization
+Demo for rendering an RGB and Depth pair. 
 
-Demo for rendering an RGB and depth pair. 
+![](../figures/depth_image.png)
+
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
-    from asyncio import sleep
     from pathlib import Path
 
-    from vuer import Vuer
+    from vuer import Vuer, VuerSession
     from vuer.schemas import DefaultScene, ImageBackground, OrbitControls
 
     assets_folder = Path(__file__).parent / "../../../../assets"
@@ -35,11 +36,11 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         return file_buffer
 
     @app.spawn(start=True)
-    async def show_heatmap(proxy):
+    async def show_heatmap(sess: VuerSession):
         rgb = get_buffer(assets_folder / "images/cubic_rgb.jpg")
         depth = get_buffer(assets_folder / "images/cubic_depth.jpg")
 
-        proxy.set @ DefaultScene(
+        sess.set @ DefaultScene(
             bgChildren=[
                 ImageBackground(
                     src=rgb,
@@ -53,11 +54,11 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             ],
             # hide the helper to only render the objects.
             up=[0, 1, 0],
+            grid=False,
             show_helper=False,
 
         )
 
-        while True:
-            await sleep(10.0)
+        await sess.forever()
 
 doc.flush()

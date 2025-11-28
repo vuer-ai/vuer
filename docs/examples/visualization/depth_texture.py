@@ -7,9 +7,13 @@ MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 doc @ """
 # Depth Texture
 
-There are two types of depth: range and metric depth. Range depth is the distance from the camera to the object in the scene. Metric depth is the distance from the camera to the object in the real world. 
+Demo for visualizing depth texture.
 
-I have implemented range depth in the deformable image plane. I will add metric depth soon. Please consider adding a GitHub issueto upvote this feature, or contribute via a PR.
+```{admonition} Note
+:class: info
+range depth in the deformable image plane is implemented. 
+we will add metric depth soon. Please consider adding a GitHub issueto upvote this feature, or contribute via a PR.
+```
 """
 
 with doc, doc.skip if MAKE_DOCS else nullcontext():
@@ -42,7 +46,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                     outlines=dict(angle=0, thickness=0.001, color="white"),
                 ),
                 key="group",
-            )
+            ),
         )
 
         proxy @ Set(scene)

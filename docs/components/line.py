@@ -45,6 +45,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 color="red",
                 lineWidth=3,
             ),
+            show_helper=False,
             bgChildren=[
                 OrbitControls(key="OrbitControls")
             ],
@@ -59,10 +60,12 @@ doc @ """
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `key` | str | - | Unique identifier for the line |
-| `points` | ndarray | - | Nx3 array of 3D points defining the path |
-| `color` | str | `"white"` | Line color (hex or named color) |
+| `points` | list/ndarray | - | Array of 3D points (Vector3, Vector2, [x,y,z], [x,y], or numbers) |
+| `color` | str | `"black"` | Line color (hex or named color) |
 | `lineWidth` | float | `1` | Line thickness in pixels |
-| `closed` | bool | `False` | Connect the last point back to the first |
+| `segments` | bool | `False` | If true, renders LineSegments2; otherwise renders Line2 |
+| `dashed` | bool | `False` | Enable dashed line rendering |
+| `vertexColors` | list | - | Optional array of RGB values for each point |
 
 ## Learn More
 

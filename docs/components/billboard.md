@@ -8,22 +8,19 @@ This is ideal for:
 - Displaying sprites and icons
 - Making annotations visible from any angle
 
-![](figures/billboard.png)
-
 ## Basic Usage
 
 A minimal example that creates a billboard with text:
 
 ```python
-import asyncio
-from vuer import Vuer
+from vuer import Vuer, VuerSession
 from vuer.schemas import DefaultScene, Billboard, Text, OrbitControls
 
 app = Vuer()
 
 @app.spawn(start=True)
-async def main(session):
-    session.set @ DefaultScene(
+async def main(sess: VuerSession):
+    sess.set @ DefaultScene(
         Billboard(
             Text(
                 "I always face you!",
@@ -34,32 +31,23 @@ async def main(session):
             key="billboard",
             position=[0, 0.5, 0],
         ),
+        show_helper=False,
         bgChildren=[
             OrbitControls(key="OrbitControls")
         ],
     )
 
-    while True:
-        await asyncio.sleep(1.0)
+    await sess.forever()
 ```
 
 ## Key Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `key` | str | - | Unique identifier for the billboard |
-| `position` | list | `[0,0,0]` | Billboard position in world coordinates |
 | `follow` | bool | `True` | Whether to follow camera rotation |
 | `lockX` | bool | `False` | Lock rotation on X axis |
 | `lockY` | bool | `False` | Lock rotation on Y axis |
 | `lockZ` | bool | `False` | Lock rotation on Z axis |
-
-## Related Components
-
-| Component | Purpose |
-|-----------|---------|
-| `Text` | 2D text (often used inside Billboard) |
-| `Text3D` | 3D extruded text |
 
 ## Learn More
 

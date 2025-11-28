@@ -126,8 +126,6 @@ Box(
 
 A rectangular box or cube shape with customizable dimensions.
 
-<p style="color:red;"><strong>⚠️ WARNING:</strong> Bug in code.</p>
-
 ```python
 args = [
     width,           # default: 1
@@ -151,8 +149,8 @@ async def main(session: VuerSession):
         # Simple cube
         Box(
             args=[1, 1, 1],
-            position=[0, 0.5, 0],
-            color="red",
+            position=[0, 0.7, 0.2],
+            material=dict(color="red"),
             key="cube",
             outlines=dict(angle=0, thickness=0.005, color="white"),  # (angle, thickness, color)
         ),
@@ -160,8 +158,8 @@ async def main(session: VuerSession):
         # Flat platform
         Box(
             args=[5, 0.2, 5],
-            position=[0, 0, 2],
-            color="gray",
+            position=[0, 0.2, 0],
+            material=dict(color="grey"),
             key="platform",
         ),
     )
@@ -198,21 +196,21 @@ async def main(session: VuerSession):
         Sphere(
             args=[0.5],  # Just radius, use defaults for segments
             position=[0, 1, 0],
-            color="red",
+            material=dict(color="red"),
             key="ball",
         ),
         # High-poly smooth sphere
         Sphere(
             args=[0.5, 64, 64],  # More segments = smoother
             position=[2, 1, 0],
-            color="green",
+            material=dict(color="green"),
             key="smooth-ball",
         ),
         # Hemisphere (half sphere)
         Sphere(
             args=[0.5, 32, 16, 0, 6.28, 0, 1.57],  # thetaLength controls how much of sphere
             position=[4, 1, 0],
-            color="blue",
+            material=dict(color="blue"),
             key="hemisphere",
         )
         
@@ -251,21 +249,21 @@ async def main(session: VuerSession):
         Cylinder(
             args=[0.5, 0.5, 2],
             position=[0, 1, 0],
-            color="green",
+            material=dict(color="green"),
             key="pillar",
         ),
         # Cone (radiusTop=0)
         Cylinder(
             args=[0, 0.5, 2],
             position=[2, 1, 0],
-            color="orange",
+            material=dict(color="orange"),
             key="cone-shape",
         ),
         # Truncated cone
         Cylinder(
             args=[0.2, 0.5, 2],
             position=[4, 1, 0],
-            color="yellow",
+            material=dict(color="yellow"),
             key="truncated",
         ),
     )
@@ -302,7 +300,7 @@ async def main(session: VuerSession):
             args=[0.5, 1.5],
             position=[0, 0.75, 0],
             rotation=[0, 0, 3.14],  # Point downward
-            color="orange",
+            material=dict(color="orange"),
             key="cone",
         ),
     )
@@ -339,22 +337,21 @@ async def main(session: VuerSession):
             args=[10, 10],
             position=[0, 0, 0],
             rotation=[-1.57, 0, 0],  # -π/2 to make horizontal
-            color="gray",
+            material=dict(color="grey"),
             key="ground",
         ),
         # Vertical wall
         Plane(
             args=[5, 3],
             position=[0, 1.5, -5],
-            color="white",
+            material=dict(color="white"),
             key="wall",
         ),
         # Two-sided plane
         Plane(
             args=[2, 2],
             position=[0, 1, 0],
-            material=dict(side=2),  # 0=front, 1=back, 2=both
-            color="blue",
+            material=dict(side=2, color="blue"),  # 0=front, 1=back, 2=both
             key="double-sided",
         ),
     )
@@ -389,7 +386,7 @@ async def main(session: VuerSession):
             args=[1],
             position=[0, 0, 0],
             rotation=[-1.57, 0, 0],
-            color="red",
+            material=dict(color="red"),
             key="disc",
         ),
         # Pac-Man (partial circle)
@@ -397,7 +394,7 @@ async def main(session: VuerSession):
             args=[1, 32, 0, 5.5],  # thetaLength < 2π creates pac-man
             position=[2, 0, 0],
             rotation=[-1.57, 0, 0],
-            color="yellow",
+            material=dict(color="yellow"),
             key="pacman",
         ),
     )
@@ -433,7 +430,7 @@ async def main(session: VuerSession):
             args=[0.5, 1],
             position=[0, 0, 0],
             rotation=[-1.57, 0, 0],
-            color="gold",
+            material=dict(color="gold"),
             key="ring",
         ),
     )
@@ -468,7 +465,7 @@ async def main(session: VuerSession):
         Capsule(
             args=[0.3, 2],
             position=[0, 1, 0],
-            color="purple",
+            material=dict(color="purple"),
             key="pill",
         ),
     )
@@ -503,14 +500,14 @@ async def main(session: VuerSession):
         Torus(
             args=[1, 0.3],
             position=[0, 1, 0],
-            color="pink",
+            material=dict(color="pink"),
             key="donut",
         ),
         # Partial torus (C-shape)
         Torus(
             args=[1, 0.3, 12, 48, 4.71],  # arc < 2π creates C-shape
             position=[3, 1, 0],
-            color="cyan",
+            material=dict(color="cyan"),
             key="c-shape",
         ),
     )
@@ -546,14 +543,14 @@ async def main(session: VuerSession):
         TorusKnot(
             args=[1, 0.3, 100, 16, 2, 3],
             position=[0, 1, 0],
-            color="purple",
+            material=dict(color="purple"),
             key="trefoil",
         ),
         # Cinquefoil knot
         TorusKnot(
             args=[1, 0.3, 100, 16, 3, 5],
             position=[3, 1, 0],
-            color="orange",
+            material=dict(color="orange"),
             key="cinquefoil",
         ),
     )
@@ -586,7 +583,7 @@ async def main(session: VuerSession):
         Tetrahedron(
             args=[1],
             position=[0, 1, 0],
-            color="red",
+            material=dict(color="red"),
             key="tetra",
         ),
     )
@@ -608,7 +605,7 @@ async def main(session: VuerSession):
         Octahedron(
             args=[1],
             position=[0, 1, 0],
-            color="green",
+            material=dict(color="green"),
             key="octa",
         ),
     )
@@ -630,7 +627,7 @@ async def main(session: VuerSession):
         Dodecahedron(
             args=[1],
             position=[0, 1, 0],
-            color="blue",
+            material=dict(color="blue"),
             key="dodeca",
         ),
     )
@@ -652,7 +649,7 @@ async def main(session: VuerSession):
         Icosahedron(
             args=[1],
             position=[0, 1, 0],
-            color="purple",
+            material=dict(color="purple"),
             key="icosa",
         ),
     )

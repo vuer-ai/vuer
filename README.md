@@ -19,6 +19,10 @@
 Vuer is a light-weight visualization toolkit for interacting with dynamic 3D and robotics data. It is
 VR and AR ready, and can be run on mobile devices.
 
+## Latest Updates
+
+- **2025-11-28**: All documentation examples are now executable with [downloadable assets](https://drive.google.com/file/d/1sx2-UckFTwEpXZwuSWSc4b2f8z0JAF1F/view?usp=sharing).
+
 ## Installation
 
 You can install `vuer` with `pip`:
@@ -61,9 +65,27 @@ For more details:
 - A full list of data types: [API documentation on Data Types](https://docs.vuer.ai/en/latest/api/types.html).
 
 ## Examples
+
+To run the examples, you'll need to download the required assets:
+
+1. Download `vuer_doc_assets` from [this Google Drive link](https://drive.google.com/file/d/1sx2-UckFTwEpXZwuSWSc4b2f8z0JAF1F/view?usp=sharing)
+2. Unzip the downloaded file
+3. Place the `vuer_doc_assets` folder alongside the project directory and rename it to `assets`.
+
+```
+parent_directory/
+├── vuer/                 # This project
+│   ├── docs/
+│   ├── vuer/
+│   └── README.md
+└── assets/      # Downloaded assets folder
+```
+
+4. Run the examples:
+
 ```bash
 cd docs/examples/meshes
-python mesh.py
+python mesh_loading.py
 ```
 
 ## Development

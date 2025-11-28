@@ -8,6 +8,8 @@ This is ideal for:
 - Loading textured models with MTL files
 - Importing models from 3D modeling software
 
+![](figures/obj.png)
+
 ## Basic Usage
 
 A minimal example that loads an OBJ file from a URL:
@@ -18,7 +20,8 @@ from vuer import Vuer
 from vuer.schemas import DefaultScene, Obj, OrbitControls
 
 app = Vuer(static_root=os.getcwd() + "/../../../assets")
-obj_file = "static_3d/armadillo_midres.obj"
+obj_file = "pointclouds/male02/male02.obj"
+mtl_file = "pointclouds/male02/male02.mtl"
 
 @app.spawn(start=True)
 async def main(sess):
@@ -26,9 +29,11 @@ async def main(sess):
         Obj(
             key="model",
             src="http://localhost:8012/static/" + obj_file,
+            mtl="http://localhost:8012/static/" + mtl_file,
             position=[0, 0, 0],
-            scale=0.5,
+            scale=0.01,
         ),
+        show_helper=False,
         bgChildren=[
             OrbitControls(key="OrbitControls")
         ],
@@ -48,33 +53,8 @@ async def main(sess):
 | `mtl` | str          | `[0,0,0]` | The source of the mtl file. Can be a url or a local file. |
 | `materials` | list[string] | `[0,0,0]` | A list of materials to be used for the obj file. |
 
-## OBJ with Materials (MTL)
-
-OBJ files often come with companion MTL (Material Template Library) files that define colors, textures, and material properties:
-
-```python
-from vuer import Vuer, VuerSession
-from vuer.schemas import DefaultScene, Obj
-
-app = Vuer(static_root="./assets")
-
-@app.spawn(start=True)
-async def main(session: VuerSession):
-    session.set @ DefaultScene(
-        Obj(
-            src="http://localhost:8012/static/textured_model.obj",
-            mtl="http://localhost:8012/static/textured_model.mtl",
-            position=[0, 0, 0],
-            key="textured",
-        ),
-    )
-    
-    await session.forever()
-```
-
-
 ## Learn More
 
 For detailed examples of using `Obj`, see:
 
-- [Loading 3D Meshes](../examples/meshes/mesh.md) - Multiple mesh loading methods
+- [Loading 3D Meshes](../examples/meshes/mesh_loading.md) - Multiple mesh loading methods

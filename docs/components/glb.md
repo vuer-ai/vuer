@@ -9,11 +9,7 @@ The `Glb` component loads 3D models from GLB (GL Transmission Format Binary) and
 - **Animation support**: Skeletal animations and morph targets
 - **Industry standard**: Supported by all major 3D tools
 
-**Use cases:**
-- Production-ready 3D assets
-- Animated characters and objects
-- Optimized models for web delivery
-- Game engine exports
+![](figures/glb.png)
 
 ## Basic Usage
 
@@ -35,6 +31,7 @@ async def main(sess):
             position=[0, 0, 0],
             key="glb-model",
         ),
+        show_helper=False,
         bgChildren=[
             OrbitControls(key="OrbitControls")
         ],
@@ -42,27 +39,3 @@ async def main(sess):
 
     await sess.forever()
 ```
-
-## Key Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `key` | str | - | Unique identifier for the model |
-| `src` | str | - | URL to GLB or GLTF file |
-| `position` | list | `[0,0,0]` | Model position in world coordinates |
-| `rotation` | list | `[0,0,0]` | Model rotation (Euler angles) |
-| `scale` | float/list | `1` | Uniform or per-axis scale |
-| `onLoad` | str | - | Event message emitted when loaded |
-
-## Animation Support
-
-GLB files can contain animations:
-
-```python
-# Animated character (animation auto-plays)
-Glb(
-    src="http://localhost:8012/static/animated_character.glb",
-    key="animated",
-)
-```
-

@@ -64,6 +64,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                         # mapRepeat=[2, 4],
                     ),
                 ),
+                show_helper=False,
                 up=[0, 1, 0],
                 bgChildren=[
                     OrbitControls(key="OrbitControls")

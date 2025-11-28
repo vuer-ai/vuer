@@ -13,8 +13,7 @@ This is ideal for:
 A minimal example that creates 3D text:
 
 ```python
-import asyncio
-from vuer import Vuer
+from vuer import Vuer, VuerSession
 from vuer.schemas import DefaultScene, Text3D, MeshNormalMaterial, OrbitControls
 
 FONT_URL = "https://threejs.org/examples/fonts/helvetiker_bold.typeface.json"
@@ -22,8 +21,8 @@ FONT_URL = "https://threejs.org/examples/fonts/helvetiker_bold.typeface.json"
 app = Vuer()
 
 @app.spawn(start=True)
-async def main(session):
-    session.set @ DefaultScene(
+async def main(sess: VuerSession):
+    sess.set @ DefaultScene(
         Text3D(
             "Hello Vuer!",
             MeshNormalMaterial(),
@@ -33,42 +32,37 @@ async def main(session):
             scale=0.15,
             bevelEnabled=True,
         ),
+        show_helper=False,
         bgChildren=[
             OrbitControls(key="OrbitControls")
         ],
     )
 
-    while True:
-        await asyncio.sleep(1.0)
+    await sess.forever()
 ```
 
 ## Key Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `key` | str | - | Unique identifier for the text |
-| `font` | str | - | URL to typeface.json font file |
-| `size` | float | `1` | Base text size |
-| `scale` | float | `1` | Overall scale multiplier |
-| `bevelEnabled` | bool | `False` | Enable beveled (rounded) edges |
-| `bevelSize` | float | `0.04` | Bevel size |
-| `bevelThickness` | float | `0.1` | Bevel thickness |
-| `letterSpacing` | float | `0` | Spacing between letters |
-| `position` | list | `[0,0,0]` | Text position in world coordinates |
-| `rotation` | list | `[0,0,0]` | Text rotation (Euler angles) |
+| `font` | str | - | URL to typeface.json font file or JSON object with font data |
+| `smooth` | float | - | Merges vertices with tolerance and calls computeVertexNormals for smoother appearance |
+| `lineHeight` | float | `0` | Line height in threejs units |
+| `letterSpacing` | float | `1` | Letter spacing factor |
 
-## Related Components
+```{admonition} Note
+:class: info
+Additional THREE.TextGeometry parameters (like `size`, `height`, `bevelEnabled`, `bevelSize`, `bevelThickness`, etc.) can be passed as `**kwargs` and will be forwarded to the underlying TextGeometry.```
+```
 
-| Component | Purpose |
-|-----------|---------|
-| [Text](text.md) | 2D text in 3D space (simpler, faster) |
-| [Billboard](billboard.md) | Wrapper to make children always face camera |
-
-## Font Sources
-
+```{admonition} Font Sources
+:class: info
 Text3D requires fonts in typeface.json format. Options include:
 - Three.js examples: `https://threejs.org/examples/fonts/`
-- Font converter: https://gero3.github.io/facetype.js/
+- Font converter: `https://gero3.github.io/facetype.js/`
+
+**Tip:** If you face display issues, try checking "Reverse font direction" in the typeface conversion tool.
+```
 
 ## Learn More
 

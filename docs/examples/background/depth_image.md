@@ -1,13 +1,14 @@
 
 # RGB-D Visualization
+Demo for rendering an RGB and Depth pair. 
 
-Demo for rendering an RGB and depth pair. 
+![](../figures/depth_image.png)
+
 
 ```python
-from asyncio import sleep
 from pathlib import Path
 
-from vuer import Vuer
+from vuer import Vuer, VuerSession
 from vuer.schemas import DefaultScene, ImageBackground, OrbitControls
 
 assets_folder = Path(__file__).parent / "../../../../assets"
@@ -28,11 +29,11 @@ def get_buffer(file_path):
     return file_buffer
 
 @app.spawn(start=True)
-async def show_heatmap(proxy):
+async def show_heatmap(sess: VuerSession):
     rgb = get_buffer(assets_folder / "images/cubic_rgb.jpg")
     depth = get_buffer(assets_folder / "images/cubic_depth.jpg")
 
-    proxy.set @ DefaultScene(
+    sess.set @ DefaultScene(
         bgChildren=[
             ImageBackground(
                 src=rgb,
@@ -46,10 +47,10 @@ async def show_heatmap(proxy):
         ],
         # hide the helper to only render the objects.
         up=[0, 1, 0],
+        grid=False,
         show_helper=False,
 
     )
 
-    while True:
-        await sleep(10.0)
+    await sess.forever()
 ```

@@ -65,15 +65,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         await sess.forever()
 
 doc @ """
-## Key Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `src` | str | - | URL to the PLY file |
-| `size` | float | `0.01` | Point size |
-| `position` | list | `[0,0,0]` | Point cloud position |
-| `rotation` | list | `[0,0,0]` | Point cloud rotation |
-| `scale` | float/list | `1` | Point cloud scale |
 
 ## Learn More
 

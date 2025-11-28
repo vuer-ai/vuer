@@ -2,45 +2,60 @@
 # SceneBackground
 
 The `SceneBackground` component displays images as scene backgrounds.
-This is essential for:
-- Streaming video from cameras or renderers
-- Displaying NeRF or Gaussian Splatting renders
-- Creating dynamic backgrounds from image sequences
-- Building augmented reality overlays
+
+![](figures/background_image.png)
 
 ## Basic Usage
 
-A minimal example that sets a background image:
+This example shows how to set a background image. 
+This is useful for relaying from a rendering model such as NeRFs, Gaussian Splatting, or GANs:
 
 ```python
-import asyncio
-import numpy as np
+from asyncio import sleep
+from pathlib import Path
+import imageio as iio
+from tqdm import tqdm
+
 from vuer import Vuer
+from vuer.events import ClientEvent
 from vuer.schemas import Scene, SceneBackground
+
+assets_folder = Path(__file__).parent / "../../../assets"
+disney_file = "movies/disney.webm"
+reader_file = assets_folder / disney_file
+reader = iio.get_reader(reader_file)
 
 app = Vuer()
 
+# we add the handler here because the spawn(start=True) binding is blocking.
+@app.add_handler("CAMERA_MOVE")
+async def on_camera(event: ClientEvent, session):
+    assert event == "CAMERA_MOVE", "the event type should be correct"
+    print("camera event", event.etype, event.value)
+
+
 @app.spawn(start=True)
-async def main(session):
-    session.set @ Scene()
+async def show_heatmap(session):
+    session.set @ Scene(grid=False, show_helper=False)
 
-    # Create a simple gradient image
-    image = np.zeros((480, 640, 3), dtype=np.uint8)
-    image[:, :, 0] = np.linspace(0, 255, 640).astype(np.uint8)
-    image[:, :, 2] = np.linspace(255, 0, 640).astype(np.uint8)
-
-    session.upsert(
-        SceneBackground(
-            image,
-            format="jpeg",
-            quality=90,
-            key="background",
-        ),
-        to="bgChildren",
-    )
-
-    while True:
-        await asyncio.sleep(1.0)
+    for i, frame in tqdm(enumerate(reader), desc="playing video"):
+        # use the upsert(..., to="bgChildren") syntax, so it is in global frame.
+        session.upsert(
+            SceneBackground(
+                # Can scale the images down.
+                frame[::1, ::1, :],
+                # One of ['b64png', 'png', 'b64jpeg', 'jpeg']
+                # 'b64png' does not work for some reason, but works for the nerf demo.
+                # 'jpeg' encoding is significantly faster than 'png'.
+                format="jpeg",
+                quality=90,
+                key="background",
+                interpolate=True,
+            ),
+            to="bgChildren",
+        )
+        # 'jpeg' encoding should give you about 30fps with a 16ms wait in-between.
+        await sleep(0.016)
 ```
 
 ## Key Parameters
@@ -50,44 +65,18 @@ async def main(session):
 | `key` | str | - | Unique identifier for the background |
 | `format` | str | `"jpeg"` | Image encoding: `"jpeg"`, `"png"`, `"b64jpeg"`, `"b64png"` |
 | `quality` | int | `75` | JPEG compression quality (1-100) |
-| `interpolate` | bool | `True` | Enable image interpolation |
 
-## Image Formats
 
-| Format | Description | Performance |
-|--------|-------------|-------------|
-| `"jpeg"` | JPEG encoding | Fast, ~30fps possible |
-| `"png"` | PNG encoding | Slower, lossless |
-| `"b64jpeg"` | Base64 JPEG | Browser compatible |
-| `"b64png"` | Base64 PNG | Lossless, slower |
-
-## Streaming Video
-
-For real-time video streaming, use `"jpeg"` encoding with appropriate quality:
-
-```python
-for frame in video_reader:
-    session.upsert(
-        SceneBackground(
-            frame,
-            format="jpeg",
-            quality=90,
-            key="background",
-        ),
-        to="bgChildren",
-    )
-    await asyncio.sleep(0.016)  # ~60fps target
+```{admonition} Image Formats
+:class: info
+One of `['b64png', 'png', 'b64jpeg', 'jpeg']`.
+`b64png` does not work for some reason, but works for the nerf demo.
+`jpeg` encoding is significantly faster than `png`.
 ```
 
-## Related Components
-
-| Component | Purpose |
-|-----------|---------|
-| `ImageBackground` | Background with depth for parallax effects |
 
 ## Learn More
 
 For detailed examples of using `SceneBackground`, see:
 
 - [Background Image](../examples/background/background_image.md) - Basic background streaming
-- [VR HUD](../examples/background/vr_hud.md) - Background in VR contexts

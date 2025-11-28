@@ -13,22 +13,22 @@ images from arbitrary viewpoints. This is essential for:
 A minimal example that creates a virtual camera and displays its frustum:
 
 ```python
-import asyncio
 import numpy as np
-from vuer import Vuer
+from vuer import Vuer, VuerSession
 from vuer.schemas import DefaultScene, CameraView, Sphere, OrbitControls
 
 app = Vuer()
 
 @app.spawn(start=True)
-async def main(proxy):
-    proxy.set @ DefaultScene(
+async def main(sess: VuerSession):
+    sess.set @ DefaultScene(
         Sphere(
             key="sphere",
             args=[0.2, 32, 32],
             position=[0, 0, 0.2],
             material={"color": "red"},
         ),
+        show_helper=False,
         rawChildren=[
             CameraView(
                 key="ego",
@@ -46,8 +46,7 @@ async def main(proxy):
         ],
     )
 
-    while True:
-        await asyncio.sleep(1.0)
+    await sess.forever()
 ```
 
 ## Key Parameters
@@ -55,19 +54,19 @@ async def main(proxy):
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `key` | str | `"ego"` | Unique identifier for the camera |
-| `fov` | float | `50` | Vertical field of view in degrees |
-| `width` | int | `320` | Image width in pixels |
-| `height` | int | `240` | Image height in pixels |
-| `position` | list | `[0,0,0]` | Camera position in world coordinates |
-| `rotation` | list | `[0,0,0]` | Camera rotation (Euler angles) |
-| `matrix` | list | - | 4x4 transformation matrix (overrides position/rotation) |
+| `fov` | float | `50` | Vertical field of view of the camera in degrees |
+| `width` | int | `320` | Width of the camera image in pixels |
+| `height` | int | `240` | Height of the camera image in pixels |
+| `position` | List[float] | `[0, 0, 0]` | Position of the camera in world coordinates |
+| `rotation` | List[float] | `[0, 0, 0]` | Rotation of the camera (Euler angles) |
+| `stream` | str | `"ondemand"` | Stream mode: `"frame"`, `"time"`, or `"ondemand"` |
+| `fps` | int | `30` | Frames per second of the camera for streaming modes |
 | `near` | float | `0.1` | Near clipping plane distance |
 | `far` | float | `20` | Far clipping plane distance |
-| `showFrustum` | bool | `True` | Whether to visualize the camera frustum |
-| `stream` | str | `"ondemand"` | Streaming mode: `"frame"`, `"time"`, or `"ondemand"` |
-| `renderDepth` | bool | `True` | Whether to capture depth images |
-| `fps` | int | `30` | Target frame rate for streaming modes |
-| `downsample` | int | `1` | Downsampling factor for rendered images |
+| `renderDepth` | bool | `True` | Whether to render depth. If set, returns value["depthFrame"] |
+| `showFrustum` | bool | `True` | Whether to show the frustum visualization |
+| `downsample` | int | `1` | Downsample rate for rendered images |
+| `distanceToCamera` | float | `2` | Distance to the camera |
 
 ## Streaming Modes
 

@@ -7,6 +7,9 @@ MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 doc @ """
 # MotionControllers
 
+> **Warning**: This example is still under construction. now reference: [Motion Controllers](../examples/vr_xr/motion_controllers.md)
+
+
 The `MotionControllers` component enables VR motion controller tracking.
 This is essential for:
 - VR controller input in WebXR applications

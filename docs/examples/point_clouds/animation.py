@@ -7,6 +7,8 @@ MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 doc @ """
 # Pointcloud Animation
 
+> **Warning**: This example is still under construction.
+
 This example demonstrates how to animate point clouds using Vuer's `TimelineControls`
 and the global `app.update` method. It loads a 3D mesh and pre-computed trajectory data,
 then updates point cloud positions frame-by-frame based on timeline events.
@@ -16,9 +18,6 @@ Key concepts:
 - Pre-populating the scene with initial components via `Set`
 - Handling `TIMELINE_STEP` events to synchronize animations
 - Displaying multiple point clouds with different colors
-
-**Note:** This example requires pre-computed data files (`suzanne.ply`,
-`suzanne_infill_good_traj.npy`, `suzanne_surface_fill_only.npy`).
 
 ## Code Example
 """
@@ -49,6 +48,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 TriMesh(vertices=vertices, faces=faces, position=[0, 0, 0], wireframe=True),
                 PointCloud(key="surface", vertices=vertices, size=0.001),
                 PointCloud(key="infill", vertices=vertices, size=0.001),
+                show_helper=False,
             ),
         )
 

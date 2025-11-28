@@ -36,6 +36,7 @@ async def main(session):
 
     session.set @ DefaultScene(
         *markers,
+        show_helper=False,
         bgChildren=[
             OrbitControls(key="OrbitControls")
         ],
@@ -52,5 +53,8 @@ async def main(session):
 | `key` | str | - | Unique identifier for the marker |
 | `position` | list | `[0,0,0]` | Marker position in world coordinates |
 | `rotation` | list | `[0,0,0]` | Marker rotation (Euler angles) |
-| `scale` | float | `1` | Marker size |
+| `matrix` | list | - | 4x4 transformation matrix (16 numbers). Overrides position and rotation |
+| `scale` | float | `1.0` | Overall marker size |
+| `headScale` | float | `1.0` | Scale factor for the arrow heads |
+| `lod` | int | - | Level of detail - number of segments for the cone and stem |
 

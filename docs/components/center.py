@@ -59,6 +59,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 key="model-right",
             ),
 
+            show_helper=False,
             bgChildren=[OrbitControls(key="OrbitControls")],
         )
 
@@ -78,10 +79,17 @@ doc @ """
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `key` | str | - | Unique identifier for the center component |
-| `position` | list | `[0,0,0]` | Position after centering |
-| `rotation` | list | `[0,0,0]` | Rotation around centered origin |
-| `scale` | float/list | `1` | Uniform or per-axis scale |
+| `top` | bool | `False` | Align to top edge instead of center on Y axis |
+| `right` | bool | `False` | Align to right edge instead of center on X axis |
+| `bottom` | bool | `False` | Align to bottom edge instead of center on Y axis |
+| `left` | bool | `False` | Align to left edge instead of center on X axis |
+| `front` | bool | `False` | Align to front edge instead of center on Z axis |
+| `back` | bool | `False` | Align to back edge instead of center on Z axis |
+| `disable` | bool | `False` | Disable centering on all axes |
+| `disableX` | bool | `False` | Disable centering on X axis |
+| `disableY` | bool | `False` | Disable centering on Y axis |
+| `disableZ` | bool | `False` | Disable centering on Z axis |
+| `precise` | bool | `True` | Use precise boundary box calculation |
 
 ## How It Works
 
@@ -90,6 +98,8 @@ doc @ """
 3. **Apply offset** - Translate object so center aligns with origin
 
 **Result:** Models with off-center origins are automatically aligned at their visual center.
+
+You can control centering behavior using alignment flags (top, bottom, left, right, front, back) or disable centering on specific axes (disableX, disableY, disableZ).
 
 """
 

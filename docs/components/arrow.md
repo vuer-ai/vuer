@@ -28,6 +28,7 @@ async def main(session):
             rotation=[0, -1.57, 0],
             scale=1,
         ),
+        show_helper=False,
         up=[0, 0, 1],
         bgChildren=[
             OrbitControls(key="OrbitControls")
@@ -45,5 +46,7 @@ async def main(session):
 | `key` | str | - | Unique identifier for the arrow |
 | `position` | list | `[0,0,0]` | Arrow origin position |
 | `rotation` | list | `[0,0,0]` | Arrow rotation (Euler angles) |
-| `scale` | float/list | `1` | Arrow size |
-| `color` | str | `"red"` | Arrow color |
+| `matrix` | list | - | 4x4 transformation matrix (16 numbers). Overrides position and rotation |
+| `scale` | float | `1.0` | Overall arrow size |
+| `headScale` | float | `1.0` | Scale factor for the arrow head |
+| `lod` | int | - | Level of detail - number of segments for the cone and stem |

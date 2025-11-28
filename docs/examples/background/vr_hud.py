@@ -12,7 +12,7 @@ the ImageBackground component.
 
 This is useful for teleoperating robots with a single camera view.
 
-![heads up display (HUD) in VR](figures/07b_vr_hud.png)
+![heads up display (HUD) in VR](../figures/07b_vr_hud.png)
 """
 
 with doc, doc.skip if MAKE_DOCS else nullcontext():

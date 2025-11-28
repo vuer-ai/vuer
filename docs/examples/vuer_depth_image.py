@@ -4,8 +4,6 @@ import cv2
 from vuer import Vuer
 from vuer.schemas import ImageBackground
 
-exit()
-
 app = Vuer(
     host="0.0.0.0",
     port=8012,
@@ -29,6 +27,7 @@ def get_array(file_path):
     img = rescale_image(img)  # Rescale to 256x256
     return img
 
+exit()
 
 @app.spawn(start=True)
 async def stereo_image(session, fps=60):

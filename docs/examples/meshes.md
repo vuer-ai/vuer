@@ -6,6 +6,6 @@ This section covers loading and displaying 3D mesh files in Vuer.
 .. toctree::
     :maxdepth: 1
 
-    Mesh <meshes/mesh.md>
+    Loading 3D Mesh <meshes/mesh_loading.md>
     Adding UV and Texture Map to Trimesh <meshes/textured_trimesh.md>
 ```

@@ -51,8 +51,8 @@ Enable user interaction with VR/AR controllers and mouse.
 
 ## Camera and View Components
 
-- [CameraView](../../components/camera_views)
 - [Frustum](../../components/frustum)
+- [CameraView](../../components/camera_views)
 
 ## Helper Components
 

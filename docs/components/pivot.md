@@ -40,12 +40,13 @@ async def main(sess):
 
         # Sphere orbiting at different radius (like a planet)
         Pivot(
-            Sphere(position=[3, 0, 0], args=[0.3], key="sphere"),
+            Sphere(position=[3, 0, 0], args=[0.3], key="sphere", material=dict(color='green')),
             position=[0, 0, 0],  # Same pivot point
             rotation=[0, 0, 0],  # Will be animated
             key="pivot-sphere",
         ),
 
+        show_helper=False,
         bgChildren=[OrbitControls(key="OrbitControls")],
     )
 
@@ -68,13 +69,6 @@ async def main(sess):
         await asyncio.sleep(0.016)
 ```
 
-## Key Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `key` | str | - | Unique identifier for the pivot |
-| `position` | list | `[0,0,0]` | Pivot point location (center of rotation) |
-| `rotation` | list | `[0,0,0]` | Rotation around pivot point |
 
 ## How It Works
 

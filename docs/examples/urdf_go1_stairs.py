@@ -18,6 +18,7 @@ This tutorial shows you how to setup a scene with the following components:
 """
 
 with doc, doc.skip if MAKE_DOCS else nullcontext():
+    import os
     import math
     from asyncio import sleep
 
@@ -26,7 +27,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
     pi = 3.1415
 
-    app = Vuer(static_root="assets")
+    app = Vuer(static_root=os.getcwd() + "/../../../assets")
 
     @app.spawn(start=True)
     async def main(app: VuerSession):
@@ -51,8 +52,8 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         await sleep(0.1)
 
         app.upsert @ Obj(
-            src="http://localhost:8012/static/textured.obj",
-            mtl="http://localhost:8012/static/textured.mtl",
+            src="http://localhost:8012/static/robots/stairway/textured.obj",
+            mtl="http://localhost:8012/static/robots/stairway/textured.mtl",
             position=[1.5, -3, 0.727],
             rotation=[3.1415 / 2, 0, 0],
             key="scene",
@@ -61,7 +62,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         i = 0
         while True:
             app.upsert @ Urdf(
-                src="http://localhost:8012/static/go1/urdf/go1.urdf",
+                src="http://localhost:8012/static/robots/go1/urdf/go1.urdf",
                 jointValues={
                     "FL_hip_joint": -0.1,
                     "RL_hip_joint": -0.1,
@@ -83,10 +84,10 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             i += 1
 
 
-doc @ """
-Now, if your script runs correctly, the robot should show up in the following view:
-
-<iframe src="https://vuer.ai/?ws=ws%3A%2F%2Flocalhost%3A8012&scene=3gAIqGNoaWxkcmVukd4ABahjaGlsZHJlbpHeAAWoY2hpbGRyZW6Qo3RhZ6RVcmRmo2tleaVyb2JvdKNzcmPZLmh0dHA6Ly9sb2NhbGhvc3Q6ODAxMi9zdGF0aWMvbWluaV9jaGVldGFoLnVyZGaram9pbnRWYWx1ZXPeAAysRkxfaGlwX2pvaW50y7%2FJmZmgAAAArFJMX2hpcF9qb2ludMu%2FyZmZoAAAAKxGUl9oaXBfam9pbnTLP8mZmaAAAACsUlJfaGlwX2pvaW50yz%2FJmZmgAAAArkZMX3RoaWdoX2pvaW50y7%2FpIcrAAAAArlJMX3RoaWdoX2pvaW50y7%2FpIcrAAAAArkZSX3RoaWdoX2pvaW50y7%2F6Up4gAAAArlJSX3RoaWdoX2pvaW50y7%2FpIcrAAAAArUZMX2NhbGZfam9pbnTLP%2FkhysAAAACtUkxfY2FsZl9qb2ludMs%2F%2BSHKwAAAAK1GUl9jYWxmX2pvaW50y0AB1y8gAAAArVJSX2NhbGZfam9pbnTLP%2FkhysAAAACjdGFnp01vdmFibGWja2V5oTaocG9zaXRpb26TAADLP9MzM0AAAAClc2NhbGXLP9mZmaAAAACjdGFnpVNjZW5lo2tleaIxMKJ1cJMAAAGkZ3JpZMOrcmF3Q2hpbGRyZW6S3gAEqGNoaWxkcmVukKN0YWesQW1iaWVudExpZ2h0o2tlebVkZWZhdWx0X2FtYmllbnRfbGlnaHSpaW50ZW5zaXR5Ad4ABahjaGlsZHJlbpCjdGFnsERpcmVjdGlvbmFsTGlnaHSja2V5uWRlZmF1bHRfZGlyZWN0aW9uYWxfbGlnaHSpaW50ZW5zaXR5AaZoZWxwZXLDrGh0bWxDaGlsZHJlbpCqYmdDaGlsZHJlbpPeAAOoY2hpbGRyZW6Qo3RhZ6pHcmFiUmVuZGVyo2tleaE33gADqGNoaWxkcmVukKN0YWevUG9pbnRlckNvbnRyb2xzo2tleaE43gADqGNoaWxkcmVukKN0YWekR3JpZKNrZXmhOQ%3D%3D" width="100%" height="600px" frameborder="0"></iframe>
-"""
+# doc @ """
+# Now, if your script runs correctly, the robot should show up in the following view:
+#
+# <iframe src="https://vuer.ai/?ws=ws%3A%2F%2Flocalhost%3A8012&scene=3gAIqGNoaWxkcmVukd4ABahjaGlsZHJlbpHeAAWoY2hpbGRyZW6Qo3RhZ6RVcmRmo2tleaVyb2JvdKNzcmPZLmh0dHA6Ly9sb2NhbGhvc3Q6ODAxMi9zdGF0aWMvbWluaV9jaGVldGFoLnVyZGaram9pbnRWYWx1ZXPeAAysRkxfaGlwX2pvaW50y7%2FJmZmgAAAArFJMX2hpcF9qb2ludMu%2FyZmZoAAAAKxGUl9oaXBfam9pbnTLP8mZmaAAAACsUlJfaGlwX2pvaW50yz%2FJmZmgAAAArkZMX3RoaWdoX2pvaW50y7%2FpIcrAAAAArlJMX3RoaWdoX2pvaW50y7%2FpIcrAAAAArkZSX3RoaWdoX2pvaW50y7%2F6Up4gAAAArlJSX3RoaWdoX2pvaW50y7%2FpIcrAAAAArUZMX2NhbGZfam9pbnTLP%2FkhysAAAACtUkxfY2FsZl9qb2ludMs%2F%2BSHKwAAAAK1GUl9jYWxmX2pvaW50y0AB1y8gAAAArVJSX2NhbGZfam9pbnTLP%2FkhysAAAACjdGFnp01vdmFibGWja2V5oTaocG9zaXRpb26TAADLP9MzM0AAAAClc2NhbGXLP9mZmaAAAACjdGFnpVNjZW5lo2tleaIxMKJ1cJMAAAGkZ3JpZMOrcmF3Q2hpbGRyZW6S3gAEqGNoaWxkcmVukKN0YWesQW1iaWVudExpZ2h0o2tlebVkZWZhdWx0X2FtYmllbnRfbGlnaHSpaW50ZW5zaXR5Ad4ABahjaGlsZHJlbpCjdGFnsERpcmVjdGlvbmFsTGlnaHSja2V5uWRlZmF1bHRfZGlyZWN0aW9uYWxfbGlnaHSpaW50ZW5zaXR5AaZoZWxwZXLDrGh0bWxDaGlsZHJlbpCqYmdDaGlsZHJlbpPeAAOoY2hpbGRyZW6Qo3RhZ6pHcmFiUmVuZGVyo2tleaE33gADqGNoaWxkcmVukKN0YWevUG9pbnRlckNvbnRyb2xzo2tleaE43gADqGNoaWxkcmVukKN0YWekR3JpZKNrZXmhOQ%3D%3D" width="100%" height="600px" frameborder="0"></iframe>
+# """
 
 doc.flush()

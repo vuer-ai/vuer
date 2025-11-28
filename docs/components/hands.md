@@ -1,6 +1,8 @@
 
 # Hands
 
+> **Warning**: This example is still under construction. now reference: [Hand Tracking](../examples/vr_xr/hand_tracking.md)
+
 The `Hands` component enables WebXR hand tracking for VR/AR applications.
 This is essential for:
 - Natural hand interaction in VR

@@ -43,6 +43,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 scale=1.0,
                 key="my-group",
             ),
+            show_helper=False,
             bgChildren=[OrbitControls(key="OrbitControls")],
         )
 
@@ -59,14 +60,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             await asyncio.sleep(0.016)
 
 doc @ """
-## Key Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `key` | str | - | Unique identifier for the group |
-| `position` | list | `[0,0,0]` | Group position in world coordinates |
-| `rotation` | list | `[0,0,0]` | Group rotation (Euler angles) |
-| `scale` | float/list | `1` | Uniform or per-axis scale |
 
 ## How It Works
 

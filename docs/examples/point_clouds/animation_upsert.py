@@ -7,6 +7,8 @@ MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 doc @ """
 # Point Cloud Animation (Upsert)
 
+> **Warning**: This example is still under construction.
+
 This example demonstrates how to animate point clouds using Vuer's `TimelineControls`
 and the session-based `proxy.upsert` method. Unlike the global `app.update` approach,
 this method targets a specific client session.
@@ -16,9 +18,6 @@ Key concepts:
 - Starting with an empty `DefaultScene` and dynamically adding components
 - Handling `TIMELINE_STEP` events to synchronize animations
 - Displaying multiple point clouds with different colors and positions
-
-**Note:** This example requires pre-computed data files (`suzanne.ply`,
-`suzanne_infill_good_traj.npy`, `suzanne_surface_fill_only.npy`).
 
 ## Code Example
 """
@@ -44,7 +43,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
     @app.spawn
     async def main(proxy):
-        proxy.set @ DefaultScene()
+        proxy.set @ DefaultScene(show_helper=False)
 
         while True:
             await asyncio.sleep(1.0)

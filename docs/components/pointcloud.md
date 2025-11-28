@@ -33,6 +33,7 @@ async def main(session):
             colors=colors,
             size=0.02,
         ),
+        show_helper=False,
         bgChildren=[
             OrbitControls(key="OrbitControls")
         ],
@@ -47,12 +48,8 @@ async def main(session):
 |-----------|------|---------|-------------|
 | `key` | str | - | Unique identifier for the point cloud |
 | `vertices` | ndarray | - | Nx3 array of point positions |
-| `colors` | ndarray | - | Nx3 array of RGB colors. Supports two formats: **Float32** (0-1 range, e.g., `np.array(pcd.colors, dtype=np.float32)`), or **Uint8** (0-255 range, recommended for performance, e.g., `(np.array(pcd.colors) * 255).astype(np.uint8)`) |
+| `colors` | ndarray | - | Nx3 array of RGB colors. Supports two formats: Float32 (0-1 range), or Uint8 (0-255 range, **better performance**) |
 | `size` | float | `0.01` | Point size |
-| `position` | list | `[0,0,0]` | Point cloud position in world coordinates |
-| `rotation` | list | `[0,0,0]` | Point cloud rotation (Euler angles) |
-| `scale` | float/list | `1` | Uniform or per-axis scale |
-
 
 ## Learn More
 

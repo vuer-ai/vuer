@@ -1,5 +1,5 @@
 
-# 3D Text, 2D Text, and Billboard in Vuer
+# 3D Text, 2D Text, and Billboard
 
 This example demonstrates how to create and customize text in Vuer:
 
@@ -70,6 +70,7 @@ async def main(session):
         # Lighting
         AmbientLight(intensity=2),
         DirectionalLight(intensity=1, position=[1, 2, 2]),
+        show_helper=False,
         bgChildren=[
             OrbitControls(key="OrbitControls")
         ],
@@ -95,48 +96,6 @@ async def main(session):
         await sleep(0.033)  # ~30 FPS
 ```
 
-## Component Reference
-
-| Component | Purpose | Key Parameters |
-|-----------|---------|----------------|
-| `Text3D` | 3D extruded text | `font`, `size`, `bevelEnabled`, `bevelSize`, `bevelThickness` |
-| `Text` | 2D text in 3D space | `fontSize`, `color`, `position` |
-| `Billboard` | Always faces camera | `position` (wraps child components) |
-
-### Text3D
-
-Renders extruded 3D text using Three.js TextGeometry. Requires a font in typeface.json format.
-
-```python
-Text3D(
-    "Hello!",
-    MeshNormalMaterial(),  # or any material
-    font="https://threejs.org/examples/fonts/helvetiker_bold.typeface.json",
-    size=1.5,              # base text size
-    scale=0.15,            # overall scale
-    bevelEnabled=True,     # rounded edges
-    rotation=[0, 0.5, 0],  # animate rotation
-)
-```
-
-### Text
-
-2D text rendered in 3D space. Good for labels and HUD elements.
-
-```python
-Text("Label", color="green", fontSize=0.1, position=[0, 1, 0])
-```
-
-### Billboard
-
-Wraps children so they always face the camera. Useful for labels that should be readable from any angle.
-
-```python
-Billboard(
-    Text("Always visible!", color="orange", fontSize=0.08),
-    position=[1, 1, 0],
-)
-```
 
 ## Resources
 

@@ -82,6 +82,7 @@ For a comprehensive list of data types, please refer to the [API documentation o
    Lights <guides/first_3d_scene/05_lights.md>
    Post-processing <guides/first_3d_scene/06_post_processing.md>
    Path Tracing <guides/first_3d_scene/07_path_tracing.md>
+   Session API <guides/session_apis.md>
 
 .. toctree::
    :maxdepth: 3
@@ -114,11 +115,12 @@ For a comprehensive list of data types, please refer to the [API documentation o
    examples/point_clouds.md
    examples/urdf_go1_stairs.md
    examples/spline_frustum.md
-   examples/visualization_utilities.md
+   Hand, Controller and Body Tracking <examples/vr_ar_xr.md>
+   3DGS from Sora video <examples/openai_sora.md>
+   3D Text, 2D Text, and Billboard <examples/visualization/3d_text.md>
+   Depth Texture <examples/visualization/depth_texture.md>
    examples/background_environment.md
    examples/pointer.md
-   examples/vr_ar_xr.md
-   examples/gaussian_splatting.md
 
 .. toctree::
    :maxdepth: 3

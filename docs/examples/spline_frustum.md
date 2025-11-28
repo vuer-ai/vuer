@@ -42,6 +42,7 @@ app = Vuer()
 async def main(session):
     # Set up the default scene with ambient lighting (required for colored elements).
     session.set @ DefaultScene(
+        show_helper=False,
         bgChildren=[
             OrbitControls(key="OrbitControls")
         ],

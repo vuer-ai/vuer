@@ -2,7 +2,7 @@ import os
 from cmx import doc
 from contextlib import nullcontext
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", None)
+MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
 doc @ """
 # Urdf
@@ -30,6 +30,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     async def main(sess):
         sess.set @ DefaultScene(
     Urdf(src="https://raw.githubusercontent.com/nasa-jpl/m2020-urdf-models/main/rover/m2020.urdf"),
+            show_helper=False,
             up=[0, 0, -1],  # Z-down coordinate system
             bgChildren=[OrbitControls(key="OrbitControls")]
         )
@@ -87,6 +88,7 @@ async def main(sess: VuerSession):
             position=[0, 0, 0.3],
             scale=0.4,
         ),
+        show_helper=False,
         grid=True,
         up=[0, 0, 1],
         bgChildren=[
