@@ -1,7 +1,5 @@
 # 3.1.1 Constructing A Scene in Python
 
-## Overview
-
 Vuer uses a client-server architecture where you write Python code to control a 3D scene rendered in the browser. This guide will teach you the fundamentals of creating and managing 3D scenes.
 
 By the end of this tutorial series, you'll be able to create rich 3D scenes like this:

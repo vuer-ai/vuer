@@ -14,6 +14,12 @@ images from arbitrary viewpoints. This is essential for:
 - Capturing screenshots and videos of your scene
 - Visualizing camera frustums in 3D
 
+```{admonition} Huge Caveat
+:class: info
+if you use more than 31 virtual cameras, it breaks your mac.
+because it overflows the max number of webGL context, and it shuts your computer down!
+```
+
 ## Basic Usage
 
 A minimal example that creates a virtual camera and displays its frustum:

@@ -1,7 +1,5 @@
 # 3.1.2 Vuer Component Index
 
-## Overview
-
 Vuer provides a rich library of 3D components for building interactive scenes.
 
 ## Primitive Geometries

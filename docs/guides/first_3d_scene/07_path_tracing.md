@@ -1,7 +1,5 @@
 # 3.1.7 Path Tracing Renders
 
-## Overview
-
 Path tracing is a rendering technique that simulates light transport for photorealistic results. Unlike real-time rasterization, path tracing accurately models:
 
 - **Global illumination**: Light bouncing between surfaces

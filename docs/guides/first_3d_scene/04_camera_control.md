@@ -1,7 +1,5 @@
 # 3.1.4 Camera Control
 
-## Overview
-
 Every 3D scene needs a camera to define what the viewer sees. This chapter covers the basics of camera setup and interactive controls. You'll learn how to:
 
 - Set up different camera types (Perspective and Orthographic)

@@ -1,7 +1,5 @@
 # 3.1.6 Post-processing and Render Passes
 
-## Overview
-
 Post-processing effects add visual polish to your 3D scenes through screen-space effects applied after the main render pass. Vuer includes bloom effects for glowing highlights and can be extended with additional passes like ambient occlusion, depth of field, and more.
 
 ## Render Modes

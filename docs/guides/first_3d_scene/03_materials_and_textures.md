@@ -1,7 +1,5 @@
 # 3.1.3 Materials and Textures
 
-## Overview
-
 Materials define how objects appear when rendered. This guide will progressively teach you how to use materials in Vuer, from simple material types to advanced properties and texture mapping.
 
 We'll build upon the scene from the previous guide, adding materials step by step to create increasingly realistic renders.
@@ -121,7 +119,7 @@ async def main(session: VuerSession):
 
 **Usage Tip**: All simple materials (`basic`, `lambert`, `phong`) must specify `color` inside the `material` dict (e.g., `material=dict(color="#ff0000")`).
 
-## PBR Materials
+## Physically-Based Rendering (PBR) Materials
 
 For photorealistic rendering, Vuer provides Physically-Based Rendering (PBR) materials: **standard** and **physical**. These materials require the `material` parameter with properties like `roughness`, `metalness`, and `transmission`:
 
