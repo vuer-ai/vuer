@@ -423,6 +423,24 @@ class HemisphereLight(SceneElement):
   tag = "HemisphereLight"
 
 
+class HemisphereLightStage(SceneElement):
+  """
+  Composite lighting component that provides a complete default lighting setup.
+
+  In the default rendering mode, this component creates:
+  - A HemisphereLight for ambient outdoor-style lighting
+  - A DirectionalLight for shadows and directional illumination
+
+  In pathtracer mode, it uses:
+  - An AmbientLight
+  - Area and spot lights optimized for path-traced rendering
+
+  This matches the frontend's HemisphereLightStage component and provides
+  consistent lighting across Python and frontend scene definitions.
+  """
+  tag = "HemisphereLightStage"
+
+
 class RectAreaLight(SceneElement):
   tag = "RectAreaLight"
 
@@ -431,8 +449,17 @@ class Stage(SceneElement):
   tag = "Stage"
 
 
-class Gamepads(SceneElement):
-  tag = "Gamepads"
+class Gamepad(SceneElement):
+  """
+  Gamepad input controller component.
+
+  Captures standard gamepad (e.g., Xbox, PlayStation controllers) input
+  and sends it via websocket to the Python backend.
+
+  :param index: Gamepad index to monitor (for multiple connected gamepads)
+  :type index: int, optional, default 0
+  """
+  tag = "Gamepad"
 
 
 class DirectionalLight(SceneElement):
@@ -1335,6 +1362,8 @@ class Scene(BlockElement):
     rawChildren=None,
     htmlChildren=None,
     bgChildren: List[Element] = None,
+    defaultLights: bool = True,
+    defaultOrbitControls: bool = True,
     # default to y-up to be consistent with three.js. Blender uses z-up though.
     up=[0, 1, 0],
     background=None,
@@ -1348,17 +1377,46 @@ class Scene(BlockElement):
     **kwargs,
   ):
     super().__init__(*children, up=up, **kwargs)
-    self.rawChildren = rawChildren or []
-    self.htmlChildren = htmlChildren or []
-    # note: empty list switch to default.
-    self.bgChildren = bgChildren or [
-      # use `grid=True` to select the grid component
+
+    # Import components needed for defaults
+    from .drei_components import OrbitControls, PerspectiveCamera
+
+    # Default lighting (controlled by defaultLights parameter)
+    # Using HemisphereLightStage to match frontend scene.vuer defaults
+    default_lighting = [
+      HemisphereLightStage(
+        key="light-stage",
+      ),
+    ] if defaultLights else []
+
+    # Default orbit controls (controlled by defaultOrbitControls parameter)
+    default_orbit_controls = [
+      OrbitControls(key="orb-control", makeDefault=True),
+    ] if defaultOrbitControls else []
+
+    # Background infrastructure components, matches frontend scene.vuer defaults:
+    # Grid + HemisphereLightStage (lighting) + Gamepad + Hands + MotionControllers + OrbitControls + PerspectiveCamera
+    default_bg_children = [
       Grid(key="default-grid", _key="default-grid") if grid else None,
-      AmbientLight(key="ambient", intensity=0.25),
-      PointLight(key="spot", intensity=1, position=[0, 1, 1]),
-      Hands(fps=30, eventType=["squeeze"], stream=True),
-      MotionControllers(fps=30, eventType=["trigger", "squeeze"], stream=True),
+    ] + default_lighting + [
+      Gamepad(key="gamepad-0", index=0),
+      Hands(fps=30, eventType=["squeeze"], stream=True, key="hands"),
+      MotionControllers(fps=30, eventType=["trigger", "squeeze"], stream=True, key="motion-controllers"),
+    ] + default_orbit_controls + [
+      PerspectiveCamera(key="perspective-camera", makeDefault=True, position=[0, 2, 2]),
     ]
+
+    # Set bgChildren: use user-provided value, or defaults if None
+    self.bgChildren = default_bg_children if bgChildren is None else bgChildren
+
+    if rawChildren is None:
+      self.rawChildren = []
+    elif isinstance(rawChildren, list):
+      self.rawChildren = rawChildren
+    else:
+      self.rawChildren = [rawChildren]
+
+    self.htmlChildren = htmlChildren or []
 
     self.up = up
     if background:

@@ -27,6 +27,7 @@ def get_array(file_path):
     img = rescale_image(img)  # Rescale to 256x256
     return img
 
+exit()
 
 @app.spawn(start=True)
 async def stereo_image(session, fps=60):

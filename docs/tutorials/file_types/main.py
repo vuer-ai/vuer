@@ -110,9 +110,7 @@ async def main(session: VuerSession):
         bounding_box = mesh.bounding_box_oriented
         original_size = bounding_box.extents
         position = [item["position"][0], item["position"][1], 0]
-        filename = os.path.join(
-            "http://localhost:8012/static", item["filename"].split("/")[-1]
-        )
+        filename = os.path.join("http://localhost:8012/static", item["filename"].split("/")[-1])
         bounding_box = item["size"]
         factor = calculate_scale_factor(original_size, bounding_box)
         session.upsert @ Glb(

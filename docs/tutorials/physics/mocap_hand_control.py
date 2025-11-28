@@ -55,9 +55,11 @@ doc @ """
 Now, to get the mujoco updates, we can listen to the `ON_MUJOCO_FRAME` event.
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
+
     @app.add_handler("ON_MUJOCO_FRAME")
     async def on_mujoco_frame(event: ClientEvent, sess: VuerSession):
         print("ON_MUJOCO_FRAME", event)
+
 
 doc @ """
 You should get events that looks like these:
@@ -67,6 +69,7 @@ You should get events that looks like these:
 and the main session handler.
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
+
     @app.spawn(start=True)
     async def main(sess: VuerSession):
         # here we setup the staging area. Use Fog to simulate MuJoCo's
@@ -85,7 +88,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         )
         await sleep(0.0005)
         sess.upsert @ MuJoCo(
-
             HandActuator(key="pinch-on-squeeze"),
             key="franka-gripper",
             src=asset_pref + "scene.xml",
@@ -96,5 +98,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         )
 
         await sleep(100.0)
+
 
 doc.flush()

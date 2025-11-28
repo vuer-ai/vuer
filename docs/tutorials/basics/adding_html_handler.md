@@ -38,4 +38,4 @@ app.start()
 Now, if you visit the path [http://localhost:8012/dynamic](http://localhost:8012/dynamic)
 you shall see the counter updates upon each refresh.
 
-<img src="./figures/dynamic_html.png" style="width: 400px"/>
+<img src="./figures/dynamic_html.png" style="width: 100px"/>

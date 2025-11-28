@@ -7,6 +7,7 @@ vuer = Vuer()
 
 host = "http://localhost:8012/static"
 
+
 @vuer.spawn(start=True)
 async def main(proxy: VuerSession):
     proxy.add @ MuJoCo(

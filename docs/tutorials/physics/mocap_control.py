@@ -17,7 +17,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     from killport import kill_ports
     from vuer import Vuer, VuerSession
     from vuer.events import ClientEvent
-    from vuer.schemas import MuJoCo, Scene, Fog, Sphere, Hands, HandActuator, MotionControllers, MotionControllerActuator
+    from vuer.schemas import MuJoCo, Scene, Fog, Sphere, MotionControllers, MotionControllerActuator
 
 doc @ """
 
@@ -70,16 +70,18 @@ MuJoCo scene, you use the correct url starting with `https`.
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
     # this won't work because it does not have SSL.
-    asset_pref = f"https://docs.vuer.ai/en/latest/_static/mujoco_scenes/gripper_model/"
+    asset_pref = "https://docs.vuer.ai/en/latest/_static/mujoco_scenes/gripper_model/"
 
 doc @ """
 
 Now, to get the mujoco updates, we can listen to the `ON_MUJOCO_FRAME` event.
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
+
     @app.add_handler("ON_MUJOCO_FRAME")
     async def on_mujoco_frame(event: ClientEvent, sess: VuerSession):
         print("ON_MUJOCO_FRAME", event)
+
 
 doc @ """
 You should get events that looks like these:
@@ -89,6 +91,7 @@ You should get events that looks like these:
 and the main session handler.
 """
 with doc, doc.skip if MAKE_DOCS else nullcontext():
+
     @app.spawn(start=True)
     async def main(sess: VuerSession):
         # here we setup the staging area. Use Fog to simulate MuJoCo's
@@ -108,7 +111,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         )
         await sleep(0.0005)
         sess.upsert @ MuJoCo(
-
             # HandActuator(key="pinch-on-squeeze"),
             MotionControllerActuator(high=0.15, low=0.01, ctrlId=-1),
             key="franka-gripper",
@@ -120,6 +122,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         )
 
         await sleep(100.0)
+
 
 doc @ """
 

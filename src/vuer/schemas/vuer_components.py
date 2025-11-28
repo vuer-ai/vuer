@@ -1,4 +1,3 @@
-from typing import List
 
 from .scene_components import SceneElement
 
@@ -37,11 +36,10 @@ class ContribLoader(SceneElement):
                     Default is False. When in development mode, it loads from
                     `third_party/${fileName}?ts=${Date.now()}`
     """
+
     tag = "ContribLoader"
     url = None
     library = None
     version = "latest"
     main = "dist/index.js"
     dev = False
-
-

@@ -39,10 +39,10 @@ make docs
 Preview documentation with live reload:
 
 ```bash
-make preview-docs
+make preview
 ```
 
-The preview server will start at `http://0.0.0.0:8000`
+The preview server will start at `http://localhost:8000/`
 
 ### Testing
 

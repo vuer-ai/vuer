@@ -21,18 +21,8 @@ SE3_DEFAULT = {
     },
 }
 LOCAL_SE3 = {
-    "Local Transformation.rotation": {
-        "value": {"x": 0, "y": 0, "z": 0},
-        "order": 1,
-        "lock": True,
-        "label": "Rotation"
-    },
-    "Local Transformation.position": {
-        "value": {"x": 0, "y": 0, "z": 0},
-        "order": -1,
-        "lock": True,
-        "label": "Translation"
-    },
+    "Local Transformation.rotation": {"value": {"x": 0, "y": 0, "z": 0}, "order": 1, "lock": True, "label": "Rotation"},
+    "Local Transformation.position": {"value": {"x": 0, "y": 0, "z": 0}, "order": -1, "lock": True, "label": "Translation"},
     "Local Transformation.scale": {
         "value": 1,
         "min": 0.0001,

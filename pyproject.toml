@@ -55,6 +55,7 @@ dev = [
     # these are very optional but needed for the doc site
     "trimesh",
     "tqdm",
+    "roman",
 ]
 
 [project.scripts]
@@ -95,12 +96,14 @@ dev = [
     "myst_parser",
     "trimesh",
     "tqdm",
+    "roman",
 ]
 
 [tool.uv]
 # Force newer versions with pre-built wheels to avoid compilation issues
 override-dependencies = [
     "multidict>=6.0",  # Older versions need compilation
+    "docutils<0.21",  # Newer versions have compatibility issues with Sphinx 8.x
 ]
 
 # ruff

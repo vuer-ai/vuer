@@ -1,4 +1,4 @@
-<h1 class="full-width" style="font-size: 28px"><code style="font-size: 1.3em; margin-right:-0.4em; background-clip: text; color: transparent; background-image: linear-gradient(to right, rgb(0,140,220), rgb(226,213,79), rgb(210,0,12));">vuer</code>, An Event-Driven, Declarative Visualization Framework for Physical AI
+<h1 class="full-width" style="font-size: 28px"><code style="font-size: 1.3em; margin-right:-0.4em; background-clip: text; color: transparent; background-image: linear-gradient(to right, rgb(0,140,220), rgb(226,213,79), rgb(210,0,12));">vuer</code><br><span style="font-size: 0.5em; line-height: 1.2; display: block; margin-top: 0.2em;">An Event-Driven, Declarative Visualization Framework for Physical AI</span>
 </h1>
 
 <link rel="stylesheet" href="_static/title_resize.css">
@@ -22,23 +22,23 @@ Modern versions of macOS should work with the pre-built wheels.
 Here is an example that loads a URDF file and displays it in the browser. For a more comprehensive list of examples, please refer to the [examples](examples/01_trimesh) page.
 
 ```python
-from vuer import Vuer, VuerSession
-from vuer.schemas import DefaultScene, Urdf
+from vuer import Vuer
+from vuer.schemas import DefaultScene, Urdf, OrbitControls
 
 app = Vuer()
 
-
 @app.spawn(start=True)
-async def main(session: VuerSession):
-  session.set @ DefaultScene(
-    Urdf("assets/urdf/robotiq.urdf"),
-  )
+async def main(sess):
+    sess.set @ DefaultScene(
+        Urdf(src="https://raw.githubusercontent.com/nasa-jpl/m2020-urdf-models/main/rover/m2020.urdf"),
+        up=[0, 0, -1],  # Z-down coordinate system
+        bgChildren=[OrbitControls(key="OrbitControls")]
+    )
 
-  while True:
-    await session.sleep(0.1)
+    await sess.forever()
 ```
 
-<iframe src="https://vuer.ai/?background=131416,fff&collapseMenu=true&initCamPos=2.8,2.2,2.5&scene=gahjaGlsZHJlbpKHqGNoaWxkcmVukKN0YWekVXJkZqNrZXmscGVyc2V2ZXJhbmNlo3NyY9lEaHR0cHM6Ly9kb2NzLnZ1ZXIuYWkvZW4vbGF0ZXN0L19zdGF0aWMvcGVyc2V2ZXJhbmNlL3JvdmVyL20yMDIwLnVyZGaram9pbnRWYWx1ZXOAqHJvdGF0aW9uk8s%2F%2BR64YAAAAAAAqHBvc2l0aW9ukwAAy7%2F4AAAAAAAAh6hjaGlsZHJlbpCjdGFnpFVyZGaja2V5r21hcnMtaGVsaWNvcHRlcqNzcmPZQGh0dHBzOi8vZG9jcy52dWVyLmFpL2VuL2xhdGVzdC9fc3RhdGljL3BlcnNldmVyYW5jZS9taHMvTUhTLnVyZGaram9pbnRWYWx1ZXOAqHJvdGF0aW9uk8s%2F%2BR64YAAAAAAAqHBvc2l0aW9ukwDLP9HrhSAAAADLP%2BAAAAAAAAA%3D" width="100%" height="400px" frameborder="0"></iframe>
+<iframe src="https://vuer.ai//?hideUI=true&reconnect=True&scene=h6hjaGlsZHJlbpGEqGNoaWxkcmVukYaoY2hpbGRyZW6Qo3RhZ6RVcmRmo2tleaExo3NyY9lSaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL25hc2EtanBsL20yMDIwLXVyZGYtbW9kZWxzL21haW4vcm92ZXIvbTIwMjAudXJkZqtqb2ludFZhbHVlc4Cocm90YXRpb26Ty0AJHrhR64UfAACjdGFnp01vdmFibGWja2V5oTKocG9zaXRpb26TAADLP8MzMzMzMzOjdGFnpVNjZW5lo2tleaEzonVwkwAAAahzaG93TGV2YcKqYmdDaGlsZHJlbpCrcmF3Q2hpbGRyZW6VhKhjaGlsZHJlbpCjdGFnrEFtYmllbnRMaWdodKNrZXmnYW1iaWVudKlpbnRlbnNpdHnLP%2BAAAAAAAACFqGNoaWxkcmVukKN0YWewRGlyZWN0aW9uYWxMaWdodKNrZXmjc3VuqWludGVuc2l0eQGocG9zaXRpb26TAwMDhahjaGlsZHJlbpCjdGFnsVBlcnNwZWN0aXZlQ2FtZXJho2tlebJwZXJzcGVjdGl2ZS1jYW1lcmGrbWFrZURlZmF1bHTDqHBvc2l0aW9ukwADA4OoY2hpbGRyZW6Qo3RhZ61PcmJpdENvbnRyb2xzo2tleatvcmItY29udHJvbIOoY2hpbGRyZW6Qo3RhZ6RHcmlko2tleaRncmlk" width="100%" height="350px" frameborder="0"></iframe>
 
 Vuer is built by researchers at MIT and UCSD in fields including robotics, computer vision, and computer graphics.
 
@@ -52,7 +52,6 @@ To get a quick overview of what you can do with  <code style="font-size: 1.3em; 
 
 - take a look at the basic tutorial or the tutorial for robotics:
   - [Introduction to Key Vuer Concepts](tutorials/basics)
-  - [Tutorial for Roboticists](tutorials/robotics)
 - or try to take a look at the example gallery [here](examples/01_trimesh)
 
 For a comprehensive list of visualization components, please refer to
@@ -68,10 +67,23 @@ For a comprehensive list of data types, please refer to the [API documentation o
    :maxdepth: 1
    :titlesonly:
 
-   Quick Start <quick_start>
+   Quick Start <quick_start.md>
    Report Issues <https://github.com/vuer-ai/vuer/issues?q=is:issue+is:closed>
-   CHANGE LOG <CHANGE_LOG.md>
-   
+
+.. toctree::
+   :maxdepth: 3
+   :caption: 📖 Your First 3D Scene (NEW!)
+   :hidden:
+
+   Constructing A Scene <guides/first_3d_scene/01_constructing_a_scene.md>
+   Vuer Component Index <guides/first_3d_scene/02_component_index.md>
+   Materials & Textures <guides/first_3d_scene/03_materials_and_textures.md>
+   Camera Control <guides/first_3d_scene/04_camera_control.md>
+   Lights <guides/first_3d_scene/05_lights.md>
+   Post-processing <guides/first_3d_scene/06_post_processing.md>
+   Path Tracing <guides/first_3d_scene/07_path_tracing.md>
+   Session API <guides/session_apis.md>
+
 .. toctree::
    :maxdepth: 3
    :caption: NEW FEATURES 🔥
@@ -86,57 +98,29 @@ For a comprehensive list of data types, please refer to the [API documentation o
    :maxdepth: 3
    :caption: Tutorials
    :hidden:
-   
+
    tutorials/basics.md
    tutorials/robotics.md
    tutorials/camera/README.md
    tutorials/physics.md
-   
+   Detecting When Assets Have Been Loaded <tutorials/obj_loading.md>
+   MuJoCo Interactive Simulator <tutorials/mujoco_interactive_simulator.md>
+
 .. toctree::
    :maxdepth: 3
    :caption: Examples
    :hidden:
-   
-   Mesh <examples/01_trimesh.md>
-   Programmatic PointCloud <examples/02_pointcloud.md>
-   ┣→ pcd files <examples/02_pointcloud_pcd.md>
-   ┗→ ply files <examples/02_pointcloud_ply.md>
-   Simpe Plane <examples/13_plane_primitive.md>
-   Obj Files <examples/14_obj.md>
-   Frustum and Spline <examples/15_spline_frustum.md>
-   URDF <examples/03_urdf.md>
-   URDF (local) <examples/03_urdf_local.md>
-   Imperative API <examples/04_imperative_api.md>
-   Virtual Camera <examples/05_collecting_render.md>
-   Render Images <examples/05_collecting_render_procedural.md>
-   Animation <examples/05_pointcloud_animation.md>
-   Upsert <examples/05_pointcloud_animation_upsert.md>
-   Depth Texture <examples/06_depth_texture.md>
-   Background Image <examples/07_background_image.md>
-   Heads Up Display <examples/07b_vr_hud.md>
-   Depth Image <examples/08_experimental_depth_image.md>
-   Coordinate Markers <examples/11_coordinates_markers.md>
-   Arrows <examples/16_arrows.md>
-   Virtual Camera <examples/12_camera.md>
-   360 Image <examples/17_sky_ball.md>
-   Movable Handles <examples/18_movable.md>
-   Hand Tracking <examples/19_hand_tracking.md>
-   Body Tracking <examples/25_body_tracking.md>
-   WebXR Mesh Detection <examples/26_webxr_mesh.md>
-   Quest 3 Controllers <examples/20_motion_controllers.md>
-   3D Movie <examples/21_3D_movie.md>
-   2D/3D Text <examples/22_3d_text.md>
-   Raycasted 3D Pointer <examples/21_pointer_example>
-   Mujoco Interactive Simulator <examples/24_mujoco_interactive_simulator>
-   
-.. toctree::
-   :maxdepth: 3
-   :caption: Textuers and Meshes
-   :hidden:
-   
-   Sphere Scene <examples/texture_meshes/ball_scene.md>
-   Stairs Scene <examples/texture_meshes/stairs_scene.md>
-   Adding UV and Texture Map to Trimesh <examples/texture_meshes/textured_trimesh.md>
+
+   examples/meshes.md
+   examples/point_clouds.md
+   examples/urdf_go1_stairs.md
+   examples/spline_frustum.md
+   Hand, Controller and Body Tracking <examples/vr_ar_xr.md>
+   3DGS from Sora video <examples/openai_sora.md>
+   3D Text, 2D Text, and Billboard <examples/visualization/3d_text.md>
+   Depth Texture <examples/visualization/depth_texture.md>
+   examples/background_environment.md
+   examples/pointer.md
 
 .. toctree::
    :maxdepth: 3

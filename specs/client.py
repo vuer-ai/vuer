@@ -1,16 +1,16 @@
 from asyncio import sleep
-from datetime import datetime
 from requests_futures import requests
 
 import numpy as np
 from pandas import DataFrame
 
-from vuer import Vuer
 from vuer.events import Set, Update, Frame
-from vuer.schemas import Scene, Ply, Gripper, SkeletalGripper, Movable, Urdf
+from vuer.schemas import Urdf
 
 
-requests.post("localhost:8012/relay", )
+requests.post(
+    "localhost:8012/relay",
+)
 
 joint_mapping = {
     0: "FL_hip",
@@ -35,13 +35,13 @@ def row2dict(row):
 import pickle
 
 with open("log.pkl", "rb") as f:
-    cfg, traj = pickle.load(f)['hardware_closed_loop']
+    cfg, traj = pickle.load(f)["hardware_closed_loop"]
     df = DataFrame(traj[:-1])
 
-    df_joint = np.concatenate(df['joint_pos_target'].values)
+    df_joint = np.concatenate(df["joint_pos_target"].values)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     i = 0
 
     event = yield Set(scene)
@@ -50,7 +50,7 @@ if __name__ == '__main__':
         i += 1
         phase = 0.1 * np.pi * i / 50
         pinch = 0.033 * (i % 30)
-        position = [0.2 * np.sin(phase), .2, 0.2 * np.cos(phase)]
+        position = [0.2 * np.sin(phase), 0.2, 0.2 * np.cos(phase)]
         jointValues = row2dict(df_joint[i % len(df_joint)])
         print(jointValues)
 
