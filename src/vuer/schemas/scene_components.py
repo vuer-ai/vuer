@@ -1363,6 +1363,7 @@ class Scene(BlockElement):
     htmlChildren=None,
     bgChildren: List[Element] = None,
     defaultLights: bool = True,
+    defaultOrbitControls: bool = True,
     # default to y-up to be consistent with three.js. Blender uses z-up though.
     up=[0, 1, 0],
     background=None,
@@ -1388,6 +1389,11 @@ class Scene(BlockElement):
       ),
     ] if defaultLights else []
 
+    # Default orbit controls (controlled by defaultOrbitControls parameter)
+    default_orbit_controls = [
+      OrbitControls(key="orb-control", makeDefault=True),
+    ] if defaultOrbitControls else []
+
     # Background infrastructure components, matches frontend scene.vuer defaults:
     # Grid + HemisphereLightStage (lighting) + Gamepad + Hands + MotionControllers + OrbitControls + PerspectiveCamera
     default_bg_children = [
@@ -1396,7 +1402,7 @@ class Scene(BlockElement):
       Gamepad(key="gamepad-0", index=0),
       Hands(fps=30, eventType=["squeeze"], stream=True, key="hands"),
       MotionControllers(fps=30, eventType=["trigger", "squeeze"], stream=True, key="motion-controllers"),
-      OrbitControls(key="orb-control", makeDefault=True),
+    ] + default_orbit_controls + [
       PerspectiveCamera(key="perspective-camera", makeDefault=True, position=[0, 2, 2]),
     ]
 
