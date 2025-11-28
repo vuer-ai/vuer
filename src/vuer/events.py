@@ -152,7 +152,7 @@ class Update(ServerEvent):
 
 class Add(ServerEvent):
   """
-  ADD Operator is used to insert new nodes to the scene graph. By default it
+  ADD Operator is used to insert new nodes to the scene graph. By default, it
   inserts into the root node, but you can specify a parent node to insert into
   via the `to` argument.
 
@@ -384,6 +384,7 @@ class GetWebXRMesh(ServerRPC):
     super().__init__(data=kwargs)
     self.key = key
     self.rtype = f"GET_WEBXR_MESH_RESPONSE@{self.uuid}"
+
 
 if __name__ == "__main__":
   # e = Frame @ {"hey": "yo"}
