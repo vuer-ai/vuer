@@ -1,4 +1,4 @@
-# 3.1.2 Components
+# 3.1.2 Vuer Component Index
 
 ## Overview
 

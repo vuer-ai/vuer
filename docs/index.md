@@ -76,7 +76,7 @@ For a comprehensive list of data types, please refer to the [API documentation o
    :hidden:
 
    Constructing A Scene <guides/first_3d_scene/01_constructing_a_scene.md>
-   Components <guides/first_3d_scene/02_component_index.md>
+   Vuer Component Index <guides/first_3d_scene/02_component_index.md>
    Materials & Textures <guides/first_3d_scene/03_materials_and_textures.md>
    Camera Control <guides/first_3d_scene/04_camera_control.md>
    Lights <guides/first_3d_scene/05_lights.md>
