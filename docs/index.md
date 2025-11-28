@@ -1,4 +1,4 @@
-<h1 class="full-width" style="font-size: 28px"><code style="font-size: 1.3em; margin-right:-0.4em; background-clip: text; color: transparent; background-image: linear-gradient(to right, rgb(0,140,220), rgb(226,213,79), rgb(210,0,12));">vuer</code>, An Event-Driven, Declarative Visualization Framework for Physical AI
+<h1 class="full-width" style="font-size: 28px"><code style="font-size: 1.3em; margin-right:-0.4em; background-clip: text; color: transparent; background-image: linear-gradient(to right, rgb(0,140,220), rgb(226,213,79), rgb(210,0,12));">vuer</code><br><span style="font-size: 0.5em; line-height: 1.2; display: block; margin-top: 0.2em;">An Event-Driven, Declarative Visualization Framework for Physical AI</span>
 </h1>
 
 <link rel="stylesheet" href="_static/title_resize.css">
@@ -22,20 +22,20 @@ Modern versions of macOS should work with the pre-built wheels.
 Here is an example that loads a URDF file and displays it in the browser. For a more comprehensive list of examples, please refer to the [examples](examples/01_trimesh) page.
 
 ```python
-from vuer import Vuer, VuerSession
-from vuer.schemas import DefaultScene, Urdf
+from vuer import Vuer
+from vuer.schemas import DefaultScene, Urdf, OrbitControls
 
 app = Vuer()
 
-
 @app.spawn(start=True)
-async def main(session: VuerSession):
-  session.set @ DefaultScene(
-    Urdf("assets/urdf/robotiq.urdf"),
-  )
+async def main(sess):
+    sess.set @ DefaultScene(
+        Urdf(src="https://raw.githubusercontent.com/nasa-jpl/m2020-urdf-models/main/rover/m2020.urdf"),
+        up=[0, 0, -1],  # Z-down coordinate system
+        bgChildren=[OrbitControls(key="OrbitControls")]
+    )
 
-  while True:
-    await session.sleep(0.1)
+    await sess.forever()
 ```
 
 <iframe src="https://vuer.ai//?hideUI=true&reconnect=True&scene=h6hjaGlsZHJlbpGEqGNoaWxkcmVukYaoY2hpbGRyZW6Qo3RhZ6RVcmRmo2tleaExo3NyY9lSaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL25hc2EtanBsL20yMDIwLXVyZGYtbW9kZWxzL21haW4vcm92ZXIvbTIwMjAudXJkZqtqb2ludFZhbHVlc4Cocm90YXRpb26Ty0AJHrhR64UfAACjdGFnp01vdmFibGWja2V5oTKocG9zaXRpb26TAADLP8MzMzMzMzOjdGFnpVNjZW5lo2tleaEzonVwkwAAAahzaG93TGV2YcKqYmdDaGlsZHJlbpCrcmF3Q2hpbGRyZW6VhKhjaGlsZHJlbpCjdGFnrEFtYmllbnRMaWdodKNrZXmnYW1iaWVudKlpbnRlbnNpdHnLP%2BAAAAAAAACFqGNoaWxkcmVukKN0YWewRGlyZWN0aW9uYWxMaWdodKNrZXmjc3VuqWludGVuc2l0eQGocG9zaXRpb26TAwMDhahjaGlsZHJlbpCjdGFnsVBlcnNwZWN0aXZlQ2FtZXJho2tlebJwZXJzcGVjdGl2ZS1jYW1lcmGrbWFrZURlZmF1bHTDqHBvc2l0aW9ukwADA4OoY2hpbGRyZW6Qo3RhZ61PcmJpdENvbnRyb2xzo2tleatvcmItY29udHJvbIOoY2hpbGRyZW6Qo3RhZ6RHcmlko2tleaRncmlk" width="100%" height="350px" frameborder="0"></iframe>
