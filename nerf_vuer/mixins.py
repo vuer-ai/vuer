@@ -1,7 +1,7 @@
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Dict, Union, List, DefaultDict, Optional, Generator, Callable, AsyncIterator
+from typing import Dict, Union, List, DefaultDict, Optional, Callable, AsyncIterator
 
 from instant_feature.cameras.cameras import Cameras
 from nerf_vuer.utils.se3 import rotation_matrix
@@ -107,7 +107,6 @@ def process_aabb(render_gen):
         render,
         **kwargs,
     ):
-
         if settings.get("use_aabb", None):
             scene_box = AABB(
                 aabb_min=Vector3(**settings.get("aabb_min", None)),
@@ -126,7 +125,7 @@ def process_aabb(render_gen):
             )
         else:
             scene_box = None
-            
+
         async for event in render_gen(*args, aabb=scene_box, settings=settings, render=render, **kwargs):
             yield event
 
@@ -304,7 +303,6 @@ def collector(
             pipe=pipe,
             **kwargs,
         ) -> AsyncIterator:
-
             outputs = defaultdict(list)
 
             async for output_chunk in async_render(self, *args, channels=channels, camera=camera, **kwargs):

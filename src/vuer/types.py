@@ -5,6 +5,7 @@ from uuid import UUID
 from vuer.events import ClientEvent
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from vuer.server import VuerSession
 

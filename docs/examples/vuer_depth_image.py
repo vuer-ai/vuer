@@ -4,6 +4,8 @@ import cv2
 from vuer import Vuer
 from vuer.schemas import ImageBackground
 
+exit()
+
 app = Vuer(
     host="0.0.0.0",
     port=8012,

@@ -1,7 +1,6 @@
 import os
 from asyncio import sleep
 from contextlib import nullcontext
-from pathlib import Path
 
 from cmx import doc
 
@@ -12,7 +11,7 @@ doc @ """
 
 This component allows you to run the MuJoCo simulations in the browser.
 """
-doc.image(src=f"figures/mujoco_cassie.png", width=400)
+doc.image(src="figures/mujoco_cassie.png", width=400)
 
 doc @ """
 You need to supply a list of path to relevant files to the `assets` attribute.
@@ -25,7 +24,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
     asset_pref = "http://localhost:8012/static/agility_cassie/"
 
-
     @app.spawn(start=True)
     async def main(sess: VuerSession):
         # here we setup the staging area. Use Fog to simulate MuJoCo's
@@ -37,17 +35,17 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 main="dist/index.umd.js",
             ),
             bgChildren=[
-                Fog(color=0x2c3f57, near=10, far=20),
+                Fog(color=0x2C3F57, near=10, far=20),
                 Sphere(
                     args=[50, 10, 10],
                     materialType="basic",
-                    material=dict(color=0x2c3f57, side=1),
+                    material=dict(color=0x2C3F57, side=1),
                 ),
             ],
         )
         # you need to wait long enough for the script to load, unless you
         # listen to and wait for the `ON_CONTRIB_LOAD` event.
-        await sleep(1.)
+        await sleep(1.0)
         sess.upsert @ MuJoCo(
             key="cassie-1",
             src=asset_pref + "scene.xml",

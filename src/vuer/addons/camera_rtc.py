@@ -27,13 +27,9 @@ def create_local_tracks(play_from, decode):
         options = {"framerate": "30", "video_size": "1280x720"}
         if relay is None:
             if platform.system() == "Darwin":
-                webcam = MediaPlayer(
-                    "default:none", format="avfoundation", options=options
-                )
+                webcam = MediaPlayer("default:none", format="avfoundation", options=options)
             elif platform.system() == "Windows":
-                webcam = MediaPlayer(
-                    "video=Integrated Camera", format="dshow", options=options
-                )
+                webcam = MediaPlayer("video=Integrated Camera", format="dshow", options=options)
             else:
                 webcam = MediaPlayer("/dev/video0", format=None, options=options)
             relay = MediaRelay()
@@ -44,9 +40,7 @@ def force_codec(pc, sender, forced_codec):
     kind = forced_codec.split("/")[0]
     codecs = RTCRtpSender.getCapabilities(kind).codecs
     transceiver = next(t for t in pc.getTransceivers() if t.sender == sender)
-    transceiver.setCodecPreferences(
-        [codec for codec in codecs if codec.mimeType == forced_codec]
-    )
+    transceiver.setCodecPreferences([codec for codec in codecs if codec.mimeType == forced_codec])
 
 
 async def index(request):
@@ -74,9 +68,7 @@ async def offer(request):
             pcs.discard(pc)
 
     # open media source
-    audio, video = create_local_tracks(
-        Args.play_from, decode=not Args.play_without_decoding
-    )
+    audio, video = create_local_tracks(Args.play_from, decode=not Args.play_without_decoding)
 
     if audio:
         audio_sender = pc.addTrack(audio)
@@ -99,9 +91,7 @@ async def offer(request):
 
     return web.Response(
         content_type="application/json",
-        text=json.dumps(
-            {"sdp": pc.localDescription.sdp, "type": pc.localDescription.type}
-        ),
+        text=json.dumps({"sdp": pc.localDescription.sdp, "type": pc.localDescription.type}),
     )
 
 
@@ -128,8 +118,7 @@ class Args(ParamsProto):
 
     play_from = Proto(help="Read the media from a file and send it.")
     play_without_decoding = Flag(
-        "Read the media without decoding it (experimental). "
-        "For now it only works with an MPEGTS container with only H.264 video."
+        "Read the media without decoding it (experimental). For now it only works with an MPEGTS container with only H.264 video."
     )
 
     audio_codec = Proto(help="Force a specific audio codec (e.g. audio/opus)")

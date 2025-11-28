@@ -4,7 +4,6 @@ To get a quick overview of what you can do with `vuer`, check out the following:
 
 - take a look at the basic tutorial or the tutorial for robotics:
   - [Vuer Basics](tutorials/basics)
-  - [Tutorial for Roboticists](tutorials/robotics)
 - or try to take a look at the example gallery [here](examples/01_trimesh)
 
 Setting up the conda environment:

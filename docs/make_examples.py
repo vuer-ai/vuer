@@ -19,9 +19,7 @@ if __name__ == "__main__":
     # go through every example in the folder
     for filename in sorted(os.listdir(SOURCE_DIR)):
         if filename.endswith(".py"):
-            filename_no_extension = os.path.splitext(os.path.basename(filename))[
-                0
-            ]  # file path without extension
+            filename_no_extension = os.path.splitext(os.path.basename(filename))[0]  # file path without extension
             example_list.append(filename_no_extension)
             create_rst(
                 SOURCE_DIR,
@@ -37,4 +35,4 @@ if __name__ == "__main__":
             toc += f"\n   {file_name}"
 
         file.write(toc)
-        print(f"Updated examples.md")
+        print("Updated examples.md")

@@ -12,286 +12,282 @@ element_counter = count()
 
 
 def omit(d, *patterns):
-  """Omit keys from dictionary that match any of the glob patterns.
+    """Omit keys from dictionary that match any of the glob patterns.
 
-  :param d: Dictionary to filter
-  :param patterns: Glob patterns to match keys against (e.g., "_*", "tag")
-  :return: New dictionary with matching keys removed
+    :param d: Dictionary to filter
+    :param patterns: Glob patterns to match keys against (e.g., "_*", "tag")
+    :return: New dictionary with matching keys removed
 
-  Example::
+    Example::
 
-      omit({"foo": 1, "_bar": 2, "tag": 3}, "_*", "tag")
-      # Returns: {"foo": 1}
-  """
-  result = {}
-  for k, v in d.items():
-    if not any(fnmatch(k, pattern) for pattern in patterns):
-      result[k] = v
-  return result
+        omit({"foo": 1, "_bar": 2, "tag": 3}, "_*", "tag")
+        # Returns: {"foo": 1}
+    """
+    result = {}
+    for k, v in d.items():
+        if not any(fnmatch(k, pattern) for pattern in patterns):
+            result[k] = v
+    return result
 
 
 class Element:
-  """
-  Base class for all elements
-  """
-
-  tag: str = "div"
-
-  def __post_init__(self, **kwargs):
-    pass
-
-  def __init__(self, key=None, **kwargs):
-    self.key = key or getattr(self, "key", None) or str(next(element_counter))
-
-    class_kwargs = omit(vars(self), "_*", "tag", "key")
-    kwargs = {**class_kwargs, **kwargs}
-
-    self.__dict__.update(tag=self.tag, key=self.key, **kwargs)
-    self.__post_init__(**{k: v for k, v in kwargs.items() if k.startswith("_")})
-
-  def _serialize(self):
     """
-    Serialize the element to a dictionary for sending over the websocket.
-
-    :return: Dictionary representing the element.
+    Base class for all elements
     """
 
-    # note: only return the non-private attributes, allow bypass.
-    output = {}
-    for k, v in self.__dict__.items():
-      if k.startswith("_"):
-        continue
-      if hasattr(v, "tolist"):
-        output[k] = v.tolist()
-      else:
-        output[k] = v
+    tag: str = "div"
 
-    return output
+    def __post_init__(self, **kwargs):
+        pass
+
+    def __init__(self, key=None, **kwargs):
+        self.key = key or getattr(self, "key", None) or str(next(element_counter))
+
+        class_kwargs = omit(vars(self), "_*", "tag", "key")
+        kwargs = {**class_kwargs, **kwargs}
+
+        self.__dict__.update(tag=self.tag, key=self.key, **kwargs)
+        self.__post_init__(**{k: v for k, v in kwargs.items() if k.startswith("_")})
+
+    def _serialize(self):
+        """
+        Serialize the element to a dictionary for sending over the websocket.
+
+        :return: Dictionary representing the element.
+        """
+
+        # note: only return the non-private attributes, allow bypass.
+        output = {}
+        for k, v in self.__dict__.items():
+            if k.startswith("_"):
+                continue
+            if hasattr(v, "tolist"):
+                output[k] = v.tolist()
+            else:
+                output[k] = v
+
+        return output
 
 
 class BlockElement(Element):
-  def __init__(self, *children, **kwargs):
-    self.children = children
-    super().__init__(**kwargs)
+    def __init__(self, *children, **kwargs):
+        self.children = children
+        super().__init__(**kwargs)
 
-  def _serialize(self):
-    # writ this as multiple lines
-    children = []
-    for e in self.children:
-      if isinstance(e, str):
-        children.append(e)
-      else:
-        children.append(e._serialize())
-    return {**super()._serialize(), "children": children}
+    def _serialize(self):
+        # writ this as multiple lines
+        children = []
+        for e in self.children:
+            if isinstance(e, str):
+                children.append(e)
+            else:
+                children.append(e._serialize())
+        return {**super()._serialize(), "children": children}
 
 
 class AutoScroll(BlockElement):
-  tag = "AutoScroll"
+    tag = "AutoScroll"
 
 
 class Markdown(BlockElement):
-  tag = "Markdown"
+    tag = "Markdown"
 
 
 class Page(BlockElement):
-  """
-  A Page is an element that contains other elements.
-  It is represented by a div element in the DOM.
-  """
+    """
+    A Page is an element that contains other elements.
+    It is represented by a div element in the DOM.
+    """
 
-  tag = "article"
+    tag = "article"
 
 
 class div(BlockElement):
-  tag = "Div"
+    tag = "Div"
 
 
 class InputBox(Element):
-  """
-  An InputBox is an element that allows the user to input text.
-  It is represented by an input element in the DOM.
-  """
+    """
+    An InputBox is an element that allows the user to input text.
+    It is represented by an input element in the DOM.
+    """
 
-  tag = "Input"
+    tag = "Input"
 
-  def __init__(self, **kwargs):
-    super().__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
 
 class Header1(BlockElement):
-  """
-  A Text element is an element that displays text.
-  It is represented by a text, or p element in the DOM.
-  """
+    """
+    A Text element is an element that displays text.
+    It is represented by a text, or p element in the DOM.
+    """
 
-  tag = "h1"
+    tag = "h1"
 
-  def __init__(self, *children, **kwargs):
-    children = [span(c) if isinstance(c, str) else c for c in children]
-    super().__init__(*children, **kwargs)
+    def __init__(self, *children, **kwargs):
+        children = [span(c) if isinstance(c, str) else c for c in children]
+        super().__init__(*children, **kwargs)
 
 
 Header = Header1
 
 
 class Header2(Header1):
-  """Header 2"""
+    """Header 2"""
 
-  tag = "h2"
+    tag = "h2"
 
 
 class Header3(Header1):
-  """Header 2"""
+    """Header 2"""
 
-  tag = "h3"
+    tag = "h3"
 
 
 class Paragraph(BlockElement):
-  """
-  A Text element is an element that displays text.
-  It is represented by a text, or p element in the DOM.
-  """
+    """
+    A Text element is an element that displays text.
+    It is represented by a text, or p element in the DOM.
+    """
 
-  tag = "p"
+    tag = "p"
 
-  def __init__(self, *children, **kwargs):
-    children = [span(c) if isinstance(c, str) else c for c in children]
-    super().__init__(*children, **kwargs)
+    def __init__(self, *children, **kwargs):
+        children = [span(c) if isinstance(c, str) else c for c in children]
+        super().__init__(*children, **kwargs)
 
 
 class span(Element):
-  """
-  A Text element is an element that displays text.
-  It is represented by a text, or p element in the DOM.
-  """
+    """
+    A Text element is an element that displays text.
+    It is represented by a text, or p element in the DOM.
+    """
 
-  tag = "Span"
+    tag = "Span"
 
-  def __init__(self, *text, sep=" ", **kwargs):
-    self.text = sep.join(text)
-    super().__init__(**kwargs)
+    def __init__(self, *text, sep=" ", **kwargs):
+        self.text = sep.join(text)
+        super().__init__(**kwargs)
 
 
 class Bold(span):
-  def __init__(self, text, style=None, **kwargs):
-    _style = {"fontWeight": "bold"}
-    _style.update(style or {})
-    super().__init__(text, style=_style, **kwargs)
+    def __init__(self, text, style=None, **kwargs):
+        _style = {"fontWeight": "bold"}
+        _style.update(style or {})
+        super().__init__(text, style=_style, **kwargs)
 
 
 class Italic(span):
-  def __init__(self, text, style=None, **kwargs):
-    _style = {"fontStyle": "italic"}
-    _style.update(style or {})
-    super().__init__(text, style=_style, **kwargs)
+    def __init__(self, text, style=None, **kwargs):
+        _style = {"fontStyle": "italic"}
+        _style.update(style or {})
+        super().__init__(text, style=_style, **kwargs)
 
 
 class Link(span):
-  tag = "a"
+    tag = "a"
 
-  def __init__(self, text, src, **kwargs):
-    super().__init__(text, src=src, **kwargs)
+    def __init__(self, text, src, **kwargs):
+        super().__init__(text, src=src, **kwargs)
 
 
 class Button(Element):
-  """
-  A Button element is an element that allows the user to click on it.
-  It is represented by a button element in the DOM.
-  """
+    """
+    A Button element is an element that allows the user to click on it.
+    It is represented by a button element in the DOM.
+    """
 
-  tag = "Button"
+    tag = "Button"
 
-  def __init__(self, **kwargs):
-    super().__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
 
 class Slider(Element):
-  """
-  A Slider element is an element that allows the user to slide a value.
-  It is represented by a slider element in the DOM.
-  """
-
-  tag = "Slider"
-
-  def __init__(self, **kwargs):
     """
-    :param min: Minimum value of the slider
-    :param max: Maximum value of the slider
-    :param step: Step size of the slider
-    :param value: Initial value of the slider
-    :param kwargs:
+    A Slider element is an element that allows the user to slide a value.
+    It is represented by a slider element in the DOM.
     """
-    super().__init__(**kwargs)
+
+    tag = "Slider"
+
+    def __init__(self, **kwargs):
+        """
+        :param min: Minimum value of the slider
+        :param max: Maximum value of the slider
+        :param step: Step size of the slider
+        :param value: Initial value of the slider
+        :param kwargs:
+        """
+        super().__init__(**kwargs)
 
 
 class Image(Element):
-  """
-  An Image element is an element that displays an image.
-  It is represented by an img element in the DOM.
-  """
+    """
+    An Image element is an element that displays an image.
+    It is represented by an img element in the DOM.
+    """
 
-  tag = "Img"
+    tag = "Img"
 
-  def __init__(
-    self,
-    data: Union[str, np.ndarray, pil_image.Image] = None,
-    *,
-    src: Union[str, bytes] = None,
-    format: Literal["png", "jpeg", "b64png", "b64jpeg"] = "png",
-    quality: int = None,
-    **kwargs,
-  ):
-    if src is not None:
-      assert data is None, "data and src can not be truthy at the same time"
-      super().__init__(src=src, **kwargs)
-      return
+    def __init__(
+        self,
+        data: Union[str, np.ndarray, pil_image.Image] = None,
+        *,
+        src: Union[str, bytes] = None,
+        format: Literal["png", "jpeg", "b64png", "b64jpeg"] = "png",
+        quality: int = None,
+        **kwargs,
+    ):
+        if src is not None:
+            assert data is None, "data and src can not be truthy at the same time"
+            super().__init__(src=src, **kwargs)
+            return
 
-    elif data is None or isinstance(data, list) and len(data) == 0:
-      super().__init__(**kwargs)
-      return
+        elif data is None or isinstance(data, list) and len(data) == 0:
+            super().__init__(**kwargs)
+            return
 
-    elif isinstance(data, pil_image.Image):
-      buff = BytesIO()
-      assert not format.startswith("b64"), (
-        "does not support base64 encoding, use binary."
-      )
-      data.save(buff, format=format)
-      binary = buff.getbuffer().tobytes()
-      super().__init__(src=binary, **kwargs)
-      return
+        elif isinstance(data, pil_image.Image):
+            buff = BytesIO()
+            assert not format.startswith("b64"), "does not support base64 encoding, use binary."
+            data.save(buff, format=format)
+            binary = buff.getbuffer().tobytes()
+            super().__init__(src=binary, **kwargs)
+            return
 
-    elif isinstance(data, str):
-      buff = BytesIO()
-      img = pil_image.open(data)
-      assert not format.startswith("b64"), (
-        "does not support base64 encoding, use binary."
-      )
-      img.save(buff, format=format)
-      binary = buff.getbuffer().tobytes()
-      super().__init__(src=binary, **kwargs)
-      return
+        elif isinstance(data, str):
+            buff = BytesIO()
+            img = pil_image.open(data)
+            assert not format.startswith("b64"), "does not support base64 encoding, use binary."
+            img.save(buff, format=format)
+            binary = buff.getbuffer().tobytes()
+            super().__init__(src=binary, **kwargs)
+            return
 
-    if isinstance(data, np.ndarray):
-      if data.dtype == np.uint8:
-        pass
-      else:
-        data = (data * 255).astype(np.uint8)
+        if isinstance(data, np.ndarray):
+            if data.dtype == np.uint8:
+                pass
+            else:
+                data = (data * 255).astype(np.uint8)
 
-      if quality is not None:
-        src = IMAGE_FORMATS[format](data, quality=quality)
-      else:
-        src = IMAGE_FORMATS[format](data)
+            if quality is not None:
+                src = IMAGE_FORMATS[format](data, quality=quality)
+            else:
+                src = IMAGE_FORMATS[format](data)
 
-    super().__init__(src=src, **kwargs)
+        super().__init__(src=src, **kwargs)
 
 
 class ImageUpload(Element):
-  """
-  A ImageUpload element is an element that allows the user to upload a file.
-  It is represented by a file upload element in the DOM.
-  """
+    """
+    A ImageUpload element is an element that allows the user to upload a file.
+    It is represented by a file upload element in the DOM.
+    """
 
-  tag = "ImageUpload"
+    tag = "ImageUpload"
 
-  def __init__(self, **kwargs):
-    super().__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)

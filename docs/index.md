@@ -52,7 +52,6 @@ To get a quick overview of what you can do with  <code style="font-size: 1.3em; 
 
 - take a look at the basic tutorial or the tutorial for robotics:
   - [Introduction to Key Vuer Concepts](tutorials/basics)
-  - [Tutorial for Roboticists](tutorials/robotics)
 - or try to take a look at the example gallery [here](examples/01_trimesh)
 
 For a comprehensive list of visualization components, please refer to
@@ -68,9 +67,8 @@ For a comprehensive list of data types, please refer to the [API documentation o
    :maxdepth: 1
    :titlesonly:
 
-   Quick Start <quick_start>
+   Quick Start <quick_start.md>
    Report Issues <https://github.com/vuer-ai/vuer/issues?q=is:issue+is:closed>
-   CHANGE LOG <CHANGE_LOG.md>
 
 .. toctree::
    :maxdepth: 3
@@ -78,7 +76,7 @@ For a comprehensive list of data types, please refer to the [API documentation o
    :hidden:
 
    Constructing A Scene <guides/first_3d_scene/01_constructing_a_scene.md>
-   Component Index <guides/first_3d_scene/02_component_index.md>
+   Components <guides/first_3d_scene/02_component_index.md>
    Materials & Textures <guides/first_3d_scene/03_materials_and_textures.md>
    Camera Control <guides/first_3d_scene/04_camera_control.md>
    Lights <guides/first_3d_scene/05_lights.md>
@@ -89,7 +87,7 @@ For a comprehensive list of data types, please refer to the [API documentation o
    :maxdepth: 3
    :caption: NEW FEATURES 🔥
    :hidden:
-
+   
    Scene Generation (OpenAI Sora) <gaussian_splatting/openai_sora.md>
    Gaussian Splatting <gaussian_splatting/09_gaussian_splats.md>
    Gaussian Splatting (VR) <gaussian_splatting/10_gaussian_splats_vr.md>
@@ -99,56 +97,28 @@ For a comprehensive list of data types, please refer to the [API documentation o
    :maxdepth: 3
    :caption: Tutorials
    :hidden:
-   
+
    tutorials/basics.md
    tutorials/robotics.md
    tutorials/camera/README.md
    tutorials/physics.md
-   
+   Detecting When Assets Have Been Loaded <tutorials/obj_loading.md>
+   MuJoCo Interactive Simulator <tutorials/mujoco_interactive_simulator.md>
+
 .. toctree::
    :maxdepth: 3
    :caption: Examples
    :hidden:
-   
-   Mesh <examples/01_trimesh.md>
-   Programmatic PointCloud <examples/02_pointcloud.md>
-   ┣→ pcd files <examples/02_pointcloud_pcd.md>
-   ┗→ ply files <examples/02_pointcloud_ply.md>
-   Simpe Plane <examples/13_plane_primitive.md>
-   Obj Files <examples/14_obj.md>
-   Frustum and Spline <examples/15_spline_frustum.md>
-   URDF <examples/03_urdf.md>
-   URDF (local) <examples/03_urdf_local.md>
-   Imperative API <examples/04_imperative_api.md>
-   Virtual Camera <examples/05_collecting_render.md>
-   Render Images <examples/05_collecting_render_procedural.md>
-   Animation <examples/05_pointcloud_animation.md>
-   Upsert <examples/05_pointcloud_animation_upsert.md>
-   Depth Texture <examples/06_depth_texture.md>
-   Background Image <examples/07_background_image.md>
-   Heads Up Display <examples/07b_vr_hud.md>
-   Depth Image <examples/08_experimental_depth_image.md>
-   Coordinate Markers <examples/11_coordinates_markers.md>
-   Arrows <examples/16_arrows.md>
-   Virtual Camera <examples/12_camera.md>
-   360 Image <examples/17_sky_ball.md>
-   Movable Handles <examples/18_movable.md>
-   Hand Tracking <examples/19_hand_tracking.md>
-   Body Tracking <examples/25_body_tracking.md>
-   Quest 3 Controllers <examples/20_motion_controllers.md>
-   3D Movie <examples/21_3D_movie.md>
-   2D/3D Text <examples/22_3d_text.md>
-   Raycasted 3D Pointer <examples/21_pointer_example>
-   Mujoco Interactive Simulator <examples/24_mujoco_interactive_simulator>
-   
-.. toctree::
-   :maxdepth: 3
-   :caption: Textuers and Meshes
-   :hidden:
 
-   Sphere Scene <examples/texture_meshes/ball_scene.md>
-   Stairs Scene <examples/texture_meshes/stairs_scene.md>
-   Adding UV and Texture Map to Trimesh <examples/texture_meshes/textured_trimesh.md>
+   examples/meshes.md
+   examples/point_clouds.md
+   examples/urdf_go1_stairs.md
+   examples/spline_frustum.md
+   examples/visualization_utilities.md
+   examples/background_environment.md
+   examples/pointer.md
+   examples/vr_ar_xr.md
+   examples/gaussian_splatting.md
 
 .. toctree::
    :maxdepth: 3

@@ -50,6 +50,19 @@ def setup(app):
     app.add_config_value("REPLACEMENT_LIST", {}, True)
     app.connect("source-read", versioning)
 
+    # Copy client_build directory to output
+    def copy_client_build(app, exception):
+        if exception is None:  # Only copy if build succeeded
+            import shutil
+            client_build_src = os.path.join(app.srcdir, "../src/vuer/client_build")
+            client_build_dst = os.path.join(app.outdir, "client_build")
+            if os.path.exists(client_build_src):
+                if os.path.exists(client_build_dst):
+                    shutil.rmtree(client_build_dst)
+                shutil.copytree(client_build_src, client_build_dst)
+
+    app.connect("build-finished", copy_client_build)
+
 
 templates_path = ["_templates"]
 source_suffix = [".rst", ".md"]

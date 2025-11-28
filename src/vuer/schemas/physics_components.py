@@ -30,10 +30,10 @@ class MuJoCo(SceneElement):
     useMocap = True
     gizmoScale = 0.3
 
-    unpauseOnDrag = False,  # Whether to unpause the simulation when dragging the object
-    dragForceScale = 1.0,  # Scale of the drag force applied to the object when dragging
-    showDragArrow = True,  # Whether to show the drag arrow when dragging the object
-    showDragForceText = True,  # Whether to show the drag force text when dragging the object
+    unpauseOnDrag = (False,)  # Whether to unpause the simulation when dragging the object
+    dragForceScale = (1.0,)  # Scale of the drag force applied to the object when dragging
+    showDragArrow = (True,)  # Whether to show the drag arrow when dragging the object
+    showDragForceText = (True,)  # Whether to show the drag force text when dragging the object
 
 
 class HandActuator(SceneElement):
@@ -72,6 +72,7 @@ class MotionControllerActuator(SceneElement):
     cond: str = "right-trigger"
     scale: float = 1.0
 
+
 class MjCameraView(SceneElement):
     """MjCameraView for rendering from arbitrary camera poses.
 
@@ -104,5 +105,5 @@ class MjCameraView(SceneElement):
     """
 
     tag = "MjCameraView"
-    movable = True,  # Whether the camera can be moved by the user
-    showCameraFrustum = True,  # Whether to show the camera  in the scene
+    movable = (True,)  # Whether the camera can be moved by the user
+    showCameraFrustum = (True,)  # Whether to show the camera  in the scene
