@@ -263,3 +263,7 @@ class PerspectiveCamera(SceneElement):
 
   tag = "PerspectiveCamera"
   key = "perspective-camera"
+
+class OrthographicCamera(SceneElement):
+  tag = "OrthographicCamera"
+  key = "orthographic-camera"

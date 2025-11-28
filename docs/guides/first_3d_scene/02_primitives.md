@@ -19,21 +19,21 @@ from vuer.schemas import Box  # or any other primitive
 Box(
     # Geometry-specific parameters
     args=[...],  # Varies by shape
-    
+
     # Transform properties
     position=[x, y, z],      # Position in 3D space
     rotation=[rx, ry, rz],   # Rotation in radians around X, Y, Z axes
     scale=[sx, sy, sz],      # Scale factors (1 = original size)
-    
+
     # Material properties
     materialType="standard",  # "basic", "lambert", "phong", "standard", "physical"
-    color="#ff0000",         # Hex color or CSS color name
-    material=dict(           # Advanced material properties
+    material=dict(           # Material configuration
+        color="#ff0000",     # Color must be inside material dict
         roughness=0.5,
         metalness=0.0,
         # ... see Materials guide
     ),
-    
+
     # Interaction
     key="unique-id",         # Required for updates and events
     onClick=handler,         # Click event handler (client-side)
@@ -62,15 +62,17 @@ async def main(session: VuerSession):
         Box(
             args=[1, 1, 1],
             position=[0, 0.5, 0],
-            color="red",
+            materialType="standard",
+            material=dict(color="red"),
             key="cube",
         ),
-        
+
         # Flat platform
         Box(
             args=[5, 0.2, 5],
             position=[0, 0, 2],
-            color="gray",
+            materialType="standard",
+            material=dict(color="gray"),
             key="platform",
         ),
     )
@@ -94,7 +96,8 @@ from vuer.schemas import Sphere
 Sphere(
     args=[0.5],  # Just radius, use defaults for segments
     position=[0, 1, 0],
-    color="blue",
+    materialType="standard",
+    material=dict(color="blue"),
     key="ball",
 )
 
@@ -102,7 +105,8 @@ Sphere(
 Sphere(
     args=[0.5, 64, 64],  # More segments = smoother
     position=[2, 1, 0],
-    color="blue",
+    materialType="standard",
+    material=dict(color="blue"),
     key="smooth-ball",
 )
 
@@ -110,7 +114,8 @@ Sphere(
 Sphere(
     args=[0.5, 32, 16, 0, 6.28, 0, 1.57],  # thetaLength controls how much of sphere
     position=[4, 1, 0],
-    color="blue",
+    materialType="standard",
+    material=dict(color="blue"),
     key="hemisphere",
 )
 ```
@@ -131,7 +136,8 @@ from vuer.schemas import Cylinder
 Cylinder(
     args=[0.5, 0.5, 2],
     position=[0, 1, 0],
-    color="green",
+    materialType="standard",
+    material=dict(color="green"),
     key="pillar",
 )
 
@@ -139,7 +145,8 @@ Cylinder(
 Cylinder(
     args=[0, 0.5, 2],
     position=[2, 1, 0],
-    color="orange",
+    materialType="standard",
+    material=dict(color="orange"),
     key="cone-shape",
 )
 
@@ -147,7 +154,8 @@ Cylinder(
 Cylinder(
     args=[0.2, 0.5, 2],
     position=[4, 1, 0],
-    color="yellow",
+    materialType="standard",
+    material=dict(color="yellow"),
     key="truncated",
 )
 ```
@@ -158,7 +166,7 @@ Cylinder(
 
 A dedicated cone shape (easier than using Cylinder with radiusTop=0).
 
-**Args:** `[radius, height, radialSegments, heightSegments, openEnded, thetaStart, thetaLength]`  
+**Args:** `[radius, height, radialSegments, heightSegments, openEnded, thetaStart, thetaLength]`
 **Default:** `[1, 1, 32, 1, False, 0, Math.PI*2]`
 
 ```python
@@ -168,7 +176,8 @@ Cone(
     args=[0.5, 1.5],
     position=[0, 0.75, 0],
     rotation=[0, 0, 3.14],  # Point downward
-    color="orange",
+    materialType="standard",
+    material=dict(color="orange"),
     key="cone",
 )
 ```
@@ -179,7 +188,7 @@ Cone(
 
 A cylinder with hemispherical ends (pill shape).
 
-**Args:** `[radius, length, capSegments, radialSegments]`  
+**Args:** `[radius, length, capSegments, radialSegments]`
 **Default:** `[1, 1, 4, 8]`
 
 ```python
@@ -188,7 +197,8 @@ from vuer.schemas import Capsule
 Capsule(
     args=[0.3, 2],
     position=[0, 1, 0],
-    color="purple",
+    materialType="standard",
+    material=dict(color="purple"),
     key="pill",
 )
 ```
@@ -210,7 +220,8 @@ Plane(
     args=[10, 10],
     position=[0, 0, 0],
     rotation=[-1.57, 0, 0],  # -π/2 to make horizontal
-    color="gray",
+    materialType="standard",
+    material=dict(color="gray"),
     key="ground",
 )
 
@@ -218,7 +229,8 @@ Plane(
 Plane(
     args=[5, 3],
     position=[0, 1.5, -5],
-    color="white",
+    materialType="standard",
+    material=dict(color="white"),
     key="wall",
 )
 
@@ -226,8 +238,11 @@ Plane(
 Plane(
     args=[2, 2],
     position=[0, 1, 0],
-    material=dict(side=2),  # 0=front, 1=back, 2=both
-    color="blue",
+    materialType="standard",
+    material=dict(
+        color="blue",
+        side=2,  # 0=front, 1=back, 2=both
+    ),
     key="double-sided",
 )
 ```
@@ -251,7 +266,8 @@ Circle(
     args=[1],
     position=[0, 0, 0],
     rotation=[-1.57, 0, 0],
-    color="red",
+    materialType="standard",
+    material=dict(color="red"),
     key="disc",
 )
 
@@ -260,7 +276,8 @@ Circle(
     args=[1, 32, 0, 5.5],  # thetaLength < 2π creates pac-man
     position=[2, 0, 0],
     rotation=[-1.57, 0, 0],
-    color="yellow",
+    materialType="standard",
+    material=dict(color="yellow"),
     key="pacman",
 )
 ```
@@ -271,7 +288,7 @@ Circle(
 
 A 2D donut shape (annulus).
 
-**Args:** `[innerRadius, outerRadius, thetaSegments, phiSegments, thetaStart, thetaLength]`  
+**Args:** `[innerRadius, outerRadius, thetaSegments, phiSegments, thetaStart, thetaLength]`
 **Default:** `[0.5, 1, 32, 1, 0, Math.PI*2]`
 
 ```python
@@ -281,7 +298,8 @@ Ring(
     args=[0.5, 1],
     position=[0, 0, 0],
     rotation=[-1.57, 0, 0],
-    color="gold",
+    materialType="standard",
+    material=dict(color="gold"),
     key="ring",
 )
 ```
@@ -304,7 +322,8 @@ from vuer.schemas import Torus
 Torus(
     args=[1, 0.3],
     position=[0, 1, 0],
-    color="pink",
+    materialType="standard",
+    material=dict(color="pink"),
     key="donut",
 )
 
@@ -312,7 +331,8 @@ Torus(
 Torus(
     args=[1, 0.3, 12, 48, 4.71],  # arc < 2π creates C-shape
     position=[3, 1, 0],
-    color="cyan",
+    materialType="standard",
+    material=dict(color="cyan"),
     key="c-shape",
 )
 ```
@@ -323,7 +343,7 @@ Torus(
 
 A mathematical knot shape.
 
-**Args:** `[radius, tube, tubularSegments, radialSegments, p, q]`  
+**Args:** `[radius, tube, tubularSegments, radialSegments, p, q]`
 **Default:** `[1, 0.4, 64, 8, 2, 3]`
 
 - `p`: Number of times the knot winds around its rotational axis
@@ -336,7 +356,8 @@ from vuer.schemas import TorusKnot
 TorusKnot(
     args=[1, 0.3, 100, 16, 2, 3],
     position=[0, 1, 0],
-    color="purple",
+    materialType="standard",
+    material=dict(color="purple"),
     key="trefoil",
 )
 
@@ -344,7 +365,8 @@ TorusKnot(
 TorusKnot(
     args=[1, 0.3, 100, 16, 3, 5],
     position=[3, 1, 0],
-    color="orange",
+    materialType="standard",
+    material=dict(color="orange"),
     key="cinquefoil",
 )
 ```
@@ -366,7 +388,8 @@ from vuer.schemas import Tetrahedron
 Tetrahedron(
     args=[1],
     position=[0, 1, 0],
-    color="red",
+    materialType="standard",
+    material=dict(color="red"),
     key="tetra",
 )
 ```
@@ -379,7 +402,8 @@ from vuer.schemas import Octahedron
 Octahedron(
     args=[1],
     position=[0, 1, 0],
-    color="green",
+    materialType="standard",
+    material=dict(color="green"),
     key="octa",
 )
 ```
@@ -392,7 +416,8 @@ from vuer.schemas import Dodecahedron
 Dodecahedron(
     args=[1],
     position=[0, 1, 0],
-    color="blue",
+    materialType="standard",
+    material=dict(color="blue"),
     key="dodeca",
 )
 ```
@@ -405,7 +430,8 @@ from vuer.schemas import Icosahedron
 Icosahedron(
     args=[1],
     position=[0, 1, 0],
-    color="purple",
+    materialType="standard",
+    material=dict(color="purple"),
     key="icosa",
 )
 ```
