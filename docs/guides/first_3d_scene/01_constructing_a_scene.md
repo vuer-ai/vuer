@@ -12,11 +12,9 @@ But we'll start simple. In this document, you'll learn to build your first basic
 
 <iframe src="https://vuer.ai/?hideUI=true&reconnect=True&scene=hqN0YWelU2NlbmWja2V5oTCidXCTAAEAqmJnQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVulISoY2hpbGRyZW6Qo3RhZ6xBbWJpZW50TGlnaHSja2V5p2FtYmllbnSpaW50ZW5zaXR5yz%2FgAAAAAAAAhahjaGlsZHJlbpCjdGFnsERpcmVjdGlvbmFsTGlnaHSja2V5o3N1bqlpbnRlbnNpdHkBqHBvc2l0aW9ukwMDA4WoY2hpbGRyZW6Qo3RhZ7FQZXJzcGVjdGl2ZUNhbWVyYaNrZXmycGVyc3BlY3RpdmUtY2FtZXJhq21ha2VEZWZhdWx0w6hwb3NpdGlvbpP8AgSDqGNoaWxkcmVukKN0YWetT3JiaXRDb250cm9sc6NrZXmrb3JiLWNvbnRyb2yoY2hpbGRyZW6Rh6hjaGlsZHJlbpCjdGFno0JveKNrZXmqc2ltcGxlLWJveKRhcmdzk8s%2F8zMzMzMzM8s%2F8zMzMzMzM8s%2F8zMzMzMzM6hwb3NpdGlvbpPLP9mZmZmZmZrLP%2BAAAAAAAAD%2BqHJvdGF0aW9ukwAAAKxtYXRlcmlhbFR5cGWlYmFzaWM%3D" width="100%" height="400px" frameborder="0"></iframe>
 
-*Starting point: a simple box on a dark stage*
+*Starting point: a simple box*
 
 ## How Vuer Works
-
-![Vuer Architecture](../../_static/01_vuer_architecture.png)
 
 Vuer uses a **client-server architecture**:
 
@@ -24,9 +22,11 @@ Vuer uses a **client-server architecture**:
 - **Web Client**: Renders the 3D scene in the browser using Three.js
 - **WebSocket**: Real-time bidirectional communication
 
+![Vuer Architecture](../../_static/01_vuer_architecture.svg)
+
 Each browser connection creates an independent **session**, allowing multiple users to view different scenes simultaneously.
 
-## Creating Your First Scene
+## Creating a Scene
 
 Here's a complete example that creates a simple scene with box:
 
@@ -74,7 +74,7 @@ Visit: https://vuer.ai?ws=ws://localhost:8012
 ## Next Steps
 
 Now that you can create basic scenes, learn about:
-- [The Magical Index of Vuer Components](./02_component_index.md) - All available 3D objects
+- [Vuer Component Index](./02_component_index.md) - All available 3D objects
 - [Materials and Textures](03_materials_and_textures.md) - Making objects look good
 - [Camera Control](./04_camera_control.md) - Viewing your scene
 - [Lights](./05_lights.md) - Illuminating your world

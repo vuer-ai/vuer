@@ -1,12 +1,32 @@
 # 3.1.4 Camera Control
 
-Every 3D scene needs a camera to define what the viewer sees. This chapter covers the basics of camera setup and interactive controls. You'll learn how to:
+Vuer provides two types of cameras for viewing your 3D scenes.
 
+- Main Camera - The default user viewport with interactive OrbitControls
+- [Virtual Cameras](../../tutorials/camera/README.md) (CameraView) - Programmable cameras for off-screen rendering and multi-view displays
+
+This chapter only covers the usage of the first type of camera. You'll learn how to:
+
+- Camera Behavior in VR/AR
+- How to disable default camera interaction controls
 - Set up different camera types (Perspective and Orthographic)
-- Add interactive controls for rotating, panning, and zooming
 - Configure camera parameters like field of view and position
 
 By default, Vuer provides a perspective camera at `[0, 2, 2]` with `OrbitControls` enabled, so you can start building scenes immediately. This chapter shows you how to customize these defaults.
+
+## VR/AR Camera Behavior
+**Key parameters:** `left`, `right`, `top`, `bottom` (define view boundaries), `near`, `far`, `position`, `lookAt`, `makeDefault`
+
+In WebXR sessions (VR/AR), the camera is controlled by the headset. Simply create a normal scene - Vuer automatically handles VR/AR mode when the user clicks the VR button
+
+**VR Camera Characteristics:**
+- Position: Tracked by headset (6DOF)
+- Rotation: Tracked by headset
+- IPD (interpupillary distance): Automatically handled
+- Render: Stereo rendering for both eyes
+- OrbitControls: Automatically disabled in VR mode
+
+**Note:** To test VR mode, you need a VR headset and a WebXR-compatible browser. The VR button appears automatically in the top-right corner of the scene.
 
 ## Interactive Camera Controls
 

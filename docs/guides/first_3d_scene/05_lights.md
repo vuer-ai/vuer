@@ -10,13 +10,17 @@ The above scene uses a sophisticated four-light setup with warm/cool color contr
 
 Vuer provides six main light types. In our optimized scene above, we use **AmbientLight**, **SpotLight**, and **RectAreaLight**. Let's explore all available types:
 
+<iframe src="https://vuer.ai/?reconnect=True&scene=h6N0YWelU2NlbmWja2V5oTCidXCTAAEApGdyaWTCqmJnQ2hpbGRyZW6WhqhjaGlsZHJlbpCjdGFnrEFtYmllbnRMaWdodKNrZXmtYW1iaWVudC1saWdodKlpbnRlbnNpdHkUpWNvbG9ypyM0YTU1NjikaGlkZcOJqGNoaWxkcmVukKN0YWewRGlyZWN0aW9uYWxMaWdodKNrZXmxZGlyZWN0aW9uYWwtbGlnaHSocG9zaXRpb26TAAUFqWludGVuc2l0eQGlY29sb3KnI2ZmZmZmZqpjYXN0U2hhZG93w6IqKoOuc2hhZG93LW1hcFNpemWSzQgAzQgAsnNoYWRvdy1jYW1lcmEtbmVhcss%2F4AAAAAAAALFzaGFkb3ctY2FtZXJhLWZhcjKkaGlkZcOKqGNoaWxkcmVukKN0YWetUmVjdEFyZWFMaWdodKNrZXmvcmVjdC1hcmVhLWxpZ2h0qHBvc2l0aW9ukwAABaZsb29rQXSTAAAAqWludGVuc2l0eQild2lkdGgEpmhlaWdodASlY29sb3KnI2U4ZDVmZqRoaWRlw4eoY2hpbGRyZW6Qo3RhZ69IZW1pc3BoZXJlTGlnaHSja2V5sGhlbWlzcGhlcmUtbGlnaHSpaW50ZW5zaXR5Aahza3lDb2xvcqcjODdjZWVisWhlaWdyb3VuZENvbG9yZ2h0pyM4YjQ1MTOkaGlkZcONqGNoaWxkcmVukKN0YWepU3BvdExpZ2h0o2tleapzcG90LWxpZ2h0qHBvc2l0aW9ukwAABalpbnRlbnNpdHlQpWFuZ2xlyz%2FgAAAAAAAAqHBlbnVtYnJhyz%2FpmZmZmZmapWNvbG9ypyNmZjlmNWGoZGlzdGFuY2UApWRlY2F5AqpjYXN0U2hhZG93w6IqKoOuc2hhZG93LW1hcFNpemWSzQgAzQgAsnNoYWRvdy1jYW1lcmEtbmVhcss%2F4AAAAAAAALFzaGFkb3ctY2FtZXJhLWZhcjKkaGlkZcOKqGNoaWxkcmVukKN0YWeqUG9pbnRMaWdodKNrZXmrcG9pbnQtbGlnaHSocG9zaXRpb26TAAAFqWludGVuc2l0eRSmcmFkaXVzyz%2B5mZmZmZmaqnNob3dTcGhlcmXDpWNvbG9ypyNmZmFhMDCqY2FzdFNoYWRvd8OiKiqDrnNoYWRvdy1tYXBTaXplks0IAM0IALJzaGFkb3ctY2FtZXJhLW5lYXLLP%2BAAAAAAAACxc2hhZG93LWNhbWVyYS1mYXIyq3Jhd0NoaWxkcmVukYOoY2hpbGRyZW6Qo3RhZ61PcmJpdENvbnRyb2xzo2tleatvcmItY29udHJvbKhjaGlsZHJlbpKIqGNoaWxkcmVukKN0YWemU3BoZXJlo2tlea1nbG9zc3ktc3BoZXJlpGFyZ3OTyz%2FkzMzMzMzNICCocG9zaXRpb26Ty7%2FjMzMzMzMzy7%2FjMzMzMzMzAKxtYXRlcmlhbFR5cGWoc3RhbmRhcmSobWF0ZXJpYWyDpWNvbG9ypyNiODkyNWapcm91Z2huZXNzyz%2B8KPXCj1wpqW1ldGFsbmVzc8s%2F6AAAAAAAAKpjYXN0U2hhZG93w4ioY2hpbGRyZW6Qo3RhZ6VQbGFuZaNrZXmoYmFja2Ryb3CkYXJnc5IUFKhwb3NpdGlvbpMAAP2sbWF0ZXJpYWxUeXBlqHN0YW5kYXJkqG1hdGVyaWFsgqNtYXDZUGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS92dWVyLWFpL3Z1ZXIvbWFpbi9kb2NzL19zdGF0aWMvMDNfYmFja2Ryb3AuanBnqXJvdWdobmVzc8s%2F7mZmZmZmZq1yZWNlaXZlU2hhZG93ww%3D%3D" width="100%" height="400px" frameborder="0"></iframe>
+
+*Click the show/hide button in the left-hand list to control the light switch and view the effects of different lights and their combinations.*
+
 ## Starting with Basic Lighting
 
 Let's start by understanding the two fundamental light types: ambient and directional.
 
 ### AmbientLight - Global Base Lighting
 
-Ambient light illuminates all objects uniformly from all directions, providing a base level of brightness. In the optimized scene above, we use a very low-intensity ambient light (0.15) with a gray tone (#4a5568) to prevent completely black areas while maintaining dramatic contrast.
+Ambient light illuminates all objects uniformly from all directions, providing a base level of brightness.
 
 ```{admonition} Why defaultLights=False in These Examples?
 :class: tip
@@ -45,11 +49,11 @@ async def main(session: VuerSession):
         defaultLights=False,  # Disable default lights
         rawChildren=[
             # Only ambient light - notice how flat it looks
-            AmbientLight(
-                 intensity=0.15,
-                 color="#4a5568",
-                 key="ambient",
-             )
+                AmbientLight(
+                    intensity=20,
+                    color="#4a5568",
+                    key="ambient-light",
+                ),
         ],
     )
 
@@ -73,8 +77,14 @@ DirectionalLight(
     intensity=1.0,
     color="#ffffff",
     position=[0, 5, 5],   # Light comes from this direction
-    key="directional",
-)
+    castShadow=True,
+    **{
+        "shadow-mapSize": [2048, 2048],
+        "shadow-camera-near": 0.5,
+        "shadow-camera-far": 50,
+    },
+    key="directional-light",
+),
 ```
 
 **Key parameters:** `color`, `intensity` (default: `0.5`), `position`, `castShadow` (enable shadows)
@@ -95,10 +105,16 @@ Point lights emit in all directions from a single point, like a light bulb:
 PointLight(
     intensity=20,
     color="#ffaa00",
-    position=[0, 5, 5],       # Actual position in space
+    position=[0, 0, 5],       # Actual position in space
     radius=0.1,               # Size of debug sphere
     showSphere=True,          # Show sphere at light position
-    key="bulb",
+    castShadow=True,
+    **{
+        "shadow-mapSize": [2048, 2048],
+        "shadow-camera-near": 0.5,
+        "shadow-camera-far": 50,
+    },
+    key="point-light",
 )
 ```
 
@@ -114,12 +130,18 @@ Spotlight creates a cone of light, perfect for dramatic focused illumination. Th
 SpotLight(
     intensity=80,
     color="#ff9f5a",
-    position=[-5, 3, 5],      # Light position
+    position=[0, 0, 5],      # Light position
     angle=0.5,                # Cone angle in radians (Math.PI/3 ≈ 1.047)
     penumbra=0.8,             # Edge softness (0-1), 0=sharp, 1=soft
     distance=0,               # Range (0 = infinite)
     decay=2,                  # Light falloff rate
-    key="spotlight",
+    castShadow=True,
+    **{
+        "shadow-mapSize": [2048, 2048],
+        "shadow-camera-near": 0.5,
+        "shadow-camera-far": 50,
+    },
+    key="spot-light",
 )
 ```
 
@@ -136,8 +158,7 @@ HemisphereLight(
     skyColor="#87ceeb",       # Sky (top) color
     groundColor="#8b4513",    # Ground (bottom) color
     intensity=1.0,
-    helper=True,              # Show helper for debugging
-    key="hemisphere",
+    key="hemisphere-light",
 )
 ```
 
@@ -157,11 +178,10 @@ RectAreaLight(
     intensity=8,
     width=4,                  # Rectangle width
     height=4,                 # Rectangle height
-    position=[6, 2, 4],
+    position=[0, 0, 5],
     lookAt=[0, 0, 0],         # Direction the light faces
-    helper=True,              # Show helper for debugging
-    key="area-light",
-)
+    key="rect-area-light",
+),
 ```
 
 **Key parameters:** `color`, `intensity` (default: 1.0), `width`, `height`, `position`, `lookAt` (direction to face), `helper`
@@ -246,6 +266,9 @@ DirectionalLight(
 ### Complete Example: Professional Lighting with Shadows
 
 Let's put everything together. The scene shown at the beginning of this chapter uses a four-light setup with shadow configuration to create professional, cinematic lighting. Here's the complete code:
+
+<details>
+<summary>Source Code</summary>
 
 ```python
 from vuer import Vuer, VuerSession
@@ -414,6 +437,7 @@ async def main(session: VuerSession):
 
     await session.forever()
 ```
+</details>
 
 This example demonstrates the concepts covered in this chapter: multiple light types working together, shadow configuration for realistic depth, and careful balance of light intensities and colors to create professional, cinematic results.
 
