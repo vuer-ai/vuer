@@ -534,6 +534,15 @@ class Movable(SceneElement):
   localRotation: bool = False
 
 
+class Clickable(SceneElement):
+  """A component wrapper that makes its children clickable and detects pointer interactions.
+
+  Listen to click events using the event handler system to respond to user interactions.
+  """
+
+  tag = "Clickable"
+
+
 class Hands(SceneElement):
   """
 
