@@ -1,7 +1,7 @@
 
-# Pivot - Custom Rotation Pivot
+# Pivot
 
-The `Pivot` component changes the rotation center for objects, allowing rotation around custom points instead of the object's origin.
+The `Pivot` component (Custom Rotation Pivot) changes the rotation center for objects, allowing rotation around custom points instead of the object's origin.
 
 This is ideal for:
 - Door hinges and rotating panels

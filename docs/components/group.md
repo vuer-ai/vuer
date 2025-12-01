@@ -1,7 +1,7 @@
 
-# Group - Grouping Objects
+# Group
 
-The `Group` component organizes multiple objects together, applying transforms (position, rotation, scale) to all children at once. Essential for managing complex hierarchies and coordinated movement.
+The `Group` component (Grouping Objects) organizes multiple objects together, applying transforms (position, rotation, scale) to all children at once. Essential for managing complex hierarchies and coordinated movement.
 
 This is ideal for:
 - Applying a single transform to multiple objects

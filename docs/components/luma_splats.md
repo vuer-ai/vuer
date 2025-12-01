@@ -1,7 +1,7 @@
 
-# LumaSplats - Luma AI Gaussian Splats
+# LumaSplats
 
-The `LumaSplats` component is optimized for loading Gaussian splats exported from Luma AI. It provides better performance and loading times compared to standard Splat format.
+The `LumaSplats` component (Luma AI Gaussian Splats) is optimized for loading Gaussian splats exported from Luma AI. It provides better performance and loading times compared to standard Splat format.
 
 This is ideal for:
 - Loading Luma AI captures directly

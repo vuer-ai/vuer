@@ -5,9 +5,9 @@ from contextlib import nullcontext
 MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
 doc @ """
-# SparkSplats - Compressed Gaussian Splats
+# SparkSplats
 
-The `SparkSplats` component uses the SparkJS format (.spz) for highly compressed Gaussian splats, offering the best performance for web delivery.
+The `SparkSplats` component (Compressed Gaussian Splats) uses the SparkJS format (.spz) for highly compressed Gaussian splats, offering the best performance for web delivery.
 
 <iframe src="https://vuer.ai/?background=131416,fff&collapseMenu=true&scene=https://docs.vuer.ai/en/latest/_static/live_demo/spark/scene.json" width="100%" height="400px" frameborder="0"></iframe>
 
