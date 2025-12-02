@@ -254,5 +254,4 @@ Now that you understand camera control basics, you can:
 - [Path Tracing](./07_path_tracing.md) - Create photorealistic renders
 
 **Advanced camera features** (for later exploration):
-- [Virtual Camera Tutorial](../../tutorials/camera/grab_render_virtual_camera.md) - Capture images from multiple cameras
-- [Recording Camera Movement](../../tutorials/camera/record_camera_movement.md) - Save and replay camera animations
+- [Virtual Camera Tutorial](../../tutorials/camera/README.md) - Programmable cameras for off-screen rendering and multi-view displays

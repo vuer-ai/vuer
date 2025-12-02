@@ -158,6 +158,9 @@ The `material` parameter accepts a dictionary of properties for fine-grained con
 
 ### Complete Example with Material Properties
 
+<details>
+<summary>Source Code</summary>
+
 ```python
 from vuer import Vuer, VuerSession
 from vuer.schemas import Scene, Cylinder, Sphere, Octahedron, Torus, Box, Plane
@@ -274,6 +277,7 @@ async def main(session: VuerSession):
 
     await session.forever()
 ```
+</details>
 
 ## Texture Mapping
 
@@ -364,9 +368,6 @@ Box(
 - `aoMap`: Ambient occlusion (darkens crevices)
 - `emissiveMap`: Self-illumination pattern
 - `mapRepeat`: Tile texture `[u, v]` times
-
-## MaterialType="normal"
-## MaterialType="depth"
 
 ## Performance Tips
 
