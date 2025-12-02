@@ -46,6 +46,7 @@ Enable user interaction with VR/AR controllers and mouse.
 - [Gripper](../../components/gripper)
 - [Hands](../../components/hands)
 - [MotionController](../../components/motion_controllers)
+- [KeyboardMonitor](../../components/keyboard_monitor)
 
 ## Camera and View Components
 
