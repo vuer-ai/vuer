@@ -1,4 +1,4 @@
-# 3.1.4 Camera Control
+# 3.1.3 Camera Control
 
 Vuer provides two types of cameras for viewing your 3D scenes.
 
@@ -249,9 +249,10 @@ Control default camera and controls behavior through Scene parameters:
 Now that you understand camera control basics, you can:
 
 **Continue with rendering:**
-- [Lights](./05_lights.md) - Illuminate your scenes properly
-- [Post-processing Effects](./06_post_processing.md) - Add bloom and visual effects
-- [Path Tracing](./07_path_tracing.md) - Create photorealistic renders
+- [Lights](./04_lights.md) - Illuminate your scenes properly
+- [Render Modes](./05_render_modes.md) - Learn about different rendering modes
+  - [Post-processing Effects](./05_render_modes/post_processing.md) - Add bloom and visual effects
+  - [Path Tracing](./05_render_modes/path_tracing.md) - Create photorealistic renders
 
 **Advanced camera features** (for later exploration):
 - [Virtual Camera Tutorial](../../tutorials/camera/README.md) - Programmable cameras for off-screen rendering and multi-view displays

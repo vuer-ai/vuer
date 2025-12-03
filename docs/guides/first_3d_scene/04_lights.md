@@ -1,4 +1,4 @@
-# 3.1.5 Lights
+# 3.1.4 Lights
 
 Lighting transforms flat 3D scenes into vibrant, realistic visuals. In previous chapters, we did not explicitly set the lights because Vuer provides default lights. This chapter will show you how to upgrade that simple setup to professional, cinematic lighting like this:
 
@@ -446,8 +446,9 @@ This example demonstrates the concepts covered in this chapter: multiple light t
 Now that you understand lighting, you can:
 
 **Continue with rendering:**
-- [Post-processing Effects](./06_post_processing.md) - Add bloom, depth of field, and other effects
-- [Path Tracing](./07_path_tracing.md) - Create photorealistic renders
+- [Render Modes](./05_render_modes.md) - Learn about different rendering modes
+  - [Post-processing Effects](./05_render_modes/post_processing.md) - Add bloom and other effects
+  - [Path Tracing](./05_render_modes/path_tracing.md) - Create photorealistic renders
 
 **Explore interactive features:**
 - [Animation](../animation/) - Animate objects and cameras

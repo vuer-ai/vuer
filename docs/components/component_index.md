@@ -87,6 +87,6 @@ Enable user interaction with VR/AR controllers and mouse.
 
 ## Next Steps
 
-- Learn about [Materials and Textures](03_materials_and_textures.md) to make your components look realistic
-- Explore [Camera Control](04_camera_control.md) for better viewpoints
-- Add [Lights](05_lights.md) to illuminate your scene
+- Learn about [Materials and Textures](../guides/first_3d_scene/02_materials_and_textures.md) to make your components look realistic
+- Explore [Camera Control](../guides/first_3d_scene/03_camera_control.md) for better viewpoints
+- Add [Lights](../guides/first_3d_scene/04_lights.md) to illuminate your scene

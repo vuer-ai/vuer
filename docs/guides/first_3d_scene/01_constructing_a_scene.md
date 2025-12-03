@@ -74,7 +74,6 @@ Visit: https://vuer.ai?ws=ws://localhost:8012
 ## Next Steps
 
 Now that you can create basic scenes, learn about:
-- [Vuer Component Index](./02_component_index.md) - All available 3D objects
-- [Materials and Textures](03_materials_and_textures.md) - Making objects look good
-- [Camera Control](./04_camera_control.md) - Viewing your scene
-- [Lights](./05_lights.md) - Illuminating your world
+- [Materials and Textures](02_materials_and_textures.md) - Making objects look good
+- [Camera Control](./03_camera_control.md) - Viewing your scene
+- [Lights](./04_lights.md) - Illuminating your world

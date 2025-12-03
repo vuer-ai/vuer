@@ -1,4 +1,4 @@
-# 3.1.7 Path Tracing Renders
+# Path Tracing Renders
 
 Path tracing is a rendering technique that simulates light transport for photorealistic results. Unlike real-time rasterization, path tracing accurately models:
 
@@ -10,7 +10,7 @@ Path tracing is a rendering technique that simulates light transport for photore
 
 Vuer includes a WebGL-based path tracer for high-quality offline renders directly in the browser.
 
-![Path Tracing Scene](../../_static/07_path_tracing_scene.png)
+![Path Tracing Scene](../../../_static/07_path_tracing_scene.png)
 
 *Example scene rendered with path tracing. Notice the realistic global illumination, soft shadows, and accurate light reflections that create a photorealistic appearance.*
 
@@ -234,9 +234,9 @@ Current path tracer limitations:
 
 ## Related Tutorials
 
-- [Materials and Textures](03_materials_and_textures.md) - Learn about physically-based materials for realistic rendering
-- [Lighting](05_lights.md) - Understand different light types and how to use them effectively
-- [Post-processing Effects](06_post_processing.md) - Compare path tracing with real-time post-processing
+- [Materials and Textures](../02_materials_and_textures.md) - Learn about physically-based materials for realistic rendering
+- [Lighting](../04_lights.md) - Understand different light types and how to use them effectively
+- [Post-processing Effects](post_processing.md) - Compare path tracing with real-time post-processing
 
 ## External Resources
 

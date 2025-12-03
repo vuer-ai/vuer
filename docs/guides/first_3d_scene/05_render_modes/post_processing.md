@@ -1,32 +1,10 @@
-# 3.1.6 Post-processing and Render Passes
+# Post-processing
 
 Post-processing effects add visual polish to your 3D scenes through screen-space effects applied after the main render pass. Vuer includes bloom effects for glowing highlights and can be extended with additional passes like ambient occlusion, depth of field, and more.
 
-![Post-Processing Scene](../../_static/06_post_processing_scene.png)
+![Post-Processing Scene](../../../_static/06_post_processing_scene.png)
 
 *Example scene with bloom post-processing enabled.*
-
-## Render Modes
-
-Vuer supports multiple render modes that can be toggled through the web interface:
-
-- **RGB** (default): Standard rendering without post-processing
-- **Post-process**: Applies post-processing effects like bloom
-- **Depth**: Visualizes scene depth
-- **Normal**: Shows surface normals
-- **Path tracer**: Photorealistic rendering (covered in next section)
-
-### Accessing Render Modes
-
-The render mode can be controlled through the UI panel in the Vuer web interface:
-
-1. Open your scene in a browser
-2. Click on the **MainControl** tab in the left panel
-3. Find the **RenderRoot** section
-4. Select "Render Mode" from the dropdown menu
-5. Choose from available modes: `rgb`, `postprocess`, `depth`, `normal`, or `pathtracer`
-
-The scene will update in real-time as you switch between modes.
 
 ## Bloom Effect
 
@@ -147,6 +125,6 @@ Scene(
 
 ## Related Tutorials
 
-- [Path Tracing Renders](07_path_tracing.md) - Achieve photorealistic rendering with accurate light simulation
-- [Materials and Textures](03_materials_and_textures.md) - Create materials that work well with post-processing
-- [Lighting](05_lights.md) - Set up lighting to maximize bloom and HDR effects
+- [Path Tracing Renders](path_tracing.md) - Achieve photorealistic rendering with accurate light simulation
+- [Materials and Textures](../02_materials_and_textures.md) - Create materials that work well with post-processing
+- [Lighting](../04_lights.md) - Set up lighting to maximize bloom and HDR effects

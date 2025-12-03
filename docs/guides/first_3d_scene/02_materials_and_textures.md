@@ -1,4 +1,4 @@
-# 3.1.3 Materials and Textures
+# 3.1.2 Materials and Textures
 
 Materials define how objects appear when rendered. This guide will progressively teach you how to use materials in Vuer, from simple material types to advanced properties and texture mapping.
 
@@ -388,6 +388,6 @@ Box(
 ## Next Steps
 
 Now that you understand materials and textures:
-- Learn about [Camera Control](04_camera_control.md) to view your scenes from different angles
-- Add [Lights](05_lights.md) to see how they interact with different material types
-- Explore advanced rendering with [Post-Processing](06_post_processing.md)
+- Learn about [Camera Control](03_camera_control.md) to view your scenes from different angles
+- Add [Lights](04_lights.md) to see how they interact with different material types
+- Explore advanced rendering with [Render Modes](05_render_modes.md)

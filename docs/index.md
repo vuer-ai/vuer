@@ -76,11 +76,10 @@ For a comprehensive list of data types, please refer to the [API documentation o
    :hidden:
 
    Constructing A Scene <guides/first_3d_scene/01_constructing_a_scene.md>
-   Materials & Textures <guides/first_3d_scene/03_materials_and_textures.md>
-   Camera Control <guides/first_3d_scene/04_camera_control.md>
-   Lights <guides/first_3d_scene/05_lights.md>
-   Post-processing <guides/first_3d_scene/06_post_processing.md>
-   Path Tracing <guides/first_3d_scene/07_path_tracing.md>
+   Materials & Textures <guides/first_3d_scene/02_materials_and_textures.md>
+   Camera Control <guides/first_3d_scene/03_camera_control.md>
+   Lights <guides/first_3d_scene/04_lights.md>
+   Render Modes <guides/first_3d_scene/05_render_modes.md>
    Session API <guides/session_apis.md>
 
 .. toctree::
