@@ -5,9 +5,9 @@ from contextlib import nullcontext
 MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
 doc @ """
-# Grid - Ground Grid Plane
+# Grid
 
-The `Grid` component displays a ground reference grid for spatial orientation. It's included by default in `DefaultScene` to help visualize the ground plane and provide spatial reference.
+The `Grid` component (Ground Grid Plane) displays a ground reference grid for spatial orientation. It's included by default in `DefaultScene` to help visualize the ground plane and provide spatial reference.
 
 This is ideal for:
 - Providing ground plane reference
