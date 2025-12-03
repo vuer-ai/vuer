@@ -1,7 +1,7 @@
 
-# Center - Auto-Center Objects
+# Center
 
-The `Center` component automatically centers its child objects at the origin, calculating the bounding box and adjusting position accordingly. Useful for imported models with off-center geometry.
+The `Center` component (Auto-Center Objects) automatically centers its child objects at the origin, calculating the bounding box and adjusting position accordingly. Useful for imported models with off-center geometry.
 
 This is ideal for:
 - Centering imported models with off-center origins

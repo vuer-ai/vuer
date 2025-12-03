@@ -1,7 +1,7 @@
 
-# Glb - GLB/GLTF File Loader
+# Glb
 
-The `Glb` component loads 3D models from GLB (GL Transmission Format Binary) and GLTF files, the modern standard for 3D assets on the web. GLB is the binary version of GLTF, offering superior compression and faster loading than OBJ.
+The `Glb` component (GLB/GLTF File Loader) loads 3D models from GLB (GL Transmission Format Binary) and GLTF files, the modern standard for 3D assets on the web. GLB is the binary version of GLTF, offering superior compression and faster loading than OBJ.
 
 **Why GLB?**
 - **Fast loading**: Binary format, up to 10x smaller than OBJ

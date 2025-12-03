@@ -462,6 +462,52 @@ class Gamepad(SceneElement):
   tag = "Gamepad"
 
 
+class KeyboardMonitor(SceneElement):
+  """
+  Monitors keyboard events in the browser and sends them to Python backend.
+
+  The KeyboardMonitor component listens for keyboard events (keydown, keyup, keypress)
+  and transmits event details including key codes, modifier states, and repeat information
+  through the WebSocket connection.
+
+  :param enableKeyDown: Enable monitoring of keydown events
+  :type enableKeyDown: bool, optional, default False
+  :param enableKeyUp: Enable monitoring of keyup events
+  :type enableKeyUp: bool, optional, default False
+  :param enableKeyPress: Enable monitoring of keypress events
+  :type enableKeyPress: bool, optional, default False
+
+  Event payload includes:
+
+  - **key**: Character value of the key pressed
+  - **code**: Physical key code (e.g., 'KeyA', 'Space', 'ArrowUp')
+  - **shiftKey**, **ctrlKey**, **altKey**, **metaKey**: Modifier key states
+  - **repeat**: Whether key is being held down
+  - **isComposing**: Whether key is part of a composition session
+
+  Example Usage::
+
+      @app.spawn(start=True)
+      async def main(session):
+          session.set @ Scene(
+              KeyboardMonitor(
+                  enableKeyDown=True,
+                  enableKeyUp=True,
+                  key="keyboard-monitor"
+              )
+          )
+
+          # Handle keyboard events
+          async for event in session.listen():
+              if event.etype in ["KeyDown", "KeyUp"]:
+                  print(f"Key: {event.value['key']}, Code: {event.value['code']}")
+                  print(f"Modifiers: Shift={event.value['shiftKey']}, "
+                        f"Ctrl={event.value['ctrlKey']}, "
+                        f"Alt={event.value['altKey']}")
+  """
+  tag = "KeyboardMonitor"
+
+
 class DirectionalLight(SceneElement):
   tag = "DirectionalLight"
 
