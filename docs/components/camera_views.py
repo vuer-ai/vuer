@@ -2,7 +2,7 @@ import os
 from cmx import doc
 from contextlib import nullcontext
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", True)
+MAKE_DOCS = os.getenv("MAKE_DOCS", None)
 
 doc @ """
 # CameraView
@@ -51,6 +51,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                     position=[1.0, 1.0, 0.5],
                     rotation=[-0.3 * np.pi, 0.25 * np.pi, 0],
                     showFrustum=True,
+                    monitor=True,  # you can disable the camera render on the top left by setting this as false
                 ),
             ],
             bgChildren=[
@@ -79,6 +80,7 @@ doc @ """
 | `showFrustum` | bool | `True` | Whether to show the frustum visualization |
 | `downsample` | int | `1` | Downsample rate for rendered images |
 | `distanceToCamera` | float | `2` | Distance to the camera |
+| `monitor` | bool | `True` | Camera Render |
 
 ## Streaming Modes
 
