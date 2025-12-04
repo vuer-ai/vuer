@@ -3,16 +3,14 @@
   font-size: 15px !important;
 }
 
-.sidebar-drawer {
-  width: calc(50% - 28em) !important;
-}
+@media (min-width: 1009px) {
+  .sidebar-drawer {
+    width: 19em !important;
+  }
 
-.sidebar-container {
-  width: 18em !important;
-}
-
-.content {
-  width: 49em !important;
+  .sidebar-container {
+    width: 18em !important;
+  }
 }
 
 /* Title responsive sizing */
