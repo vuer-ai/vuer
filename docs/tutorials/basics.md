@@ -17,6 +17,6 @@ In other words, [`vuer.ai`](https://vuer.ai) offers a powerful, component-based 
     Your First `vuer` Scene <basics/setting_a_scene.md>
     Simpe Life-Cycle <basics/simple_life_cycle.md>
     Setting Up SSL Proxy for WebSocket <basics/ssl_proxy_webxr.md>
-    Serviing Dynamic Content <basics/adding_html_handler.md>
+    Serving Dynamic Content <basics/adding_html_handler.md>
 ```
 
