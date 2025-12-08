@@ -55,8 +55,8 @@ async def main(sess):
 
 To get a quick overview of what you can do with `vuer`, check out the following:
 
-- browse the example gallery [here](https://docs.vuer.ai/en/latest/examples/01_trimesh.html)
-- try the demo showing a Unitree Go1 robot in front of a staircase [here](https://docs.vuer.ai/en/latest/tutorials/robotics/urdf_go1_stairs.html)
+- browse the example gallery [here](https://docs.vuer.ai/en/latest/examples/meshes/mesh_loading.html)
+- try the demo showing a Unitree Go1 robot in front of a staircase [here](https://docs.vuer.ai/en/latest/examples/urdf_go1_stairs.html)
 
 For more details:
 

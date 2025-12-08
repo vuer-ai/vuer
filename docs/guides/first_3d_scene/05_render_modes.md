@@ -1,4 +1,4 @@
-# 3.1.5 Render Modes
+# 5. Render Modes
 
 Vuer supports multiple render modes that control how your 3D scene is rendered, from standard real-time rendering to photorealistic path tracing. Each mode serves different purposes and offers unique visual characteristics.
 

@@ -1,4 +1,4 @@
-# 3.1.3 Camera Control
+# 3. Camera Control
 
 Vuer provides two types of cameras for viewing your 3D scenes.
 
