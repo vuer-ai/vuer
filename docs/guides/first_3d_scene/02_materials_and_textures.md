@@ -1,4 +1,4 @@
-# 3.1.2 Materials and Textures
+# 2. Materials and Textures
 
 Materials define how objects appear when rendered. This guide will progressively teach you how to use materials in Vuer, from simple material types to advanced properties and texture mapping.
 

@@ -1,4 +1,4 @@
-# 3.1.1 Constructing A Scene in Python
+# 1. Build A Scene in Python
 
 Vuer uses a client-server architecture where you write Python code to control a 3D scene rendered in the browser. This guide will teach you the fundamentals of creating and managing 3D scenes.
 
@@ -8,11 +8,15 @@ By the end of this tutorial series, you'll be able to create rich 3D scenes like
 
 *Expected scene: a complete scene with diverse geometry, materials, textures, and dramatic lighting*
 
-But we'll start simple. In this document, you'll learn to build your first basic scene:
+But we'll start simple. In this guide, you'll learn to build your first basic scene: 
 
-<iframe src="https://vuer.ai/?hideUI=true&reconnect=True&scene=hqN0YWelU2NlbmWja2V5oTCidXCTAAEAqmJnQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVulISoY2hpbGRyZW6Qo3RhZ6xBbWJpZW50TGlnaHSja2V5p2FtYmllbnSpaW50ZW5zaXR5yz%2FgAAAAAAAAhahjaGlsZHJlbpCjdGFnsERpcmVjdGlvbmFsTGlnaHSja2V5o3N1bqlpbnRlbnNpdHkBqHBvc2l0aW9ukwMDA4WoY2hpbGRyZW6Qo3RhZ7FQZXJzcGVjdGl2ZUNhbWVyYaNrZXmycGVyc3BlY3RpdmUtY2FtZXJhq21ha2VEZWZhdWx0w6hwb3NpdGlvbpP8AgSDqGNoaWxkcmVukKN0YWetT3JiaXRDb250cm9sc6NrZXmrb3JiLWNvbnRyb2yoY2hpbGRyZW6Rh6hjaGlsZHJlbpCjdGFno0JveKNrZXmqc2ltcGxlLWJveKRhcmdzk8s%2F8zMzMzMzM8s%2F8zMzMzMzM8s%2F8zMzMzMzM6hwb3NpdGlvbpPLP9mZmZmZmZrLP%2BAAAAAAAAD%2BqHJvdGF0aW9ukwAAAKxtYXRlcmlhbFR5cGWlYmFzaWM%3D" width="100%" height="400px" frameborder="0"></iframe>
+*a simple box*
 
-*Starting point: a simple box*
+![Simple Box](../figures/simple_box.png)
+
+[//]: # (&#40;<iframe src="https://vuer.ai/?hideUI=true&reconnect=True&scene=hqN0YWelU2NlbmWja2V5oTCidXCTAAEAqmJnQ2hpbGRyZW6Qq3Jhd0NoaWxkcmVulISoY2hpbGRyZW6Qo3RhZ6xBbWJpZW50TGlnaHSja2V5p2FtYmllbnSpaW50ZW5zaXR5yz%2FgAAAAAAAAhahjaGlsZHJlbpCjdGFnsERpcmVjdGlvbmFsTGlnaHSja2V5o3N1bqlpbnRlbnNpdHkBqHBvc2l0aW9ukwMDA4WoY2hpbGRyZW6Qo3RhZ7FQZXJzcGVjdGl2ZUNhbWVyYaNrZXmycGVyc3BlY3RpdmUtY2FtZXJhq21ha2VEZWZhdWx0w6hwb3NpdGlvbpP8AgSDqGNoaWxkcmVukKN0YWetT3JiaXRDb250cm9sc6NrZXmrb3JiLWNvbnRyb2yoY2hpbGRyZW6Rh6hjaGlsZHJlbpCjdGFno0JveKNrZXmqc2ltcGxlLWJveKRhcmdzk8s%2F8zMzMzMzM8s%2F8zMzMzMzM8s%2F8zMzMzMzM6hwb3NpdGlvbpPLP9mZmZmZmZrLP%2BAAAAAAAAD%2BqHJvdGF0aW9ukwAAAKxtYXRlcmlhbFR5cGWlYmFzaWM%3D" width="100%" height="400px" frameborder="0"></iframe>&#41;)
+
+[//]: # (*Starting point: a simple box*)
 
 ## How Vuer Works
 

@@ -10,4 +10,5 @@ Enable user interaction with VR/AR controllers and mouse.
    gripper
    hands
    motion_controllers
+   keyboard_monitor
 ```

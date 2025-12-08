@@ -1,4 +1,4 @@
-# 3.1.4 Lights
+# 4. Lights
 
 Lighting transforms flat 3D scenes into vibrant, realistic visuals. In previous chapters, we did not explicitly set the lights because Vuer provides default lights. This chapter will show you how to upgrade that simple setup to professional, cinematic lighting like this:
 

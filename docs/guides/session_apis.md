@@ -423,5 +423,4 @@ async def main(session: VuerSession):
 ## See Also
 
 - [Constructing a Scene](first_3d_scene/01_constructing_a_scene.md) - Learn about scene structure
-- [Component Index](first_3d_scene/02_component_index.md) - All available components
 - [Event Handling](../api/events.md) - Responding to user interactions
