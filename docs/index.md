@@ -81,6 +81,7 @@ For a comprehensive list of data types, please refer to the [API documentation o
    Lights <guides/first_3d_scene/04_lights.md>
    Render Modes <guides/first_3d_scene/05_render_modes.md>
    Session API <guides/session_apis.md>
+   Static Files & Cache Control <guides/static_files.md>
 
 .. toctree::
    :maxdepth: 3

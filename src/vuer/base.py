@@ -46,7 +46,26 @@ async def handle_file_request(request, root, filename=None):
     if not filepath.is_file():
         raise web.HTTPNotFound()
 
-    return web.FileResponse(filepath)
+    response = web.FileResponse(filepath)
+
+    # Check if URL contains noCache parameter for development mode
+    # Parameter name is case-insensitive (noCache, nocache, NOCACHE all work)
+    # Parameter value must not equal "false" (case insensitive)
+    nocache_key = None
+    for key in request.query.keys():
+        if key.lower() == "nocache":
+            nocache_key = key
+            break
+
+    if nocache_key:
+        # Check if noCache is explicitly set to false
+        nocache_value = request.query.get(nocache_key, "")
+        if nocache_value.lower() != "false":
+            # Set Cache-Control to no-cache to force revalidation
+            # This allows 304 responses but prevents strong caching
+            response.headers["Cache-Control"] = "no-cache"
+
+    return response
 
 
 class Server:
@@ -155,5 +174,5 @@ class Server:
 if __name__ == "__main__":
     app = Server()
     app._add_route("", websocket_handler)
-    app._add_static("/static", handle_file_request, root=".")
+    app._add_static("/static", ".")
     app.start()
