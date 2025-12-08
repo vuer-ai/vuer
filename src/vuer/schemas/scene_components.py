@@ -160,82 +160,544 @@ p = PointCloud
 
 
 class Box(SceneElement):
+  """
+  Creates a box (rectangular cuboid) geometry.
+
+  :param args: Geometry parameters [width, height, depth, widthSegments, heightSegments, depthSegments]
+  :type args: tuple[float, float, float, int, int, int], optional, default (1, 1, 1, 1, 1, 1)
+
+  **Geometry Parameters:**
+
+  - **width**: Box width along X axis
+  - **height**: Box height along Y axis
+  - **depth**: Box depth along Z axis
+  - **widthSegments**: Number of segmented faces along the width (min: 1)
+  - **heightSegments**: Number of segmented faces along the height (min: 1)
+  - **depthSegments**: Number of segmented faces along the depth (min: 1)
+
+  Example Usage::
+
+      from vuer.schemas import Box
+
+      # Simple box with default dimensions
+      Box(key="box1")
+
+      # Custom dimensions
+      Box(args=(2, 1, 0.5), key="box2")
+
+      # High-poly box with many segments
+      Box(args=(1, 1, 1, 10, 10, 10), key="box3")
+  """
   tag = "Box"
 
 
 class Capsule(SceneElement):
+  """
+  Creates a capsule geometry (cylinder with hemispherical ends).
+
+  :param args: Geometry parameters [radius, height, capSegments, radialSegments, heightSegments]
+  :type args: tuple[float, float, int, int, int], optional, default (1, 1, 4, 8, 1)
+
+  **Geometry Parameters:**
+
+  - **radius**: Radius of the capsule body and caps
+  - **height**: Height of the cylindrical section (excluding caps)
+  - **capSegments**: Number of curve segments for the hemispherical caps (1-32)
+  - **radialSegments**: Number of segmented faces around the circumference (1-64)
+  - **heightSegments**: Number of segmented faces along the height (1-32)
+
+  Example Usage::
+
+      from vuer.schemas import Capsule
+
+      # Simple capsule
+      Capsule(key="capsule1")
+
+      # Tall thin capsule
+      Capsule(args=(0.2, 3, 4, 8, 1), key="capsule2")
+  """
   tag = "Capsule"
 
 
 class Cone(SceneElement):
+  """
+  Creates a cone geometry.
+
+  :param args: Geometry parameters [radius, height, radialSegments, heightSegments, openEnded, thetaStart, thetaLength]
+  :type args: tuple[float, float, int, int, bool, float, float], optional, default (1, 1, 8, 1, False, 0, 2π)
+
+  **Geometry Parameters:**
+
+  - **radius**: Radius of the base of the cone
+  - **height**: Height of the cone
+  - **radialSegments**: Number of segmented faces around the circumference (3-128)
+  - **heightSegments**: Number of segmented faces along the height (1-64)
+  - **openEnded**: Whether the base of the cone is open or capped
+  - **thetaStart**: Start angle for first segment (radians, 0-2π)
+  - **thetaLength**: Central angle of the circular sector (radians, 0-2π)
+
+  Example Usage::
+
+      from vuer.schemas import Cone
+
+      # Simple cone
+      Cone(key="cone1")
+
+      # Half cone (180 degrees)
+      Cone(args=(1, 1, 8, 1, False, 0, 3.14159), key="half-cone")
+  """
   tag = "Cone"
 
 
 class Circle(SceneElement):
+  """
+  Creates a circle (flat disc) geometry.
+
+  :param args: Geometry parameters [radius, segments, thetaStart, thetaLength]
+  :type args: tuple[float, int, float, float], optional, default (1, 8, 0, 2π)
+
+  **Geometry Parameters:**
+
+  - **radius**: Radius of the circle
+  - **segments**: Number of segments (3-128), minimum 3
+  - **thetaStart**: Start angle for first segment (radians, 0-2π)
+  - **thetaLength**: Central angle of the circular sector (radians, 0-2π)
+
+  Example Usage::
+
+      from vuer.schemas import Circle
+
+      # Full circle
+      Circle(key="circle1")
+
+      # Semi-circle
+      Circle(args=(1, 32, 0, 3.14159), key="semi-circle")
+  """
   tag = "Circle"
 
 
 class Cylinder(SceneElement):
+  """
+  Creates a cylinder geometry.
+
+  :param args: Geometry parameters [radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded, thetaStart, thetaLength]
+  :type args: tuple[float, float, float, int, int, bool, float, float], optional, default (1, 1, 1, 8, 1, False, 0, 2π)
+
+  **Geometry Parameters:**
+
+  - **radiusTop**: Radius of the cylinder at the top
+  - **radiusBottom**: Radius of the cylinder at the bottom
+  - **height**: Height of the cylinder
+  - **radialSegments**: Number of segmented faces around the circumference (3-128)
+  - **heightSegments**: Number of segmented faces along the height (1-64)
+  - **openEnded**: Whether the ends of the cylinder are open or capped
+  - **thetaStart**: Start angle for first segment (radians, 0-2π)
+  - **thetaLength**: Central angle of the circular sector (radians, 0-2π)
+
+  Example Usage::
+
+      from vuer.schemas import Cylinder
+
+      # Simple cylinder
+      Cylinder(key="cylinder1")
+
+      # Cone-like cylinder (different top/bottom radii)
+      Cylinder(args=(0.5, 1, 2, 16, 1, False, 0, 6.28), key="tapered")
+  """
   tag = "Cylinder"
 
 
 class Dodecahedron(SceneElement):
+  """
+  Creates a dodecahedron geometry (12-faced polyhedron).
+
+  :param args: Geometry parameters [radius, detail]
+  :type args: tuple[float, int], optional, default (1, 0)
+
+  **Geometry Parameters:**
+
+  - **radius**: Radius of the dodecahedron
+  - **detail**: Level of subdivision (0-5), higher values create more faces
+
+  Example Usage::
+
+      from vuer.schemas import Dodecahedron
+
+      # Simple dodecahedron
+      Dodecahedron(key="dodeca1")
+
+      # High-poly subdivided dodecahedron
+      Dodecahedron(args=(1, 3), key="dodeca2")
+  """
   tag = "Dodecahedron"
 
 
 class Edges(SceneElement):
+  """
+  Creates edges geometry from another geometry.
+
+  :param args: Geometry parameters [geometry, thresholdAngle]
+  :type args: tuple[any, float], optional
+
+  **Geometry Parameters:**
+
+  - **geometry**: Source geometry to extract edges from
+  - **thresholdAngle**: Angle threshold in degrees (0-180) for edge detection
+
+  Example Usage::
+
+      from vuer.schemas import Edges
+
+      Edges(args=(geometry, 15), key="edges1")
+  """
   tag = "Edges"
 
 
 class Extrude(SceneElement):
+  """
+  Creates extruded geometry from 2D shapes.
+
+  :param shapes: 2D shape(s) to extrude
+  :type shapes: any
+  :param options: Extrusion parameters
+  :type options: dict, optional
+
+  **Options Parameters:**
+
+  - **curveSegments**: Number of curve segments (default: 12)
+  - **steps**: Number of steps along extrusion depth (default: 1)
+  - **depth**: Extrusion depth (default: 1)
+  - **bevelEnabled**: Enable beveling (default: True)
+  - **bevelThickness**: Bevel thickness (default: 0.2)
+  - **bevelSize**: Bevel size (default: 0.1)
+  - **bevelOffset**: Bevel offset (default: 0)
+  - **bevelSegments**: Number of bevel segments (default: 3)
+
+  Example Usage::
+
+      from vuer.schemas import Extrude
+
+      Extrude(
+          shapes=shape,
+          options=dict(depth=2, bevelEnabled=True),
+          key="extrude1"
+      )
+  """
   tag = "Extrude"
 
 
 class Icosahedron(SceneElement):
+  """
+  Creates an icosahedron geometry (20-faced polyhedron).
+
+  :param args: Geometry parameters [radius, detail]
+  :type args: tuple[float, int], optional, default (1, 0)
+
+  **Geometry Parameters:**
+
+  - **radius**: Radius of the icosahedron
+  - **detail**: Level of subdivision (0-5), higher values create more faces
+
+  Example Usage::
+
+      from vuer.schemas import Icosahedron
+
+      # Simple icosahedron
+      Icosahedron(key="icosa1")
+
+      # Subdivided sphere-like icosahedron
+      Icosahedron(args=(1, 2), key="icosa2")
+  """
   tag = "Icosahedron"
 
 
 class Lathe(SceneElement):
+  """
+  Creates geometry by rotating a 2D profile around an axis.
+
+  :param args: Geometry parameters [points, segments, phiStart, phiLength]
+  :type args: tuple[list, int, float, float], optional, default ([], 12, 0, 2π)
+
+  **Geometry Parameters:**
+
+  - **points**: Array of 2D points defining the profile to rotate
+  - **segments**: Number of circumferential segments (3-128)
+  - **phiStart**: Start angle for rotation (radians, 0-2π)
+  - **phiLength**: Angle of rotation (radians, 0-2π)
+
+  Example Usage::
+
+      from vuer.schemas import Lathe
+
+      points = [[0, 0], [1, 0.5], [0.5, 1]]
+      Lathe(args=(points, 32, 0, 6.28), key="lathe1")
+  """
   tag = "Lathe"
 
 
 class Octahedron(SceneElement):
+  """
+  Creates an octahedron geometry (8-faced polyhedron).
+
+  :param args: Geometry parameters [radius, detail]
+  :type args: tuple[float, int], optional, default (1, 0)
+
+  **Geometry Parameters:**
+
+  - **radius**: Radius of the octahedron
+  - **detail**: Level of subdivision (0-5), higher values create more faces
+
+  Example Usage::
+
+      from vuer.schemas import Octahedron
+
+      # Simple octahedron
+      Octahedron(key="octa1")
+
+      # Subdivided octahedron
+      Octahedron(args=(1, 2), key="octa2")
+  """
   tag = "Octahedron"
 
 
 class Plane(SceneElement):
+  """
+  Creates a plane (flat rectangle) geometry.
+
+  :param args: Geometry parameters [width, height, widthSegments, heightSegments]
+  :type args: tuple[float, float, int, int], optional, default (1, 1, 1, 1)
+
+  **Geometry Parameters:**
+
+  - **width**: Width of the plane along X axis
+  - **height**: Height of the plane along Y axis
+  - **widthSegments**: Number of segmented faces along the width (1-100)
+  - **heightSegments**: Number of segmented faces along the height (1-100)
+
+  Example Usage::
+
+      from vuer.schemas import Plane
+
+      # Simple plane
+      Plane(key="plane1")
+
+      # High-poly plane (useful for displacement mapping)
+      Plane(args=(10, 10, 50, 50), key="terrain")
+  """
   tag = "Plane"
 
 
 class Polyhedron(SceneElement):
+  """
+  Creates a custom polyhedron geometry from vertices and indices.
+
+  :param args: Geometry parameters [vertices, indices, radius, detail]
+  :type args: tuple[list[float], list[int], float, int], optional, default ([], [], 1, 0)
+
+  **Geometry Parameters:**
+
+  - **vertices**: Flat array of vertex coordinates [x1,y1,z1, x2,y2,z2, ...]
+  - **indices**: Flat array of face indices
+  - **radius**: Radius of the polyhedron
+  - **detail**: Level of subdivision (0-5)
+
+  Example Usage::
+
+      from vuer.schemas import Polyhedron
+
+      vertices = [1, 1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1]
+      indices = [2, 1, 0, 0, 3, 2, 1, 3, 0, 2, 3, 1]
+      Polyhedron(args=(vertices, indices, 1, 0), key="poly1")
+  """
   tag = "Polyhedron"
 
 
 class Ring(SceneElement):
+  """
+  Creates a ring (flat annulus) geometry.
+
+  :param args: Geometry parameters [innerRadius, outerRadius, thetaSegments, phiSegments, thetaStart, thetaLength]
+  :type args: tuple[float, float, int, int, float, float], optional, default (0.5, 1, 8, 1, 0, 2π)
+
+  **Geometry Parameters:**
+
+  - **innerRadius**: Inner radius of the ring
+  - **outerRadius**: Outer radius of the ring
+  - **thetaSegments**: Number of segments around the circumference (3-128)
+  - **phiSegments**: Number of segments along the radius (1-32)
+  - **thetaStart**: Start angle for first segment (radians, 0-2π)
+  - **thetaLength**: Central angle of the circular sector (radians, 0-2π)
+
+  Example Usage::
+
+      from vuer.schemas import Ring
+
+      # Simple ring
+      Ring(key="ring1")
+
+      # Thick ring with high detail
+      Ring(args=(0.3, 1, 64, 8, 0, 6.28), key="ring2")
+  """
   tag = "Ring"
 
 
 class Shape(SceneElement):
+  """
+  Creates 2D shape geometry from paths.
+
+  :param args: Geometry parameters [shapes, curveSegments]
+  :type args: tuple[any, int], optional
+
+  **Geometry Parameters:**
+
+  - **shapes**: Shape definition or array of shapes
+  - **curveSegments**: Number of curve segments (1-100)
+
+  Example Usage::
+
+      from vuer.schemas import Shape
+
+      Shape(args=(shape, 12), key="shape1")
+  """
   tag = "Shape"
 
 
 class Sphere(SceneElement):
+  """
+  Creates a sphere geometry.
+
+  :param args: Geometry parameters [radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength]
+  :type args: tuple[float, int, int, float, float, float, float], optional, default (1, 32, 16, 0, 2π, 0, π)
+
+  **Geometry Parameters:**
+
+  - **radius**: Radius of the sphere
+  - **widthSegments**: Number of horizontal segments (3-128)
+  - **heightSegments**: Number of vertical segments (2-64)
+  - **phiStart**: Horizontal starting angle (radians, 0-2π)
+  - **phiLength**: Horizontal sweep angle (radians, 0-2π)
+  - **thetaStart**: Vertical starting angle (radians, 0-π)
+  - **thetaLength**: Vertical sweep angle (radians, 0-π)
+
+  Example Usage::
+
+      from vuer.schemas import Sphere
+
+      # Simple sphere
+      Sphere(key="sphere1")
+
+      # High-poly sphere
+      Sphere(args=(1, 64, 32), key="sphere2")
+
+      # Hemisphere
+      Sphere(args=(1, 32, 16, 0, 6.28, 0, 1.57), key="hemisphere")
+  """
   tag = "Sphere"
 
 
 class Tetrahedron(SceneElement):
+  """
+  Creates a tetrahedron geometry (4-faced polyhedron).
+
+  :param args: Geometry parameters [radius, detail]
+  :type args: tuple[float, int], optional, default (1, 0)
+
+  **Geometry Parameters:**
+
+  - **radius**: Radius of the tetrahedron
+  - **detail**: Level of subdivision (0-5), higher values create more faces
+
+  Example Usage::
+
+      from vuer.schemas import Tetrahedron
+
+      # Simple tetrahedron
+      Tetrahedron(key="tetra1")
+
+      # Subdivided tetrahedron
+      Tetrahedron(args=(1, 2), key="tetra2")
+  """
   tag = "Tetrahedron"
 
 
 class Torus(SceneElement):
+  """
+  Creates a torus (donut) geometry.
+
+  :param args: Geometry parameters [radius, tube, radialSegments, tubularSegments, arc]
+  :type args: tuple[float, float, int, int, float], optional, default (1, 0.4, 8, 6, 2π)
+
+  **Geometry Parameters:**
+
+  - **radius**: Radius from the center of the torus to the center of the tube
+  - **tube**: Radius of the tube
+  - **radialSegments**: Number of segments around the tube (3-64)
+  - **tubularSegments**: Number of segments around the torus (3-128)
+  - **arc**: Central angle of the torus (radians, 0-2π)
+
+  Example Usage::
+
+      from vuer.schemas import Torus
+
+      # Simple torus
+      Torus(key="torus1")
+
+      # Thin high-detail torus
+      Torus(args=(2, 0.2, 16, 100, 6.28), key="torus2")
+  """
   tag = "Torus"
 
 
 class TorusKnot(SceneElement):
+  """
+  Creates a torus knot geometry.
+
+  :param args: Geometry parameters [radius, tube, tubularSegments, radialSegments, p, q]
+  :type args: tuple[float, float, int, int, int, int], optional, default (1, 0.4, 64, 8, 2, 3)
+
+  **Geometry Parameters:**
+
+  - **radius**: Radius of the torus
+  - **tube**: Radius of the tube
+  - **tubularSegments**: Number of segments along the tube (3-256)
+  - **radialSegments**: Number of segments around the tube (3-32)
+  - **p**: Number of times the knot winds around the torus (1-10)
+  - **q**: Number of times the knot winds through the torus hole (1-10)
+
+  Example Usage::
+
+      from vuer.schemas import TorusKnot
+
+      # Simple torus knot
+      TorusKnot(key="knot1")
+
+      # Complex knot pattern
+      TorusKnot(args=(1, 0.3, 128, 16, 5, 7), key="knot2")
+  """
   tag = "TorusKnot"
 
 
 class Tube(SceneElement):
+  """
+  Creates a tube geometry along a path.
+
+  :param args: Geometry parameters [path, tubularSegments, radius, radialSegments, closed]
+  :type args: tuple[any, int, float, int, bool], optional, default (None, 64, 1, 8, False)
+
+  **Geometry Parameters:**
+
+  - **path**: 3D curve path defining the tube's centerline
+  - **tubularSegments**: Number of segments along the tube (2-256)
+  - **radius**: Radius of the tube
+  - **radialSegments**: Number of segments around the tube (2-32)
+  - **closed**: Whether the tube forms a closed loop
+
+  Example Usage::
+
+      from vuer.schemas import Tube
+
+      Tube(args=(path, 64, 0.5, 8, False), key="tube1")
+  """
   tag = "Tube"
 
 
@@ -262,6 +724,22 @@ class Fog(SceneElement):
 
 
 class Wireframe(SceneElement):
+  """
+  Creates wireframe geometry from another geometry.
+
+  :param args: Geometry parameters [geometry]
+  :type args: tuple[any], optional
+
+  **Geometry Parameters:**
+
+  - **geometry**: Source geometry to convert to wireframe
+
+  Example Usage::
+
+      from vuer.schemas import Wireframe
+
+      Wireframe(args=(geometry,), key="wireframe1")
+  """
   tag = "Wireframe"
 
 
@@ -420,6 +898,39 @@ class Group(SceneElement):
 
 
 class HemisphereLight(SceneElement):
+  """
+  Creates a hemisphere light that simulates ambient outdoor lighting.
+
+  Hemisphere lights emit light from directly above and below, with different
+  colors for sky and ground. This creates more realistic outdoor lighting than
+  ambient light alone.
+
+  :param skyColor: Color of light from above
+  :type skyColor: str, optional, default "#ffffff"
+  :param groundColor: Color of light from below
+  :type groundColor: str, optional, default "#ffffff"
+  :param intensity: Light intensity
+  :type intensity: float, optional, default 1.0
+  :param helper: Show visual helper for debugging
+  :type helper: bool, optional, default False
+  :param hide: Hide the light
+  :type hide: bool, optional, default False
+
+  Example Usage::
+
+      from vuer.schemas import HemisphereLight
+
+      # Basic hemisphere light
+      HemisphereLight(key="hemi1")
+
+      # Outdoor-style lighting (blue sky, brown ground)
+      HemisphereLight(
+          skyColor="#87CEEB",
+          groundColor="#8B4513",
+          intensity=0.6,
+          key="hemi2"
+      )
+  """
   tag = "HemisphereLight"
 
 
@@ -442,10 +953,63 @@ class HemisphereLightStage(SceneElement):
 
 
 class RectAreaLight(SceneElement):
+  """
+  Creates a rectangular area light source.
+
+  Area lights emit light from a rectangular surface, producing soft, realistic
+  shadows. Ideal for simulating windows, light panels, or studio lighting.
+
+  :param color: Color of the light
+  :type color: str, optional, default "#ffffff"
+  :param intensity: Light intensity
+  :type intensity: float, optional, default 1.0
+  :param width: Width of the light panel
+  :type width: float, optional, default 1.0
+  :param height: Height of the light panel
+  :type height: float, optional, default 1.0
+  :param lookAt: Target position [x, y, z] for the light to face
+  :type lookAt: tuple[float, float, float], optional, default [0, 0, 0]
+  :param helper: Show visual helper for debugging
+  :type helper: bool, optional, default False
+  :param hide: Hide the light
+  :type hide: bool, optional, default False
+
+  Example Usage::
+
+      from vuer.schemas import RectAreaLight
+
+      # Simple area light
+      RectAreaLight(
+          position=[0, 2, 0],
+          key="area1"
+      )
+
+      # Large soft light panel
+      RectAreaLight(
+          width=4,
+          height=2,
+          intensity=2,
+          position=[0, 3, -2],
+          lookAt=[0, 0, 0],
+          key="area2"
+      )
+  """
   tag = "RectAreaLight"
 
 
 class Stage(SceneElement):
+  """
+  Creates a pre-configured lighting stage setup.
+
+  Provides automatic three-point lighting (key, fill, rim) commonly used
+  in studio and product visualization. Simplifies lighting setup for common scenarios.
+
+  Example Usage::
+
+      from vuer.schemas import Stage
+
+      Stage(key="stage1")
+  """
   tag = "Stage"
 
 
@@ -509,18 +1073,163 @@ class KeyboardMonitor(SceneElement):
 
 
 class DirectionalLight(SceneElement):
+  """
+  Creates a directional light that simulates sunlight.
+
+  Directional lights emit parallel rays from an infinite distance, like sunlight.
+  The position determines the direction of the light rays.
+
+  :param color: Color of the light
+  :type color: str, optional, default "#ffffff"
+  :param intensity: Light intensity
+  :type intensity: float, optional, default 0.5
+  :param helper: Show visual helper for debugging
+  :type helper: bool, optional, default False
+  :param hide: Hide the light
+  :type hide: bool, optional, default False
+
+  Example Usage::
+
+      from vuer.schemas import DirectionalLight
+
+      # Simple sun-like light
+      DirectionalLight(
+          position=[5, 5, 5],
+          intensity=1.0,
+          key="sun"
+      )
+
+      # Warm sunset lighting
+      DirectionalLight(
+          position=[10, 3, 0],
+          color="#FFA500",
+          intensity=0.8,
+          key="sunset"
+      )
+  """
   tag = "DirectionalLight"
 
 
 class PointLight(SceneElement):
+  """
+  Creates a point light that emits in all directions from a point.
+
+  Point lights simulate light bulbs or other omnidirectional light sources.
+  Light intensity decreases with distance.
+
+  :param color: Color of the light
+  :type color: str, optional, default "#ffffff"
+  :param intensity: Light intensity
+  :type intensity: float, optional, default 20
+  :param radius: Visual radius of the light sphere (if showSphere is True)
+  :type radius: float, optional, default 0.1
+  :param showSphere: Show sphere visualization at light position
+  :type showSphere: bool, optional, default False
+  :param helper: Show visual helper for debugging
+  :type helper: bool, optional, default False
+  :param hide: Hide the light
+  :type hide: bool, optional, default False
+
+  Example Usage::
+
+      from vuer.schemas import PointLight
+
+      # Simple point light
+      PointLight(
+          position=[0, 2, 0],
+          key="bulb1"
+      )
+
+      # Colored light with sphere visualization
+      PointLight(
+          position=[1, 1, 1],
+          color="#ff0000",
+          intensity=30,
+          showSphere=True,
+          key="bulb2"
+      )
+  """
   tag = "PointLight"
 
 
 class SpotLight(SceneElement):
+  """
+  Creates a spotlight that emits light in a cone.
+
+  Spotlights are useful for focused lighting effects, stage lighting,
+  or flashlight simulations.
+
+  :param color: Color of the light
+  :type color: str, optional, default "#ffffff"
+  :param intensity: Light intensity
+  :type intensity: float, optional, default 0.5
+  :param distance: Maximum range of the light (0 = infinite)
+  :type distance: float, optional, default 0
+  :param angle: Maximum cone angle in radians (max: π/2)
+  :type angle: float, optional, default π/3
+  :param penumbra: Softness of the cone edge (0-1)
+  :type penumbra: float, optional, default 0
+  :param decay: Light falloff rate with distance
+  :type decay: float, optional, default 2
+  :param helper: Show visual helper for debugging
+  :type helper: bool, optional, default False
+  :param hide: Hide the light
+  :type hide: bool, optional, default False
+
+  Example Usage::
+
+      from vuer.schemas import SpotLight
+      import math
+
+      # Simple spotlight
+      SpotLight(
+          position=[0, 3, 0],
+          key="spot1"
+      )
+
+      # Focused spotlight with soft edges
+      SpotLight(
+          position=[2, 4, 2],
+          angle=math.pi / 6,  # 30 degrees
+          penumbra=0.5,
+          intensity=1.5,
+          key="spot2"
+      )
+  """
   tag = "SpotLight"
 
 
 class AmbientLight(SceneElement):
+  """
+  Creates uniform ambient lighting from all directions.
+
+  Ambient lights illuminate all objects equally without shadows or directionality.
+  Use sparingly as too much ambient light can make scenes look flat.
+
+  :param color: Color of the light
+  :type color: str, optional, default "#ffffff"
+  :param intensity: Light intensity
+  :type intensity: float, optional, default 0.5
+  :param hide: Hide the light
+  :type hide: bool, optional, default False
+
+  Example Usage::
+
+      from vuer.schemas import AmbientLight
+
+      # Subtle ambient fill light
+      AmbientLight(
+          intensity=0.3,
+          key="ambient1"
+      )
+
+      # Warm ambient lighting
+      AmbientLight(
+          color="#FFF5E1",
+          intensity=0.4,
+          key="ambient2"
+      )
+  """
   tag = "AmbientLight"
 
 
@@ -1028,6 +1737,44 @@ class Arrow(SceneElement):
 
 
 class Ply(SceneElement):
+  """
+  Loads and displays PLY (Polygon File Format) 3D models.
+
+  PLY is a format for storing 3D point clouds and polygon meshes, commonly
+  used for 3D scanning data and computer graphics.
+
+  :param src: URL or path to the PLY file
+  :type src: str, optional
+  :param text: PLY file content as text string
+  :type text: str, optional
+  :param buff: Binary content of the PLY file
+  :type buff: bytes, optional
+  :param assets: Dictionary mapping texture names to blob URLs
+  :type assets: dict[str, str], optional
+  :param encoding: Text encoding for binary PLY files (default: "ascii")
+  :type encoding: str, optional
+  :param onLoad: Callback function or event name when model loads
+  :type onLoad: callable | str, optional
+  :param hide: Hide the model
+  :type hide: bool, optional, default False
+
+  Example Usage::
+
+      from vuer.schemas import Ply
+
+      # Load PLY from URL
+      Ply(
+          src="https://example.com/model.ply",
+          key="ply1"
+      )
+
+      # Load PLY with texture assets
+      Ply(
+          src="scan.ply",
+          assets={"texture.jpg": blob_url},
+          key="ply2"
+      )
+  """
   tag = "Ply"
 
 
@@ -1046,18 +1793,157 @@ class Glb(SceneElement):
 
 
 class Urdf(SceneElement):
+  """
+  Loads and displays a robot model from URDF (Unified Robot Description Format) file.
+
+  URDF is the standard format for describing robot kinematics and dynamics.
+  This component loads the URDF file and its associated mesh files (STL, DAE, OBJ, etc.)
+  to create a 3D visualization of the robot.
+
+  :param src: URL or path to the URDF file
+  :type src: str
+  :param text: URDF file content as text string (alternative to src)
+  :type text: str, optional
+  :param assets: Dictionary mapping file paths to blob URLs for mesh assets
+  :type assets: dict[str, str], optional
+  :param workingPath: Base path for resolving relative paths in URDF
+  :type workingPath: str, optional
+  :param jointValues: Dictionary of joint names to angles/positions for setting robot pose
+  :type jointValues: dict[str, float], optional
+  :param parseVisual: Parse visual geometry elements
+  :type parseVisual: bool, optional, default True
+  :param parseCollision: Parse collision geometry elements
+  :type parseCollision: bool, optional, default False
+  :param packages: ROS package path resolution (string path or dict mapping)
+  :type packages: str | dict[str, str], optional
+  :param color: Override color for all meshes
+  :type color: str, optional
+  :param material: Material properties for robot meshes
+  :type material: dict, optional
+  :param materialType: Type of material ("physical", "standard", etc.)
+  :type materialType: str, optional
+
+  Example Usage::
+
+      from vuer.schemas import Urdf
+
+      # Load URDF from URL
+      Urdf(
+          src="https://example.com/robot.urdf",
+          key="robot1"
+      )
+
+      # Load URDF with joint configuration
+      Urdf(
+          src="/path/to/robot.urdf",
+          jointValues={
+              "joint1": 0.5,
+              "joint2": -0.3,
+              "joint3": 1.2,
+          },
+          key="robot2"
+      )
+
+      # Load URDF with custom material
+      Urdf(
+          src="robot.urdf",
+          material=dict(
+              roughness=0.01,
+              metalness=0.2,
+              color="#cccccc"
+          ),
+          key="robot3"
+      )
+  """
   tag = "Urdf"
 
 
 class Gripper(SceneElement):
+  """
+  Creates a 3D robot gripper visualization with two parallel jaws.
+
+  The gripper is rendered as a cylindrical body with two opposing jaw assemblies
+  (left: blue, right: red). Useful for robotics visualization and teleoperation.
+
+  :param color: Base color for the gripper body
+  :type color: str, optional
+  :param pinchWidth: Half-distance between gripper jaws (default: 0.04)
+  :type pinchWidth: float, optional
+  :param skeleton: Use skeletal (simplified) gripper model instead
+  :type skeleton: bool, optional, default False
+  :param axes: Show coordinate axes helper at gripper origin
+  :type axes: bool, optional, default False
+  :param showOrigin: Show green sphere at gripper origin point
+  :type showOrigin: bool, optional, default True
+  :param hide: Hide the gripper visualization
+  :type hide: bool, optional, default False
+
+  Example Usage::
+
+      from vuer.schemas import Gripper
+
+      # Simple gripper
+      Gripper(key="gripper1")
+
+      # Gripper with custom jaw width
+      Gripper(pinchWidth=0.06, key="gripper2")
+
+      # Gripper with axes and custom color
+      Gripper(
+          color="#ff0000",
+          axes=True,
+          showOrigin=True,
+          key="gripper3"
+      )
+  """
   tag = "Gripper"
 
 
 class SkeletalGripper(SceneElement):
+  """
+  Creates a simplified skeletal gripper visualization.
+
+  A lightweight version of the Gripper component with simplified geometry,
+  useful for performance-critical applications or when many grippers need
+  to be rendered simultaneously.
+
+  :param color: Color for the gripper
+  :type color: str, optional
+  :param pinchWidth: Half-distance between gripper jaws (default: 0.04)
+  :type pinchWidth: float, optional
+  :param hide: Hide the gripper visualization
+  :type hide: bool, optional, default False
+
+  Example Usage::
+
+      from vuer.schemas import SkeletalGripper
+
+      # Simple skeletal gripper
+      SkeletalGripper(key="skel-gripper1")
+
+      # Skeletal gripper with custom width
+      SkeletalGripper(pinchWidth=0.05, key="skel-gripper2")
+  """
   tag = "SkeletalGripper"
 
 
 class Grid(SceneElement):
+  """
+  Creates a ground reference grid for spatial orientation.
+
+  Displays a grid on the ground plane (XZ plane) to help visualize scale,
+  position, and orientation in 3D space. Commonly used as a background element.
+
+  Example Usage::
+
+      from vuer.schemas import Grid, DefaultScene
+
+      # Grid is included by default in DefaultScene
+      DefaultScene(grid=True)
+
+      # Manual grid placement
+      Grid(key="custom-grid")
+  """
   tag = "Grid"
 
 
