@@ -79,6 +79,51 @@ class mesh(SceneElement):
 
 
 class TriMesh(SceneElement):
+  """
+  Triangle mesh component for custom 3D geometry.
+
+  Allows creation of arbitrary triangle meshes by specifying vertices, faces,
+  colors, and UV coordinates. Useful for custom geometry or procedurally
+  generated meshes.
+
+  :param vertices: Vertex positions as Nx3 array [x, y, z]
+  :type vertices: NDArray[np.float16]
+  :param faces: Triangle face indices as Nx3 array
+  :type faces: NDArray[np.uint32]
+  :param colors: Vertex colors as Nx3 array [r, g, b] (0-255)
+  :type colors: NDArray[np.uint8], optional
+  :param uv: UV texture coordinates as Nx2 array
+  :type uv: NDArray[np.float16], optional
+  :param children: Child elements
+  :type children: list, optional
+
+  Example Usage::
+
+      from vuer.schemas import TriMesh
+      import numpy as np
+
+      # Simple triangle
+      vertices = np.array([
+          [0, 0, 0],
+          [1, 0, 0],
+          [0.5, 1, 0]
+      ], dtype=np.float16)
+
+      faces = np.array([[0, 1, 2]], dtype=np.uint32)
+
+      colors = np.array([
+          [255, 0, 0],
+          [0, 255, 0],
+          [0, 0, 255]
+      ], dtype=np.uint8)
+
+      TriMesh(
+          vertices=vertices,
+          faces=faces,
+          colors=colors,
+          key="triangle"
+      )
+  """
   tag = "TriMesh"
   children = []
 
@@ -821,79 +866,357 @@ class CameraView(SceneElement):
 
 
 class SceneBackground(Image, SceneElement):
-  """Sets the background of the scene to a static image. Does not work well
-  with high frame rates. For displaying movies, use the ImageBackground element.
+  """
+  Sets the background of the scene to a static image or texture.
+
+  Uses Three.js scene.background property to display an environment image.
+  Suitable for static backgrounds like skyboxes or HDRI environments.
+  For video backgrounds or high frame rate updates, use ImageBackground instead.
+
+  :param src: URL or path to the background image
+  :type src: str
+  :param backgroundIntensity: Intensity multiplier for the background (used in path tracing)
+  :type backgroundIntensity: float, optional, default -0.5
+  :param backgroundBlurriness: Blur amount for the background (0-1)
+  :type backgroundBlurriness: float, optional, default 0.0
+
+  Example Usage::
+
+      from vuer.schemas import SceneBackground
+
+      # Simple image background
+      SceneBackground(
+          src="https://example.com/skybox.jpg",
+          key="bg1"
+      )
+
+      # HDRI environment with blur
+      SceneBackground(
+          src="studio.hdr",
+          backgroundBlurriness=0.3,
+          key="bg2"
+      )
   """
 
   tag = "SceneBackground"
 
 
 class ImageBackground(Image, SceneElement):
-  """Sets the background of the scene to an image, Supports high frame rates.
+  """
+  Sets the background to a dynamically updating image plane.
 
-  We use a plane that is always facing the camera to display the image.
+  Uses a camera-facing plane to display images, supporting high frame rates
+  and video streams. The plane always faces the camera to maintain the background effect.
+
+  :param src: URL or path to the background image/video
+  :type src: str
+  :param distance: Distance from camera to the background plane
+  :type distance: float, optional
+  :param scale: Scale of the background plane
+  :type scale: float, optional
+
+  Example Usage::
+
+      from vuer.schemas import ImageBackground
+
+      # Static image background
+      ImageBackground(
+          src="background.jpg",
+          key="bg1"
+      )
+
+      # Video background
+      ImageBackground(
+          src="background_video.mp4",
+          key="bg2"
+      )
   """
 
   tag = "ImageBackground"
 
 
 class HUDPlane(Image, SceneElement):
-  """A Head-up display (HUD) plane that is always facing the camera. Requires
-  mounting a material."""
+  """
+  Head-up display plane that always faces the camera.
+
+  Creates a plane that automatically orients itself to face the camera,
+  similar to a billboard. Useful for UI elements, annotations, or information
+  displays that should always be visible to the user.
+
+  :param distanceToCamera: Distance from camera to the plane
+  :type distanceToCamera: float, optional, default 10
+  :param aspect: Aspect ratio (width/height) of the plane
+  :type aspect: float, optional
+  :param height: Height of the plane in world units
+  :type height: float, optional
+  :param position: Position [x, y, z] offset from camera
+  :type position: tuple[float, float, float], optional
+  :param rotation: Rotation [x, y, z] in radians
+  :type rotation: tuple[float, float, float], optional
+  :param fixed: Whether the plane stays fixed in screen space
+  :type fixed: bool, optional, default False
+  :param layers: Render layer for VR/AR contexts
+  :type layers: int, optional
+
+  Example Usage::
+
+      from vuer.schemas import HUDPlane
+
+      # Simple HUD plane
+      HUDPlane(
+          distanceToCamera=5,
+          height=1,
+          key="hud1"
+      )
+  """
 
   tag = "HUDPlane"
 
 
 class VideoMaterial(Image, SceneElement):
-  """A Video Material for loading from a file hosted at a url."""
+  """
+  Material for displaying video from a URL.
+
+  Loads video from a file or URL and creates a material that can be
+  applied to meshes. The video plays automatically when loaded.
+
+  :param src: URL or path to the video file
+  :type src: str
+  :param loop: Whether to loop the video
+  :type loop: bool, optional, default True
+  :param autoplay: Start playing automatically
+  :type autoplay: bool, optional, default True
+
+  Example Usage::
+
+      from vuer.schemas import VideoMaterial
+
+      VideoMaterial(
+          src="video.mp4",
+          loop=True,
+          key="video-mat"
+      )
+  """
 
   tag = "VideoMaterial"
 
 
 class WebRTCVideoMaterial(Image, SceneElement):
-  """A Video Material for loading from a media stream."""
+  """
+  Material for displaying real-time video from WebRTC media stream.
+
+  Creates a material that displays live video from a WebRTC connection,
+  useful for video conferencing, camera feeds, or screen sharing.
+
+  :param stream: WebRTC media stream ID or configuration
+  :type stream: str | dict
+
+  Example Usage::
+
+      from vuer.schemas import WebRTCVideoMaterial
+
+      WebRTCVideoMaterial(
+          stream="camera-stream",
+          key="webrtc-mat"
+      )
+  """
 
   tag = "WebRTCVideoMaterial"
 
 
 class VideoPlane(Image, SceneElement):
-  """A Head-up display (HUD) plane that is always facing the camera. Requires
-  mounting a material."""
+  """
+  Plane for displaying video content that faces the camera.
+
+  Combines HUDPlane behavior with video playback. The plane automatically
+  faces the camera and displays video from a file or URL.
+
+  :param src: URL or path to the video file
+  :type src: str
+  :param distanceToCamera: Distance from camera to the video plane
+  :type distanceToCamera: float, optional, default 10
+  :param height: Height of the video plane
+  :type height: float, optional
+  :param loop: Whether to loop the video
+  :type loop: bool, optional, default True
+  :param autoplay: Start playing automatically
+  :type autoplay: bool, optional, default True
+
+  Example Usage::
+
+      from vuer.schemas import VideoPlane
+
+      VideoPlane(
+          src="video.mp4",
+          distanceToCamera=5,
+          height=2,
+          key="video1"
+      )
+  """
 
   tag = "VideoPlane"
 
 
 class WebRTCVideoPlane(SceneElement):
-  """A Head-up display (HUD) plane that is always facing the camera. Requires
-  mounting a material."""
+  """
+  Plane for displaying WebRTC video stream that faces the camera.
+
+  Displays real-time video from WebRTC on a camera-facing plane.
+  Ideal for video calls, live camera feeds, or screen sharing.
+
+  :param stream: WebRTC media stream ID or configuration
+  :type stream: str | dict
+  :param distanceToCamera: Distance from camera to the plane
+  :type distanceToCamera: float, optional, default 10
+  :param height: Height of the video plane
+  :type height: float, optional
+
+  Example Usage::
+
+      from vuer.schemas import WebRTCVideoPlane
+
+      WebRTCVideoPlane(
+          stream="camera-feed",
+          distanceToCamera=3,
+          height=1.5,
+          key="webrtc-video"
+      )
+  """
 
   tag = "WebRTCVideoPlane"
 
 
 class StereoVideoPlane(Image, SceneElement):
-  """A Head-up display (HUD) plane that is always facing the camera. Requires
-  mounting a material."""
+  """
+  Plane for displaying stereoscopic (3D) video content.
+
+  Displays side-by-side or top-bottom stereoscopic video for VR applications.
+  Each eye sees the appropriate half of the video for 3D effect.
+
+  :param src: URL or path to the stereoscopic video file
+  :type src: str
+  :param distanceToCamera: Distance from camera to the plane
+  :type distanceToCamera: float, optional, default 10
+  :param height: Height of the video plane
+  :type height: float, optional
+  :param layout: Stereo layout ("side-by-side" or "top-bottom")
+  :type layout: str, optional, default "side-by-side"
+
+  Example Usage::
+
+      from vuer.schemas import StereoVideoPlane
+
+      StereoVideoPlane(
+          src="stereo_video.mp4",
+          layout="side-by-side",
+          key="stereo-video"
+      )
+  """
 
   tag = "StereoVideoPlane"
 
 
 class WebRTCStereoVideoPlane(SceneElement):
-  """A Head-up display (HUD) plane that is always facing the camera. Requires
-  mounting a material."""
+  """
+  Plane for displaying stereoscopic WebRTC video stream.
+
+  Combines WebRTC streaming with stereoscopic video display for
+  real-time 3D video in VR applications.
+
+  :param stream: WebRTC media stream ID or configuration
+  :type stream: str | dict
+  :param distanceToCamera: Distance from camera to the plane
+  :type distanceToCamera: float, optional, default 10
+  :param height: Height of the video plane
+  :type height: float, optional
+  :param layout: Stereo layout ("side-by-side" or "top-bottom")
+  :type layout: str, optional, default "side-by-side"
+
+  Example Usage::
+
+      from vuer.schemas import WebRTCStereoVideoPlane
+
+      WebRTCStereoVideoPlane(
+          stream="stereo-camera",
+          layout="side-by-side",
+          key="webrtc-stereo"
+      )
+  """
 
   tag = "WebRTCStereoVideoPlane"
 
 
-# class ImagePlane(Image, SceneElement):
-#     """For displaying a static image. Just pass in an image object to the first argument."
-#
-#     Untested, not taking in images right now.
-#     ""
-#
-#     tag = "ImagePlane"
+class ImagePlane(Image, SceneElement):
+    """
+    Displays a static image on a plane in 3D space.
+
+    Creates a textured plane for displaying images at specific positions and orientations
+    in the 3D scene. Unlike ImageBackground, this plane has a fixed position in world space.
+
+    :param src: URL or path to the image file
+    :type src: str
+    :param position: Position [x, y, z] of the image plane
+    :type position: tuple[float, float, float], optional
+    :param rotation: Rotation [x, y, z] in radians
+    :type rotation: tuple[float, float, float], optional
+    :param scale: Scale of the image plane
+    :type scale: float | tuple[float, float, float], optional
+    :param opacity: Transparency of the image (0-1)
+    :type opacity: float, optional, default 1.0
+
+    Example Usage::
+
+        from vuer.schemas import ImagePlane
+
+        # Simple image plane
+        ImagePlane(
+            src="image.png",
+            position=[0, 1, -2],
+            key="img1"
+        )
+
+        # Rotated and scaled image
+        ImagePlane(
+            src="poster.jpg",
+            position=[2, 1.5, -1],
+            rotation=[0, 0.5, 0],
+            scale=2,
+            key="img2"
+        )
+    """
+
+    tag = "ImagePlane"
 
 
 class Group(SceneElement):
+  """
+  Container for grouping multiple 3D objects together.
+
+  Groups allow you to transform (move, rotate, scale) multiple objects as a single unit.
+  Changes to the group's position, rotation, or scale affect all children.
+
+  :param position: Position [x, y, z] of the group origin
+  :type position: tuple[float, float, float], optional
+  :param rotation: Rotation [x, y, z] in radians
+  :type rotation: tuple[float, float, float], optional
+  :param scale: Scale of the group
+  :type scale: float | tuple[float, float, float], optional
+  :param children: Child elements to include in the group
+  :type children: list, optional
+
+  Example Usage::
+
+      from vuer.schemas import Group, Box, Sphere
+
+      # Group multiple objects
+      Group(
+          Box(position=[-0.5, 0, 0], key="box1"),
+          Sphere(position=[0.5, 0, 0], key="sphere1"),
+          position=[0, 1, 0],
+          rotation=[0, 0.5, 0],
+          key="group1"
+      )
+  """
   tag = "VuerGroup"
 
 
@@ -1259,6 +1582,32 @@ class Html(SceneElement):
 
 
 class Pivot(SceneElement):
+  """
+  Creates a pivot point for rotation and transformation.
+
+  A Pivot acts as a transformation anchor, allowing objects to rotate
+  around a specific point rather than their own center. Useful for
+  mechanical joints, doors, or any object that rotates around an axis.
+
+  :param position: Position [x, y, z] of the pivot point
+  :type position: tuple[float, float, float], optional
+  :param rotation: Initial rotation [x, y, z] in radians
+  :type rotation: tuple[float, float, float], optional
+  :param children: Child elements that rotate around this pivot
+  :type children: list, optional
+
+  Example Usage::
+
+      from vuer.schemas import Pivot, Box
+
+      # Door rotating around left edge
+      Pivot(
+          Box(position=[0.5, 0, 0], args=(1, 2, 0.1), key="door"),
+          position=[-2, 0, 0],
+          rotation=[0, 1.57, 0],  # 90 degrees open
+          key="door-pivot"
+      )
+  """
   tag = "Pivot"
 
 
@@ -1948,20 +2297,45 @@ class Grid(SceneElement):
 
 
 class GrabRender(SceneElement):
+  """
+  Captures the current rendered frame from the canvas.
+
+  A singleton component that grabs the current frame buffer and sends it
+  to the Python backend. Useful for capturing screenshots or implementing
+  custom rendering pipelines.
+
+  This component is a singleton and should only be instantiated once per scene.
+  The key is automatically set to "DEFAULT".
+
+  Example Usage::
+
+      from vuer.schemas import GrabRender
+
+      # Add to scene to enable frame capture
+      GrabRender()
+  """
   tag = "GrabRender"
   key = "DEFAULT"
-  """We do not want the client to set keys automatically since GrabRender is 
-    usually used a singleton component as default."""
 
 
 class TimelineControls(SceneElement):
   tag = "TimelineControls"
-  # todo: consider adding default component keys here.
 
 
 class PointerControls(SceneElement):
+  """
+  Enables pointer-based interaction with scene objects.
+
+  Provides mouse/touch pointer controls for selecting and interacting
+  with objects in the scene. Works with Clickable and Movable components.
+
+  Example Usage::
+
+      from vuer.schemas import PointerControls
+
+      PointerControls(key="pointer-controls")
+  """
   tag = "PointerControls"
-  # todo: consider adding default component keys here.
 
 
 class RandomizedLight(SceneElement):
@@ -2292,6 +2666,87 @@ class Text3D(SceneElement):
       letterSpacing=letterSpacing,
       **kwargs,
     )
+
+
+class BackgroundColor(SceneElement):
+  """
+  Sets a solid color background for the scene.
+
+  Changes the scene background to a uniform color. This is the simplest
+  way to set a background and has minimal performance impact.
+
+  :param color: Hex color string for the background
+  :type color: str, optional, default "#131416"
+
+  Example Usage::
+
+      from vuer.schemas import BackgroundColor
+
+      # Dark background
+      BackgroundColor(color="#131416", key="bg")
+
+      # White background
+      BackgroundColor(color="#ffffff", key="bg")
+
+      # Custom color
+      BackgroundColor(color="#4A90E2", key="bg")
+  """
+  tag = "BackgroundColor"
+
+  def __init__(self, color="#131416", **kwargs):
+    super().__init__(color=color, **kwargs)
+
+
+class BBox(SceneElement):
+  """
+  Renders a bounding box visualization using edge geometry.
+
+  Displays a wireframe box defined by minimum and maximum corner points.
+  Useful for visualizing spatial bounds, collision boxes, or regions of interest.
+
+  :param min: Minimum corner coordinates {x, y, z}
+  :type min: dict, optional, default {"x": -1, "y": -1, "z": -1}
+  :param max: Maximum corner coordinates {x, y, z}
+  :type max: dict, optional, default {"x": 1, "y": 1, "z": 1}
+  :param color: Color of the bounding box edges
+  :type color: str, optional, default "0xffffff"
+  :param scale: Scale factor for the edges
+  :type scale: float, optional, default 1.01
+
+  Example Usage::
+
+      from vuer.schemas import BBox
+
+      # Simple bounding box
+      BBox(
+          min={"x": -1, "y": 0, "z": -1},
+          max={"x": 1, "y": 2, "z": 1},
+          key="bbox1"
+      )
+
+      # Colored bounding box
+      BBox(
+          min={"x": -2, "y": -2, "z": -2},
+          max={"x": 2, "y": 2, "z": 2},
+          color="0xff0000",
+          key="bbox2"
+      )
+  """
+  tag = "BBox"
+
+  def __init__(
+    self,
+    min=None,
+    max=None,
+    color="0xffffff",
+    scale=1.01,
+    **kwargs
+  ):
+    if min is None:
+      min = {"x": -1, "y": -1, "z": -1}
+    if max is None:
+      max = {"x": 1, "y": 1, "z": 1}
+    super().__init__(min=min, max=max, color=color, scale=scale, **kwargs)
 
 
 class Scene(BlockElement):
