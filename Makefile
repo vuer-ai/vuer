@@ -1,4 +1,10 @@
-.PHONY: docs preview test clean clear
+.PHONY: docs preview test clean clear clean-tags release-docs build publish-pypi release version
+
+# Extract version from pyproject.toml
+VERSION := $(shell grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+
+version:
+	@echo "Current version: $(VERSION)"
 
 docs:
 	uv run sphinx-build -M html docs docs/_build
@@ -14,3 +20,26 @@ clean:
 
 clear:
 	rm -rf docs/_build
+
+# Documentation release (ReadTheDocs)
+clean-tags:
+	-git tag -d v$(VERSION)
+	-git push origin --delete v$(VERSION)
+
+release-docs: clean-tags
+	@echo "Releasing documentation version: $(VERSION)"
+	git push
+	git tag v$(VERSION) -m '$(MSG)'
+	git tag -f latest
+	git push origin v$(VERSION)
+	git push origin latest --force
+
+# Package release (PyPI)
+build: clean
+	uv build
+
+publish-pypi: build
+	uv publish --token $$UV_PYPI_TOKEN
+
+# Full release (both docs and package)
+release: release-docs publish-pypi
