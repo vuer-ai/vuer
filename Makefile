@@ -23,11 +23,20 @@ clear:
 
 # Documentation release (ReadTheDocs)
 clean-tags:
-	-git tag -d v$(VERSION)
-	-git push origin --delete v$(VERSION)
+	@if git rev-parse v$(VERSION) >/dev/null 2>&1; then \
+		echo "Removing existing tag v$(VERSION)..."; \
+		git tag -d v$(VERSION); \
+		git push origin --delete v$(VERSION) 2>/dev/null || true; \
+	else \
+		echo "Tag v$(VERSION) does not exist, skipping cleanup"; \
+	fi
 
 release-docs: clean-tags
 	@echo "Releasing documentation version: $(VERSION)"
+	@if [ -z "$(MSG)" ]; then \
+		echo "Error: MSG is required. Usage: make release-docs MSG='your message'"; \
+		exit 1; \
+	fi
 	git push
 	git tag v$(VERSION) -m '$(MSG)'
 	git tag -f latest
