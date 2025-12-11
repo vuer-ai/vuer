@@ -1,8 +1,8 @@
-# Static File Serving & Cache Control
+# Static File Serving & Hot Loading
 
 ## Overview
 
-Vuer includes a built-in static file server that allows you to serve 3D models, textures, and other assets alongside your visualization. Understanding how to configure static file serving and manage browser caching is essential for efficient development and deployment.
+Vuer includes a built-in static file server that allows you to serve 3D models, textures, and other assets alongside your visualization. This guide covers how to configure static file serving and use **hot loading** for assets that change frequently during development.
 
 ## Static File Configuration
 
@@ -63,160 +63,139 @@ async def main(session: VuerSession):
     await session.forever()
 ```
 
-## Browser Cache Control
+## Hot Loading with `?hot`
 
-### The Problem: Stale Assets During Development
+### What is Hot Loading?
 
-During development, when you modify static files (e.g., update a 3D model or texture), browsers may continue using cached versions. This means you won't see your changes immediately without manually clearing the cache (Ctrl+F5).
+In Vuer, **hot loading** is a concept for handling assets that change frequently during development. When you mark an asset as "hot", Vuer treats it as dynamic content that should always reflect the latest version from disk.
 
-### The Solution: `?noCache` Parameter
+Think of hot loading as telling Vuer:
+> *"This asset is actively being edited. Always show me the newest version."*
 
-Vuer provides a simple and efficient cache control mechanism using the `?noCache` query parameter. When appended to any static file URL, it forces the browser to revalidate the file on every request.
+This is especially useful when:
+- Iteratively refining 3D models, textures, or materials
+- Experimenting with different asset variations
+- Debugging asset-related issues
 
-**Usage:**
+### Using Hot URLs
+
+To mark an asset as hot, append `?hot` to its URL:
 
 ```python
-# Development mode - always check for updates
+# Development: Hot loading for frequently changing assets
 session.upsert @ Obj(
     key="model",
-    src="/static/model.obj?noCache",
-    mtl="/static/model.mtl?noCache"
+    src="/static/model.obj?hot",
+    mtl="/static/model.mtl?hot"
 )
 
 # Or with textures
 session.upsert @ ImageBackground(
-    src="/static/environment.jpg?noCache"
+    src="/static/environment.jpg?hot"
 )
 ```
 
-### How `?noCache` Works
+### Hot URL Syntax
 
-The `noCache` parameter can appear anywhere in the query string. The only restriction is that its value must not equal `false`.
+The `?hot` parameter can appear anywhere in the query string:
 
-**Valid formats:**
 ```
-/static/model.obj?noCache           ✅ Works
-/static/model.obj?noCache&foo=bar   ✅ Works (any position)
-/static/model.obj?foo=bar&noCache   ✅ Works (any position)
-/static/model.obj?noCache=true      ✅ Works
-/static/model.obj?noCache=1         ✅ Works (any non-false value)
+/static/model.obj?hot              ✅ Works
+/static/model.obj?hot&debug=true   ✅ Works (any position)
+/static/model.obj?v=1&hot          ✅ Works (any position)
 ```
 
-**Invalid format:**
+To explicitly disable hot loading, set it to `false`:
+
 ```
-/static/model.obj?noCache=false     ❌ Doesn't work (explicitly disabled)
+/static/model.obj?hot=false        ❌ Hot loading disabled
 ```
 
-When `noCache` is correctly specified:
+### How Hot Loading Works
 
-1. **Server Response:** The server sets `Cache-Control: no-cache` in the HTTP headers
-2. **Browser Behavior:** The browser MUST validate the file with the server on every request
-3. **Efficient Bandwidth:** If the file hasn't changed, the server returns `304 Not Modified` (no file transfer)
-4. **Instant Updates:** When you modify the file, the browser immediately receives the new version
+When an asset is marked as hot:
 
-### Production vs Development
+1. **Loader behavior:** Vuer tells the browser to always check for updates
+2. **Instant updates:** When you save changes to the file, they appear immediately
+3. **Efficient:** Unchanged files are not re-downloaded (uses HTTP 304 responses)
 
-**Development Mode (with `?noCache`):**
+This creates a smooth development experience where your changes are reflected instantly without manual page refreshes or cache clearing.
+
+## Development vs Production
+
+### Development Mode (Hot Assets)
+
+During development, mark assets you're actively editing as hot:
+
 ```python
 @app.spawn(start=True)
 async def main(session: VuerSession):
     session.set @ DefaultScene(
+        # Hot loading for assets being actively edited
         Obj(
             key="robot",
-            src="/static/robot.obj?noCache",  # Always fresh
-            mtl="/static/robot.mtl?noCache"
+            src="/static/robot.obj?hot",
+            mtl="/static/robot.mtl?hot"
         )
     )
 ```
 
-**Production Mode (without `?noCache`):**
+### Production Mode (Static Assets)
+
+In production, omit the `?hot` parameter to allow efficient browser caching:
+
 ```python
 @app.spawn(start=True)
 async def main(session: VuerSession):
     session.set @ DefaultScene(
+        # Standard loading with browser caching
         Obj(
             key="robot",
-            src="/static/robot.obj",  # Browser can cache
+            src="/static/robot.obj",
             mtl="/static/robot.mtl"
         )
     )
 ```
 
-### Why Not Timestamp or Hash Parameters?
+## Pattern: Conditional Hot Loading
 
-You might wonder why we use `?noCache` instead of common alternatives like `?ts=<timestamp>` or `?hash=<content-hash>`. Here's the reasoning:
-
-**Problems with `?ts=<timestamp>`:**
-- Changes URL even when file content hasn't changed
-- Forces complete re-downloads instead of efficient 304 responses
-- Requires server restart to update timestamps
-- Unnecessarily invalidates browser cache for unchanged files
-
-**Problems with `?hash=<content-hash>`:**
-- Requires reading and hashing every file at server startup
-- For large scenes (e.g., MJCF models with hundreds of assets), this means hundreds of disk reads
-- Significantly slows server initialization
-- Most assets rarely change, making this overhead wasteful
-
-**Benefits of `?noCache`:**
-- ✅ **Zero overhead:** No file reading or hashing required
-- ✅ **Instant updates:** Browser detects changes immediately
-- ✅ **Efficient bandwidth:** 304 Not Modified responses when files haven't changed
-- ✅ **Simple implementation:** Just one HTTP header
-- ✅ **Predictable URLs:** Same URL works consistently, easier to debug
-
-The browser automatically detects file changes through the `ETag` header (which is based on file modification time and size), so you get instant updates without the complexity of URL manipulation.
-
-## Complete Example
-
-Here's a complete example showing static file configuration and cache control:
+You can conditionally enable hot loading based on your environment:
 
 ```python
 from pathlib import Path
 from vuer import Vuer, VuerSession
-from vuer.schemas import DefaultScene, Obj, Pcd, ImageBackground
+from vuer.schemas import DefaultScene, Obj, Pcd
 
-# Configure static file serving
-app = Vuer(
-    static_root=Path(__file__).parent / "assets",
-    port=8012
-)
+app = Vuer(static_root=Path(__file__).parent / "assets")
 
 @app.spawn(start=True)
 async def main(session: VuerSession):
     # Determine if in development mode
-    DEV_MODE = True  # Set to False for production
+    DEV_MODE = True  # Toggle based on your environment
 
-    # Helper function to add ?noCache in dev mode
-    def static_url(path: str) -> str:
-        return f"{path}?noCache" if DEV_MODE else path
+    # Helper function to create hot URLs in dev mode
+    def asset(path: str) -> str:
+        """Mark asset as hot in development mode."""
+        return f"{path}?hot" if DEV_MODE else path
 
     session.set @ DefaultScene(
-        # 3D Model
         Obj(
             key="robot",
-            src=static_url("/static/models/robot.obj"),
-            mtl=static_url("/static/models/robot.mtl")
+            src=asset("/static/models/robot.obj"),
+            mtl=asset("/static/models/robot.mtl")
         ),
-
-        # Point Cloud
         Pcd(
             key="scan",
-            src=static_url("/static/scans/room.ply")
-        ),
-
-        # Background Image
-        ImageBackground(
-            src=static_url("/static/backgrounds/sky.jpg")
+            src=asset("/static/scans/room.ply")
         )
     )
 
     await session.forever()
 ```
 
-## Advanced: Conditional Cache Control
+### Using Environment Variables
 
-For more control, you can conditionally enable `?noCache` based on environment variables:
+For more flexibility, use environment variables to control hot loading:
 
 ```python
 import os
@@ -225,23 +204,20 @@ from vuer.schemas import DefaultScene, Obj
 
 app = Vuer(static_root="./assets")
 
-# Check environment
+# Check if running in production
 IS_PRODUCTION = os.getenv("PRODUCTION", "false").lower() == "true"
 
-def asset_url(path: str) -> str:
-    """Generate asset URL with appropriate cache control."""
-    if IS_PRODUCTION:
-        return path
-    else:
-        return f"{path}?noCache"
+def asset(path: str) -> str:
+    """Generate asset URL with hot loading in development."""
+    return path if IS_PRODUCTION else f"{path}?hot"
 
 @app.spawn(start=True)
 async def main(session: VuerSession):
     session.set @ DefaultScene(
         Obj(
             key="model",
-            src=asset_url("/static/model.obj"),
-            mtl=asset_url("/static/model.mtl")
+            src=asset("/static/model.obj"),
+            mtl=asset("/static/model.mtl")
         )
     )
 
@@ -250,21 +226,92 @@ async def main(session: VuerSession):
 
 Then run with:
 ```bash
-# Development (with hot reload)
+# Development (with hot loading)
 python my_app.py
 
-# Production (with caching)
+# Production (standard loading)
 PRODUCTION=true python my_app.py
+```
+
+## Understanding Hot vs Static Assets
+
+### Hot Assets (`?hot`)
+- **Use for:** Assets you're actively editing
+- **Behavior:** Always reflect latest version from disk
+- **Performance:** Minimal overhead (uses HTTP 304 for unchanged files)
+- **Example:** Model you're refining in Blender, texture you're adjusting
+
+### Static Assets (no parameter)
+- **Use for:** Stable assets that rarely change
+- **Behavior:** Browser caches efficiently
+- **Performance:** Optimal (no server requests after initial load)
+- **Example:** Final models, published textures, shared assets
+
+## Best Practices
+
+1. **Development workflow:**
+   - Mark assets as `?hot` while actively editing them
+   - Remove `?hot` once assets are finalized
+
+2. **Performance:**
+   - Don't mark all assets as hot—only those you're currently working on
+   - Static assets load faster and reduce server load
+
+3. **Team collaboration:**
+   - Use environment variables to automatically enable hot loading in development
+   - This prevents accidentally deploying hot URLs to production
+
+4. **Debugging:**
+   - If you don't see changes, verify the asset has `?hot` in the URL
+   - Check the browser network tab to confirm the file is being fetched
+
+## Complete Example
+
+Here's a complete example showing hot loading for development:
+
+```python
+from pathlib import Path
+from vuer import Vuer, VuerSession
+from vuer.schemas import DefaultScene, Obj, Pcd, ImageBackground
+
+app = Vuer(
+    static_root=Path(__file__).parent / "assets",
+    port=8012
+)
+
+@app.spawn(start=True)
+async def main(session: VuerSession):
+    session.set @ DefaultScene(
+        # Model you're actively refining - hot load
+        Obj(
+            key="robot",
+            src="/static/models/robot.obj?hot",
+            mtl="/static/models/robot.mtl?hot"
+        ),
+
+        # Stable point cloud - standard load
+        Pcd(
+            key="background-scan",
+            src="/static/scans/room.ply"
+        ),
+
+        # Texture you're tweaking - hot load
+        ImageBackground(
+            src="/static/backgrounds/sky.jpg?hot"
+        )
+    )
+
+    await session.forever()
 ```
 
 ## Summary
 
 - **`static_root`**: Configure where static files are served from
-- **`?noCache`**: Add to URLs during development for instant file updates
-- **Remove `?noCache`**: In production for better performance through browser caching
-- **Default behavior**: Without `?noCache`, browsers use heuristic caching with ETag validation
+- **`?hot`**: Mark frequently changing assets for instant updates
+- **Hot loading**: A development concept for assets that change often
+- **Production**: Remove `?hot` for optimal caching and performance
 
-This approach provides the best balance between development convenience and production performance.
+Hot loading provides a seamless development experience where your asset changes are instantly visible, without the complexity of build systems or manual cache management.
 
 ## See Also
 
