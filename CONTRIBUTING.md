@@ -84,107 +84,29 @@ vuer/
 
 ## Release Management
 
-The project uses Makefile commands for streamlined releases. Version is automatically extracted from `pyproject.toml`.
+Version is auto-extracted from `pyproject.toml`. Use Makefile commands for releases.
 
-### Check Current Version
+### Quick Reference
 
 ```bash
+# Check version
 make version
-```
 
-Output: `Current version: 0.0.70`
+# Release docs (pushes tags only, not code)
+make release-docs                    # No message
+make release-docs MSG="description"  # With message
 
-### Release Documentation (ReadTheDocs)
+# Release package to PyPI
+UV_PYPI_TOKEN=xxx make publish-pypi
 
-Publishes documentation by creating git tags that trigger ReadTheDocs builds:
-
-```bash
-# Quick release (no message)
-make release-docs
-
-# With custom message (optional)
-make release-docs MSG="Fix critical documentation bug"
-```
-
-This will:
-1. Clean existing version tag (if any)
-2. Push code changes
-3. Create `v$(VERSION)` tag
-4. Update `latest` tag to point to new version
-5. Push tags to trigger ReadTheDocs build
-
-### Release Package (PyPI)
-
-Build and publish the Python package to PyPI:
-
-```bash
-# Set PyPI token
-export UV_PYPI_TOKEN=pypi-xxxxx
-
-# Build and publish
-make publish-pypi
-```
-
-Or in one line:
-```bash
-UV_PYPI_TOKEN=pypi-xxxxx make publish-pypi
-```
-
-This will:
-1. Clean build artifacts
-2. Build wheel and sdist
-3. Upload to PyPI
-
-### Full Release (Documentation + Package)
-
-Release both documentation and package in one command:
-
-```bash
-# Quick full release
-UV_PYPI_TOKEN=pypi-xxxxx make release
-
-# With custom message
-UV_PYPI_TOKEN=pypi-xxxxx make release MSG="Release v0.0.70"
+# Full release (docs + package)
+UV_PYPI_TOKEN=xxx make release
 ```
 
 ### Release Workflow
 
-1. **Make changes** to code/docs
-2. **Update version** in `pyproject.toml`:
-   ```toml
-   version = "0.0.71"
-   ```
-3. **Commit changes**:
-   ```bash
-   git commit -am "feat: add new feature"
-   ```
-4. **Release**:
-   ```bash
-   # Option 1: Release everything
-   UV_PYPI_TOKEN=xxx make release
+1. Update `version` in `pyproject.toml`
+2. Commit and push code changes
+3. Run release command(s) above
 
-   # Option 2: Release separately
-   make release-docs              # Publish docs
-   UV_PYPI_TOKEN=xxx make publish-pypi  # Publish package
-   ```
-
-### Available Make Commands
-
-| Command | Description |
-|---------|-------------|
-| `make version` | Show current version from pyproject.toml |
-| `make docs` | Build documentation locally |
-| `make preview` | Preview docs with live reload |
-| `make test` | Run test suite |
-| `make clean` | Remove all build artifacts |
-| `make build` | Build package (wheel + sdist) |
-| `make release-docs` | Release documentation to ReadTheDocs |
-| `make publish-pypi` | Build and publish package to PyPI |
-| `make release` | Full release (docs + package) |
-
-### Notes
-
-- Version is automatically read from `pyproject.toml` - no need to specify manually
-- The `latest` tag always points to the most recent version
-- Historical version tags (v0.0.69, v0.0.68, etc.) are preserved
-- MSG parameter is optional for all release commands
+**Note:** `make release-docs` only pushes git tags (v0.0.70 and latest), not branch code.

@@ -33,15 +33,14 @@ clean-tags:
 
 release-docs: clean-tags
 	@echo "Releasing documentation version: $(VERSION)"
-	git push
 	@if [ -z "$(MSG)" ]; then \
 		git tag v$(VERSION); \
 	else \
 		git tag v$(VERSION) -m '$(MSG)'; \
 	fi
 	git tag -f latest
-	git push origin v$(VERSION)
-	git push origin latest --force
+	git push origin v$(VERSION) latest --force
+	@echo "Documentation tags pushed successfully"
 
 # Package release (PyPI)
 build: clean
