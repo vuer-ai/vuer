@@ -25,15 +25,14 @@ clear:
 clean-tags:
 	-git tag -d v$(VERSION)
 	-git push origin --delete v$(VERSION)
-	-git tag -d latest
-	-git push origin --delete latest
 
 release-docs: clean-tags
 	@echo "Releasing documentation version: $(VERSION)"
 	git push
 	git tag v$(VERSION) -m '$(MSG)'
-	git tag latest
-	git push origin --tags -f
+	git tag -f latest
+	git push origin v$(VERSION)
+	git push origin latest --force
 
 # Package release (PyPI)
 build: clean
