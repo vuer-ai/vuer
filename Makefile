@@ -33,12 +33,12 @@ clean-tags:
 
 release-docs: clean-tags
 	@echo "Releasing documentation version: $(VERSION)"
-	@if [ -z "$(MSG)" ]; then \
-		echo "Error: MSG is required. Usage: make release-docs MSG='your message'"; \
-		exit 1; \
-	fi
 	git push
-	git tag v$(VERSION) -m '$(MSG)'
+	@if [ -z "$(MSG)" ]; then \
+		git tag v$(VERSION); \
+	else \
+		git tag v$(VERSION) -m '$(MSG)'; \
+	fi
 	git tag -f latest
 	git push origin v$(VERSION)
 	git push origin latest --force
