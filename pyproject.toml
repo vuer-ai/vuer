@@ -50,7 +50,7 @@ dev = [
     "furo",
     "sphinx-autobuild",
     "sphinx_copybutton",
-    "sphinxcontrib-video @ git+https://github.com/QuLogic/sphinxcontrib-video.git@634ce982244ae9fee29958524536f5288b49c5d5",
+    "sphinxcontrib-video>=0.4.1",
     "myst_parser",
     # these are very optional but needed for the doc site
     "trimesh",
@@ -67,17 +67,15 @@ vuer-docs-build = "sphinx.cmd.build:main"
 [tool.hatch.metadata]
 allow-direct-references = true
 
-[tool.hatch.build]
+[tool.hatch.build.targets.wheel]
 packages = ["src/vuer"]
 
-[tool.hatch.build.targets.wheel]
-
 [tool.hatch.build.targets.sdist]
-include = [
-    "src",
-    "*.md",
-    "*.toml",
+only-include = [
+    "src/vuer",
+    "README.md",
     "LICENSE",
+    "pyproject.toml",
 ]
 
 [dependency-groups]
@@ -92,7 +90,7 @@ dev = [
     "furo",
     "sphinx-autobuild",
     "sphinx_copybutton",
-    "sphinxcontrib-video @ git+https://github.com/QuLogic/sphinxcontrib-video.git@634ce982244ae9fee29958524536f5288b49c5d5",
+    "sphinxcontrib-video>=0.4.1",
     "myst_parser",
     "trimesh",
     "tqdm",
