@@ -1,4 +1,10 @@
-.PHONY: docs preview test clean clear clean-tags release-docs build publish-pypi release
+.PHONY: docs preview test clean clear clean-tags release-docs build publish-pypi release version
+
+# Extract version from pyproject.toml
+VERSION := $(shell grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+
+version:
+	@echo "Current version: $(VERSION)"
 
 docs:
 	uv run sphinx-build -M html docs docs/_build
@@ -23,6 +29,7 @@ clean-tags:
 	-git push origin --delete latest
 
 release-docs: clean-tags
+	@echo "Releasing documentation version: $(VERSION)"
 	git push
 	git tag v$(VERSION) -m '$(MSG)'
 	git tag latest
