@@ -32,7 +32,7 @@ pip install -U 'vuer[all]'
 ```
 
 Here is an example that loads a URDF file and displays it in the browser. For more examples, see the
-the [examples](https://docs.vuer.ai/en/latest/examples/01_trimesh.html) page.
+the [examples](https://docs.vuer.ai/en/latest/examples/meshes/mesh_loading.html) page.
 
 ```python
 from vuer import Vuer
