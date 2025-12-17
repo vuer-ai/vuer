@@ -8,7 +8,6 @@ from pathlib import Path
 
 import aiohttp_cors
 from aiohttp import web
-from params_proto import Proto
 
 
 async def default_handler(request, ws):
@@ -70,39 +69,11 @@ async def handle_file_request(request, root, filename=None):
 
 
 class Server:
-    """Base TCP server"""
+    """Base TCP server mixin - provides HTTP/WebSocket server methods.
 
-    host = Proto(env="HOST", default="localhost")
-    cors = Proto(help="Enable CORS", default="*")
-    port = Proto(env="PORT", default=8012)
-
-    cert = Proto(None, dtype=str, help="the path to the SSL certificate")
-    key = Proto(None, dtype=str, help="the path to the SSL key")
-    ca_cert = Proto(None, dtype=str, help="the trusted root CA certificates")
-
-    WEBSOCKET_MAX_SIZE: int = Proto(
-        2**28,
-        env="WEBSOCKET_MAX_SIZE",
-        help="maximum size for websocket requests.",
-    )
-    REQUEST_MAX_SIZE: int = Proto(
-        2**28,
-        env="REQUEST_MAX_SIZE",
-        help="maximum size for requests.",
-    )
-
-    def __post_init__(self):
-        self.app = web.Application(client_max_size=self.REQUEST_MAX_SIZE)
-
-        default = aiohttp_cors.ResourceOptions(
-            allow_credentials=True,
-            expose_headers="*",
-            allow_headers="*",
-            allow_methods="*",
-        )
-        cors_config = {k: default for k in self.cors.split(",")}
-
-        self.cors_context = aiohttp_cors.setup(self.app, defaults=cors_config)
+    This is a mixin class that provides server functionality. It does not
+    define any fields - subclasses should define their own configuration fields.
+    """
 
     def _add_route(
         self,
@@ -121,6 +92,7 @@ class Server:
     def _add_task(fn: Coroutine, name=None):
         loop = asyncio.get_running_loop()
         loop.create_task(fn, name=name)
+        return None
 
     def _add_static(self, path, root):
         _fn = partial(handle_file_request, root=root)

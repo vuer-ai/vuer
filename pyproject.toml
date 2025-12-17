@@ -14,7 +14,7 @@ classifiers = [
     "Programming Language :: Python",
 ]
 dependencies = [
-    "params-proto>=2.13.0",
+    "params-proto>=3.0.0rc6",
     "pillow",
     "msgpack",
     "numpy>=1.21", # because we require numpy.typing.NDArray

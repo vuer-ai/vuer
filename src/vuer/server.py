@@ -6,12 +6,14 @@ from pathlib import Path
 from typing import Callable, Deque, Dict, Union, cast
 from uuid import uuid4
 
+from aiohttp import web
 from aiohttp.hdrs import UPGRADE
 from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import Response
 from aiohttp.web_ws import WebSocketResponse
+import aiohttp_cors
 from msgpack import packb, unpackb
-from params_proto import Flag, PrefixProto, Proto
+from params_proto import proto
 from websockets import ConnectionClosedError
 
 from vuer.base import Server, handle_file_request, websocket_handler
@@ -448,7 +450,8 @@ class VuerSession:
 DEFAULT_PORT = 8012
 
 
-class Vuer(PrefixProto, Server):
+@proto.prefix
+class Vuer(Server):
   """Vuer Server
 
   This is the server for the Vuer client.
@@ -481,28 +484,56 @@ class Vuer(PrefixProto, Server):
   .. automethod:: run
   """
 
-  domain = Proto("https://vuer.ai", help="default url of web client")
-  host = Proto("localhost", help="set to 0.0.0.0 to enable remote connections")
-  port = Proto(DEFAULT_PORT, help="port to use")
-  free_port: bool = Flag("Kill what is running on the requested port if True.")
-  static_root: str = Proto(".", help="root for file serving")
-  """todo: we want to support multiple paths."""
-  queue_len: int = Proto(
-    100, help="use a max length to avoid the memory from blowing up."
-  )
-  cors = Proto(
-    "https://vuer.ai,https://staging.vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*",
-    help="domains that are allowed for cross origin requests.",
-  )
-  queries: Dict = Proto({}, help="query parameters to pass")
+  domain: str = "https://vuer.ai"  # Default URL of web client
+  host: str = "localhost"  # env: HOST - Set to 0.0.0.0 to enable remote connections
+  port: int = DEFAULT_PORT  # env: PORT - Port to use
+  free_port: bool = False  # Kill what is running on the requested port if True
+  static_root: str = "."  # Root for file serving
+  queue_len: int = 100  # Use a max length to avoid memory from blowing up
+  cors: str = "https://vuer.ai,https://staging.vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"  # Domains allowed for cross origin requests
+  queries: Dict = None  # Query parameters to pass
 
-  cert: str = Proto(None, dtype=str, help="the path to the SSL certificate")
-  key: str = Proto(None, dtype=str, help="the path to the SSL key")
-  ca_cert: str = Proto(None, dtype=str, help="the trusted root CA certificates")
+  cert: str = None  # Path to the SSL certificate
+  key: str = None  # Path to the SSL key
+  ca_cert: str = None  # Path to trusted root CA certificates
 
   client_root: Path = Path(__file__).parent / "client_build"
 
-  verbose = Flag("Print the settings if True.")
+  verbose: bool = False  # Print the settings if True
+
+  def _ensure_initialized(self):
+    """Lazy initialization for params-proto v3 compatibility."""
+    if hasattr(self, '_initialized'):
+      return None
+
+    # Set WEBSOCKET_MAX_SIZE and REQUEST_MAX_SIZE if not set
+    if not hasattr(self, 'WEBSOCKET_MAX_SIZE'):
+      self.WEBSOCKET_MAX_SIZE = 2**28
+    if not hasattr(self, 'REQUEST_MAX_SIZE'):
+      self.REQUEST_MAX_SIZE = 2**28
+
+    # Initialize Server base class attributes
+    self.app = web.Application(client_max_size=self.REQUEST_MAX_SIZE)
+
+    default = aiohttp_cors.ResourceOptions(
+        allow_credentials=True,
+        expose_headers="*",
+        allow_headers="*",
+        allow_methods="*",
+    )
+    if hasattr(self, 'cors'):
+      cors_config = {k: default for k in self.cors.split(",")}
+      self.cors_context = aiohttp_cors.setup(self.app, defaults=cors_config)
+
+    # Initialize Vuer-specific attributes
+    self.handlers = defaultdict(dict)
+    self.page = Page()
+    self.ws: Dict[str, WebSocketResponse] = {}
+    self.socket_handler: SocketHandler = None
+    self.spawned_coroutines = []
+
+    self._initialized = True
+    return None
 
   def _proxy(self, ws_id) -> "VuerSession":
     """This is a proxy object that allows us to use the @ notation
@@ -511,30 +542,11 @@ class Vuer(PrefixProto, Server):
     :param ws_id: The websocket id.
     :return: A proxy object.
     """
+    self._ensure_initialized()
     # todo: check if shallow copy suffices
     proxy = VuerSession(self, ws_id, queue_len=self.queue_len)
 
     return proxy
-
-  def __post_init__(self):
-    # todo: what is this?
-
-    if self.verbose:
-      print("========= Arguments =========")
-      for k, v in vars(self).items():
-        print(f" {k} = {v},")
-      print("-----------------------------")
-
-    Server.__post_init__(self)
-
-    self.handlers = defaultdict(dict)
-
-    # todo: can remove
-    self.page = Page()
-
-    self.ws: Dict[str, WebSocketResponse] = {}
-    self.socket_handler: SocketHandler = None
-    self.spawned_coroutines = []
 
   async def relay(self, request):
     """This is the relay object for sending events to the server.
@@ -771,7 +783,20 @@ class Vuer(PrefixProto, Server):
 
     generator = self.bound_fn(vuer_proxy)
 
-    self._add_task(self.uplink(vuer_proxy))
+    # Call uplink and ensure we get a coroutine
+    # params-proto wraps methods and can interfere with async detection
+    # Get the unwrapped async method directly from the class
+    uplink_coro = Vuer.uplink(self, vuer_proxy)
+
+    # Debug: verify we got a coroutine
+    if not asyncio.iscoroutine(uplink_coro):
+        print(f"ERROR: uplink_coro is not a coroutine! Type: {type(uplink_coro)}, Value: {uplink_coro}")
+        raise TypeError(f"Vuer.uplink did not return a coroutine, got {type(uplink_coro)}")
+
+    # Call _add_task from the base class to bypass params-proto wrapper
+    # params-proto wraps static methods incorrectly, so we must use Server._add_task
+    from vuer.base import Server
+    Server._add_task(uplink_coro)
 
     if self.socket_handler is not None:
 
@@ -785,7 +810,9 @@ class Vuer(PrefixProto, Server):
 
         await self.close_ws(ws_id)
 
-      task = self._add_task(handler())
+      # Call _add_task from base class to bypass params-proto wrapper
+      from vuer.base import Server
+      task = Server._add_task(handler())
 
     if hasattr(generator, "__anext__"):
       serverEvent = await generator.__anext__()
@@ -862,6 +889,7 @@ class Vuer(PrefixProto, Server):
         app.add_handler("CAMERA_MOVE", on_camera)
         app.run()
     """
+    self._ensure_initialized()
 
     if fn is None:
       return lambda fn: self.add_handler(event_type, fn, once=once)
@@ -950,6 +978,8 @@ class Vuer(PrefixProto, Server):
     self.start(free_port=free_port, *args, **kwargs)
 
   def start(self, free_port=None, *args, **kwargs):
+    self._ensure_initialized()
+
     import os
 
     # protocol, host, _ = self.uri.split(":")
