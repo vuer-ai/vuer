@@ -23,16 +23,24 @@ clear:
 
 # Documentation release (ReadTheDocs)
 clean-tags:
-	-git tag -d v$(VERSION)
-	-git push origin --delete v$(VERSION)
+	@if git rev-parse v$(VERSION) >/dev/null 2>&1; then \
+		echo "Removing existing tag v$(VERSION)..."; \
+		git tag -d v$(VERSION); \
+		git push origin --delete v$(VERSION) 2>/dev/null || true; \
+	else \
+		echo "Tag v$(VERSION) does not exist, skipping cleanup"; \
+	fi
 
 release-docs: clean-tags
 	@echo "Releasing documentation version: $(VERSION)"
-	git push
-	git tag v$(VERSION) -m '$(MSG)'
+	@if [ -z "$(MSG)" ]; then \
+		git tag v$(VERSION); \
+	else \
+		git tag v$(VERSION) -m '$(MSG)'; \
+	fi
 	git tag -f latest
-	git push origin v$(VERSION)
-	git push origin latest --force
+	git push origin v$(VERSION) latest --force
+	@echo "Documentation tags pushed successfully"
 
 # Package release (PyPI)
 build: clean
