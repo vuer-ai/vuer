@@ -8,7 +8,7 @@ from pathlib import Path
 
 import aiohttp_cors
 from aiohttp import web
-from params_proto import Proto
+from params_proto.v2 import Proto
 
 
 async def default_handler(request, ws):
