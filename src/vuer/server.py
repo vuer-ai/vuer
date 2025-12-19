@@ -11,7 +11,7 @@ from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import Response
 from aiohttp.web_ws import WebSocketResponse
 from msgpack import packb, unpackb
-from params_proto.v2 import Flag, PrefixProto, Proto
+from params_proto import proto
 from websockets import ConnectionClosedError
 
 from vuer.base import Server, handle_file_request, websocket_handler
@@ -448,7 +448,8 @@ class VuerSession:
 DEFAULT_PORT = 8012
 
 
-class Vuer(PrefixProto, Server):
+@proto.prefix
+class Vuer(Server):
   """Vuer Server
 
   This is the server for the Vuer client.
@@ -481,28 +482,18 @@ class Vuer(PrefixProto, Server):
   .. automethod:: run
   """
 
-  domain = Proto("https://vuer.ai", help="default url of web client")
-  host = Proto("localhost", help="set to 0.0.0.0 to enable remote connections")
-  port = Proto(DEFAULT_PORT, help="port to use")
-  free_port: bool = Flag("Kill what is running on the requested port if True.")
-  static_root: str = Proto(".", help="root for file serving")
-  """todo: we want to support multiple paths."""
-  queue_len: int = Proto(
-    100, help="use a max length to avoid the memory from blowing up."
-  )
-  cors = Proto(
-    "https://vuer.ai,https://staging.vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*",
-    help="domains that are allowed for cross origin requests.",
-  )
-  queries: Dict = Proto({}, help="query parameters to pass")
+  # Vuer-specific settings (host, cert, key, ca_cert inherited from Server)
+  domain: str = "https://vuer.ai"  # URL of the Vuer web client
+  port: int = DEFAULT_PORT  # Server port (default 8012)
+  free_port: bool = False  # Kill existing process on port if True
+  static_root: str = "."  # Root directory for serving static files
+  queue_len: int = 100  # Max event queue length to prevent memory blowup
+  cors: str = "https://vuer.ai,https://staging.vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"  # CORS allowed origins
+  queries: Dict = None  # URL query parameters to pass to client
 
-  cert: str = Proto(None, dtype=str, help="the path to the SSL certificate")
-  key: str = Proto(None, dtype=str, help="the path to the SSL key")
-  ca_cert: str = Proto(None, dtype=str, help="the trusted root CA certificates")
+  client_root: Path = Path(__file__).parent / "client_build"  # Path to client build directory
 
-  client_root: Path = Path(__file__).parent / "client_build"
-
-  verbose = Flag("Print the settings if True.")
+  verbose: bool = False  # Print server settings on startup
 
   def _proxy(self, ws_id) -> "VuerSession":
     """This is a proxy object that allows us to use the @ notation
@@ -517,21 +508,18 @@ class Vuer(PrefixProto, Server):
     return proxy
 
   def __post_init__(self):
-    # todo: what is this?
-
+    """Initialize Vuer after params-proto sets up fields."""
     if self.verbose:
       print("========= Arguments =========")
       for k, v in vars(self).items():
         print(f" {k} = {v},")
       print("-----------------------------")
 
-    Server.__post_init__(self)
+    # Initialize base Server (app, cors_context)
+    self._init_app()
 
     self.handlers = defaultdict(dict)
-
-    # todo: can remove
     self.page = Page()
-
     self.ws: Dict[str, WebSocketResponse] = {}
     self.socket_handler: SocketHandler = None
     self.spawned_coroutines = []
