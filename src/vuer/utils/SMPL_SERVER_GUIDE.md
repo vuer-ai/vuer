@@ -54,34 +54,11 @@ ln -s /path/to/SMPL_NEUTRAL.pkl ~/smpl_models/smpl/SMPL_NEUTRAL.pkl
 ## Convert WebXR Data to SMPL Parameters
 
 ```bash
-cd /Users/57block/repository/vuer/vuer
-
 # Simple conversion (T-pose with position tracking)
 python src/vuer/utils/webxr_to_smpl.py \
     bodies_data/session_20251216_162658.json \
     bodies_data/session_20251216_162658_simple.json
 ```
-
-### Basic Usage
-
-```bash
-python webxr_to_smpl_optimized.py \
-    input.json \
-    output.json \
-    --model_folder /path/to/models/smpl
-```
-
-### With GPU Acceleration
-
-```bash
-python webxr_to_smpl_optimized.py \
-    input.json \
-    output.json \
-    --model_folder /path/to/models/smpl \
-    --device cuda
-```
-
-### High Accuracy (More Iterations)
 
 ```bash
 python webxr_to_smpl_optimized.py \
@@ -89,7 +66,8 @@ python webxr_to_smpl_optimized.py \
     output.json \
     --model_folder /path/to/models/smpl \
     --iterations 200 \
-    --verbose
+    --verbose \
+    --cuda
 ```
 
 ## Start SMPL Server
@@ -106,14 +84,6 @@ python src/vuer/utils/smpl_websocket_server.py \
     --port 8012
 ```
 
-### View Visualization
-
-Open your browser and visit:
-- **Vuer Web Interface**: https://vuer.ai
-- Connect to server at: `ws://localhost:8012`
-
-Or if vuer provides a direct URL, visit that address.
-
 ## Server Options
 
 ```bash
@@ -127,32 +97,3 @@ Options:
   --port PORT             Server port (default: 8012)
   --cpu                   Force CPU usage (default: auto-detect CUDA)
 ```
-
-## License Compliance
-
-✅ **This architecture is license-compliant:**
-- SMPL model stays on your local machine
-- Only computed mesh vertices are sent to browser
-- No SMPL model data is distributed
-- Users must download SMPL model themselves
-
-## Troubleshooting
-
-### Server won't start
-
-```bash
-# Make sure conda environment is activated
-conda activate smpl
-
-# Install vuer with all dependencies
-pip install 'vuer[all]'
-
-# Check SMPL model path
-ls ~/smpl_models/smpl/
-```
-
-### Can't see visualization
-
-- Make sure server is running (check terminal output)
-- Visit https://vuer.ai and connect to `ws://localhost:8012`
-- Check browser console for WebSocket connection errors
