@@ -105,7 +105,7 @@ async def on_shutdown(app):
     pcs.clear()
 
 
-from params_proto import ParamsProto, Proto, Flag
+from params_proto.v2 import ParamsProto, Proto, Flag
 
 
 class Args(ParamsProto):

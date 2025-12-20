@@ -14,4 +14,11 @@ except ImportError:
     Also, we require numpy>=1.21 for numpy.typing.NDArray.
     """)
 
-__all__ = ["Vuer", "VuerSession"]
+
+def entrypoint():
+    """CLI entrypoint for vuer command."""
+    app = Vuer()
+    app.run()
+
+
+__all__ = ["Vuer", "VuerSession", "entrypoint"]
