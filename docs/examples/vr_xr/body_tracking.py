@@ -49,7 +49,7 @@ You need to enable the WebXR Experiments flag for body tracking:
 Here’s what Body Tracking looks like on devices that support it (e.g., Meta Quest3).
 
 ```{eval-rst}
-.. video:: ../_static/25_body_tracking.mp4
+.. video:: ../../_static/25_body_tracking.mp4
     :alt: Body Tracking Demo with Vuer and Quest3
     :autoplay:
     :nocontrols:
