@@ -25,7 +25,7 @@ or localtunnel before preceding.
 Here is the what it looks like with the Vision Pro 
 
 ```{eval-rst}
-.. video:: ../_static/19_hand_tracking.webm
+.. video:: ../../_static/19_hand_tracking.webm
     :alt: Hand Tracking Demo with Vuer and Vision Pro
     :autoplay:
     :nocontrols:
