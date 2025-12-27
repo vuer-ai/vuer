@@ -1897,6 +1897,94 @@ class Bodies(SceneElement):
     )
 
 
+class MotionTracker(SceneElement):
+  """
+  MotionTracker component for synchronized body and hand tracking.
+
+  Combines body tracking (XRBody API) and hand tracking (XRHand API)
+  into a single synchronized data stream.
+
+  This solves two key problems:
+
+  1. Eliminates duplicate hand data by using XRBody for body-only joints
+  2. Ensures perfect synchronization by collecting both sources in the same frame
+
+  The component streams motion tracking data with the following structure:
+
+  - **body**: Dictionary of body joint names to transformation matrices (excluding hand joints)
+  - **hands.left/right**: Hand landmarks with detailed finger tracking and gesture states
+
+  :param key: Unique identifier for the motion tracking instance.
+  :type key: str, optional
+  :param fps: Frames per second at which motion data should be sent.
+  :type fps: int, optional
+  :param stream: Whether to enable streaming of motion tracking data to the server.
+  :type stream: bool, optional
+  :param hideIndicate: Whether to hide all visual indicators while still tracking data.
+  :type hideIndicate: bool, optional
+  :param showFrame: Whether to display coordinate frames at each tracked point.
+  :type showFrame: bool, optional
+  :param frameScale: Scale factor for the coordinate frames or markers.
+  :type frameScale: float, optional
+  :param handScale: Overall scale factor for hand tracking.
+  :type handScale: float, optional
+
+  Usage Example:
+
+  .. code-block:: python
+
+      from vuer import Vuer, VuerSession
+      from vuer.schemas import MotionTracker
+      from asyncio import sleep
+
+      app = Vuer()
+
+
+      @app.add_handler("MOTION_TRACKING")
+      async def handler(event, session):
+          data = event.value
+          print(f"Frame {data['frameId']}")
+          print(f"Body joints: {data['body'].keys()}")
+          if data['hands']['left']:
+              print(f"Left hand landmarks: {len(data['hands']['left']['landmarks'])}")
+          if data['hands']['right']:
+              print(f"Right hand pinch: {data['hands']['right']['state']['pinch']}")
+
+
+      @app.spawn(start=True)
+      async def main(session: VuerSession):
+          session.upsert @ MotionTracker(stream=True, fps=30, key="motion_tracking")
+
+          while True:
+              await sleep(1)
+
+  """
+
+  tag = "MotionTracker"
+
+  def __init__(
+    self,
+    key="motion_tracking",
+    fps=30,
+    stream=True,
+    hideIndicate=False,
+    showFrame=True,
+    frameScale=0.02,
+    handScale=1.0,
+    **kwargs,
+  ):
+    super().__init__(
+      key=key,
+      fps=fps,
+      stream=stream,
+      hideIndicate=hideIndicate,
+      showFrame=showFrame,
+      frameScale=frameScale,
+      handScale=handScale,
+      **kwargs,
+    )
+
+
 class WebXRMesh(SceneElement):
   """
   WebXR Mesh Detection component for real-world environment geometry detection in AR sessions.
