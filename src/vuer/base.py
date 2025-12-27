@@ -95,19 +95,16 @@ class Server:
         REQUEST_MAX_SIZE: Maximum HTTP request size (default 256MB).
     """
 
-    # Network configuration (can be set via environment variables)
-    host: str = EnvVar("HOST", default="localhost").get()  # Server hostname, use 0.0.0.0 for remote access
-    port: int = EnvVar("PORT", dtype=int, default=8012).get()  # Server port number
-    cors: str = EnvVar("CORS", default="*").get()  # CORS allowed origins, comma-separated
+    host: str = EnvVar @ "HOST" | "localhost"
+    port: int = EnvVar @ "PORT" | 8012
+    cors: str = EnvVar @ "CORS" | "*"
 
-    # SSL/TLS configuration (all None = HTTP mode)
-    cert: str = EnvVar("SSL_CERT", default=None).get()  # Path to SSL certificate file
-    key: str = EnvVar("SSL_KEY", default=None).get()  # Path to SSL private key file
-    ca_cert: str = EnvVar("SSL_CA_CERT", default=None).get()  # Path to CA certificate for client verification
+    cert: str = EnvVar @ "SSL_CERT" | None
+    key: str = EnvVar @ "SSL_KEY" | None
+    ca_cert: str = EnvVar @ "SSL_CA_CERT" | None
 
-    # Size limits
-    WEBSOCKET_MAX_SIZE: int = EnvVar("WEBSOCKET_MAX_SIZE", dtype=int, default=2**28).get()  # Max WebSocket message size (default 256MB)
-    REQUEST_MAX_SIZE: int = EnvVar("REQUEST_MAX_SIZE", dtype=int, default=2**28).get()  # Max HTTP request size (default 256MB)
+    WEBSOCKET_MAX_SIZE: int = EnvVar @ "WEBSOCKET_MAX_SIZE" | 2**28
+    REQUEST_MAX_SIZE: int = EnvVar @ "REQUEST_MAX_SIZE" | 2**28
 
     def _init_app(self):
         """Initialize the aiohttp application and CORS context.
