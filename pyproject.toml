@@ -14,11 +14,12 @@ classifiers = [
     "Programming Language :: Python",
 ]
 dependencies = [
-    "params-proto>=3.0.0rc15",
+    "params-proto>=3.0.0rc18",
     "pillow",
     "msgpack",
     "numpy>=1.21", # because we require numpy.typing.NDArray
     "websockets",
+    "dotvar>=0.1.1",
 ]
 
 [project.optional-dependencies]
