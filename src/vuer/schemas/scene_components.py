@@ -1931,74 +1931,70 @@ class Body(SceneElement):
        - Index
      * - hips
        - 0
-       - right-hand-palm
-       - 18
+       - left-hand-palm
+       - 17
      * - spine-lower
        - 1
-       - left-upper-leg
-       - 19
+       - right-hand-palm
+       - 18
      * - spine-middle
        - 2
-       - left-lower-leg
-       - 20
+       - left-upper-leg
+       - 19
      * - spine-upper
        - 3
-       - left-foot-ankle-twist
-       - 21
+       - left-lower-leg
+       - 20
      * - chest
        - 4
-       - left-foot-ankle
-       - 22
+       - left-foot-ankle-twist
+       - 21
      * - neck
        - 5
-       - left-foot-subtalar
-       - 23
+       - left-foot-ankle
+       - 22
      * - head
        - 6
-       - left-foot-transverse
-       - 24
+       - left-foot-subtalar
+       - 23
      * - left-shoulder
        - 7
-       - left-foot-ball
-       - 25
+       - left-foot-transverse
+       - 24
      * - left-scapula
        - 8
-       - right-upper-leg
-       - 26
+       - left-foot-ball
+       - 25
      * - left-arm-upper
        - 9
-       - right-lower-leg
-       - 27
+       - right-upper-leg
+       - 26
      * - left-arm-lower
        - 10
-       - right-foot-ankle-twist
-       - 28
+       - right-lower-leg
+       - 27
      * - left-hand-wrist-twist
        - 11
-       - right-foot-ankle
-       - 29
+       - right-foot-ankle-twist
+       - 28
      * - right-shoulder
        - 12
-       - right-foot-subtalar
-       - 30
+       - right-foot-ankle
+       - 29
      * - right-scapula
        - 13
-       - right-foot-transverse
-       - 31
+       - right-foot-subtalar
+       - 30
      * - right-arm-upper
        - 14
-       - right-foot-ball
-       - 32
+       - right-foot-transverse
+       - 31
      * - right-arm-lower
        - 15
-       - -
-       - -
+       - right-foot-ball
+       - 32
      * - right-hand-wrist-twist
        - 16
-       - -
-       - -
-     * - left-hand-palm
-       - 17
        - -
        - -
 
