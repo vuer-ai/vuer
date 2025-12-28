@@ -11,7 +11,7 @@ from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import Response
 from aiohttp.web_ws import WebSocketResponse
 from msgpack import packb, unpackb
-from params_proto import proto
+from params_proto import proto, EnvVar
 from websockets import ConnectionClosedError
 
 from vuer.base import Server, handle_file_request, websocket_handler
@@ -483,17 +483,17 @@ class Vuer(Server):
   """
 
   # Vuer-specific settings (host, cert, key, ca_cert inherited from Server)
-  domain: str = "https://vuer.ai"  # URL of the Vuer web client
-  port: int = DEFAULT_PORT  # Server port (default 8012)
-  free_port: bool = False  # Kill existing process on port if True
-  static_root: str = "."  # Root directory for serving static files
-  queue_len: int = 100  # Max event queue length to prevent memory blowup
-  cors: str = "https://vuer.ai,https://staging.vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"  # CORS allowed origins
-  queries: Dict = None  # URL query parameters to pass to client
+  domain: str = EnvVar("VUER_DOMAIN", default="https://vuer.ai").get()  # URL of the Vuer web client
+  port: int = EnvVar("PORT", dtype=int, default=DEFAULT_PORT).get()  # Server port (default 8012)
+  free_port: bool = EnvVar("FREE_PORT", dtype=bool, default=False).get()  # Kill existing process on port if True
+  static_root: str = EnvVar("STATIC_ROOT", default=".").get()  # Root directory for serving static files
+  queue_len: int = EnvVar("QUEUE_LEN", dtype=int, default=100).get()  # Max event queue length to prevent memory blowup
+  cors: str = EnvVar("CORS", default="https://vuer.ai,https://staging.vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*").get()  # CORS allowed origins
+  queries: Dict = EnvVar("QUERIES", default=None).get()  # URL query parameters to pass to client
 
   client_root: Path = Path(__file__).parent / "client_build"  # Path to client build directory
 
-  verbose: bool = False  # Print server settings on startup
+  verbose: bool = EnvVar("VERBOSE", dtype=bool, default=False).get()  # Print server settings on startup
 
   def _proxy(self, ws_id) -> "VuerSession":
     """This is a proxy object that allows us to use the @ notation
