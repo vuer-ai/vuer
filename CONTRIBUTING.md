@@ -82,16 +82,31 @@ vuer/
 └── pyproject.toml     # Project configuration
 ```
 
-## Publishing
+## Release Management
 
-### Using uv (recommended)
+Version is auto-extracted from `pyproject.toml`. Use Makefile commands for releases.
 
-1. Update version in `pyproject.toml`
-2. Build the package: `uv build`
-3. Publish: `uv publish`
+### Quick Reference
 
-### Using traditional tools
+```bash
+# Check version
+make version
 
-1. Update version in `pyproject.toml`
-2. Build: `python -m build`
-3. Publish: `twine upload dist/*`
+# Release docs (pushes tags only, not code)
+make release-docs                    # No message
+make release-docs MSG="description"  # With message
+
+# Release package to PyPI
+UV_PYPI_TOKEN=xxx make publish-pypi
+
+# Full release (docs + package)
+UV_PYPI_TOKEN=xxx make release
+```
+
+### Release Workflow
+
+1. Update `version` in `pyproject.toml`
+2. Commit and push code changes
+3. Run release command(s) above
+
+**Note:** `make release-docs` only pushes git tags (v0.0.70 and latest), not branch code.

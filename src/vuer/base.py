@@ -8,7 +8,7 @@ from pathlib import Path
 
 import aiohttp_cors
 from aiohttp import web
-from params_proto import Proto
+from params_proto import EnvVar
 
 
 async def default_handler(request, ws):
@@ -46,34 +46,82 @@ async def handle_file_request(request, root, filename=None):
     if not filepath.is_file():
         raise web.HTTPNotFound()
 
-    return web.FileResponse(filepath)
+    response = web.FileResponse(filepath)
+
+    # Check if URL contains "hot" parameter for hot loading mode
+    # Hot assets are those that change frequently during development
+    # Parameter name is case-insensitive (hot, Hot, HOT all work)
+    # Parameter value must not equal "false" (case insensitive)
+    hot_key = None
+    for key in request.query.keys():
+        if key.lower() == "hot":
+            hot_key = key
+            break
+
+    if hot_key:
+        # Check if hot is explicitly set to false
+        hot_value = request.query.get(hot_key, "")
+        if hot_value.lower() != "false":
+            # Set Cache-Control to no-cache to force revalidation
+            # This allows 304 responses but prevents strong caching
+            response.headers["Cache-Control"] = "no-cache"
+
+    return response
 
 
 class Server:
-    """Base TCP server"""
+    """Base TCP server with HTTP/WebSocket functionality.
 
-    host = Proto(env="HOST", default="localhost")
-    cors = Proto(help="Enable CORS", default="*")
-    port = Proto(env="PORT", default=8012)
+    This class provides the core server infrastructure for Vuer, including:
+    - HTTP route handling with CORS support
+    - WebSocket connection management
+    - SSL/TLS support for secure connections
+    - Static file serving
 
-    cert = Proto(None, dtype=str, help="the path to the SSL certificate")
-    key = Proto(None, dtype=str, help="the path to the SSL key")
-    ca_cert = Proto(None, dtype=str, help="the trusted root CA certificates")
+    Subclasses should call _init_app() in their __post_init__ to initialize
+    the aiohttp application before using server methods.
 
-    WEBSOCKET_MAX_SIZE: int = Proto(
-        2**28,
-        env="WEBSOCKET_MAX_SIZE",
-        help="maximum size for websocket requests.",
-    )
-    REQUEST_MAX_SIZE: int = Proto(
-        2**28,
-        env="REQUEST_MAX_SIZE",
-        help="maximum size for requests.",
-    )
+    Note: This class cannot use @proto.prefix because Vuer inherits from it
+    and also uses @proto.prefix, which causes a metaclass conflict.
 
-    def __post_init__(self):
+    Attributes:
+        host: Server hostname. Set to "0.0.0.0" to accept remote connections.
+        port: Server port number.
+        cors: Comma-separated list of allowed CORS origins. Use "*" for all.
+        cert: Path to SSL certificate file for HTTPS.
+        key: Path to SSL private key file for HTTPS.
+        ca_cert: Path to CA certificate for client certificate verification.
+        WEBSOCKET_MAX_SIZE: Maximum WebSocket message size (default 256MB).
+        REQUEST_MAX_SIZE: Maximum HTTP request size (default 256MB).
+    """
+
+    # Network configuration (can be set via environment variables)
+    host: str = EnvVar("HOST", default="localhost").get()  # Server hostname, use 0.0.0.0 for remote access
+    port: int = EnvVar("PORT", dtype=int, default=8012).get()  # Server port number
+    cors: str = EnvVar("CORS", default="*").get()  # CORS allowed origins, comma-separated
+
+    # SSL/TLS configuration (all None = HTTP mode)
+    cert: str = EnvVar("SSL_CERT", default=None).get()  # Path to SSL certificate file
+    key: str = EnvVar("SSL_KEY", default=None).get()  # Path to SSL private key file
+    ca_cert: str = EnvVar("SSL_CA_CERT", default=None).get()  # Path to CA certificate for client verification
+
+    # Size limits
+    WEBSOCKET_MAX_SIZE: int = EnvVar("WEBSOCKET_MAX_SIZE", dtype=int, default=2**28).get()  # Max WebSocket message size (default 256MB)
+    REQUEST_MAX_SIZE: int = EnvVar("REQUEST_MAX_SIZE", dtype=int, default=2**28).get()  # Max HTTP request size (default 256MB)
+
+    def _init_app(self):
+        """Initialize the aiohttp application and CORS context.
+
+        This must be called before using any server methods. Subclasses
+        should call this in their __post_init__ method.
+
+        Creates:
+            self.app: The aiohttp web.Application instance.
+            self.cors_context: The aiohttp_cors setup for CORS handling.
+        """
+        if hasattr(self, 'app'):
+            return
         self.app = web.Application(client_max_size=self.REQUEST_MAX_SIZE)
-
         default = aiohttp_cors.ResourceOptions(
             allow_credentials=True,
             expose_headers="*",
@@ -81,7 +129,6 @@ class Server:
             allow_methods="*",
         )
         cors_config = {k: default for k in self.cors.split(",")}
-
         self.cors_context = aiohttp_cors.setup(self.app, defaults=cors_config)
 
     def _add_route(
@@ -155,5 +202,5 @@ class Server:
 if __name__ == "__main__":
     app = Server()
     app._add_route("", websocket_handler)
-    app._add_static("/static", handle_file_request, root=".")
+    app._add_static("/static", ".")
     app.start()
