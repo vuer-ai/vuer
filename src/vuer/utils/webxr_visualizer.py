@@ -470,6 +470,7 @@ class WebXRVisualizer:
         video_element = None
         if self.video_file:
             video_src = make_static_url(self.video_file)
+            print(video_src)
             video_aspect = 16 / 9
             video_height = 0.85
 

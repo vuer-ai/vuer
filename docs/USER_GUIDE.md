@@ -29,7 +29,7 @@ python3 -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 
 # 安装依赖
-pip install vuer numpy scipy torch smplx
+pip install 'vuer[all]' numpy scipy torch smplx
 ```
 
 2. **SMPL-X 模型文件**
