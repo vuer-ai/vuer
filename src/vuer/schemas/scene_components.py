@@ -124,6 +124,7 @@ class TriMesh(SceneElement):
           key="triangle"
       )
   """
+
   tag = "TriMesh"
   children = []
 
@@ -233,6 +234,7 @@ class Box(SceneElement):
       # High-poly box with many segments
       Box(args=(1, 1, 1, 10, 10, 10), key="box3")
   """
+
   tag = "Box"
 
 
@@ -261,6 +263,7 @@ class Capsule(SceneElement):
       # Tall thin capsule
       Capsule(args=(0.2, 3, 4, 8, 1), key="capsule2")
   """
+
   tag = "Capsule"
 
 
@@ -291,6 +294,7 @@ class Cone(SceneElement):
       # Half cone (180 degrees)
       Cone(args=(1, 1, 8, 1, False, 0, 3.14159), key="half-cone")
   """
+
   tag = "Cone"
 
 
@@ -318,6 +322,7 @@ class Circle(SceneElement):
       # Semi-circle
       Circle(args=(1, 32, 0, 3.14159), key="semi-circle")
   """
+
   tag = "Circle"
 
 
@@ -349,6 +354,7 @@ class Cylinder(SceneElement):
       # Cone-like cylinder (different top/bottom radii)
       Cylinder(args=(0.5, 1, 2, 16, 1, False, 0, 6.28), key="tapered")
   """
+
   tag = "Cylinder"
 
 
@@ -374,6 +380,7 @@ class Dodecahedron(SceneElement):
       # High-poly subdivided dodecahedron
       Dodecahedron(args=(1, 3), key="dodeca2")
   """
+
   tag = "Dodecahedron"
 
 
@@ -395,6 +402,7 @@ class Edges(SceneElement):
 
       Edges(args=(geometry, 15), key="edges1")
   """
+
   tag = "Edges"
 
 
@@ -428,6 +436,7 @@ class Extrude(SceneElement):
           key="extrude1"
       )
   """
+
   tag = "Extrude"
 
 
@@ -453,6 +462,7 @@ class Icosahedron(SceneElement):
       # Subdivided sphere-like icosahedron
       Icosahedron(args=(1, 2), key="icosa2")
   """
+
   tag = "Icosahedron"
 
 
@@ -477,6 +487,7 @@ class Lathe(SceneElement):
       points = [[0, 0], [1, 0.5], [0.5, 1]]
       Lathe(args=(points, 32, 0, 6.28), key="lathe1")
   """
+
   tag = "Lathe"
 
 
@@ -502,6 +513,7 @@ class Octahedron(SceneElement):
       # Subdivided octahedron
       Octahedron(args=(1, 2), key="octa2")
   """
+
   tag = "Octahedron"
 
 
@@ -529,6 +541,7 @@ class Plane(SceneElement):
       # High-poly plane (useful for displacement mapping)
       Plane(args=(10, 10, 50, 50), key="terrain")
   """
+
   tag = "Plane"
 
 
@@ -554,6 +567,7 @@ class Polyhedron(SceneElement):
       indices = [2, 1, 0, 0, 3, 2, 1, 3, 0, 2, 3, 1]
       Polyhedron(args=(vertices, indices, 1, 0), key="poly1")
   """
+
   tag = "Polyhedron"
 
 
@@ -583,6 +597,7 @@ class Ring(SceneElement):
       # Thick ring with high detail
       Ring(args=(0.3, 1, 64, 8, 0, 6.28), key="ring2")
   """
+
   tag = "Ring"
 
 
@@ -604,6 +619,7 @@ class Shape(SceneElement):
 
       Shape(args=(shape, 12), key="shape1")
   """
+
   tag = "Shape"
 
 
@@ -637,6 +653,7 @@ class Sphere(SceneElement):
       # Hemisphere
       Sphere(args=(1, 32, 16, 0, 6.28, 0, 1.57), key="hemisphere")
   """
+
   tag = "Sphere"
 
 
@@ -662,6 +679,7 @@ class Tetrahedron(SceneElement):
       # Subdivided tetrahedron
       Tetrahedron(args=(1, 2), key="tetra2")
   """
+
   tag = "Tetrahedron"
 
 
@@ -690,6 +708,7 @@ class Torus(SceneElement):
       # Thin high-detail torus
       Torus(args=(2, 0.2, 16, 100, 6.28), key="torus2")
   """
+
   tag = "Torus"
 
 
@@ -719,6 +738,7 @@ class TorusKnot(SceneElement):
       # Complex knot pattern
       TorusKnot(args=(1, 0.3, 128, 16, 5, 7), key="knot2")
   """
+
   tag = "TorusKnot"
 
 
@@ -743,6 +763,7 @@ class Tube(SceneElement):
 
       Tube(args=(path, 64, 0.5, 8, False), key="tube1")
   """
+
   tag = "Tube"
 
 
@@ -762,10 +783,11 @@ class Fog(SceneElement):
   """
 
   tag = "fog"
+  attach = "fog"
+  key = "fog"
 
-  def __init__(self, *, children=None, color=None, near=None, far=None, **kwargs):
+  def __post_init__(self, *, children=None, **kwargs):
     assert children is None, "Fog does not support children."
-    super().__init__(attach="fog", key="fog", color=color, near=near, far=far, **kwargs)
 
 
 class Wireframe(SceneElement):
@@ -785,6 +807,7 @@ class Wireframe(SceneElement):
 
       Wireframe(args=(geometry,), key="wireframe1")
   """
+
   tag = "Wireframe"
 
 
@@ -1147,45 +1170,45 @@ class WebRTCStereoVideoPlane(SceneElement):
 
 
 class ImagePlane(Image, SceneElement):
-    """
-    Displays a static image on a plane in 3D space.
+  """
+  Displays a static image on a plane in 3D space.
 
-    Creates a textured plane for displaying images at specific positions and orientations
-    in the 3D scene. Unlike ImageBackground, this plane has a fixed position in world space.
+  Creates a textured plane for displaying images at specific positions and orientations
+  in the 3D scene. Unlike ImageBackground, this plane has a fixed position in world space.
 
-    :param src: URL or path to the image file
-    :type src: str
-    :param position: Position [x, y, z] of the image plane
-    :type position: tuple[float, float, float], optional
-    :param rotation: Rotation [x, y, z] in radians
-    :type rotation: tuple[float, float, float], optional
-    :param scale: Scale of the image plane
-    :type scale: float | tuple[float, float, float], optional
-    :param opacity: Transparency of the image (0-1)
-    :type opacity: float, optional, default 1.0
+  :param src: URL or path to the image file
+  :type src: str
+  :param position: Position [x, y, z] of the image plane
+  :type position: tuple[float, float, float], optional
+  :param rotation: Rotation [x, y, z] in radians
+  :type rotation: tuple[float, float, float], optional
+  :param scale: Scale of the image plane
+  :type scale: float | tuple[float, float, float], optional
+  :param opacity: Transparency of the image (0-1)
+  :type opacity: float, optional, default 1.0
 
-    Example Usage::
+  Example Usage::
 
-        from vuer.schemas import ImagePlane
+      from vuer.schemas import ImagePlane
 
-        # Simple image plane
-        ImagePlane(
-            src="image.png",
-            position=[0, 1, -2],
-            key="img1"
-        )
+      # Simple image plane
+      ImagePlane(
+          src="image.png",
+          position=[0, 1, -2],
+          key="img1"
+      )
 
-        # Rotated and scaled image
-        ImagePlane(
-            src="poster.jpg",
-            position=[2, 1.5, -1],
-            rotation=[0, 0.5, 0],
-            scale=2,
-            key="img2"
-        )
-    """
+      # Rotated and scaled image
+      ImagePlane(
+          src="poster.jpg",
+          position=[2, 1.5, -1],
+          rotation=[0, 0.5, 0],
+          scale=2,
+          key="img2"
+      )
+  """
 
-    tag = "ImagePlane"
+  tag = "ImagePlane"
 
 
 class Group(SceneElement):
@@ -1217,6 +1240,7 @@ class Group(SceneElement):
           key="group1"
       )
   """
+
   tag = "VuerGroup"
 
 
@@ -1254,6 +1278,7 @@ class HemisphereLight(SceneElement):
           key="hemi2"
       )
   """
+
   tag = "HemisphereLight"
 
 
@@ -1272,6 +1297,7 @@ class HemisphereLightStage(SceneElement):
   This matches the frontend's HemisphereLightStage component and provides
   consistent lighting across Python and frontend scene definitions.
   """
+
   tag = "HemisphereLightStage"
 
 
@@ -1317,6 +1343,7 @@ class RectAreaLight(SceneElement):
           key="area2"
       )
   """
+
   tag = "RectAreaLight"
 
 
@@ -1333,6 +1360,7 @@ class Stage(SceneElement):
 
       Stage(key="stage1")
   """
+
   tag = "Stage"
 
 
@@ -1346,6 +1374,7 @@ class Gamepad(SceneElement):
   :param index: Gamepad index to monitor (for multiple connected gamepads)
   :type index: int, optional, default 0
   """
+
   tag = "Gamepad"
 
 
@@ -1392,6 +1421,7 @@ class KeyboardMonitor(SceneElement):
                         f"Ctrl={event.value['ctrlKey']}, "
                         f"Alt={event.value['altKey']}")
   """
+
   tag = "KeyboardMonitor"
 
 
@@ -1430,6 +1460,7 @@ class DirectionalLight(SceneElement):
           key="sunset"
       )
   """
+
   tag = "DirectionalLight"
 
 
@@ -1472,6 +1503,7 @@ class PointLight(SceneElement):
           key="bulb2"
       )
   """
+
   tag = "PointLight"
 
 
@@ -1519,6 +1551,7 @@ class SpotLight(SceneElement):
           key="spot2"
       )
   """
+
   tag = "SpotLight"
 
 
@@ -1553,6 +1586,7 @@ class AmbientLight(SceneElement):
           key="ambient2"
       )
   """
+
   tag = "AmbientLight"
 
 
@@ -1608,6 +1642,7 @@ class Pivot(SceneElement):
           key="door-pivot"
       )
   """
+
   tag = "Pivot"
 
 
@@ -1795,28 +1830,13 @@ class Hands(SceneElement):
   """
 
   tag = "Hands"
-
-  def __init__(
-    self,
-    key="hands",
-    # eventTypes=("squeeze",),
-    stream=True,
-    disableLeft=False,  # disables the left data stream, also hides the hand.
-    disableRight=False,  # disables the right data stream, also hides the hand.
-    hideLeft=False,  # hides the hand, but still streams the data.
-    hideRight=False,  # hides the hand, but still streams the data.
-    **kwargs,
-  ):
-    super().__init__(
-      key=key,
-      # eventTypes=eventTypes,
-      stream=stream,
-      disableLeft=disableLeft,
-      disableRight=disableRight,
-      hideLeft=hideLeft,
-      hideRight=hideRight,
-      **kwargs,
-    )
+  key = "hands"
+  # eventTypes=("squeeze",),
+  stream = True
+  disableLeft = False  # disables the left data stream, also hides the hand.
+  disableRight = False  # disables the right data stream, also hides the hand.
+  hideLeft = False  # hides the hand, but still streams the data.
+  hideRight = False  # hides the hand, but still streams the data.
 
 
 class MotionControllers(SceneElement):
@@ -1856,45 +1876,191 @@ class MotionControllers(SceneElement):
     )
 
 
-class Bodies(SceneElement):
+class Body(SceneElement):
   """
-  Bodies component for tracking full-body XR poses using the WebXR Body Tracking API.
+  Body component for tracking full-body XR poses using the WebXR Body Tracking API.
+
+  .. admonition:: tip Setting stream to True
+
+      Important: You need to set the `stream` option to `True` to
+      start streaming the body pose data to the server.
+
+  .. admonition:: warning Experimental API
+
+      The WebXR Body Tracking API is experimental and currently only supported
+      in Quest Browser. Enable WebXR Experiments flags in chrome://flags.
+
+  The Body component streams the full 3D pose of the human body to the server in
+  real time. You can listen to the `BODY_MOVE` event to receive body pose data.
+  The data includes body joints and optionally left/right hand joints.
+
+  **Returned Data**
+
+  The `BODY_MOVE` event sends a `BodyData` object containing flattened arrays:
+
+  .. code-block:: typescript
+
+      type BodyData = {
+        body: number[];      // 33 joints × 16 floats = 528 floats
+        leftHand: number[];  // 25 joints × 16 floats = 400 floats
+        rightHand: number[]; // 25 joints × 16 floats = 400 floats
+      };
+
+  **Matrix Format**
+
+  All 4x4 transform matrices are stored in 16-element arrays in column-major order:
+
+  .. code-block::
+
+                                    ⌈  a0 a4 a8 a12  ⌉
+                                    |  a1 a5 a9 a13  |
+                                    |  a2 a6 a10 a14 |
+                                    ⌊  a3 a7 a11 a15 ⌋
+
+  **Body Joints (33 joints)**
+
+  We follow the `WebXR Body Tracking specification <https://immersive-web.github.io/body-tracking/>`_.
+
+  .. list-table::
+     :widths: 40 10 40 10
+     :header-rows: 1
+
+     * - Body Joint
+       - Index
+       - Body Joint (continued)
+       - Index
+     * - hips
+       - 0
+       - right-hand-palm
+       - 18
+     * - spine-lower
+       - 1
+       - left-upper-leg
+       - 19
+     * - spine-middle
+       - 2
+       - left-lower-leg
+       - 20
+     * - spine-upper
+       - 3
+       - left-foot-ankle-twist
+       - 21
+     * - chest
+       - 4
+       - left-foot-ankle
+       - 22
+     * - neck
+       - 5
+       - left-foot-subtalar
+       - 23
+     * - head
+       - 6
+       - left-foot-transverse
+       - 24
+     * - left-shoulder
+       - 7
+       - left-foot-ball
+       - 25
+     * - left-scapula
+       - 8
+       - right-upper-leg
+       - 26
+     * - left-arm-upper
+       - 9
+       - right-lower-leg
+       - 27
+     * - left-arm-lower
+       - 10
+       - right-foot-ankle-twist
+       - 28
+     * - left-hand-wrist-twist
+       - 11
+       - right-foot-ankle
+       - 29
+     * - right-shoulder
+       - 12
+       - right-foot-subtalar
+       - 30
+     * - right-scapula
+       - 13
+       - right-foot-transverse
+       - 31
+     * - right-arm-upper
+       - 14
+       - right-foot-ball
+       - 32
+     * - right-arm-lower
+       - 15
+       - -
+       - -
+     * - right-hand-wrist-twist
+       - 16
+       - -
+       - -
+     * - left-hand-palm
+       - 17
+       - -
+       - -
+
+  **Usage Example**
+
+  .. code-block:: python
+
+      from asyncio import sleep
+      from vuer import Vuer, VuerSession
+      from vuer.schemas import Body
+
+      app = Vuer()
+
+
+      @app.add_handler("BODY_MOVE")
+      async def on_body_move(event, session):
+          body = event.value.get("body", [])
+          left = event.value.get("leftHand", [])
+          right = event.value.get("rightHand", [])
+          print(f"body: {len(body)//16} joints, hands: L={len(left)//16} R={len(right)//16}")
+
+
+      @app.spawn(start=True)
+      async def main(session: VuerSession):
+          # Important: stream=True is required to receive BODY_MOVE events
+          session.upsert @ Body(
+              stream=True,
+              leftHand=True,   # Include left hand joints
+              rightHand=True,  # Include right hand joints
+              fps=30,
+          )
+
+          while True:
+              await sleep(1)
 
   :param key: Unique identifier for the body tracking instance.
   :type key: str, optional
   :param stream: Whether to enable streaming of body pose data to the server.
   :type stream: bool, optional
+  :param leftHand: Whether to include left hand tracking data (25 joints).
+  :type leftHand: bool, optional
+  :param rightHand: Whether to include right hand tracking data (25 joints).
+  :type rightHand: bool, optional
   :param fps: Frames per second at which body pose data should be sent.
   :type fps: int, optional
-  :param hideIndicate: Whether to hide all visual indicators for tracked joints while still tracking data.
-  :type hideIndicate: bool, optional
+  :param hideBody: Whether to hide body tracking visualization.
+  :type hideBody: bool, optional
   :param showFrame: Whether to display coordinate frames at each joint position.
   :type showFrame: bool, optional
   :param frameScale: Scale factor for the coordinate frames or joint markers.
   :type frameScale: float, optional
   """
 
-  tag = "Bodies"
-
-  def __init__(
-    self,
-    key="body_tracking",
-    stream=True,
-    fps=30,
-    hideIndicate=False,
-    showFrame=True,
-    frameScale=0.02,
-    **kwargs,
-  ):
-    super().__init__(
-      key=key,
-      stream=stream,
-      fps=fps,
-      hideIndicate=hideIndicate,
-      showFrame=showFrame,
-      frameScale=frameScale,
-      **kwargs,
-    )
+  tag = "Body"
+  key = "body_tracking"
+  stream = True
+  leftHand = False
+  rightHand = False
+  fps = 30
+  hideBody = False
+  showFrame = True
+  frameScale = 0.02
 
 
 class WebXRMesh(SceneElement):
@@ -2124,6 +2290,7 @@ class Ply(SceneElement):
           key="ply2"
       )
   """
+
   tag = "Ply"
 
 
@@ -2204,6 +2371,7 @@ class Urdf(SceneElement):
           key="robot3"
       )
   """
+
   tag = "Urdf"
 
 
@@ -2245,6 +2413,7 @@ class Gripper(SceneElement):
           key="gripper3"
       )
   """
+
   tag = "Gripper"
 
 
@@ -2273,6 +2442,7 @@ class SkeletalGripper(SceneElement):
       # Skeletal gripper with custom width
       SkeletalGripper(pinchWidth=0.05, key="skel-gripper2")
   """
+
   tag = "SkeletalGripper"
 
 
@@ -2293,6 +2463,7 @@ class Grid(SceneElement):
       # Manual grid placement
       Grid(key="custom-grid")
   """
+
   tag = "Grid"
 
 
@@ -2314,6 +2485,7 @@ class GrabRender(SceneElement):
       # Add to scene to enable frame capture
       GrabRender()
   """
+
   tag = "GrabRender"
   key = "DEFAULT"
 
@@ -2335,6 +2507,7 @@ class PointerControls(SceneElement):
 
       PointerControls(key="pointer-controls")
   """
+
   tag = "PointerControls"
 
 
@@ -2691,6 +2864,7 @@ class BackgroundColor(SceneElement):
       # Custom color
       BackgroundColor(color="#4A90E2", key="bg")
   """
+
   tag = "BackgroundColor"
 
   def __init__(self, color="#131416", **kwargs):
@@ -2732,16 +2906,10 @@ class BBox(SceneElement):
           key="bbox2"
       )
   """
+
   tag = "BBox"
 
-  def __init__(
-    self,
-    min=None,
-    max=None,
-    color="0xffffff",
-    scale=1.01,
-    **kwargs
-  ):
+  def __init__(self, min=None, max=None, color="0xffffff", scale=1.01, **kwargs):
     if min is None:
       min = {"x": -1, "y": -1, "z": -1}
     if max is None:
@@ -2779,28 +2947,49 @@ class Scene(BlockElement):
 
     # Default lighting (controlled by defaultLights parameter)
     # Using HemisphereLightStage to match frontend scene.vuer defaults
-    default_lighting = [
-      HemisphereLightStage(
-        key="light-stage",
-      ),
-    ] if defaultLights else []
+    default_lighting = (
+      [
+        HemisphereLightStage(
+          key="light-stage",
+        ),
+      ]
+      if defaultLights
+      else []
+    )
 
     # Default orbit controls (controlled by defaultOrbitControls parameter)
-    default_orbit_controls = [
-      OrbitControls(key="orb-control", makeDefault=True),
-    ] if defaultOrbitControls else []
+    default_orbit_controls = (
+      [
+        OrbitControls(key="orb-control", makeDefault=True),
+      ]
+      if defaultOrbitControls
+      else []
+    )
 
     # Background infrastructure components, matches frontend scene.vuer defaults:
     # Grid + HemisphereLightStage (lighting) + Gamepad + Hands + MotionControllers + OrbitControls + PerspectiveCamera
-    default_bg_children = [
-      Grid(key="default-grid", _key="default-grid") if grid else None,
-    ] + default_lighting + [
-      Gamepad(key="gamepad-0", index=0),
-      Hands(fps=30, eventType=["squeeze"], stream=True, key="hands"),
-      MotionControllers(fps=30, eventType=["trigger", "squeeze"], stream=True, key="motion-controllers"),
-    ] + default_orbit_controls + [
-      PerspectiveCamera(key="perspective-camera", makeDefault=True, position=[0, 2, 2]),
-    ]
+    default_bg_children = (
+      [
+        Grid(key="default-grid", _key="default-grid") if grid else None,
+      ]
+      + default_lighting
+      + [
+        Gamepad(key="gamepad-0", index=0),
+        Hands(fps=30, eventType=["squeeze"], stream=True, key="hands"),
+        MotionControllers(
+          fps=30,
+          eventType=["trigger", "squeeze"],
+          stream=True,
+          key="motion-controllers",
+        ),
+      ]
+      + default_orbit_controls
+      + [
+        PerspectiveCamera(
+          key="perspective-camera", makeDefault=True, position=[0, 2, 2]
+        ),
+      ]
+    )
 
     # Set bgChildren: use user-provided value, or defaults if None
     self.bgChildren = default_bg_children if bgChildren is None else bgChildren
