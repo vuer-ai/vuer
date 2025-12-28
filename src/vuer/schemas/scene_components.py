@@ -1169,45 +1169,45 @@ class WebRTCStereoVideoPlane(SceneElement):
 
 
 class ImagePlane(Image, SceneElement):
-    """
-    Displays a static image on a plane in 3D space.
+  """
+  Displays a static image on a plane in 3D space.
 
-    Creates a textured plane for displaying images at specific positions and orientations
-    in the 3D scene. Unlike ImageBackground, this plane has a fixed position in world space.
+  Creates a textured plane for displaying images at specific positions and orientations
+  in the 3D scene. Unlike ImageBackground, this plane has a fixed position in world space.
 
-    :param src: URL or path to the image file
-    :type src: str
-    :param position: Position [x, y, z] of the image plane
-    :type position: tuple[float, float, float], optional
-    :param rotation: Rotation [x, y, z] in radians
-    :type rotation: tuple[float, float, float], optional
-    :param scale: Scale of the image plane
-    :type scale: float | tuple[float, float, float], optional
-    :param opacity: Transparency of the image (0-1)
-    :type opacity: float, optional, default 1.0
+  :param src: URL or path to the image file
+  :type src: str
+  :param position: Position [x, y, z] of the image plane
+  :type position: tuple[float, float, float], optional
+  :param rotation: Rotation [x, y, z] in radians
+  :type rotation: tuple[float, float, float], optional
+  :param scale: Scale of the image plane
+  :type scale: float | tuple[float, float, float], optional
+  :param opacity: Transparency of the image (0-1)
+  :type opacity: float, optional, default 1.0
 
-    Example Usage::
+  Example Usage::
 
-        from vuer.schemas import ImagePlane
+      from vuer.schemas import ImagePlane
 
-        # Simple image plane
-        ImagePlane(
-            src="image.png",
-            position=[0, 1, -2],
-            key="img1"
-        )
+      # Simple image plane
+      ImagePlane(
+          src="image.png",
+          position=[0, 1, -2],
+          key="img1"
+      )
 
-        # Rotated and scaled image
-        ImagePlane(
-            src="poster.jpg",
-            position=[2, 1.5, -1],
-            rotation=[0, 0.5, 0],
-            scale=2,
-            key="img2"
-        )
-    """
+      # Rotated and scaled image
+      ImagePlane(
+          src="poster.jpg",
+          position=[2, 1.5, -1],
+          rotation=[0, 0.5, 0],
+          scale=2,
+          key="img2"
+      )
+  """
 
-    tag = "ImagePlane"
+  tag = "ImagePlane"
 
 
 class Group(SceneElement):
