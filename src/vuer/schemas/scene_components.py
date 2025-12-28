@@ -1894,6 +1894,154 @@ class Bodies(SceneElement):
     """
     Bodies component for tracking full-body XR poses using the WebXR Body Tracking API.
 
+    .. admonition:: tip Setting stream to True
+
+        Important: You need to set the `stream` option to `True` to
+        start streaming the body pose data to the server.
+
+    .. admonition:: warning Experimental API
+
+        The WebXR Body Tracking API is experimental and currently only supported
+        in Quest Browser. Enable WebXR Experiments flags in chrome://flags.
+
+    The Bodies component streams the full 3D pose of the human body to the server in
+    real time. You can listen to the `BODY_MOVE` event to receive body pose data.
+    The data includes body joints and optionally left/right hand joints.
+
+    **Returned Data**
+
+    The `BODY_MOVE` event sends a `BodyData` object containing flattened arrays:
+
+    .. code-block:: typescript
+
+        type BodyData = {
+          body: number[];      // 33 joints × 16 floats = 528 floats
+          leftHand: number[];  // 25 joints × 16 floats = 400 floats
+          rightHand: number[]; // 25 joints × 16 floats = 400 floats
+        };
+
+    **Matrix Format**
+
+    All 4x4 transform matrices are stored in 16-element arrays in column-major order:
+
+    .. code-block::
+
+                                        ⌈  a0 a4 a8 a12  ⌉
+                                        |  a1 a5 a9 a13  |
+                                        |  a2 a6 a10 a14 |
+                                        ⌊  a3 a7 a11 a15 ⌋
+
+    **Body Joints (33 joints)**
+
+    We follow the `WebXR Body Tracking specification <https://immersive-web.github.io/body-tracking/>`_.
+
+    .. list-table::
+       :widths: 40 10 40 10
+       :header-rows: 1
+
+       * - Body Joint
+         - Index
+         - Body Joint (continued)
+         - Index
+       * - hips
+         - 0
+         - left-hand-palm
+         - 17
+       * - spine-lower
+         - 1
+         - right-hand-palm
+         - 18
+       * - spine-middle
+         - 2
+         - left-upper-leg
+         - 19
+       * - spine-upper
+         - 3
+         - left-lower-leg
+         - 20
+       * - chest
+         - 4
+         - left-foot-ankle-twist
+         - 21
+       * - neck
+         - 5
+         - left-foot-ankle
+         - 22
+       * - head
+         - 6
+         - left-foot-subtalar
+         - 23
+       * - left-shoulder
+         - 7
+         - left-foot-transverse
+         - 24
+       * - left-scapula
+         - 8
+         - left-foot-ball
+         - 25
+       * - left-arm-upper
+         - 9
+         - right-upper-leg
+         - 26
+       * - left-arm-lower
+         - 10
+         - right-lower-leg
+         - 27
+       * - left-hand-wrist-twist
+         - 11
+         - right-foot-ankle-twist
+         - 28
+       * - right-shoulder
+         - 12
+         - right-foot-ankle
+         - 29
+       * - right-scapula
+         - 13
+         - right-foot-subtalar
+         - 30
+       * - right-arm-upper
+         - 14
+         - right-foot-transverse
+         - 31
+       * - right-arm-lower
+         - 15
+         - right-foot-ball
+         - 32
+       * - right-hand-wrist-twist
+         - 16
+         - -
+         - -
+
+    **Usage Example**
+
+    .. code-block:: python
+
+        from asyncio import sleep
+        from vuer import Vuer, VuerSession
+        from vuer.schemas import Bodies
+
+        app = Vuer()
+
+
+        @app.add_handler("BODY_MOVE")
+        async def on_body_move(event, session):
+            body = event.value.get("body", [])
+            left = event.value.get("leftHand", [])
+            right = event.value.get("rightHand", [])
+            print(f"body: {len(body)//16} joints, hands: L={len(left)//16} R={len(right)//16}")
+
+
+        @app.spawn(start=True)
+        async def main(session: VuerSession):
+            # Important: stream=True is required to receive BODY_MOVE events
+            session.upsert @ Bodies(
+                stream=True,
+                fps=30,
+            )
+
+            while True:
+                await sleep(1)
+
     :param key: Unique identifier for the body tracking instance.
     :type key: str, optional
     :param stream: Whether to enable streaming of body pose data to the server.
