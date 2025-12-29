@@ -2376,6 +2376,106 @@ class Fbx(SceneElement):
     tag = "Fbx"
 
 
+class VectorTrack(SceneElement):
+    """Vector Track for AnimationClip
+
+    Creates a Three.js VectorKeyframeTrack for animating position or scale properties.
+    Must be used as a child of AnimationClip.
+
+    :param name: Target property path (e.g., 'mixamorigHips.position')
+    :type name: str
+    :param times: Array of keyframe times in seconds
+    :type times: list[float]
+    :param values: Array of Vector3 values (flattened: [x1, y1, z1, x2, y2, z2, ...])
+    :type values: list[float]
+
+    Example Usage::
+
+        VectorTrack(
+            name="mixamorigHips.position",
+            times=[0, 0.5, 1.0],
+            values=[0, 0, 0,  0, 0.1, 0,  0, 0, 0],
+        )
+    """
+
+    tag = "VectorTrack"
+
+
+class QuaternionTrack(SceneElement):
+    """Quaternion Track for AnimationClip
+
+    Creates a Three.js QuaternionKeyframeTrack for animating rotation properties.
+    Must be used as a child of AnimationClip.
+
+    :param name: Target property path (e.g., 'mixamorigSpine.quaternion')
+    :type name: str
+    :param times: Array of keyframe times in seconds
+    :type times: list[float]
+    :param values: Array of Quaternion values (flattened: [x1, y1, z1, w1, x2, y2, z2, w2, ...])
+    :type values: list[float]
+
+    Example Usage::
+
+        QuaternionTrack(
+            name="mixamorigSpine.quaternion",
+            times=[0, 0.5, 1.0],
+            values=[0, 0, 0, 1,  0, 0.1, 0, 0.995,  0, 0, 0, 1],
+        )
+    """
+
+    tag = "QuaternionTrack"
+
+
+class AnimationClip(SceneElement):
+    """Declarative AnimationClip for FBX/GLB models
+
+    Creates a Three.js AnimationClip from declarative VectorTrack and QuaternionTrack children.
+    Use as a child of Fbx or Glb components to add custom keyframe animations.
+
+    :param name: Name of the animation clip
+    :type name: str
+    :param duration: Duration of the clip in seconds (auto-calculated if not provided)
+    :type duration: float, optional
+
+    Example Usage::
+
+        from vuer import Vuer
+        from vuer.schemas import Fbx, AnimationClip, VectorTrack, QuaternionTrack
+
+        app = Vuer()
+
+        @app.spawn
+        async def main(proxy):
+            proxy.set @ Fbx(
+                src="/assets/character.fbx",
+                playAnimation=True,
+                animationIndex=0,
+                children=[
+                    AnimationClip(
+                        name="custom-idle",
+                        duration=1.0,
+                        children=[
+                            VectorTrack(
+                                name="mixamorigHips.position",
+                                times=[0, 0.5, 1.0],
+                                values=[0, 0, 0,  0, 0.1, 0,  0, 0, 0],
+                            ),
+                            QuaternionTrack(
+                                name="mixamorigSpine.quaternion",
+                                times=[0, 0.5, 1.0],
+                                values=[0, 0, 0, 1,  0, 0.1, 0, 0.995,  0, 0, 0, 1],
+                            ),
+                        ]
+                    )
+                ]
+            )
+
+        app.run()
+    """
+
+    tag = "AnimationClip"
+
+
 class FbxSkeleton(SceneElement):
     """FBX Skeleton Viewer Component
 
