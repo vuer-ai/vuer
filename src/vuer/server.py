@@ -491,6 +491,9 @@ class Vuer(Server):
   cors: str = EnvVar("CORS", default="https://vuer.ai,https://staging.vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*").get()  # CORS allowed origins
   queries: Dict = EnvVar("QUERIES", default=None).get()  # URL query parameters to pass to client
 
+  # Proxy configuration
+  proxy_url: str = EnvVar("PROXY_URL", default=None).get()  # External proxy URL (e.g., "https://abc123.ngrok.io" or "https://your-tunnel.loca.lt")
+
   client_root: Path = Path(__file__).parent / "client_build"  # Path to client build directory
 
   verbose: bool = EnvVar("VERBOSE", dtype=bool, default=False).get()  # Print server settings on startup
@@ -623,6 +626,73 @@ class Vuer(Server):
       return wrapper
     else:
       return wrapper(fn)
+
+  def _get_local_ip(self):
+    """Get the local IP address of this machine.
+
+    :return: Local IP address as a string, or None if unable to determine.
+    """
+    import socket
+    try:
+      # Create a socket connection to determine the local IP
+      # We don't actually connect, just use this to determine which interface would be used
+      s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+      s.settimeout(0)
+      try:
+        # Connect to a public DNS server (doesn't actually send data)
+        s.connect(('8.8.8.8', 80))
+        local_ip = s.getsockname()[0]
+      finally:
+        s.close()
+      return local_ip
+    except Exception:
+      return None
+
+  def _print_connection_info(self):
+    """Print comprehensive connection information for local and VR device access."""
+    import os
+
+    # Build query string if needed
+    query_str = ""
+    if self.queries:
+      query_str = "&" + "&".join([f"{k}={v}" for k, v in self.queries.items()])
+
+    print("Vuer Server Started")
+
+    # Always show localhost URL first
+    localhost_ws = f"ws://localhost:{self.port}"
+    print(f"Local Access: {self.domain}?ws={localhost_ws}{query_str}")
+
+    # Determine VR device access based on proxy or TLS configuration
+    if self.proxy_url:
+      # Using a proxy (ngrok, localtunnel, etc.)
+      # The proxy handles TLS, so use wss:// regardless of local cert
+      proxy_ws = self.proxy_url.replace("https://", "wss://").replace("http://", "ws://")
+      print(f"VR Device Access (via proxy): {self.domain}?ws={proxy_ws}{query_str}")
+      print(f"[OK] Proxy configured - WebXR ready")
+
+    else:
+      # Direct connection (no proxy) - check for TLS
+      local_ip = self._get_local_ip()
+
+      # VR device access (only show if TLS is enabled, since WebXR requires it)
+      if local_ip and local_ip != "127.0.0.1":
+        if self.cert:
+          # TLS enabled - show VR access URL
+          protocol = "wss"
+          local_ip_ws = f"{protocol}://{local_ip}:{self.port}"
+          print(f"VR Device Access (same WiFi network): {self.domain}?ws={local_ip_ws}{query_str}")
+          print(f"[OK] TLS/HTTPS enabled - WebXR ready")
+        else:
+          # No TLS - just show warning
+          print(f"[!] TLS/HTTPS NOT enabled - WebXR will NOT work on VR devices")
+          print(f"    To enable WebXR on VR devices, set up TLS using one of these methods:")
+          print(f"    - Self-signed cert: Vuer(cert='cert.pem', key='key.pem')")
+          print(f"    - ngrok/localtunnel: Vuer(proxy_url='https://your-url')")
+
+      if self.host == "0.0.0.0":
+        print(f"Listening on: 0.0.0.0:{self.port} (all interfaces)")
+
 
   def get_url(self):
     """
@@ -974,9 +1044,9 @@ class Vuer(Server):
 
     # serve local files via /static endpoint
     self._add_static("/static", self.static_root)
-    print("Serving file://" + os.path.abspath(self.static_root), "at", "/static")
     self._add_route("/relay", self.relay, method="POST")
 
-    print("Visit: " + self.get_url())
+    # Print comprehensive connection information
+    self._print_connection_info()
 
     super().start()

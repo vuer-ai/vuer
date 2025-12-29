@@ -19,13 +19,14 @@ Choose the approach that best fits your needs:
 |--------|----------|------------|------|
 | [Self-signed certificate](self_signed_cert.md) | Local development, LAN access | Low | Free |
 | [ngrok](ngrok_setup.md) | Quick setup, internet access | Low | Free tier available |
-| [localtunnel](#using-localtunnel-as-a-proxy) | Free internet access | Low | Free |
+| [localtunnel](localtunnel_setup.md) | Free internet access | Low | Free |
 | nginx reverse proxy | Advanced setups | Medium | Free |
 
 ```{admonition} Recommended for Beginners
 :class: tip
 - **VR headset on the same WiFi network as your computer?** → Use [self-signed certificates](self_signed_cert.md)
 - **VR headset on a different network or need to share with others?** → Use [ngrok](ngrok_setup.md)
+- **Don't want to pay for ngrok?** → Use [localtunnel](localtunnel_setup.md) (completely free alternative)
 ```
 
 ## Important Configuration Notes
@@ -92,57 +93,25 @@ sess.upsert @ URDF(
 
 ## Setup Methods
 
-### Using Self-Signed Certificates (Local Development)
+### Self-Signed Certificates (Local Development)
 
-**Best for:** Connecting your VR headset when it's on the same WiFi network as your development machine
+Best for connecting your VR headset when it's on the same WiFi network as your development machine.
 
-For detailed instructions on setting up and using self-signed certificates with Vuer for local development, please see the [self-signed certificate setup guide](self_signed_cert.md).
+See the [self-signed certificate setup guide](self_signed_cert.md) for complete instructions.
 
-**Quick overview:**
-1. Generate certificates with OpenSSL
-2. Configure Vuer to use the certificates
-3. Access via `https://<your-local-IP>:8012`
+### ngrok (Internet Access)
 
-### Using ngrok (Internet Access)
+Best for connecting your VR headset from anywhere or sharing your Vuer session with remote users. Requires a free account.
 
-**Best for:** Connecting your VR headset from anywhere (different WiFi network), or sharing your Vuer session with remote users
+See the [ngrok setup guide](ngrok_setup.md) for complete instructions.
 
-For detailed instructions on setting up and using ngrok with Vuer, including both free tier and paid subscription options, please see the [ngrok setup guide](ngrok_setup.md).
+### localtunnel (Free Alternative)
 
-**Quick overview:**
-1. Install and authenticate ngrok
-2. Start ngrok tunnel: `ngrok http 8012`
-3. Access via the ngrok URL: `https://abc123.ngrok.io`
+Best for connecting your VR headset from anywhere without creating an account. Completely free and open-source.
 
-### Using localtunnel (Free Alternative)
+See the [localtunnel setup guide](localtunnel_setup.md) for complete instructions.
 
-**Best for:** Quick testing with your VR headset without creating an account
-
-[localtunnel](https://localtunnel.me) provides free tunneling service similar to ngrok, but requires entering a passcode when accessing.
-
-**Installation:**
-```bash
-npm install -g localtunnel
-```
-
-**Usage:**
-```bash
-# Start your Vuer server first
-# Then create a tunnel
-lt --port 8012
-```
-
-You'll receive a URL like `https://xyz.loca.lt`. Access it via:
-```
-https://vuer.ai?ws=wss://xyz.loca.lt
-```
-
-```{admonition} Volunteers Needed!
-:class: info
-We're looking for contributors to expand this section with detailed localtunnel examples. If interested, please submit a PR or contact the maintainers.
-```
-
-### Using nginx as a Reverse Proxy
+### nginx Reverse Proxy
 
 ```{admonition} Volunteers Needed!
 :class: info
