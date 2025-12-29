@@ -11,7 +11,7 @@ from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import Response
 from aiohttp.web_ws import WebSocketResponse
 from msgpack import packb, unpackb
-from params_proto import proto, EnvVar
+from params_proto import EnvVar, proto
 from websockets import ConnectionClosedError
 
 from vuer.base import Server, handle_file_request, websocket_handler
@@ -446,6 +446,7 @@ class VuerSession:
 
 
 DEFAULT_PORT = 8012
+DEFAULT_CORS = "https://vuer.ai,https://staging.vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
 
 
 @proto.prefix
@@ -485,13 +486,15 @@ class Vuer(Server):
   # Vuer-specific settings (host, cert, key, ca_cert inherited from Server)
   domain: str = "https://vuer.ai"
   port: int = EnvVar @ "PORT" | DEFAULT_PORT
+  cors: str = EnvVar @ "CORS" | DEFAULT_CORS
   free_port: bool = False
   static_root: str = "."
   queue_len: int = 100
-  cors: str = EnvVar @ "CORS" | "https://vuer.ai,https://staging.vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
   queries: Dict = None  # URL query parameters to pass to client
 
-  client_root: Path = Path(__file__).parent / "client_build"  # Path to client build directory
+  client_root: Path = (
+    Path(__file__).parent / "client_build"
+  )  # Path to client build directory
 
   verbose: bool = False  # Print server settings on startup
 
@@ -930,10 +933,11 @@ class Vuer(Server):
         Use :meth:`start` instead. This method will be removed in a future version.
     """
     import warnings
+
     warnings.warn(
       "Vuer.run() is deprecated, use Vuer.start() instead",
       DeprecationWarning,
-      stacklevel=2
+      stacklevel=2,
     )
     self.start(free_port=free_port, *args, **kwargs)
 
@@ -949,7 +953,7 @@ class Vuer(Server):
 
       try:
         kill_ports(ports=[self.port])
-      except ProcessLookupError as e:
+      except ProcessLookupError:
         # Race condition - process disappeared during check
         pass  # Port may already be free
       except ImportError as e:
