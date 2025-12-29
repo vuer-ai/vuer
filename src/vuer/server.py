@@ -11,7 +11,7 @@ from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import Response
 from aiohttp.web_ws import WebSocketResponse
 from msgpack import packb, unpackb
-from params_proto import proto
+from params_proto import proto, EnvVar
 from websockets import ConnectionClosedError
 
 from vuer.base import Server, handle_file_request, websocket_handler
@@ -483,12 +483,12 @@ class Vuer(Server):
   """
 
   # Vuer-specific settings (host, cert, key, ca_cert inherited from Server)
-  domain: str = "https://vuer.ai"  # URL of the Vuer web client
-  port: int = DEFAULT_PORT  # Server port (default 8012)
-  free_port: bool = False  # Kill existing process on port if True
-  static_root: str = "."  # Root directory for serving static files
-  queue_len: int = 100  # Max event queue length to prevent memory blowup
-  cors: str = "https://vuer.ai,https://staging.vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"  # CORS allowed origins
+  domain: str = "https://vuer.ai"
+  port: int = EnvVar @ "PORT" | DEFAULT_PORT
+  free_port: bool = False
+  static_root: str = "."
+  queue_len: int = 100
+  cors: str = EnvVar @ "CORS" | "https://vuer.ai,https://staging.vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
   queries: Dict = None  # URL query parameters to pass to client
 
   client_root: Path = Path(__file__).parent / "client_build"  # Path to client build directory
