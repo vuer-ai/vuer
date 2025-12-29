@@ -99,9 +99,9 @@ class Server:
     port: int = EnvVar @ "PORT" | 8012
     cors: str = EnvVar @ "CORS" | "*"
 
-    cert: str = EnvVar @ "SSL_CERT" | None
-    key: str = EnvVar @ "SSL_KEY" | None
-    ca_cert: str = EnvVar @ "SSL_CA_CERT" | None
+    cert: str = EnvVar @ "VUER_SSL_CERT" | None
+    key: str = EnvVar @ "VUER_SSL_KEY" | None
+    ca_cert: str = EnvVar @ "VUER_SSL_CA_CERT" | None
 
     WEBSOCKET_MAX_SIZE: int = EnvVar @ "WEBSOCKET_MAX_SIZE" | 2**28
     REQUEST_MAX_SIZE: int = EnvVar @ "REQUEST_MAX_SIZE" | 2**28
