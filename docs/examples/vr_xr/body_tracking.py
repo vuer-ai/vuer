@@ -1,6 +1,7 @@
 import os
-from cmx import doc
 from contextlib import nullcontext
+
+from cmx import doc
 
 MAKE_DOCS = os.getenv("MAKE_DOCS", True)
 
@@ -26,7 +27,7 @@ Please read the relevant documentation of ngrok or localtunnel before proceeding
 
 ### Body Tracking API
 
-You can access the full body pose by listening to the `BODY_TRACKING_MOVE` event.
+You can access the full body pose by listening to the `BODY_MOVE` event.
 The event will send all tracked joint positions and orientations as transformation matrices, indexed by [XRBodyJoint](https://immersive-web.github.io/body-tracking/#xrbodyjoint-enum).
 
 ```{admonition} Warning
@@ -65,65 +66,66 @@ Here’s what Body Tracking looks like on devices that support it (e.g., Meta Qu
 """
 
 with doc, doc.skip if MAKE_DOCS else nullcontext():
-    from vuer import Vuer, VuerSession
-    from vuer.schemas import Bodies
-    from asyncio import sleep
+  from asyncio import sleep
 
-    app = Vuer()
+  from vuer import Vuer, VuerSession
+  from vuer.schemas import Body
 
-    @app.add_handler("BODY_TRACKING_MOVE")
-    async def on_body_move(event, session):
-        """
-        Handle incoming BODY_TRACKING_MOVE events from the client.
-        event.value should be a BodiesData dictionary:
-          { jointName: { matrix: Float32Array-like, ... }, ... }
-        """
-        print(f"BODY_TRACKING_MOVE: key={event.key} ts={getattr(event, 'ts', None)}")
+  app = Vuer()
 
-        # Example: print only the first joint to avoid large output
-        if event.value:
-            first_joint, first_data = next(iter(event.value.items()))
-            print(
-                first_joint,
-                "matrix_len=",
-                len(first_data.get("matrix", [])) if first_data else None,
-            )
+  @app.add_handler("BODY_MOVE")
+  async def on_body_move(event, session):
+    """
+    Handle incoming BODY_MOVE events from the client.
+    event.value contains flattened Float32Arrays:
+      { body: [...], leftHand: [...], rightHand: [...] }
+    Each array contains 16 floats per joint (4x4 matrix) concatenated.
+    """
+    print(f"BODY_MOVE: key={event.key} ts={getattr(event, 'ts', None)}")
 
-    @app.spawn(start=True)
-    async def main(session: VuerSession):
-        """
-        Add the Bodies element to the scene and start streaming body tracking data.
-        """
-        session.upsert(
-            Bodies(
-                key="body_tracking",  # Optional unique identifier (default: "body_tracking")
-                stream=True,  # Must be True to start streaming data
-                fps=30,  # Send data at 30 frames per second
-                hideIndicate=False,  # Hide joint indicators in the scene but still stream data
-                showFrame=False,  # Display coordinate frames at each joint
-                frameScale=0.02,  # Scale of the coordinate frames or markers
-            ),
-            to="children",
-        )
+    if event.value:
+      body_data = event.value.get("body", [])
+      left_hand = event.value.get("leftHand", [])
+      right_hand = event.value.get("rightHand", [])
+      print(f"body: {len(body_data)} floats ({len(body_data) // 16} joints)")
+      print(f"leftHand: {len(left_hand)} floats, rightHand: {len(right_hand)} floats")
 
-        # Keep the session alive
-        while True:
-            await sleep(1)
+  @app.spawn(start=True)
+  async def main(session: VuerSession):
+    """
+    Add the Body element to the scene and start streaming body tracking data.
+    """
+    session.upsert @ Body(
+      key="body_tracking",  # Optional unique identifier (default: "body_tracking")
+      stream=True,  # Must be True to start streaming data
+      leftHand=True,  # Include left hand tracking data
+      rightHand=True,  # Include right hand tracking data
+      fps=30,  # Send data at 30 frames per second
+      hideBody=False,  # Hide body visualization but still stream data
+      showFrame=True,  # Display coordinate frames at each joint
+      frameScale=0.02,  # Scale of the coordinate frames or markers
+    )
+
+    # Keep the session alive
+    while True:
+      await sleep(1)
 
 
 doc @ """
 
 ### Returned Data
 
-The `BODY_TRACKING_MOVE` event sends a `BodiesData` object containing **all joints** and their transform matrices:
+The `BODY_MOVE` event sends a `BodyData` object containing flattened arrays of joint matrices:
 
 ```ts
-export type BodiesData = {
-  [jointName: string]: {
-    matrix: Float32Array; // 4x4 matrix in column-major order
-  };
+type BodyData = {
+  body: number[];      // Flattened array: 16 floats per joint × N body joints
+  leftHand: number[];  // Flattened array: 16 floats per joint × 25 hand joints
+  rightHand: number[]; // Flattened array: 16 floats per joint × 25 hand joints
 };
 ```
+
+Each joint's 4×4 transformation matrix is stored as 16 consecutive floats in column-major order.
 
 ---
 

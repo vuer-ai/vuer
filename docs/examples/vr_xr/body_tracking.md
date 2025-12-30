@@ -56,13 +56,13 @@ Here’s what Body Tracking looks like on devices that support it (e.g., Meta Qu
 
 ### Example
 
-
 ```python
 from vuer import Vuer, VuerSession
-from vuer.schemas import Bodies
+from vuer.schemas import Body
 from asyncio import sleep
 
 app = Vuer()
+
 
 @app.add_handler("BODY_TRACKING_MOVE")
 async def on_body_move(event, session):
@@ -82,13 +82,14 @@ async def on_body_move(event, session):
             len(first_data.get("matrix", [])) if first_data else None,
         )
 
+
 @app.spawn(start=True)
 async def main(session: VuerSession):
     """
-    Add the Bodies element to the scene and start streaming body tracking data.
+    Add the Body element to the scene and start streaming body tracking data.
     """
     session.upsert(
-        Bodies(
+        Body(
             key="body_tracking",  # Optional unique identifier (default: "body_tracking")
             stream=True,  # Must be True to start streaming data
             fps=30,  # Send data at 30 frames per second

@@ -105,26 +105,26 @@ async def on_shutdown(app):
     pcs.clear()
 
 
-from params_proto.v2 import ParamsProto, Proto, Flag
+from params_proto import proto
 
 
-class Args(ParamsProto):
-    description = "WebRTC webcam demo"
-    cert_file = Proto(help="SSL certificate file (for HTTPS)")
-    key_file = Proto(help="SSL key file (for HTTPS)")
+@proto.prefix
+class Args:
+    """WebRTC webcam demo"""
 
-    host = Proto(default="localhost", help="Host for HTTP server (default: 0.0.0.0)")
-    port = Proto(default=8080, dtype=int, help="Port for HTTP server (default: 8080)")
+    cert_file: str = None  # SSL certificate file (for HTTPS)
+    key_file: str = None  # SSL key file (for HTTPS)
 
-    play_from = Proto(help="Read the media from a file and send it.")
-    play_without_decoding = Flag(
-        "Read the media without decoding it (experimental). For now it only works with an MPEGTS container with only H.264 video."
-    )
+    host: str = "localhost"  # Host for HTTP server (default: 0.0.0.0)
+    port: int = 8080  # Port for HTTP server
 
-    audio_codec = Proto(help="Force a specific audio codec (e.g. audio/opus)")
-    video_codec = Proto(help="Force a specific video codec (e.g. video/H264)")
+    play_from: str = None  # Read the media from a file and send it
+    play_without_decoding: bool = False  # Read the media without decoding it (experimental)
 
-    verbose = Flag()
+    audio_codec: str = None  # Force a specific audio codec (e.g. audio/opus)
+    video_codec: str = None  # Force a specific video codec (e.g. video/H264)
+
+    verbose: bool = False
 
 
 if __name__ == "__main__":
