@@ -447,6 +447,7 @@ class VuerSession:
 
 DEFAULT_PORT = 8012
 DEFAULT_CORS = "https://vuer.ai,https://staging.vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
+DEFAULT_CLIENT_ROOT: Path = Path(__file__).parent / "client_build"
 
 
 @proto.prefix
@@ -484,18 +485,16 @@ class Vuer(Server):
   """
 
   # Vuer-specific settings (host, cert, key, ca_cert inherited from Server)
-  domain: str = "https://vuer.ai"
-  port: int = EnvVar @ "PORT" | DEFAULT_PORT
-  cors: str = EnvVar @ "CORS" | DEFAULT_CORS
+  domain: str = EnvVar @ "VUER_DOMAIN" | "https://vuer.ai"
+
+  port: int = EnvVar @ "VUER_PORT" | DEFAULT_PORT
+  cors: str = EnvVar @ "VUER_CORS" | DEFAULT_CORS
+  static_root: str = EnvVar @ "VUER_STATIC_ROOT" | "."
+
   free_port: bool = False
-  static_root: str = "."
   queue_len: int = 100
   queries: Dict = None  # URL query parameters to pass to client
-
-  client_root: Path = (
-    Path(__file__).parent / "client_build"
-  )  # Path to client build directory
-
+  client_root: Path = DEFAULT_CLIENT_ROOT  # Path to client build directory
   verbose: bool = False  # Print server settings on startup
 
   def _proxy(self, ws_id) -> "VuerSession":
