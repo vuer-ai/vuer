@@ -1,9 +1,10 @@
 import os
 from contextlib import nullcontext
 
+import dotvar.auto_load  # noqa
 from cmx import doc
 
-MAKE_DOCS = os.getenv("MAKE_DOCS", True)
+MAKE_DOCS = os.getenv("MAKE_DOCS", "false").lower() == "true"
 
 doc @ """
 ## Body Tracking
@@ -71,7 +72,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
   from vuer import Vuer, VuerSession
   from vuer.schemas import Body
 
-  app = Vuer()
+  app = Vuer(verbose=True)
 
   @app.add_handler("BODY_MOVE")
   async def on_body_move(event, session):
