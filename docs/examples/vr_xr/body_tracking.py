@@ -1,5 +1,6 @@
 import os
 from contextlib import nullcontext
+from datetime import datetime
 
 import dotvar.auto_load  # noqa
 from cmx import doc
@@ -82,14 +83,16 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
       { body: [...], leftHand: [...], rightHand: [...] }
     Each array contains 16 floats per joint (4x4 matrix) concatenated.
     """
-    print(f"BODY_MOVE: key={event.key} ts={getattr(event, 'ts', None)}")
 
     if event.value:
       body_data = event.value.get("body", [])
-      left_hand = event.value.get("leftHand", [])
-      right_hand = event.value.get("rightHand", [])
-      print(f"body: {len(body_data)} floats ({len(body_data) // 16} joints)")
-      print(f"leftHand: {len(left_hand)} floats, rightHand: {len(right_hand)} floats")
+      print(
+        f"BODY_MOVE {datetime.now() - event.ts} "
+        f"body: {len(body_data)} floats ({len(body_data) // 16} joints)"
+      )
+      # left_hand = event.value.get("leftHand", [])
+      # right_hand = event.value.get("rightHand", [])
+      # print(f"leftHand: {len(left_hand)} floats, rightHand: {len(right_hand)} floats")
 
   @app.spawn(start=True)
   async def main(session: VuerSession):
@@ -101,7 +104,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
       stream=True,  # Must be True to start streaming data
       leftHand=True,  # Include left hand tracking data
       rightHand=True,  # Include right hand tracking data
-      fps=30,  # Send data at 30 frames per second
+      fps=60,  # Send data at 60 frames per second
       hideBody=False,  # Hide body visualization but still stream data
       showFrame=True,  # Display coordinate frames at each joint
       frameScale=0.02,  # Scale of the coordinate frames or markers
