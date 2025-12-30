@@ -93,6 +93,42 @@ This keeps all other defaults (Grid, Lights, etc.) while only removing OrbitCont
 - Fixed viewpoint demonstrations
 - Guided tours with programmatic camera animation
 
+### Streaming Camera Updates to the Server
+
+You can stream camera position and orientation changes to the server in real-time by enabling the `stream` parameter:
+
+```python
+from vuer import Vuer, VuerSession
+from vuer.schemas import Scene, Box, OrbitControls
+
+app = Vuer()
+
+@app.spawn(start=True)
+async def main(session: VuerSession):
+    session.set @ Scene(
+        Box(args=[1, 1, 1], position=[0, 0.5, 0], key="box"),
+
+        bgChildren=[
+            OrbitControls(stream=True, key="controls"),
+        ],
+    )
+
+    # Listen for camera move events
+    @session.on("CAMERA_MOVE")
+    async def handle_camera_move(event):
+        camera = event.value["camera"]
+        print(f"Camera position: {camera.position}")
+        # Use camera data for custom logic (recording, analysis, etc.)
+
+    await session.forever()
+```
+
+**Use cases:**
+- Record camera trajectories for animation playback
+- Send camera state to other clients for shared viewing
+- Analyze camera movement patterns
+- Synchronize multiple views with camera position
+
 ## Camera Types
 
 Vuer supports two main camera types: **PerspectiveCamera** and **OrthographicCamera**. Each serves different purposes in 3D visualization.
@@ -230,19 +266,44 @@ Control default camera and controls behavior through Scene parameters:
 
 ### OrbitControls
 
+**Control Settings:**
+
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `target` | `[x, y, z]` | `[0, 0, 0]` | Point to orbit around |
-| `enableDamping` | `bool` | False | Enable smooth damping |
-| `dampingFactor` | `float` | 0.05 | Damping strength (lower = smoother) |
+| `enableDamping` | `bool` | False | Enable smooth damping (inertia) |
+| `enableRotate` | `bool` | True | Allow rotation/orbiting |
 | `enableZoom` | `bool` | True | Allow zoom in/out |
 | `enablePan` | `bool` | True | Allow panning |
-| `enableRotate` | `bool` | True | Allow rotation |
+| `screenSpacePanning` | `bool` | True | Pan in screen space vs. camera space |
+| `makeDefault` | `bool` | True | Set as default controls |
+
+**Distance Limits:**
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
 | `minDistance` | `float` | 0 | Minimum zoom distance |
-| `maxDistance` | `float` | Infinity | Maximum zoom distance |
-| `minPolarAngle` | `float` | 0 | Minimum vertical angle (radians) |
-| `maxPolarAngle` | `float` | π | Maximum vertical angle (radians) |
-| `makeDefault` | `bool` | False | Set as default controls |
+| `maxDistance` | `float` | 1000 | Maximum zoom distance |
+
+**Angle Limits (degrees):**
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `minPolarAngle` | `float` | 0 | Minimum vertical angle (0-180) |
+| `maxPolarAngle` | `float` | 135 | Maximum vertical angle (0-180) |
+
+**Speed Settings:**
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `rotateSpeed` | `float` | 1.0 | Rotation speed multiplier |
+| `zoomSpeed` | `float` | 1.0 | Zoom speed multiplier |
+| `panSpeed` | `float` | 1.0 | Pan speed multiplier |
+
+**Server Integration:**
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `stream` | `bool` | False | Report camera move events to server |
 
 ## What's Next?
 

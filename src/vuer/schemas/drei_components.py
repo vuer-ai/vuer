@@ -174,8 +174,15 @@ class Facemesh(SceneElement):
 class OrbitControls(SceneElement):
     """Camera controls for orbiting, panning, and zooming around a target.
 
-    OrbitControls provides intuitive camera control through mouse/touch interactions.
+    OrbitControls provides intuitive camera control through mouse/touch interactions:
+    - Left-click + drag: Rotate around target
+    - Right-click + drag: Pan
+    - Scroll wheel: Zoom in/out
+    - Touch: Multi-touch gestures supported
+
     Included in the default scene in bgChildren to enable interactive camera controls.
+
+    **Control Options:**
 
     :param enableDamping: Enable smooth damping (inertia). Default: False
     :type enableDamping: bool, optional
@@ -187,8 +194,9 @@ class OrbitControls(SceneElement):
     :type enableRotate: bool, optional
     :param enableZoom: Enable zooming. Default: True
     :type enableZoom: bool, optional
-    :param makeDefault: Make this the default controls. Default: True
-    :type makeDefault: bool, optional
+
+    **Camera Limits:**
+
     :param maxPolarAngle: Maximum polar angle in degrees (0-180). Default: 135
     :type maxPolarAngle: float, optional
     :param minPolarAngle: Minimum polar angle in degrees (0-180). Default: 0
@@ -197,6 +205,9 @@ class OrbitControls(SceneElement):
     :type maxDistance: float, optional
     :param minDistance: Minimum zoom distance. Default: 0
     :type minDistance: float, optional
+
+    **Speed Settings:**
+
     :param zoomSpeed: Zoom speed multiplier. Default: 1.0
     :type zoomSpeed: float, optional
     :param rotateSpeed: Rotation speed multiplier. Default: 1.0
@@ -204,12 +215,45 @@ class OrbitControls(SceneElement):
     :param panSpeed: Pan speed multiplier. Default: 1.0
     :type panSpeed: float, optional
 
-    Usage::
+    **Server Integration:**
+
+    :param stream: Report camera move events to the server. Default: False
+    :type stream: bool, optional
+    :param makeDefault: Make this the default controls. Default: True
+    :type makeDefault: bool, optional
+
+    **Examples:**
+
+    Basic usage::
 
         session.set @ Scene(
             Box(args=[0.2, 0.2, 0.2], key="box"),
             bgChildren=[
-                OrbitControls(makeDefault=True, enableDamping=True, key="controls"),
+                OrbitControls(makeDefault=True, key="controls"),
+            ],
+        )
+
+    With streaming camera updates to server::
+
+        session.set @ Scene(
+            Box(args=[0.2, 0.2, 0.2], key="box"),
+            bgChildren=[
+                OrbitControls(stream=True, enableDamping=True, key="controls"),
+            ],
+        )
+
+    With custom limits::
+
+        session.set @ Scene(
+            Box(args=[0.2, 0.2, 0.2], key="box"),
+            bgChildren=[
+                OrbitControls(
+                    minDistance=1,
+                    maxDistance=100,
+                    minPolarAngle=0,
+                    maxPolarAngle=90,
+                    key="controls",
+                ),
             ],
         )
     """
