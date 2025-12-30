@@ -105,7 +105,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
       leftHand=True,  # Include left hand tracking data
       rightHand=True,  # Include right hand tracking data
       fps=60,  # Send data at 60 frames per second
-      hideBody=False,  # Hide body visualization but still stream data
+      showBody=True,  # enable body tracking and show visualization but still stream data
       showFrame=True,  # Display coordinate frames at each joint
       frameScale=0.02,  # Scale of the coordinate frames or markers
     )
