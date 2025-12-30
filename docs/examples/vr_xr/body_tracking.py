@@ -102,8 +102,8 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     session.upsert @ Body(
       key="body_tracking",  # Optional unique identifier (default: "body_tracking")
       stream=True,  # Must be True to start streaming data
-      leftHand=True,  # Include left hand tracking data
-      rightHand=True,  # Include right hand tracking data
+      leftHand=False,  # Include left hand tracking data
+      rightHand=False,  # Include right hand tracking data
       fps=60,  # Send data at 60 frames per second
       showBody=True,  # enable body tracking and show visualization but still stream data
       showFrame=True,  # Display coordinate frames at each joint

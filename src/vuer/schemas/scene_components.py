@@ -2053,9 +2053,9 @@ class Body(SceneElement):
   tag = "Body"
   key = "body_tracking"
   stream = True
-  leftHand = True
-  rightHand = True
-  fps = 60
+  leftHand = False
+  rightHand = False
+  fps = 30
   showBody = True
   showFrame = True
   frameScale = 0.02
