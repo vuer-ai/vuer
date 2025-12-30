@@ -2217,6 +2217,132 @@ class Obj(SceneElement):
     super().__init__(**kwargs)
 
 
+class Fbx(SceneElement):
+  """Loads and displays FBX 3D models.
+
+  FBX is a popular 3D file format for models, animations, and skeletal data.
+
+  :param src: URL or path to the FBX file
+  :type src: str, optional
+  :param mtl: URL or path to associated material file
+  :type mtl: str, optional
+  :param hide: Hide the model
+  :type hide: bool, optional
+  :param playAnimation: Auto-play animations
+  :type playAnimation: bool, optional
+  :param animationIndex: Index of animation to play
+  :type animationIndex: int, optional
+  :param animationSpeed: Speed multiplier for animation
+  :type animationSpeed: float, optional
+  :param position: Position in 3D space
+  :type position: tuple[float, float, float], optional
+  :param rotation: Rotation in Euler angles
+  :type rotation: tuple[float, float, float], optional
+  :param scale: Scale factors
+  :type scale: tuple[float, float, float], optional
+  :param quaternion: Rotation as quaternion
+  :type quaternion: tuple[float, float, float, float], optional
+  :param color: Material color
+  :type color: str, optional
+  :param visible: Visibility
+  :type visible: bool, optional
+  :param castShadow: Cast shadows
+  :type castShadow: bool, optional
+  :param receiveShadow: Receive shadows
+  :type receiveShadow: bool, optional
+  :param frustumCulled: Enable frustum culling
+  :type frustumCulled: bool, optional
+  :param renderOrder: Render order
+  :type renderOrder: int, optional
+  :param opacity: Opacity (0-1)
+  :type opacity: float, optional
+  :param wireframe: Render as wireframe
+  :type wireframe: bool, optional
+  :param label: Show label
+  :type label: bool, optional
+  :param materialType: Material type
+  :type materialType: str, optional
+  :param frame: Show frame
+  :type frame: bool, optional
+  :param boneRadius: Radius of bone visualizations
+  :type boneRadius: float, optional
+  :param jointColor: Color of joint markers
+  :type jointColor: str, optional
+  :param frameScale: Scale of frame visualization
+  :type frameScale: float, optional
+  """
+
+  tag = "Fbx"
+
+
+class Stl(SceneElement):
+  """Loads and displays STL 3D models.
+
+  STL (Stereolithography) is a format commonly used for 3D printing and CAD.
+
+  :param src: URL or path to the STL file
+  :type src: str, optional
+  :param mtl: URL or path to associated material file
+  :type mtl: str, optional
+  :param hide: Hide the model
+  :type hide: bool, optional
+  :param playAnimation: Auto-play animations
+  :type playAnimation: bool, optional
+  :param animationIndex: Index of animation to play
+  :type animationIndex: int, optional
+  :param animationSpeed: Speed multiplier for animation
+  :type animationSpeed: float, optional
+  :param position: Position in 3D space
+  :type position: tuple[float, float, float], optional
+  :param rotation: Rotation in Euler angles
+  :type rotation: tuple[float, float, float], optional
+  :param scale: Scale factors
+  :type scale: tuple[float, float, float], optional
+  :param quaternion: Rotation as quaternion
+  :type quaternion: tuple[float, float, float, float], optional
+  :param color: Material color
+  :type color: str, optional
+  :param opacity: Opacity (0-1)
+  :type opacity: float, optional
+  """
+
+  tag = "Stl"
+
+
+class Dae(SceneElement):
+  """Loads and displays DAE (COLLADA) 3D models.
+
+  COLLADA is an XML-based format for exchanging 3D models and animations.
+
+  :param src: URL or path to the DAE file
+  :type src: str, optional
+  :param mtl: URL or path to associated material file
+  :type mtl: str, optional
+  :param hide: Hide the model
+  :type hide: bool, optional
+  :param playAnimation: Auto-play animations
+  :type playAnimation: bool, optional
+  :param animationIndex: Index of animation to play
+  :type animationIndex: int, optional
+  :param animationSpeed: Speed multiplier for animation
+  :type animationSpeed: float, optional
+  :param position: Position in 3D space
+  :type position: tuple[float, float, float], optional
+  :param rotation: Rotation in Euler angles
+  :type rotation: tuple[float, float, float], optional
+  :param scale: Scale factors
+  :type scale: tuple[float, float, float], optional
+  :param quaternion: Rotation as quaternion
+  :type quaternion: tuple[float, float, float, float], optional
+  :param color: Material color
+  :type color: str, optional
+  :param opacity: Opacity (0-1)
+  :type opacity: float, optional
+  """
+
+  tag = "Dae"
+
+
 class CoordsMarker(SceneElement):
   """Coordinates Marker Component.
 
@@ -2911,16 +3037,6 @@ class BBox(SceneElement):
     if max is None:
       max = {"x": 1, "y": 1, "z": 1}
     super().__init__(min=min, max=max, color=color, scale=scale, **kwargs)
-
-
-class RenderRoot(SceneElement):
-  """Render root component for controlling render modes and output.
-
-  :param mode: Render mode (postprocess, rgb, depth, normal, pathtracer)
-  :type mode: str, optional
-  """
-
-  tag = "RenderRoot"
 
 
 class VuerSplat(SceneElement):
