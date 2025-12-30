@@ -1,0 +1,8840 @@
+[
+  {
+    "component": "SparkSplats",
+    "schemas": [
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "src",
+        "dtype": "string",
+        "label": "Splat File URL"
+      }
+    ],
+    "groups": [
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "VuerSplat",
+    "schemas": [
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "src",
+        "dtype": "string",
+        "label": "Splat File URL"
+      },
+      {
+        "name": "flipCoords",
+        "dtype": "boolean",
+        "label": "Flip Coordinates",
+        "value": true
+      },
+      {
+        "name": "toneMapped",
+        "dtype": "boolean",
+        "label": "Tone Mapped"
+      },
+      {
+        "name": "alphaTest",
+        "dtype": "number",
+        "min": 0,
+        "max": 1,
+        "step": 0.01,
+        "label": "Alpha Test"
+      },
+      {
+        "name": "alphaHash",
+        "dtype": "boolean",
+        "label": "Alpha Hash"
+      },
+      {
+        "name": "chunkSize",
+        "dtype": "number-int",
+        "min": 1000,
+        "max": 100000,
+        "step": 1000,
+        "label": "Chunk Size"
+      }
+    ],
+    "description": "We can not attach refs to the Splat component because it is a functional component.\n/ So we wrap it in a VuerGroup component, and handle all position/rotation/scale/matrix\n/ from there. *",
+    "groups": [
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "RenderRoot",
+    "schemas": [
+      {
+        "name": "mode",
+        "dtype": "string",
+        "options": [
+          "postprocess",
+          "rgb",
+          "depth",
+          "normal",
+          "pathtracer"
+        ],
+        "value": "rgb",
+        "label": "Render Mode",
+        "labelPosition": "left"
+      }
+    ]
+  },
+  {
+    "component": "Box",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "vector",
+        "vectorCols": 2,
+        "vectorRows": 3,
+        "grouping": "geometry",
+        "value": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "BoxArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "width",
+              "dtype": "number",
+              "min": 0.01,
+              "step": 0.01
+            },
+            {
+              "name": "height",
+              "dtype": "number",
+              "min": 0.01,
+              "step": 0.01
+            },
+            {
+              "name": "depth",
+              "dtype": "number",
+              "min": 0.01,
+              "step": 0.01
+            },
+            {
+              "name": "widthSegments",
+              "dtype": "number-int",
+              "min": 0,
+              "max": 200,
+              "step": 1
+            },
+            {
+              "name": "heightSegments",
+              "dtype": "number-int",
+              "min": 0,
+              "max": 200,
+              "step": 1
+            },
+            {
+              "name": "depthSegments",
+              "dtype": "number-int",
+              "min": 0,
+              "max": 200,
+              "step": 1
+            }
+          ]
+        },
+        "mins": [
+          0.01,
+          0.01,
+          0.01,
+          0,
+          0,
+          0
+        ],
+        "maxs": [
+          100,
+          100,
+          100,
+          200,
+          200,
+          200
+        ],
+        "steps": [
+          0.01,
+          0.01,
+          0.01,
+          1,
+          1,
+          1
+        ],
+        "dtypes": [
+          "number",
+          "number",
+          "number",
+          "number-int",
+          "number-int",
+          "number-int"
+        ],
+        "placeholders": [
+          "width",
+          "height",
+          "depth",
+          "widthSegments",
+          "heightSegments",
+          "depthSegments"
+        ],
+        "tooltips": [
+          "Width",
+          "Height",
+          "Depth",
+          "WidthSegments",
+          "HeightSegments",
+          "DepthSegments"
+        ]
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry"
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Capsule",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "vector",
+        "vectorCols": 2,
+        "vectorRows": 3,
+        "grouping": "geometry",
+        "value": [
+          1,
+          1,
+          4,
+          8,
+          1
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "CapsuleArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "radius",
+              "dtype": "number",
+              "min": 0.01,
+              "step": 0.01
+            },
+            {
+              "name": "height",
+              "dtype": "number",
+              "min": 0.01,
+              "step": 0.01
+            },
+            {
+              "name": "capSegments",
+              "dtype": "number-int",
+              "min": 1,
+              "max": 32,
+              "step": 1
+            },
+            {
+              "name": "radialSegments",
+              "dtype": "number-int",
+              "min": 1,
+              "max": 64,
+              "step": 1
+            },
+            {
+              "name": "heightSegments",
+              "dtype": "number-int",
+              "min": 1,
+              "max": 32,
+              "step": 1
+            }
+          ]
+        },
+        "mins": [
+          0.01,
+          0.01,
+          1,
+          1,
+          1
+        ],
+        "maxs": [
+          100,
+          100,
+          32,
+          64,
+          32
+        ],
+        "steps": [
+          0.01,
+          0.01,
+          1,
+          1,
+          1
+        ],
+        "dtypes": [
+          "number",
+          "number",
+          "number-int",
+          "number-int",
+          "number-int"
+        ],
+        "placeholders": [
+          "radius",
+          "height",
+          "capSegments",
+          "radialSegments",
+          "heightSegments"
+        ],
+        "tooltips": [
+          "Radius",
+          "Height",
+          "CapSegments",
+          "RadialSegments",
+          "HeightSegments"
+        ]
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry"
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Circle",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "vector",
+        "vectorCols": 2,
+        "vectorRows": 2,
+        "grouping": "geometry",
+        "value": [
+          1,
+          8,
+          0,
+          6.283185307179586
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "CircleArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "radius",
+              "dtype": "number",
+              "min": 0.01,
+              "step": 0.01
+            },
+            {
+              "name": "segments",
+              "dtype": "number-int",
+              "min": 3,
+              "max": 128,
+              "step": 1
+            },
+            {
+              "name": "thetaStart",
+              "dtype": "number",
+              "min": 0,
+              "max": 6.284,
+              "step": 0.001
+            },
+            {
+              "name": "thetaLength",
+              "dtype": "number",
+              "min": 0,
+              "max": 6.284,
+              "step": 0.001
+            }
+          ]
+        },
+        "mins": [
+          0.01,
+          3,
+          0,
+          0
+        ],
+        "maxs": [
+          100,
+          128,
+          6.284,
+          6.284
+        ],
+        "steps": [
+          0.01,
+          1,
+          0.001,
+          0.001
+        ],
+        "dtypes": [
+          "number",
+          "number-int",
+          "number",
+          "number"
+        ],
+        "placeholders": [
+          "radius",
+          "segments",
+          "thetaStart",
+          "thetaLength"
+        ],
+        "tooltips": [
+          "Radius",
+          "Segments",
+          "ThetaStart",
+          "ThetaLength"
+        ]
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry"
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Cone",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "vector",
+        "vectorCols": 2,
+        "vectorRows": 3,
+        "grouping": "geometry",
+        "value": [
+          1,
+          1,
+          8,
+          1,
+          false,
+          0,
+          6.283185307179586
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "ConeArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "radius",
+              "dtype": "number",
+              "min": 0.01,
+              "step": 0.01
+            },
+            {
+              "name": "height",
+              "dtype": "number",
+              "min": 0.01,
+              "step": 0.01
+            },
+            {
+              "name": "radialSegments",
+              "dtype": "number-int",
+              "min": 3,
+              "max": 128,
+              "step": 1
+            },
+            {
+              "name": "heightSegments",
+              "dtype": "number-int",
+              "min": 1,
+              "max": 64,
+              "step": 1
+            },
+            {
+              "name": "openEnded",
+              "dtype": "boolean"
+            },
+            {
+              "name": "thetaStart",
+              "dtype": "number",
+              "min": 0,
+              "max": 6.284,
+              "step": 0.001
+            },
+            {
+              "name": "thetaLength",
+              "dtype": "number",
+              "min": 0,
+              "max": 6.284,
+              "step": 0.001
+            }
+          ]
+        },
+        "mins": [
+          0.01,
+          0.01,
+          3,
+          1,
+          0,
+          0,
+          0
+        ],
+        "maxs": [
+          100,
+          100,
+          128,
+          64,
+          100,
+          6.284,
+          6.284
+        ],
+        "steps": [
+          0.01,
+          0.01,
+          1,
+          1,
+          0.1,
+          0.001,
+          0.001
+        ],
+        "dtypes": [
+          "number",
+          "number",
+          "number-int",
+          "number-int",
+          "boolean",
+          "number",
+          "number"
+        ],
+        "placeholders": [
+          "radius",
+          "height",
+          "radialSegments",
+          "heightSegments",
+          "openEnded",
+          "thetaStart",
+          "thetaLength"
+        ],
+        "tooltips": [
+          "Radius",
+          "Height",
+          "RadialSegments",
+          "HeightSegments",
+          "OpenEnded",
+          "ThetaStart",
+          "ThetaLength"
+        ]
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry"
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Cylinder",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "vector",
+        "vectorCols": 2,
+        "vectorRows": 4,
+        "grouping": "geometry",
+        "value": [
+          1,
+          1,
+          1,
+          8,
+          1,
+          false,
+          0,
+          6.283185307179586
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "CylinderArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "radiusTop",
+              "dtype": "number",
+              "min": 0,
+              "step": 0.01
+            },
+            {
+              "name": "radiusBottom",
+              "dtype": "number",
+              "min": 0,
+              "step": 0.01
+            },
+            {
+              "name": "height",
+              "dtype": "number",
+              "min": 0.01,
+              "step": 0.01
+            },
+            {
+              "name": "radialSegments",
+              "dtype": "number-int",
+              "min": 3,
+              "max": 128,
+              "step": 1
+            },
+            {
+              "name": "heightSegments",
+              "dtype": "number-int",
+              "min": 1,
+              "max": 64,
+              "step": 1
+            },
+            {
+              "name": "openEnded",
+              "dtype": "boolean"
+            },
+            {
+              "name": "thetaStart",
+              "dtype": "number",
+              "min": 0,
+              "max": 6.284,
+              "step": 0.001
+            },
+            {
+              "name": "thetaLength",
+              "dtype": "number",
+              "min": 0,
+              "max": 6.284,
+              "step": 0.001
+            }
+          ]
+        },
+        "mins": [
+          0,
+          0,
+          0.01,
+          3,
+          1,
+          0,
+          0,
+          0
+        ],
+        "maxs": [
+          100,
+          100,
+          100,
+          128,
+          64,
+          100,
+          6.284,
+          6.284
+        ],
+        "steps": [
+          0.01,
+          0.01,
+          0.01,
+          1,
+          1,
+          0.1,
+          0.001,
+          0.001
+        ],
+        "dtypes": [
+          "number",
+          "number",
+          "number",
+          "number-int",
+          "number-int",
+          "boolean",
+          "number",
+          "number"
+        ],
+        "placeholders": [
+          "radiusTop",
+          "radiusBottom",
+          "height",
+          "radialSegments",
+          "heightSegments",
+          "openEnded",
+          "thetaStart",
+          "thetaLength"
+        ],
+        "tooltips": [
+          "RadiusTop",
+          "RadiusBottom",
+          "Height",
+          "RadialSegments",
+          "HeightSegments",
+          "OpenEnded",
+          "ThetaStart",
+          "ThetaLength"
+        ]
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry"
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Dodecahedron",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "vector",
+        "grouping": "geometry",
+        "value": [
+          1,
+          0
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "DodecahedronArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "radius",
+              "dtype": "number",
+              "min": 0.01,
+              "step": 0.01
+            },
+            {
+              "name": "detail",
+              "dtype": "number-int",
+              "min": 0,
+              "max": 5,
+              "step": 1
+            }
+          ]
+        },
+        "mins": [
+          0.01,
+          0
+        ],
+        "maxs": [
+          100,
+          5
+        ],
+        "steps": [
+          0.01,
+          1
+        ],
+        "dtypes": [
+          "number",
+          "number-int"
+        ],
+        "placeholders": [
+          "radius",
+          "detail"
+        ],
+        "tooltips": [
+          "Radius",
+          "Detail"
+        ]
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry",
+        "gridCols": 1
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Edges",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "tuple",
+        "grouping": "geometry",
+        "value": [
+          null,
+          1
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "EdgesArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "geometry",
+              "dtype": "string"
+            },
+            {
+              "name": "thresholdAngle",
+              "dtype": "number",
+              "min": 0,
+              "max": 180,
+              "step": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry",
+        "gridCols": 1
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Extrude",
+    "schemas": [
+      {
+        "name": "options",
+        "dtype": "object",
+        "value": {
+          "curveSegments": 12,
+          "steps": 1,
+          "depth": 1,
+          "bevelEnabled": true,
+          "bevelThickness": 0.2,
+          "bevelSize": 0.1,
+          "bevelOffset": 0,
+          "bevelSegments": 3
+        },
+        "typeDefinition": {
+          "name": "options",
+          "type": "ExtrudeArgsOption",
+          "kind": "interface",
+          "schemas": [
+            {
+              "name": "curveSegments",
+              "dtype": "number-int",
+              "min": 1,
+              "max": 100,
+              "step": 1,
+              "grouping": "geometry"
+            },
+            {
+              "name": "steps",
+              "dtype": "number-int",
+              "min": 1,
+              "max": 100,
+              "step": 1,
+              "grouping": "geometry"
+            },
+            {
+              "name": "depth",
+              "dtype": "number",
+              "min": 0.01,
+              "max": 100,
+              "step": 0.01,
+              "grouping": "geometry"
+            },
+            {
+              "name": "bevelEnabled",
+              "dtype": "boolean",
+              "grouping": "geometry"
+            },
+            {
+              "name": "bevelThickness",
+              "dtype": "number",
+              "min": 0,
+              "max": 10,
+              "step": 0.01,
+              "grouping": "geometry"
+            },
+            {
+              "name": "bevelSize",
+              "dtype": "number",
+              "min": 0,
+              "max": 10,
+              "step": 0.01,
+              "grouping": "geometry"
+            },
+            {
+              "name": "bevelOffset",
+              "dtype": "number",
+              "min": -10,
+              "max": 10,
+              "step": 0.01,
+              "grouping": "geometry"
+            },
+            {
+              "name": "bevelSegments",
+              "dtype": "number-int",
+              "min": 0,
+              "max": 10,
+              "step": 1,
+              "grouping": "geometry"
+            }
+          ],
+          "groups": [
+            {
+              "name": "geometry",
+              "gridCol": 3
+            }
+          ]
+        }
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Icosahedron",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "vector",
+        "grouping": "geometry",
+        "value": [
+          1,
+          0
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "IcosahedronArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "radius",
+              "dtype": "number",
+              "min": 0.01,
+              "max": 100,
+              "step": 0.01
+            },
+            {
+              "name": "detail",
+              "dtype": "number-int",
+              "min": 0,
+              "max": 5,
+              "step": 1
+            }
+          ]
+        },
+        "mins": [
+          0.01,
+          0
+        ],
+        "maxs": [
+          100,
+          5
+        ],
+        "steps": [
+          0.01,
+          1
+        ],
+        "dtypes": [
+          "number",
+          "number-int"
+        ],
+        "placeholders": [
+          "radius",
+          "detail"
+        ],
+        "tooltips": [
+          "Radius",
+          "Detail"
+        ]
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry",
+        "gridCols": 1
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Lathe",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "tuple",
+        "grouping": "geometry",
+        "value": [
+          [],
+          12,
+          0,
+          6.283185307179586
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "LatheArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "points",
+              "dtype": "string"
+            },
+            {
+              "name": "segments",
+              "dtype": "number-int",
+              "min": 3,
+              "max": 128,
+              "step": 1
+            },
+            {
+              "name": "phiStart",
+              "dtype": "number",
+              "min": 0,
+              "max": 6.284,
+              "step": 0.001
+            },
+            {
+              "name": "phiLength",
+              "dtype": "number",
+              "min": 0,
+              "max": 6.284,
+              "step": 0.001
+            }
+          ]
+        }
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry",
+        "gridCols": 1
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Octahedron",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "vector",
+        "grouping": "geometry",
+        "value": [
+          1,
+          0
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "OctahedronArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "radius",
+              "dtype": "number",
+              "min": 0.01,
+              "step": 0.01
+            },
+            {
+              "name": "detail",
+              "dtype": "number-int",
+              "min": 0,
+              "max": 5,
+              "step": 1
+            }
+          ]
+        },
+        "mins": [
+          0.01,
+          0
+        ],
+        "maxs": [
+          100,
+          5
+        ],
+        "steps": [
+          0.01,
+          1
+        ],
+        "dtypes": [
+          "number",
+          "number-int"
+        ],
+        "placeholders": [
+          "radius",
+          "detail"
+        ],
+        "tooltips": [
+          "Radius",
+          "Detail"
+        ]
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry",
+        "gridCols": 1
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Plane",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "vector",
+        "vectorCols": 2,
+        "vectorRows": 2,
+        "grouping": "geometry",
+        "value": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "PlaneArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "width",
+              "dtype": "number",
+              "min": 0.01,
+              "step": 0.01
+            },
+            {
+              "name": "height",
+              "dtype": "number",
+              "min": 0.01,
+              "step": 0.01
+            },
+            {
+              "name": "widthSegments",
+              "dtype": "number-int",
+              "min": 1,
+              "max": 100,
+              "step": 1
+            },
+            {
+              "name": "heightSegments",
+              "dtype": "number-int",
+              "min": 1,
+              "max": 100,
+              "step": 1
+            }
+          ]
+        },
+        "mins": [
+          0.01,
+          0.01,
+          1,
+          1
+        ],
+        "maxs": [
+          100,
+          100,
+          100,
+          100
+        ],
+        "steps": [
+          0.01,
+          0.01,
+          1,
+          1
+        ],
+        "dtypes": [
+          "number",
+          "number",
+          "number-int",
+          "number-int"
+        ],
+        "placeholders": [
+          "width",
+          "height",
+          "widthSegments",
+          "heightSegments"
+        ],
+        "tooltips": [
+          "Width",
+          "Height",
+          "WidthSegments",
+          "HeightSegments"
+        ]
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry"
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Polyhedron",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "vector",
+        "grouping": "geometry",
+        "value": [
+          [],
+          [],
+          1,
+          0
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "PolyhedronArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "vertices",
+              "dtype": "string"
+            },
+            {
+              "name": "indices",
+              "dtype": "string"
+            },
+            {
+              "name": "radius",
+              "dtype": "number",
+              "min": 0.01,
+              "step": 0.01
+            },
+            {
+              "name": "detail",
+              "dtype": "number-int",
+              "min": 0,
+              "max": 5,
+              "step": 1
+            }
+          ]
+        },
+        "mins": [
+          0,
+          0,
+          0.01,
+          0
+        ],
+        "maxs": [
+          100,
+          100,
+          100,
+          5
+        ],
+        "steps": [
+          0.1,
+          0.1,
+          0.01,
+          1
+        ],
+        "dtypes": [
+          "number",
+          "number",
+          "number",
+          "number-int"
+        ],
+        "placeholders": [
+          "vertices",
+          "indices",
+          "radius",
+          "detail"
+        ],
+        "tooltips": [
+          "Vertices",
+          "Indices",
+          "Radius",
+          "Detail"
+        ]
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry",
+        "gridCols": 2
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Ring",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "vector",
+        "vectorCols": 2,
+        "vectorRows": 3,
+        "grouping": "geometry",
+        "value": [
+          0.5,
+          1,
+          8,
+          1,
+          0,
+          6.283185307179586
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "RingArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "innerRadius",
+              "dtype": "number",
+              "min": 0.01,
+              "max": 100,
+              "step": 0.01
+            },
+            {
+              "name": "outerRadius",
+              "dtype": "number",
+              "min": 0.01,
+              "max": 100,
+              "step": 0.01
+            },
+            {
+              "name": "thetaSegments",
+              "dtype": "number-int",
+              "min": 3,
+              "max": 128,
+              "step": 1
+            },
+            {
+              "name": "phiSegments",
+              "dtype": "number-int",
+              "min": 1,
+              "max": 32,
+              "step": 1
+            },
+            {
+              "name": "thetaStart",
+              "dtype": "number",
+              "min": 0,
+              "max": 6.284,
+              "step": 0.001
+            },
+            {
+              "name": "thetaLength",
+              "dtype": "number",
+              "min": 0,
+              "max": 6.284,
+              "step": 0.001
+            }
+          ]
+        },
+        "mins": [
+          0.01,
+          0.01,
+          3,
+          1,
+          0,
+          0
+        ],
+        "maxs": [
+          100,
+          100,
+          128,
+          32,
+          6.284,
+          6.284
+        ],
+        "steps": [
+          0.01,
+          0.01,
+          1,
+          1,
+          0.001,
+          0.001
+        ],
+        "dtypes": [
+          "number",
+          "number",
+          "number-int",
+          "number-int",
+          "number",
+          "number"
+        ],
+        "placeholders": [
+          "innerRadius",
+          "outerRadius",
+          "thetaSegments",
+          "phiSegments",
+          "thetaStart",
+          "thetaLength"
+        ],
+        "tooltips": [
+          "InnerRadius",
+          "OuterRadius",
+          "ThetaSegments",
+          "PhiSegments",
+          "ThetaStart",
+          "ThetaLength"
+        ]
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry"
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Shape",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "tuple",
+        "grouping": "geometry",
+        "value": [
+          null,
+          12
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "ShapeArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "shapes",
+              "dtype": "string"
+            },
+            {
+              "name": "curveSegments",
+              "dtype": "number-int",
+              "min": 1,
+              "max": 100,
+              "step": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry",
+        "gridCols": 1
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Sphere",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "vector",
+        "vectorCols": 2,
+        "vectorRows": 4,
+        "grouping": "geometry",
+        "value": [
+          1,
+          32,
+          16,
+          0,
+          6.283185307179586,
+          0,
+          3.141592653589793
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "SphereArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "radius",
+              "dtype": "number",
+              "min": 0.01,
+              "step": 0.01
+            },
+            {
+              "name": "widthSegments",
+              "dtype": "number-int",
+              "min": 3,
+              "max": 128,
+              "step": 1
+            },
+            {
+              "name": "heightSegments",
+              "dtype": "number-int",
+              "min": 2,
+              "max": 64,
+              "step": 1
+            },
+            {
+              "name": "phiStart",
+              "dtype": "number",
+              "min": 0,
+              "max": 6.284,
+              "step": 0.001
+            },
+            {
+              "name": "phiLength",
+              "dtype": "number",
+              "min": 0,
+              "max": 6.284,
+              "step": 0.001
+            },
+            {
+              "name": "thetaStart",
+              "dtype": "number",
+              "min": 0,
+              "max": 3.142,
+              "step": 0.001
+            },
+            {
+              "name": "thetaLength",
+              "dtype": "number",
+              "min": 0,
+              "max": 3.142,
+              "step": 0.001
+            }
+          ]
+        },
+        "mins": [
+          0.01,
+          3,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        "maxs": [
+          100,
+          128,
+          64,
+          6.284,
+          6.284,
+          3.142,
+          3.142
+        ],
+        "steps": [
+          0.01,
+          1,
+          1,
+          0.001,
+          0.001,
+          0.001,
+          0.001
+        ],
+        "dtypes": [
+          "number",
+          "number-int",
+          "number-int",
+          "number",
+          "number",
+          "number",
+          "number"
+        ],
+        "placeholders": [
+          "radius",
+          "widthSegments",
+          "heightSegments",
+          "phiStart",
+          "phiLength",
+          "thetaStart",
+          "thetaLength"
+        ],
+        "tooltips": [
+          "Radius",
+          "WidthSegments",
+          "HeightSegments",
+          "PhiStart",
+          "PhiLength",
+          "ThetaStart",
+          "ThetaLength"
+        ]
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry"
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Tetrahedron",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "vector",
+        "grouping": "geometry",
+        "value": [
+          1,
+          0
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "TetrahedronArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "radius",
+              "dtype": "number",
+              "min": 0.01,
+              "max": 100,
+              "step": 0.01
+            },
+            {
+              "name": "detail",
+              "dtype": "number-int",
+              "min": 0,
+              "max": 5,
+              "step": 1
+            }
+          ]
+        },
+        "mins": [
+          0.01,
+          0
+        ],
+        "maxs": [
+          100,
+          5
+        ],
+        "steps": [
+          0.01,
+          1
+        ],
+        "dtypes": [
+          "number",
+          "number-int"
+        ],
+        "placeholders": [
+          "radius",
+          "detail"
+        ],
+        "tooltips": [
+          "Radius",
+          "Detail"
+        ]
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry",
+        "gridCols": 1
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Torus",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "vector",
+        "vectorCols": 2,
+        "vectorRows": 3,
+        "grouping": "geometry",
+        "value": [
+          1,
+          0.4,
+          8,
+          6,
+          6.283185307179586
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "TorusArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "radius",
+              "dtype": "number",
+              "min": 0.01,
+              "step": 0.01
+            },
+            {
+              "name": "tube",
+              "dtype": "number",
+              "min": 0.01,
+              "max": 50,
+              "step": 0.01
+            },
+            {
+              "name": "radialSegments",
+              "dtype": "number-int",
+              "min": 3,
+              "max": 64,
+              "step": 1
+            },
+            {
+              "name": "tubularSegments",
+              "dtype": "number-int",
+              "min": 3,
+              "max": 128,
+              "step": 1
+            },
+            {
+              "name": "arc",
+              "dtype": "number",
+              "min": 0,
+              "max": 6.284,
+              "step": 0.001
+            }
+          ]
+        },
+        "mins": [
+          0.01,
+          0.01,
+          3,
+          3,
+          0
+        ],
+        "maxs": [
+          100,
+          50,
+          64,
+          128,
+          6.284
+        ],
+        "steps": [
+          0.01,
+          0.01,
+          1,
+          1,
+          0.001
+        ],
+        "dtypes": [
+          "number",
+          "number",
+          "number-int",
+          "number-int",
+          "number"
+        ],
+        "placeholders": [
+          "radius",
+          "tube",
+          "radialSegments",
+          "tubularSegments",
+          "arc"
+        ],
+        "tooltips": [
+          "Radius",
+          "Tube",
+          "RadialSegments",
+          "TubularSegments",
+          "Arc"
+        ]
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry"
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "TorusKnot",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "vector",
+        "vectorCols": 2,
+        "vectorRows": 3,
+        "grouping": "geometry",
+        "value": [
+          1,
+          0.4,
+          64,
+          8,
+          2,
+          3
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "TorusKnotArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "radius",
+              "dtype": "number",
+              "min": 0.01,
+              "step": 0.01
+            },
+            {
+              "name": "tube",
+              "dtype": "number",
+              "min": 0.01,
+              "max": 50,
+              "step": 0.01
+            },
+            {
+              "name": "tubularSegments",
+              "dtype": "number-int",
+              "min": 3,
+              "max": 256,
+              "step": 1
+            },
+            {
+              "name": "radialSegments",
+              "dtype": "number-int",
+              "min": 3,
+              "max": 32,
+              "step": 1
+            },
+            {
+              "name": "p",
+              "dtype": "number-int",
+              "min": 1,
+              "max": 10,
+              "step": 1
+            },
+            {
+              "name": "q",
+              "dtype": "number-int",
+              "min": 1,
+              "max": 10,
+              "step": 1
+            }
+          ]
+        },
+        "mins": [
+          0.01,
+          0.01,
+          3,
+          3,
+          1,
+          1
+        ],
+        "maxs": [
+          100,
+          50,
+          256,
+          32,
+          10,
+          10
+        ],
+        "steps": [
+          0.01,
+          0.01,
+          1,
+          1,
+          1,
+          1
+        ],
+        "dtypes": [
+          "number",
+          "number",
+          "number-int",
+          "number-int",
+          "number-int",
+          "number-int"
+        ],
+        "placeholders": [
+          "radius",
+          "tube",
+          "tubularSegments",
+          "radialSegments",
+          "p",
+          "q"
+        ],
+        "tooltips": [
+          "Radius",
+          "Tube",
+          "TubularSegments",
+          "RadialSegments",
+          "P",
+          "Q"
+        ]
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry"
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Tube",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "tuple",
+        "vectorCols": 3,
+        "vectorRows": 2,
+        "grouping": "geometry",
+        "value": [
+          null,
+          64,
+          1,
+          8,
+          false
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "TubeArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "path",
+              "dtype": "string"
+            },
+            {
+              "name": "tubularSegments",
+              "dtype": "number-int",
+              "min": 2,
+              "max": 256,
+              "step": 1
+            },
+            {
+              "name": "radius",
+              "dtype": "number",
+              "min": 0.01,
+              "step": 0.01
+            },
+            {
+              "name": "radialSegments",
+              "dtype": "number-int",
+              "min": 2,
+              "max": 32,
+              "step": 1
+            },
+            {
+              "name": "closed",
+              "dtype": "boolean"
+            }
+          ]
+        }
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry"
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Wireframe",
+    "schemas": [
+      {
+        "name": "args",
+        "dtype": "tuple",
+        "grouping": "geometry",
+        "value": [
+          null
+        ],
+        "typeDefinition": {
+          "name": "args",
+          "type": "WireframeArgs",
+          "kind": "tuple",
+          "schemas": [
+            {
+              "name": "geometry",
+              "dtype": "string"
+            }
+          ]
+        }
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "value": "physical",
+        "grouping": "Material"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlines",
+        "dtype": "boolean",
+        "value": false,
+        "grouping": "Material"
+      },
+      {
+        "name": "outlineColor",
+        "dtype": "color",
+        "default": "#ffffff",
+        "grouping": "Material",
+        "value": "#ffffff"
+      },
+      {
+        "name": "outlineThickness",
+        "dtype": "number",
+        "value": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "Material"
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "value": 0,
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "labelPosition": "inline"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry",
+        "gridCols": 1
+      },
+      {
+        "name": "Material",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "SkeletalGripper",
+    "schemas": [
+      {
+        "name": "color",
+        "dtype": "color",
+        "grouping": "material"
+      },
+      {
+        "name": "pinchWidth",
+        "dtype": "number",
+        "step": 0.01,
+        "min": 0,
+        "grouping": "material",
+        "value": 0.07
+      },
+      {
+        "name": "opacity",
+        "dtype": "number",
+        "step": 0.1,
+        "min": 0,
+        "max": 1,
+        "grouping": "material",
+        "value": 0.9
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "grouping": "visibility"
+      },
+      {
+        "name": "matrix",
+        "dtype": "matrix",
+        "grouping": "transform"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "default": [
+          0,
+          0,
+          0
+        ],
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "default": [
+          0,
+          0,
+          0
+        ],
+        "grouping": "transform",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "vector4",
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": 0,
+        "step": 0.01,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "groups": [
+      {
+        "name": "material",
+        "gridCols": 2
+      },
+      {
+        "name": "visibility"
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "OrbitControls",
+    "schemas": [
+      {
+        "name": "enableDamping",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "controls",
+        "value": false
+      },
+      {
+        "name": "enablePan",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "controls",
+        "value": true
+      },
+      {
+        "name": "screenSpacePanning",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "controls",
+        "value": true
+      },
+      {
+        "name": "enableRotate",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "controls",
+        "value": true
+      },
+      {
+        "name": "enableZoom",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "controls",
+        "value": true
+      },
+      {
+        "name": "makeDefault",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "controls",
+        "value": true
+      },
+      {
+        "name": "maxPolarAngle",
+        "dtype": "number",
+        "default": 135,
+        "min": 0,
+        "max": 180,
+        "step": 1,
+        "grouping": "limits",
+        "value": 135
+      },
+      {
+        "name": "minPolarAngle",
+        "dtype": "number",
+        "default": 0,
+        "min": 0,
+        "max": 180,
+        "step": 1,
+        "grouping": "limits",
+        "value": 0
+      },
+      {
+        "name": "maxDistance",
+        "dtype": "number",
+        "default": 1000,
+        "min": 0,
+        "step": 1,
+        "grouping": "limits",
+        "value": 1000
+      },
+      {
+        "name": "minDistance",
+        "dtype": "number",
+        "default": 0,
+        "min": 0,
+        "step": 0.1,
+        "grouping": "limits",
+        "value": 0
+      },
+      {
+        "name": "zoomSpeed",
+        "dtype": "number",
+        "default": 1,
+        "min": 0.1,
+        "max": 5,
+        "step": 0.1,
+        "grouping": "speeds",
+        "value": 1
+      },
+      {
+        "name": "rotateSpeed",
+        "dtype": "number",
+        "default": 1,
+        "min": 0.1,
+        "max": 5,
+        "step": 0.1,
+        "grouping": "speeds",
+        "value": 1
+      },
+      {
+        "name": "panSpeed",
+        "dtype": "number",
+        "default": 1,
+        "min": 0.1,
+        "max": 5,
+        "step": 0.1,
+        "grouping": "speeds",
+        "value": 1
+      },
+      {
+        "name": "stream",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "events",
+        "value": false
+      }
+    ],
+    "groups": [
+      {
+        "name": "controls",
+        "gridCols": 2
+      },
+      {
+        "name": "limits",
+        "gridCols": 2
+      },
+      {
+        "name": "speeds",
+        "gridCols": 2
+      },
+      {
+        "name": "events"
+      }
+    ]
+  },
+  {
+    "component": "SceneCamera",
+    "schemas": [
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.1,
+        "grouping": "transform",
+        "value": [
+          0,
+          5,
+          10
+        ]
+      },
+      {
+        "name": "lookAt",
+        "dtype": "vector3",
+        "step": 0.1,
+        "grouping": "transform",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "fov",
+        "dtype": "number",
+        "min": 1,
+        "max": 180,
+        "step": 1,
+        "grouping": "camera",
+        "value": 60
+      },
+      {
+        "name": "near",
+        "dtype": "number",
+        "min": 0.01,
+        "max": 100,
+        "step": 0.01,
+        "grouping": "camera",
+        "value": 0.1
+      },
+      {
+        "name": "far",
+        "dtype": "number",
+        "min": 10,
+        "max": 10000,
+        "step": 10,
+        "grouping": "camera",
+        "value": 2000
+      }
+    ],
+    "description": "EditCamera - The main scene camera used for viewing the entire scene.\nThis is a real Three.js PerspectiveCamera that users look through.\nUse with EditorCameraControls for interactive camera control.",
+    "groups": [
+      {
+        "name": "transform",
+        "gridCols": 2
+      },
+      {
+        "name": "camera",
+        "gridCols": 2
+      }
+    ]
+  },
+  {
+    "component": "SceneControl",
+    "schemas": [
+      {
+        "name": "moveSpeed",
+        "dtype": "number",
+        "min": 0.1,
+        "max": 10,
+        "step": 0.1,
+        "grouping": "movement",
+        "value": 2
+      },
+      {
+        "name": "keyboardRotateSpeed",
+        "dtype": "number",
+        "min": 10,
+        "max": 180,
+        "step": 5,
+        "grouping": "movement",
+        "value": 90
+      },
+      {
+        "name": "mouseRotateSpeed",
+        "dtype": "number",
+        "min": 0.1,
+        "max": 2,
+        "step": 0.1,
+        "grouping": "movement",
+        "value": 1
+      },
+      {
+        "name": "dollySpeed",
+        "dtype": "number",
+        "min": 0.1,
+        "max": 2,
+        "step": 0.1,
+        "grouping": "movement",
+        "value": 1
+      },
+      {
+        "name": "truckSpeed",
+        "dtype": "number",
+        "min": 0.1,
+        "max": 5,
+        "step": 0.1,
+        "grouping": "movement",
+        "value": 2
+      },
+      {
+        "name": "minDistance",
+        "dtype": "number",
+        "min": 0.01,
+        "max": 100,
+        "step": 0.1,
+        "grouping": "distance",
+        "value": 0.1
+      },
+      {
+        "name": "maxDistance",
+        "dtype": "number",
+        "min": 10,
+        "max": 10000,
+        "step": 10,
+        "grouping": "distance",
+        "value": 1000
+      },
+      {
+        "name": "minPolarAngle",
+        "dtype": "number",
+        "min": 0,
+        "max": 3.14159,
+        "step": 0.1,
+        "grouping": "angle",
+        "value": 0
+      },
+      {
+        "name": "maxPolarAngle",
+        "dtype": "number",
+        "min": 0,
+        "max": 3.14159,
+        "step": 0.1,
+        "grouping": "angle",
+        "value": 3.141592653589793
+      },
+      {
+        "name": "minAzimuthAngle",
+        "dtype": "number",
+        "min": -6.28318,
+        "max": 6.28318,
+        "step": 0.1,
+        "grouping": "angle"
+      },
+      {
+        "name": "maxAzimuthAngle",
+        "dtype": "number",
+        "min": -6.28318,
+        "max": 6.28318,
+        "step": 0.1,
+        "grouping": "angle"
+      },
+      {
+        "name": "enableKeyboard",
+        "dtype": "boolean",
+        "grouping": "features",
+        "value": true
+      },
+      {
+        "name": "enableArrowRotate",
+        "dtype": "boolean",
+        "grouping": "features",
+        "value": true
+      },
+      {
+        "name": "enableRotate",
+        "dtype": "boolean",
+        "grouping": "features",
+        "value": true
+      },
+      {
+        "name": "enableZoom",
+        "dtype": "boolean",
+        "grouping": "features",
+        "value": true
+      },
+      {
+        "name": "enablePan",
+        "dtype": "boolean",
+        "grouping": "features",
+        "value": true
+      },
+      {
+        "name": "smoothTime",
+        "dtype": "number",
+        "min": 0,
+        "max": 1,
+        "step": 0.05,
+        "grouping": "smoothing",
+        "value": 0.1
+      },
+      {
+        "name": "showPivot",
+        "dtype": "boolean",
+        "colSpan": 2,
+        "grouping": "pivot",
+        "value": false
+      },
+      {
+        "name": "pivotSize",
+        "dtype": "number",
+        "min": 0.01,
+        "max": 1,
+        "step": 0.01,
+        "grouping": "pivot",
+        "value": 0.5
+      },
+      {
+        "name": "pivotColor",
+        "dtype": "color",
+        "grouping": "pivot",
+        "value": "#ffff00"
+      },
+      {
+        "name": "stream",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "events",
+        "value": false
+      }
+    ],
+    "groups": [
+      {
+        "name": "features",
+        "gridCols": 2,
+        "groupOrder": -100
+      },
+      {
+        "name": "movement",
+        "gridCols": 2
+      },
+      {
+        "name": "distance",
+        "gridCols": 2
+      },
+      {
+        "name": "angle",
+        "gridCols": 2
+      },
+      {
+        "name": "smoothing"
+      },
+      {
+        "name": "pivot",
+        "gridCols": 2
+      },
+      {
+        "name": "events"
+      }
+    ]
+  },
+  {
+    "component": "PerspectiveCamera",
+    "schemas": [
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.1,
+        "grouping": "transform",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "rotation",
+        "dtype": "euler",
+        "step": 0.01,
+        "grouping": "transform"
+      },
+      {
+        "name": "fov",
+        "dtype": "number",
+        "min": 1,
+        "max": 179,
+        "step": 0.1,
+        "grouping": "camera",
+        "value": 60
+      },
+      {
+        "name": "aspect",
+        "dtype": "number",
+        "min": 0.1,
+        "max": 10,
+        "step": 0.01,
+        "grouping": "camera",
+        "value": 1.3333333333333333
+      },
+      {
+        "name": "zoom",
+        "dtype": "number",
+        "min": 0.1,
+        "max": 10,
+        "step": 0.1,
+        "grouping": "camera",
+        "value": 1
+      },
+      {
+        "name": "near",
+        "dtype": "number",
+        "min": 0.001,
+        "max": 100,
+        "step": 0.001,
+        "grouping": "camera",
+        "value": 0.1
+      },
+      {
+        "name": "far",
+        "dtype": "number",
+        "min": 1,
+        "max": 10000,
+        "step": 1,
+        "grouping": "camera",
+        "value": 1000
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "grouping": "display",
+        "value": false
+      },
+      {
+        "name": "showFrustum",
+        "dtype": "boolean",
+        "grouping": "display",
+        "value": true
+      },
+      {
+        "name": "previewInScene",
+        "dtype": "boolean",
+        "grouping": "render",
+        "value": true
+      },
+      {
+        "name": "previewInOverlay",
+        "dtype": "boolean",
+        "grouping": "render",
+        "value": true
+      },
+      {
+        "name": "renderSizeH",
+        "dtype": "number-int",
+        "min": 64,
+        "max": 2048,
+        "step": 64,
+        "grouping": "render",
+        "value": 1024
+      },
+      {
+        "name": "samples",
+        "dtype": "number-int",
+        "min": 1,
+        "max": 8,
+        "step": 1,
+        "grouping": "render",
+        "value": 1
+      },
+      {
+        "name": "depthBuffer",
+        "dtype": "boolean",
+        "grouping": "render",
+        "value": true
+      },
+      {
+        "name": "showCameraHelpers",
+        "dtype": "boolean",
+        "grouping": "render",
+        "value": false
+      },
+      {
+        "name": "previewDistance",
+        "dtype": "number",
+        "min": 0.1,
+        "max": 100,
+        "step": 0.1,
+        "grouping": "render",
+        "value": 1
+      }
+    ],
+    "description": "Virtual Perspective Camera component.\nThis is NOT a real camera - it's a group with frustum visualization\nthat can be used to position and preview camera views in the editor.",
+    "groups": [
+      {
+        "name": "transform",
+        "layout": "grid",
+        "gridCols": 2
+      },
+      {
+        "name": "camera",
+        "layout": "grid",
+        "gridCols": 2
+      },
+      {
+        "name": "display",
+        "layout": "grid",
+        "gridCols": 2
+      },
+      {
+        "name": "render",
+        "layout": "grid",
+        "gridCols": 2
+      }
+    ]
+  },
+  {
+    "component": "OrthographicCamera",
+    "schemas": [
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.1,
+        "grouping": "transform",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "rotation",
+        "dtype": "euler",
+        "step": 0.01,
+        "grouping": "transform"
+      },
+      {
+        "name": "left",
+        "dtype": "number",
+        "min": -100,
+        "max": 0,
+        "step": 0.1,
+        "grouping": "camera",
+        "value": -1
+      },
+      {
+        "name": "right",
+        "dtype": "number",
+        "min": 0,
+        "max": 100,
+        "step": 0.1,
+        "grouping": "camera",
+        "value": 1
+      },
+      {
+        "name": "top",
+        "dtype": "number",
+        "min": 0,
+        "max": 100,
+        "step": 0.1,
+        "grouping": "camera",
+        "value": 1
+      },
+      {
+        "name": "bottom",
+        "dtype": "number",
+        "min": -100,
+        "max": 0,
+        "step": 0.1,
+        "grouping": "camera",
+        "value": -1
+      },
+      {
+        "name": "zoom",
+        "dtype": "number",
+        "min": 0.01,
+        "max": 100,
+        "step": 0.1,
+        "grouping": "camera",
+        "value": 1
+      },
+      {
+        "name": "near",
+        "dtype": "number",
+        "min": 0.001,
+        "max": 100,
+        "step": 0.001,
+        "grouping": "camera",
+        "value": 0.1
+      },
+      {
+        "name": "far",
+        "dtype": "number",
+        "min": 1,
+        "max": 10000,
+        "step": 1,
+        "grouping": "camera",
+        "value": 1000
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "grouping": "display",
+        "value": false
+      },
+      {
+        "name": "showFrustum",
+        "dtype": "boolean",
+        "grouping": "display",
+        "value": true
+      },
+      {
+        "name": "previewInScene",
+        "dtype": "boolean",
+        "grouping": "render",
+        "value": true
+      },
+      {
+        "name": "previewInOverlay",
+        "dtype": "boolean",
+        "grouping": "render",
+        "value": true
+      },
+      {
+        "name": "renderSizeH",
+        "dtype": "number-int",
+        "min": 64,
+        "max": 2048,
+        "step": 64,
+        "grouping": "render",
+        "value": 1024
+      },
+      {
+        "name": "samples",
+        "dtype": "number-int",
+        "min": 1,
+        "max": 8,
+        "step": 1,
+        "grouping": "render",
+        "value": 1
+      },
+      {
+        "name": "depthBuffer",
+        "dtype": "boolean",
+        "grouping": "render",
+        "value": true
+      },
+      {
+        "name": "showCameraHelpers",
+        "dtype": "boolean",
+        "grouping": "render",
+        "value": false
+      },
+      {
+        "name": "previewDistance",
+        "dtype": "number",
+        "min": 0,
+        "max": 100,
+        "step": 0.1,
+        "grouping": "render",
+        "value": 0
+      }
+    ],
+    "description": "Virtual Orthographic Camera component.\nThis is NOT a real camera - it's a group with frustum visualization\nthat can be used to position and preview camera views in the editor.",
+    "groups": [
+      {
+        "name": "transform",
+        "layout": "grid",
+        "gridCols": 2
+      },
+      {
+        "name": "camera",
+        "layout": "grid",
+        "gridCols": 2
+      },
+      {
+        "name": "display",
+        "layout": "grid",
+        "gridCols": 2
+      },
+      {
+        "name": "render",
+        "layout": "grid",
+        "gridCols": 2
+      }
+    ]
+  },
+  {
+    "component": "FisheyeCamera",
+    "schemas": [
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.1,
+        "grouping": "transform",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "rotation",
+        "dtype": "euler",
+        "step": 0.01,
+        "grouping": "transform"
+      },
+      {
+        "name": "segments",
+        "dtype": "number-int",
+        "min": 16,
+        "max": 256,
+        "step": 1,
+        "grouping": "camera",
+        "value": 64
+      },
+      {
+        "name": "near",
+        "dtype": "number",
+        "min": 0.001,
+        "max": 100,
+        "step": 0.001,
+        "grouping": "camera",
+        "value": 0.1
+      },
+      {
+        "name": "far",
+        "dtype": "number",
+        "min": 1,
+        "max": 10000,
+        "step": 1,
+        "grouping": "camera",
+        "value": 1000
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "grouping": "display",
+        "value": false
+      },
+      {
+        "name": "showFrustum",
+        "dtype": "boolean",
+        "grouping": "display",
+        "value": true
+      },
+      {
+        "name": "previewInScene",
+        "dtype": "boolean",
+        "grouping": "render",
+        "value": true
+      },
+      {
+        "name": "previewInOverlay",
+        "dtype": "boolean",
+        "grouping": "render",
+        "value": true
+      },
+      {
+        "name": "renderSizeH",
+        "dtype": "number-int",
+        "min": 64,
+        "max": 2048,
+        "step": 64,
+        "grouping": "render",
+        "value": 1024
+      },
+      {
+        "name": "showCameraHelpers",
+        "dtype": "boolean",
+        "grouping": "render",
+        "value": false
+      },
+      {
+        "name": "previewDistance",
+        "dtype": "number",
+        "min": 0.1,
+        "max": 100,
+        "step": 0.1,
+        "grouping": "render",
+        "value": 1
+      }
+    ],
+    "description": "Virtual Fisheye Camera component.\nThis is NOT a real camera - it's a group with frustum visualization\nthat can be used to position and preview camera views in the editor.\n\nUses a PerspectiveCamera for metadata storage (transform, near, far).\nThe actual fisheye rendering is done by useFisheyePreview using CubeCamera.",
+    "groups": [
+      {
+        "name": "transform",
+        "layout": "grid",
+        "gridCols": 2
+      },
+      {
+        "name": "camera",
+        "layout": "grid",
+        "gridCols": 2
+      },
+      {
+        "name": "display",
+        "layout": "grid",
+        "gridCols": 2
+      },
+      {
+        "name": "render",
+        "layout": "grid",
+        "gridCols": 2
+      }
+    ]
+  },
+  {
+    "component": "CameraPreviewThumbs",
+    "schemas": [
+      {
+        "name": "previewHeight",
+        "dtype": "number-int",
+        "min": 50,
+        "max": 500,
+        "step": 10,
+        "grouping": "layout",
+        "value": 200
+      },
+      {
+        "name": "gap",
+        "dtype": "number-int",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "grouping": "layout",
+        "value": 10
+      },
+      {
+        "name": "margin",
+        "dtype": "number-int",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "grouping": "layout",
+        "value": 10
+      },
+      {
+        "name": "showLabels",
+        "dtype": "boolean",
+        "grouping": "display",
+        "value": true
+      }
+    ],
+    "description": "Renders camera preview thumbnails in the bottom-left corner.\nSupports pointer events and optional labels.",
+    "groups": [
+      {
+        "name": "layout",
+        "layout": "grid",
+        "gridCols": 2
+      },
+      {
+        "name": "display"
+      }
+    ]
+  },
+  {
+    "component": "CameraPreviewOverlay",
+    "schemas": [
+      {
+        "name": "margin",
+        "dtype": "number",
+        "min": 0,
+        "max": 0.5,
+        "step": 0.01,
+        "grouping": "layout",
+        "value": 0.05
+      },
+      {
+        "name": "showLabel",
+        "dtype": "boolean",
+        "grouping": "display",
+        "value": true
+      },
+      {
+        "name": "showCornerBrackets",
+        "dtype": "boolean",
+        "grouping": "display",
+        "value": true
+      },
+      {
+        "name": "showCenterFocus",
+        "dtype": "boolean",
+        "grouping": "display",
+        "value": true
+      },
+      {
+        "name": "cornerBracketColor",
+        "dtype": "color",
+        "grouping": "display",
+        "value": "#ffae00"
+      },
+      {
+        "name": "centerFocusColor",
+        "dtype": "color",
+        "grouping": "display",
+        "value": "#999999"
+      }
+    ],
+    "description": "Renders the bound camera's preview centered and maximized in the canvas.\nMaintains aspect ratio while respecting margins.",
+    "groups": [
+      {
+        "name": "layout"
+      },
+      {
+        "name": "display"
+      }
+    ]
+  },
+  {
+    "component": "BackgroundColor",
+    "schemas": [
+      {
+        "name": "color",
+        "dtype": "color",
+        "value": "#131416"
+      }
+    ]
+  },
+  {
+    "component": "BBox",
+    "schemas": [
+      {
+        "name": "scale",
+        "dtype": "number",
+        "min": 0.01,
+        "step": 0.01,
+        "grouping": "appearance",
+        "value": 1.01
+      },
+      {
+        "name": "min",
+        "dtype": "vector3",
+        "grouping": "geometry",
+        "value": {
+          "x": -1,
+          "y": -1,
+          "z": -1
+        }
+      },
+      {
+        "name": "max",
+        "dtype": "vector3",
+        "grouping": "geometry",
+        "value": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      {
+        "name": "color",
+        "dtype": "color",
+        "grouping": "appearance",
+        "value": 16777215
+      }
+    ],
+    "groups": [
+      {
+        "name": "appearance",
+        "gridCols": 2
+      },
+      {
+        "name": "geometry",
+        "gridCols": 2
+      }
+    ]
+  },
+  {
+    "component": "CameraView",
+    "schemas": [
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "grouping": "visibility"
+      },
+      {
+        "name": "width",
+        "dtype": "number-int",
+        "min": 1,
+        "grouping": "camera",
+        "value": 640
+      },
+      {
+        "name": "height",
+        "dtype": "number-int",
+        "min": 1,
+        "grouping": "camera",
+        "value": 480
+      },
+      {
+        "name": "fov",
+        "dtype": "number",
+        "min": 0,
+        "max": 170,
+        "step": 0.1,
+        "grouping": "camera",
+        "value": 60
+      },
+      {
+        "name": "aspect",
+        "dtype": "number",
+        "step": 0.01,
+        "grouping": "camera"
+      },
+      {
+        "name": "top",
+        "dtype": "number",
+        "default": 1,
+        "step": 1,
+        "grouping": "camera",
+        "value": 1
+      },
+      {
+        "name": "bottom",
+        "dtype": "number",
+        "default": -1,
+        "step": 1,
+        "grouping": "camera",
+        "value": -1
+      },
+      {
+        "name": "left",
+        "dtype": "number",
+        "step": 1,
+        "default": -1,
+        "grouping": "camera",
+        "value": -1
+      },
+      {
+        "name": "right",
+        "dtype": "number",
+        "step": 1,
+        "default": 1,
+        "grouping": "camera",
+        "value": 1
+      },
+      {
+        "name": "near",
+        "dtype": "number",
+        "min": 0.001,
+        "step": 0.01,
+        "grouping": "camera",
+        "value": 0.1
+      },
+      {
+        "name": "far",
+        "dtype": "number",
+        "min": 0.1,
+        "step": 0.01,
+        "grouping": "camera",
+        "value": 20
+      },
+      {
+        "name": "renderDepth",
+        "dtype": "boolean",
+        "grouping": "camera",
+        "value": false
+      },
+      {
+        "name": "origin",
+        "dtype": "select",
+        "options": [
+          "bottom-left",
+          "top-left",
+          "bottom-right",
+          "top-right"
+        ],
+        "grouping": "camera",
+        "value": "top-left"
+      },
+      {
+        "name": "distanceToCamera",
+        "dtype": "number",
+        "min": 0.01,
+        "step": 0.01,
+        "grouping": "camera",
+        "value": 0.5
+      },
+      {
+        "name": "ctype",
+        "dtype": "select",
+        "options": [
+          "perspective",
+          "orthographic"
+        ],
+        "grouping": "camera",
+        "value": "perspective"
+      },
+      {
+        "name": "showCamera",
+        "dtype": "boolean",
+        "grouping": "visibility",
+        "value": true
+      },
+      {
+        "name": "scale",
+        "dtype": "number",
+        "min": 0.01,
+        "step": 0.01,
+        "grouping": "camera",
+        "value": 10
+      },
+      {
+        "name": "showFrustum",
+        "dtype": "boolean",
+        "grouping": "visibility",
+        "value": true
+      },
+      {
+        "name": "stream",
+        "dtype": "select",
+        "options": [
+          null,
+          "frame",
+          "time",
+          "ondemand"
+        ],
+        "grouping": "streaming",
+        "value": null
+      },
+      {
+        "name": "downsample",
+        "dtype": "number-int",
+        "min": 1,
+        "grouping": "streaming",
+        "value": 2
+      },
+      {
+        "name": "fps",
+        "dtype": "number-int",
+        "min": 1,
+        "max": 120,
+        "step": 1,
+        "grouping": "streaming",
+        "value": 30
+      },
+      {
+        "name": "quality",
+        "dtype": "number",
+        "min": 0,
+        "max": 1,
+        "step": 0.01,
+        "grouping": "streaming",
+        "value": 1
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "monitor",
+        "dtype": "boolean",
+        "grouping": "visibility",
+        "value": true
+      },
+      {
+        "name": "movable",
+        "dtype": "boolean",
+        "grouping": "controls",
+        "value": true
+      },
+      {
+        "name": "movableScale",
+        "dtype": "number",
+        "min": 0.01,
+        "step": 0.01,
+        "grouping": "controls",
+        "value": 1
+      }
+    ],
+    "groups": [
+      {
+        "name": "visibility",
+        "gridCols": 2
+      },
+      {
+        "name": "camera",
+        "gridCols": 2
+      },
+      {
+        "name": "streaming",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 2
+      },
+      {
+        "name": "controls",
+        "gridCols": 2
+      }
+    ]
+  },
+  {
+    "component": "AmbientLight",
+    "schemas": [
+      {
+        "name": "color",
+        "dtype": "color",
+        "value": "#ffffff"
+      },
+      {
+        "name": "intensity",
+        "dtype": "number",
+        "value": 0.5
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "value": false
+      }
+    ]
+  },
+  {
+    "component": "DirectionalLight",
+    "schemas": [
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "value": false
+      },
+      {
+        "name": "intensity",
+        "dtype": "number",
+        "value": 0.5
+      },
+      {
+        "name": "color",
+        "dtype": "color",
+        "value": "#ffffff"
+      },
+      {
+        "name": "helper",
+        "dtype": "boolean",
+        "value": false
+      }
+    ]
+  },
+  {
+    "component": "HemisphereLight",
+    "schemas": [
+      {
+        "name": "skyColor",
+        "dtype": "color",
+        "value": "#ffffff"
+      },
+      {
+        "name": "groundColor",
+        "dtype": "color",
+        "value": "#ffffff"
+      },
+      {
+        "name": "intensity",
+        "dtype": "number",
+        "value": 1
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "value": false
+      },
+      {
+        "name": "helper",
+        "dtype": "boolean",
+        "value": false
+      }
+    ]
+  },
+  {
+    "component": "PointLight",
+    "schemas": [
+      {
+        "name": "color",
+        "dtype": "color",
+        "value": "#ffffff"
+      },
+      {
+        "name": "intensity",
+        "dtype": "number",
+        "value": 20
+      },
+      {
+        "name": "radius",
+        "dtype": "number",
+        "value": 0.1
+      },
+      {
+        "name": "showSphere",
+        "dtype": "boolean",
+        "value": false
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "value": false
+      },
+      {
+        "name": "helper",
+        "dtype": "boolean",
+        "value": false
+      },
+      {
+        "name": "position",
+        "dtype": "vec3",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  {
+    "component": "RectAreaLight",
+    "schemas": [
+      {
+        "name": "color",
+        "dtype": "color",
+        "value": "#ffffff"
+      },
+      {
+        "name": "intensity",
+        "dtype": "number",
+        "value": 1
+      },
+      {
+        "name": "lookAt",
+        "dtype": "vec3",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "width",
+        "dtype": "number",
+        "value": 1
+      },
+      {
+        "name": "height",
+        "dtype": "number",
+        "value": 1
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "value": false
+      },
+      {
+        "name": "helper",
+        "dtype": "boolean",
+        "value": false
+      }
+    ]
+  },
+  {
+    "component": "SpotLight",
+    "schemas": [
+      {
+        "name": "color",
+        "dtype": "color",
+        "value": "#ffffff"
+      },
+      {
+        "name": "intensity",
+        "dtype": "number",
+        "value": 0.5
+      },
+      {
+        "name": "distance",
+        "dtype": "number",
+        "value": 0
+      },
+      {
+        "name": "angle",
+        "dtype": "number",
+        "value": 1.0471975511965976
+      },
+      {
+        "name": "penumbra",
+        "dtype": "number",
+        "value": 0
+      },
+      {
+        "name": "decay",
+        "dtype": "number",
+        "value": 2
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "value": false
+      },
+      {
+        "name": "helper",
+        "dtype": "boolean",
+        "value": false
+      }
+    ],
+    "description": "Creates a new SpotLight."
+  },
+  {
+    "component": "Frustum",
+    "schemas": [
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "aspect",
+        "dtype": "number",
+        "step": 0.001,
+        "grouping": "camera",
+        "value": 1.3333333333333333
+      },
+      {
+        "name": "focus",
+        "dtype": "number",
+        "min": 0.01,
+        "step": 0.01,
+        "grouping": "camera",
+        "value": 10
+      },
+      {
+        "name": "fov",
+        "dtype": "number",
+        "min": 0.01,
+        "step": 0.01,
+        "grouping": "camera",
+        "value": 50
+      },
+      {
+        "name": "near",
+        "dtype": "number",
+        "min": 0.01,
+        "step": 0.01,
+        "grouping": "camera",
+        "value": 0.1
+      },
+      {
+        "name": "far",
+        "dtype": "number",
+        "min": 0.01,
+        "step": 0.01,
+        "grouping": "camera",
+        "value": 0.2
+      },
+      {
+        "name": "scale",
+        "dtype": "number",
+        "default": 1,
+        "min": 0.01,
+        "step": 0.01,
+        "grouping": "appearance",
+        "value": 1
+      },
+      {
+        "name": "upScale",
+        "dtype": "number",
+        "default": 1,
+        "min": 0.01,
+        "step": 0.01,
+        "grouping": "appearance",
+        "value": 1
+      },
+      {
+        "name": "focalLength",
+        "dtype": "number",
+        "min": 0.01,
+        "step": 0.01,
+        "grouping": "camera",
+        "value": 0.035
+      },
+      {
+        "name": "showUp",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "visibility",
+        "value": true
+      },
+      {
+        "name": "showFrustum",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "visibility",
+        "value": true
+      },
+      {
+        "name": "showFocalPlane",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "visibility",
+        "value": true
+      },
+      {
+        "name": "showImagePlane",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "visibility",
+        "value": false
+      },
+      {
+        "name": "src",
+        "dtype": "string",
+        "grouping": "appearance"
+      },
+      {
+        "name": "colorOrigin",
+        "dtype": "color",
+        "grouping": "appearance"
+      },
+      {
+        "name": "colorFrustum",
+        "dtype": "color",
+        "grouping": "appearance",
+        "value": 16755200
+      },
+      {
+        "name": "colorCone",
+        "dtype": "color",
+        "grouping": "appearance",
+        "value": 16711680
+      },
+      {
+        "name": "colorFocalPlane",
+        "dtype": "color",
+        "grouping": "appearance",
+        "value": "white"
+      },
+      {
+        "name": "colorUp",
+        "dtype": "color",
+        "grouping": "appearance",
+        "value": 43775
+      },
+      {
+        "name": "colorTarget",
+        "dtype": "color",
+        "grouping": "appearance",
+        "value": "green"
+      },
+      {
+        "name": "colorCross",
+        "dtype": "color",
+        "grouping": "appearance",
+        "value": 3355443
+      }
+    ],
+    "groups": [
+      {
+        "name": "transform",
+        "gridCols": 2
+      },
+      {
+        "name": "camera",
+        "gridCols": 2
+      },
+      {
+        "name": "appearance",
+        "gridCols": 2
+      },
+      {
+        "name": "visibility",
+        "gridCols": 2
+      }
+    ]
+  },
+  {
+    "component": "PointCloud",
+    "schemas": [
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "grouping": "transform",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "grouping": "transform",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "size",
+        "dtype": "number",
+        "min": 0.001,
+        "step": 0.001,
+        "grouping": "appearance",
+        "value": 0.01
+      },
+      {
+        "name": "color",
+        "dtype": "color",
+        "grouping": "appearance"
+      }
+    ],
+    "groups": [
+      {
+        "name": "transform",
+        "gridCols": 2
+      },
+      {
+        "name": "appearance",
+        "gridCols": 2
+      }
+    ]
+  },
+  {
+    "component": "TriMesh",
+    "schemas": [
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "grouping": "transform",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "grouping": "transform",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "color",
+        "dtype": "color",
+        "grouping": "appearance"
+      },
+      {
+        "name": "materialType",
+        "dtype": "select",
+        "options": [
+          "basic",
+          "standard",
+          "phong",
+          "lambert",
+          "normal",
+          "depth"
+        ],
+        "grouping": "appearance",
+        "value": "standard"
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "grouping": "appearance"
+      },
+      {
+        "name": "opacity",
+        "dtype": "number",
+        "min": 0,
+        "max": 1,
+        "step": 0.01,
+        "grouping": "appearance"
+      },
+      {
+        "name": "side",
+        "dtype": "select",
+        "options": [
+          "front",
+          "back",
+          "double"
+        ],
+        "grouping": "appearance",
+        "value": "double"
+      }
+    ],
+    "groups": [
+      {
+        "name": "transform",
+        "gridCols": 2
+      },
+      {
+        "name": "appearance"
+      }
+    ]
+  },
+  {
+    "component": "WebXRMesh",
+    "schemas": [
+      {
+        "name": "color",
+        "dtype": "color",
+        "grouping": "appearance"
+      },
+      {
+        "name": "opacity",
+        "dtype": "number",
+        "default": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.01,
+        "grouping": "appearance",
+        "value": 0.15
+      },
+      {
+        "name": "autoUpdate",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "behavior",
+        "value": true
+      }
+    ],
+    "description": "WebXRMesh component\n\nThis component enables real-world mesh detection in WebXR AR sessions.\nIt detects and renders environmental geometry like walls, floors, and furniture.\n\n**Data Upload Modes:**\n1. **Auto-Update Mode** (when `autoUpdate: true`, default):\n   - Automatically detects mesh changes (new/updated/removed)\n   - Pushes updates to server only when changes occur\n   - Event type: 'WEBXR_MESH_UPDATE'\n   - Set `autoUpdate: false` to disable\n\n2. **RPC Mode** (always active):\n   - Server sends 'GET_WEBXR_MESH' request with matching key\n   - Component responds with latest mesh data\n   - Response event type: rtype from request or 'GET_WEBXR_MESH_RESPONSE'\n\n**Requirements:**\n- WebXR session must be initialized with 'mesh-detection' feature\n- Only works in immersive-ar mode\n- Device must support mesh detection API",
+    "groups": [
+      {
+        "name": "appearance",
+        "gridCols": 2
+      },
+      {
+        "name": "behavior"
+      }
+    ]
+  },
+  {
+    "component": "SceneBackground",
+    "schemas": [
+      {
+        "name": "src",
+        "dtype": "string",
+        "grouping": "scene"
+      }
+    ],
+    "groups": [
+      {
+        "name": "scene"
+      }
+    ]
+  },
+  {
+    "component": "ImagePlane",
+    "schemas": [
+      {
+        "name": "depthScale",
+        "dtype": "number",
+        "default": 1,
+        "min": 0,
+        "step": 0.01,
+        "grouping": "texture",
+        "value": 1
+      },
+      {
+        "name": "depthBias",
+        "dtype": "number",
+        "default": 0,
+        "step": 0.01,
+        "grouping": "texture",
+        "value": 0
+      },
+      {
+        "name": "distanceToCamera",
+        "dtype": "number",
+        "default": 10,
+        "step": 0.01,
+        "min": 0.1,
+        "grouping": "geometry",
+        "value": 10
+      },
+      {
+        "name": "aspect",
+        "dtype": "number",
+        "step": 0.01,
+        "grouping": "geometry"
+      },
+      {
+        "name": "height",
+        "dtype": "number",
+        "step": 0.01,
+        "grouping": "geometry"
+      },
+      {
+        "name": "opacity",
+        "dtype": "number",
+        "min": 0,
+        "max": 1,
+        "step": 0.01,
+        "grouping": "appearance",
+        "value": 1
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "fixed",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "behavior",
+        "value": false
+      },
+      {
+        "name": "side",
+        "dtype": "number-int",
+        "default": 2,
+        "min": 0,
+        "max": 2,
+        "grouping": "appearance",
+        "value": 2
+      },
+      {
+        "name": "layers",
+        "dtype": "number-int",
+        "grouping": "rendering",
+        "value": null
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "appearance",
+        "value": false
+      }
+    ],
+    "groups": [
+      {
+        "name": "texture",
+        "gridCols": 2
+      },
+      {
+        "name": "geometry",
+        "gridCols": 2
+      },
+      {
+        "name": "appearance",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 2
+      },
+      {
+        "name": "behavior"
+      },
+      {
+        "name": "rendering"
+      }
+    ]
+  },
+  {
+    "component": "HUDPlane",
+    "schemas": [
+      {
+        "name": "distanceToCamera",
+        "dtype": "number",
+        "default": 10,
+        "step": 0.01,
+        "min": 0.1,
+        "grouping": "geometry",
+        "value": 10
+      },
+      {
+        "name": "aspect",
+        "dtype": "number",
+        "step": 0.01,
+        "grouping": "geometry"
+      },
+      {
+        "name": "height",
+        "dtype": "number",
+        "step": 0.01,
+        "grouping": "geometry"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "fixed",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "behavior",
+        "value": false
+      },
+      {
+        "name": "side",
+        "dtype": "number-int",
+        "default": 2,
+        "min": 0,
+        "max": 2,
+        "grouping": "appearance",
+        "value": 2
+      },
+      {
+        "name": "layers",
+        "dtype": "number-int",
+        "grouping": "rendering",
+        "value": null
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 2
+      },
+      {
+        "name": "behavior"
+      },
+      {
+        "name": "appearance"
+      },
+      {
+        "name": "rendering"
+      }
+    ]
+  },
+  {
+    "component": "VideoPlane",
+    "schemas": [
+      {
+        "name": "src",
+        "dtype": "string",
+        "grouping": "video"
+      },
+      {
+        "name": "unsuspend",
+        "dtype": "string",
+        "grouping": "video"
+      },
+      {
+        "name": "start",
+        "dtype": "boolean",
+        "grouping": "video",
+        "value": true
+      },
+      {
+        "name": "distanceToCamera",
+        "dtype": "number",
+        "default": 10,
+        "step": 0.01,
+        "min": 0.1,
+        "grouping": "geometry",
+        "value": 10
+      },
+      {
+        "name": "aspect",
+        "dtype": "number",
+        "step": 0.01,
+        "grouping": "geometry"
+      },
+      {
+        "name": "height",
+        "dtype": "number",
+        "step": 0.01,
+        "grouping": "geometry"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "fixed",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "behavior",
+        "value": false
+      },
+      {
+        "name": "side",
+        "dtype": "number-int",
+        "default": 2,
+        "min": 0,
+        "max": 2,
+        "grouping": "appearance",
+        "value": 2
+      },
+      {
+        "name": "layers",
+        "dtype": "number-int",
+        "grouping": "rendering"
+      }
+    ],
+    "groups": [
+      {
+        "name": "video",
+        "gridCols": 2
+      },
+      {
+        "name": "geometry",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 2
+      },
+      {
+        "name": "behavior"
+      },
+      {
+        "name": "appearance"
+      },
+      {
+        "name": "rendering"
+      }
+    ]
+  },
+  {
+    "component": "ImageBackground",
+    "schemas": [
+      {
+        "name": "geometry",
+        "dtype": "select",
+        "options": [
+          "plane",
+          "sphere",
+          null
+        ],
+        "grouping": "geometry"
+      },
+      {
+        "name": "src",
+        "dtype": "string",
+        "grouping": "texture"
+      },
+      {
+        "name": "alphaSrc",
+        "dtype": "string",
+        "grouping": "texture"
+      },
+      {
+        "name": "depthSrc",
+        "dtype": "string",
+        "grouping": "texture"
+      },
+      {
+        "name": "interpolate",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "texture",
+        "value": false
+      },
+      {
+        "name": "opacity",
+        "dtype": "number",
+        "min": 0,
+        "max": 1,
+        "step": 0.01,
+        "grouping": "appearance"
+      },
+      {
+        "name": "depthScale",
+        "dtype": "number",
+        "default": 1,
+        "min": 0,
+        "step": 0.01,
+        "grouping": "texture",
+        "value": 1
+      },
+      {
+        "name": "depthBias",
+        "dtype": "number",
+        "default": 0,
+        "step": 0.01,
+        "grouping": "texture",
+        "value": 0
+      },
+      {
+        "name": "distanceToCamera",
+        "dtype": "number",
+        "default": 10,
+        "step": 0.01,
+        "min": 0.1,
+        "grouping": "geometry",
+        "value": 10
+      },
+      {
+        "name": "fixed",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "behavior",
+        "value": false
+      },
+      {
+        "name": "layers",
+        "dtype": "number-int",
+        "grouping": "rendering"
+      },
+      {
+        "name": "side",
+        "dtype": "number-int",
+        "default": 2,
+        "min": 0,
+        "max": 2,
+        "grouping": "appearance",
+        "value": 2
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "appearance",
+        "value": false
+      },
+      {
+        "name": "aspect",
+        "dtype": "number",
+        "step": 0.01,
+        "grouping": "geometry"
+      },
+      {
+        "name": "height",
+        "dtype": "number",
+        "step": 0.01,
+        "grouping": "geometry"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry",
+        "gridCols": 2
+      },
+      {
+        "name": "texture",
+        "gridCols": 2
+      },
+      {
+        "name": "appearance",
+        "gridCols": 2
+      },
+      {
+        "name": "behavior"
+      },
+      {
+        "name": "rendering"
+      },
+      {
+        "name": "transform",
+        "gridCols": 2
+      }
+    ]
+  },
+  {
+    "component": "StereoVideoPlane",
+    "schemas": [
+      {
+        "name": "side",
+        "dtype": "number-int",
+        "default": 2,
+        "min": 0,
+        "max": 2,
+        "grouping": "appearance",
+        "value": 2
+      },
+      {
+        "name": "distanceToCamera",
+        "dtype": "number",
+        "default": 10,
+        "step": 0.01,
+        "min": 0.1,
+        "grouping": "geometry",
+        "value": 10
+      },
+      {
+        "name": "aspect",
+        "dtype": "number",
+        "step": 0.01,
+        "grouping": "geometry"
+      },
+      {
+        "name": "height",
+        "dtype": "number",
+        "step": 0.01,
+        "grouping": "geometry"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "fixed",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "behavior",
+        "value": false
+      },
+      {
+        "name": "layers",
+        "dtype": "number-int",
+        "grouping": "rendering"
+      }
+    ],
+    "groups": [
+      {
+        "name": "appearance"
+      },
+      {
+        "name": "geometry",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 2
+      },
+      {
+        "name": "behavior"
+      },
+      {
+        "name": "rendering"
+      }
+    ]
+  },
+  {
+    "component": "WebRTCVideoPlane",
+    "schemas": [
+      {
+        "name": "distanceToCamera",
+        "dtype": "number",
+        "default": 10,
+        "step": 0.01,
+        "min": 0.1,
+        "grouping": "geometry",
+        "value": 10
+      },
+      {
+        "name": "aspect",
+        "dtype": "number",
+        "step": 0.01,
+        "grouping": "geometry"
+      },
+      {
+        "name": "height",
+        "dtype": "number",
+        "step": 0.01,
+        "grouping": "geometry"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "fixed",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "behavior",
+        "value": false
+      },
+      {
+        "name": "side",
+        "dtype": "number-int",
+        "default": 2,
+        "min": 0,
+        "max": 2,
+        "grouping": "appearance",
+        "value": 2
+      },
+      {
+        "name": "layers",
+        "dtype": "number-int",
+        "grouping": "rendering"
+      }
+    ],
+    "groups": [
+      {
+        "name": "geometry",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 2
+      },
+      {
+        "name": "behavior"
+      },
+      {
+        "name": "appearance"
+      },
+      {
+        "name": "rendering"
+      }
+    ]
+  },
+  {
+    "component": "WebRTCStereoVideoPlane",
+    "schemas": [
+      {
+        "name": "side",
+        "dtype": "number-int",
+        "default": 2,
+        "min": 0,
+        "max": 2,
+        "grouping": "appearance",
+        "value": 2
+      },
+      {
+        "name": "distanceToCamera",
+        "dtype": "number",
+        "default": 10,
+        "step": 0.01,
+        "min": 0.1,
+        "grouping": "geometry",
+        "value": 10
+      },
+      {
+        "name": "aspect",
+        "dtype": "number",
+        "step": 0.01,
+        "grouping": "geometry"
+      },
+      {
+        "name": "height",
+        "dtype": "number",
+        "step": 0.01,
+        "grouping": "geometry"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "fixed",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "behavior",
+        "value": false
+      },
+      {
+        "name": "layers",
+        "dtype": "number-int",
+        "grouping": "rendering"
+      }
+    ],
+    "groups": [
+      {
+        "name": "appearance"
+      },
+      {
+        "name": "geometry",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 2
+      },
+      {
+        "name": "behavior"
+      },
+      {
+        "name": "rendering"
+      }
+    ]
+  },
+  {
+    "component": "Arrow",
+    "schemas": [
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "direction",
+        "dtype": "vector3",
+        "grouping": "geometry",
+        "value": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "scale",
+        "dtype": "number",
+        "min": 0.01,
+        "step": 0.01,
+        "grouping": "geometry",
+        "value": 1
+      },
+      {
+        "name": "lod",
+        "dtype": "number-int",
+        "min": 3,
+        "max": 32,
+        "step": 1,
+        "grouping": "geometry",
+        "value": 10
+      },
+      {
+        "name": "headScale",
+        "dtype": "number",
+        "min": 0.01,
+        "step": 0.01,
+        "grouping": "geometry",
+        "value": 1
+      },
+      {
+        "name": "color",
+        "dtype": "color",
+        "grouping": "appearance",
+        "value": "red"
+      },
+      {
+        "name": "opacity",
+        "dtype": "number",
+        "min": 0,
+        "max": 1,
+        "step": 0.01,
+        "grouping": "appearance",
+        "value": 1
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "appearance",
+        "value": false
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "visibility",
+        "value": false
+      }
+    ],
+    "groups": [
+      {
+        "name": "transform",
+        "gridCols": 2
+      },
+      {
+        "name": "geometry",
+        "gridCols": 2
+      },
+      {
+        "name": "appearance",
+        "gridCols": 2
+      },
+      {
+        "name": "visibility"
+      }
+    ]
+  },
+  {
+    "component": "CoordsMarker",
+    "schemas": [
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "grouping": "transform"
+      },
+      {
+        "name": "direction",
+        "dtype": "vector3",
+        "grouping": "geometry"
+      },
+      {
+        "name": "scale",
+        "dtype": "number",
+        "min": 0.01,
+        "step": 0.01,
+        "grouping": "geometry",
+        "value": 1
+      },
+      {
+        "name": "lod",
+        "dtype": "number-int",
+        "default": 10,
+        "min": 3,
+        "max": 32,
+        "step": 1,
+        "grouping": "geometry",
+        "value": 10
+      },
+      {
+        "name": "headScale",
+        "dtype": "number",
+        "min": 0.01,
+        "step": 0.01,
+        "grouping": "geometry",
+        "value": 1
+      },
+      {
+        "name": "color",
+        "dtype": "color",
+        "grouping": "appearance"
+      },
+      {
+        "name": "opacity",
+        "dtype": "number",
+        "min": 0,
+        "max": 1,
+        "step": 0.01,
+        "grouping": "appearance",
+        "value": 1
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "appearance",
+        "value": false
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "visibility",
+        "value": false
+      }
+    ],
+    "groups": [
+      {
+        "name": "transform",
+        "gridCols": 2
+      },
+      {
+        "name": "geometry",
+        "gridCols": 2
+      },
+      {
+        "name": "appearance"
+      },
+      {
+        "name": "visibility"
+      }
+    ]
+  },
+  {
+    "component": "VuerGroup",
+    "schemas": [
+      {
+        "name": "matrix",
+        "dtype": "matrix",
+        "grouping": "transform"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "default": [
+          0,
+          0,
+          0
+        ],
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "default": [
+          0,
+          0,
+          0
+        ],
+        "grouping": "transform",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "vector4",
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": 0,
+        "step": 0.01,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "grouping": "visibility"
+      }
+    ],
+    "groups": [
+      {
+        "name": "transform",
+        "gridCols": 3
+      },
+      {
+        "name": "visibility"
+      }
+    ]
+  },
+  {
+    "component": "Group",
+    "schemas": [
+      {
+        "name": "matrix",
+        "dtype": "matrix",
+        "grouping": "transform"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "default": [
+          0,
+          0,
+          0
+        ],
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "default": [
+          0,
+          0,
+          0
+        ],
+        "grouping": "transform",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "vector4",
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": 0,
+        "step": 0.01,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "grouping": "visibility"
+      }
+    ],
+    "groups": [
+      {
+        "name": "transform",
+        "gridCols": 3
+      },
+      {
+        "name": "visibility"
+      }
+    ]
+  },
+  {
+    "component": "Grid",
+    "schemas": [
+      {
+        "name": "offset",
+        "dtype": "number",
+        "value": 0,
+        "grouping": "transform"
+      },
+      {
+        "name": "width",
+        "dtype": "number",
+        "grouping": "geometry",
+        "value": 10
+      },
+      {
+        "name": "height",
+        "dtype": "number",
+        "grouping": "geometry",
+        "value": 10
+      },
+      {
+        "name": "widthSegments",
+        "dtype": "number-int",
+        "min": 1,
+        "grouping": "geometry",
+        "value": 1
+      },
+      {
+        "name": "heightSegments",
+        "dtype": "number-int",
+        "min": 1,
+        "grouping": "geometry",
+        "value": 1
+      },
+      {
+        "name": "cellSize",
+        "dtype": "number",
+        "step": 0.001,
+        "grouping": "cell",
+        "value": 0.2
+      },
+      {
+        "name": "cellThickness",
+        "dtype": "number",
+        "step": 0.001,
+        "grouping": "cell",
+        "value": 0.6
+      },
+      {
+        "name": "cellColor",
+        "dtype": "color",
+        "grouping": "cell",
+        "value": "#6f6f6f"
+      },
+      {
+        "name": "sectionSize",
+        "dtype": "number",
+        "step": 0.001,
+        "grouping": "section",
+        "value": 1
+      },
+      {
+        "name": "sectionThickness",
+        "dtype": "number",
+        "step": 0.001,
+        "grouping": "section",
+        "value": 1.5
+      },
+      {
+        "name": "sectionColor",
+        "dtype": "color",
+        "grouping": "section",
+        "value": "#23aaff"
+      },
+      {
+        "name": "fadeDistance",
+        "dtype": "number",
+        "step": 0.1,
+        "grouping": "fade",
+        "value": 40
+      },
+      {
+        "name": "fadeStrength",
+        "dtype": "number",
+        "step": 0.001,
+        "grouping": "fade",
+        "value": 1
+      },
+      {
+        "name": "followCamera",
+        "dtype": "boolean",
+        "grouping": "misc",
+        "value": true
+      },
+      {
+        "name": "infiniteGrid",
+        "dtype": "boolean",
+        "grouping": "misc",
+        "value": true
+      },
+      {
+        "name": "enableRaycast",
+        "dtype": "boolean",
+        "grouping": "misc",
+        "value": false
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "description": "Grid component\n*",
+    "groups": [
+      {
+        "name": "transform",
+        "gridCols": 3
+      },
+      {
+        "name": "geometry",
+        "gridCols": 2
+      },
+      {
+        "name": "cell",
+        "gridCols": 3
+      },
+      {
+        "name": "section",
+        "gridCols": 3
+      },
+      {
+        "name": "fade",
+        "gridCols": 2
+      },
+      {
+        "name": "misc",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Gripper",
+    "schemas": [
+      {
+        "name": "color",
+        "dtype": "color",
+        "grouping": "appearance"
+      },
+      {
+        "name": "pinchWidth",
+        "dtype": "number",
+        "min": 0.01,
+        "step": 0.01,
+        "grouping": "geometry",
+        "value": 0.04
+      },
+      {
+        "name": "skeleton",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "appearance",
+        "value": false
+      },
+      {
+        "name": "axes",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "visibility",
+        "value": false
+      },
+      {
+        "name": "showOrigin",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "visibility",
+        "value": true
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "grouping": "visibility"
+      },
+      {
+        "name": "matrix",
+        "dtype": "matrix",
+        "grouping": "transform"
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "default": [
+          0,
+          0,
+          0
+        ],
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "default": [
+          0,
+          0,
+          0
+        ],
+        "grouping": "transform",
+        "value": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "vector4",
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": 0,
+        "step": 0.01,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "groups": [
+      {
+        "name": "appearance",
+        "gridCols": 2
+      },
+      {
+        "name": "geometry"
+      },
+      {
+        "name": "visibility",
+        "gridCols": 3
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "ThreeAnimate",
+    "schemas": [
+      {
+        "name": "clipIndex",
+        "dtype": "number-int",
+        "default": 0,
+        "icon": "Hash",
+        "min": 0,
+        "grouping": "animation",
+        "value": 0
+      },
+      {
+        "name": "play",
+        "dtype": "boolean",
+        "default": true,
+        "icon": "Play",
+        "grouping": "animation",
+        "value": true
+      },
+      {
+        "name": "speed",
+        "dtype": "number",
+        "default": 1,
+        "min": 0.01,
+        "icon": "Gauge",
+        "grouping": "animation",
+        "value": 1
+      }
+    ],
+    "description": "ThreeAnimate - simplified animation component that takes explicit target",
+    "groups": [
+      {
+        "name": "animation"
+      }
+    ]
+  },
+  {
+    "component": "PlaybackAnimate",
+    "schemas": [
+      {
+        "name": "clipIndex",
+        "dtype": "number-int",
+        "default": 0,
+        "icon": "Hash",
+        "min": 0,
+        "grouping": "animation",
+        "value": 0
+      },
+      {
+        "name": "play",
+        "dtype": "boolean",
+        "default": true,
+        "icon": "Play",
+        "grouping": "animation",
+        "value": true
+      },
+      {
+        "name": "speed",
+        "dtype": "number",
+        "default": 1,
+        "min": 0.01,
+        "icon": "Gauge",
+        "grouping": "animation",
+        "value": 1
+      }
+    ],
+    "description": "PlaybackAnimate - animation component that syncs with the playback timeline\nUses usePlaybackFrame instead of useFrame for synchronized playback",
+    "groups": [
+      {
+        "name": "animation"
+      }
+    ]
+  },
+  {
+    "component": "AnimationClip",
+    "schemas": [
+      {
+        "name": "duration",
+        "dtype": "number",
+        "min": 0.1,
+        "grouping": "animation"
+      }
+    ],
+    "description": "AnimationClip component for declaratively creating Three.js animations\n\nThis component collects track children and creates a Three.js AnimationClip\nthat can target specific bones in an FBX model. The clip is automatically\nregistered with the parent Fbx component via context.",
+    "groups": [
+      {
+        "name": "animation"
+      }
+    ]
+  },
+  {
+    "component": "VectorTrack",
+    "schemas": [
+      {
+        "name": "times",
+        "dtype": "array",
+        "arrayElementType": "number",
+        "grouping": "animation"
+      },
+      {
+        "name": "values",
+        "dtype": "array",
+        "arrayElementType": "number",
+        "grouping": "animation"
+      }
+    ],
+    "description": "VectorTrack component for position/scale animations\n\nCreates a Three.js VectorKeyframeTrack and registers it with\nthe parent AnimationClip component.",
+    "groups": [
+      {
+        "name": "animation"
+      }
+    ]
+  },
+  {
+    "component": "QuaternionTrack",
+    "schemas": [
+      {
+        "name": "times",
+        "dtype": "array",
+        "arrayElementType": "number",
+        "grouping": "animation"
+      },
+      {
+        "name": "values",
+        "dtype": "array",
+        "arrayElementType": "number",
+        "grouping": "animation"
+      }
+    ],
+    "description": "QuaternionTrack component for rotation animations\n\nCreates a Three.js QuaternionKeyframeTrack and registers it with\nthe parent AnimationClip component.",
+    "groups": [
+      {
+        "name": "animation"
+      }
+    ]
+  },
+  {
+    "component": "Glb",
+    "schemas": [
+      {
+        "name": "src",
+        "dtype": "string",
+        "grouping": "loader"
+      },
+      {
+        "name": "mtl",
+        "dtype": "string",
+        "grouping": "loader"
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "grouping": "visibility"
+      },
+      {
+        "name": "playAnimation",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "animation",
+        "value": true
+      },
+      {
+        "name": "animationIndex",
+        "dtype": "number-int",
+        "default": 0,
+        "min": 0,
+        "grouping": "animation",
+        "value": 0
+      },
+      {
+        "name": "animationSpeed",
+        "dtype": "number",
+        "default": 1,
+        "min": 0.01,
+        "grouping": "animation",
+        "value": 1
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "color",
+        "dtype": "color",
+        "grouping": "appearance"
+      },
+      {
+        "name": "opacity",
+        "dtype": "number",
+        "default": 1,
+        "min": 0,
+        "max": 1,
+        "step": 0.001,
+        "grouping": "appearance",
+        "value": 1
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "grouping": "appearance"
+      }
+    ],
+    "description": "GLB/GLTF file loader component",
+    "groups": [
+      {
+        "name": "loader"
+      },
+      {
+        "name": "visibility"
+      },
+      {
+        "name": "animation",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      },
+      {
+        "name": "appearance",
+        "gridCols": 2
+      }
+    ]
+  },
+  {
+    "component": "Fbx",
+    "schemas": [
+      {
+        "name": "src",
+        "dtype": "string",
+        "grouping": "loader"
+      },
+      {
+        "name": "mtl",
+        "dtype": "string",
+        "grouping": "loader"
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "grouping": "visibility"
+      },
+      {
+        "name": "playAnimation",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "animation",
+        "value": true
+      },
+      {
+        "name": "animationIndex",
+        "dtype": "number-int",
+        "default": 0,
+        "min": 0,
+        "grouping": "animation",
+        "value": 0
+      },
+      {
+        "name": "animationSpeed",
+        "dtype": "number",
+        "default": 1,
+        "min": 0.01,
+        "grouping": "animation",
+        "value": 1
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "color",
+        "dtype": "color",
+        "grouping": "appearance"
+      },
+      {
+        "name": "visible",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "rendering",
+        "value": true
+      },
+      {
+        "name": "castShadow",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "rendering",
+        "value": true
+      },
+      {
+        "name": "receiveShadow",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "rendering",
+        "value": true
+      },
+      {
+        "name": "frustumCulled",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "rendering",
+        "value": true
+      },
+      {
+        "name": "renderOrder",
+        "dtype": "number",
+        "default": 0,
+        "step": 1,
+        "grouping": "rendering",
+        "value": 0
+      },
+      {
+        "name": "opacity",
+        "dtype": "number",
+        "default": 0.8,
+        "min": 0,
+        "max": 1,
+        "step": 0.001,
+        "grouping": "appearance",
+        "value": 0.8
+      },
+      {
+        "name": "wireframe",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "appearance",
+        "value": false
+      },
+      {
+        "name": "label",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "skeleton",
+        "value": false
+      },
+      {
+        "name": "materialType",
+        "dtype": "string",
+        "options": [
+          "basic",
+          "phong",
+          "lambert",
+          "standard",
+          "normal",
+          "depth",
+          "physical",
+          "points",
+          "line",
+          "lineDashed",
+          "sprite",
+          "shadow",
+          "rawShader"
+        ],
+        "label": "Material Type",
+        "grouping": "appearance"
+      },
+      {
+        "name": "frame",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "skeleton",
+        "value": false
+      },
+      {
+        "name": "boneRadius",
+        "dtype": "number",
+        "default": 0.01,
+        "min": 0.001,
+        "max": 0.1,
+        "step": 0.001,
+        "grouping": "skeleton",
+        "value": 0.01
+      },
+      {
+        "name": "jointColor",
+        "dtype": "color",
+        "default": "#ffda23",
+        "grouping": "skeleton",
+        "value": "#ffda23"
+      },
+      {
+        "name": "frameScale",
+        "dtype": "number",
+        "default": 1,
+        "min": 0.1,
+        "max": 10,
+        "step": 0.1,
+        "grouping": "skeleton",
+        "value": 1
+      }
+    ],
+    "groups": [
+      {
+        "name": "loader"
+      },
+      {
+        "name": "visibility"
+      },
+      {
+        "name": "animation",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      },
+      {
+        "name": "appearance"
+      },
+      {
+        "name": "rendering"
+      },
+      {
+        "name": "skeleton"
+      }
+    ]
+  },
+  {
+    "component": "Obj",
+    "schemas": [
+      {
+        "name": "src",
+        "dtype": "string",
+        "grouping": "loader"
+      },
+      {
+        "name": "mtl",
+        "dtype": "string",
+        "grouping": "loader"
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "grouping": "visibility"
+      },
+      {
+        "name": "playAnimation",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "animation",
+        "value": true
+      },
+      {
+        "name": "animationIndex",
+        "dtype": "number-int",
+        "default": 0,
+        "min": 0,
+        "grouping": "animation",
+        "value": 0
+      },
+      {
+        "name": "animationSpeed",
+        "dtype": "number",
+        "default": 1,
+        "min": 0.01,
+        "grouping": "animation",
+        "value": 1
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "description": "Load a 3D object from a file or text.",
+    "groups": [
+      {
+        "name": "loader"
+      },
+      {
+        "name": "visibility"
+      },
+      {
+        "name": "animation",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Pcd",
+    "schemas": [
+      {
+        "name": "src",
+        "dtype": "string",
+        "grouping": "loader"
+      },
+      {
+        "name": "mtl",
+        "dtype": "string",
+        "grouping": "loader"
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "grouping": "visibility"
+      },
+      {
+        "name": "playAnimation",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "animation",
+        "value": true
+      },
+      {
+        "name": "animationIndex",
+        "dtype": "number-int",
+        "default": 0,
+        "min": 0,
+        "grouping": "animation",
+        "value": 0
+      },
+      {
+        "name": "animationSpeed",
+        "dtype": "number",
+        "default": 1,
+        "min": 0.01,
+        "grouping": "animation",
+        "value": 1
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "color",
+        "dtype": "color",
+        "grouping": "appearance"
+      },
+      {
+        "name": "opacity",
+        "dtype": "number",
+        "default": 1,
+        "min": 0,
+        "max": 1,
+        "step": 0.001,
+        "grouping": "appearance",
+        "value": 1
+      },
+      {
+        "name": "size",
+        "dtype": "number",
+        "min": 0.001,
+        "step": 0.001,
+        "grouping": "appearance"
+      }
+    ],
+    "groups": [
+      {
+        "name": "loader"
+      },
+      {
+        "name": "visibility"
+      },
+      {
+        "name": "animation",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      },
+      {
+        "name": "appearance",
+        "gridCols": 2
+      }
+    ]
+  },
+  {
+    "component": "Ply",
+    "schemas": [
+      {
+        "name": "src",
+        "dtype": "string",
+        "grouping": "loader"
+      },
+      {
+        "name": "mtl",
+        "dtype": "string",
+        "grouping": "loader"
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "grouping": "visibility"
+      },
+      {
+        "name": "playAnimation",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "animation",
+        "value": true
+      },
+      {
+        "name": "animationIndex",
+        "dtype": "number-int",
+        "default": 0,
+        "min": 0,
+        "grouping": "animation",
+        "value": 0
+      },
+      {
+        "name": "animationSpeed",
+        "dtype": "number",
+        "default": 1,
+        "min": 0.01,
+        "grouping": "animation",
+        "value": 1
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      }
+    ],
+    "groups": [
+      {
+        "name": "loader"
+      },
+      {
+        "name": "visibility"
+      },
+      {
+        "name": "animation",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      }
+    ]
+  },
+  {
+    "component": "Urdf",
+    "schemas": [
+      {
+        "name": "src",
+        "dtype": "string",
+        "grouping": "loader"
+      },
+      {
+        "name": "mtl",
+        "dtype": "string",
+        "grouping": "loader"
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "visibility",
+        "value": false
+      },
+      {
+        "name": "playAnimation",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "animation",
+        "value": true
+      },
+      {
+        "name": "animationIndex",
+        "dtype": "number-int",
+        "default": 0,
+        "min": 0,
+        "grouping": "animation",
+        "value": 0
+      },
+      {
+        "name": "animationSpeed",
+        "dtype": "number",
+        "default": 1,
+        "min": 0.01,
+        "grouping": "animation",
+        "value": 1
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "color",
+        "dtype": "color",
+        "grouping": "appearance"
+      },
+      {
+        "name": "materialType",
+        "dtype": "select",
+        "grouping": "appearance"
+      },
+      {
+        "name": "opacity",
+        "dtype": "number",
+        "default": 1,
+        "min": 0,
+        "max": 1,
+        "step": 0.001,
+        "grouping": "appearance",
+        "value": 1
+      }
+    ],
+    "groups": [
+      {
+        "name": "loader"
+      },
+      {
+        "name": "visibility"
+      },
+      {
+        "name": "animation",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      },
+      {
+        "name": "appearance",
+        "gridCols": 2
+      }
+    ]
+  },
+  {
+    "component": "Stl",
+    "schemas": [
+      {
+        "name": "src",
+        "dtype": "string",
+        "grouping": "loader"
+      },
+      {
+        "name": "mtl",
+        "dtype": "string",
+        "grouping": "loader"
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "grouping": "visibility"
+      },
+      {
+        "name": "playAnimation",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "animation",
+        "value": true
+      },
+      {
+        "name": "animationIndex",
+        "dtype": "number-int",
+        "default": 0,
+        "min": 0,
+        "grouping": "animation",
+        "value": 0
+      },
+      {
+        "name": "animationSpeed",
+        "dtype": "number",
+        "default": 1,
+        "min": 0.01,
+        "grouping": "animation",
+        "value": 1
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "color",
+        "dtype": "color",
+        "grouping": "appearance"
+      },
+      {
+        "name": "opacity",
+        "dtype": "number",
+        "default": 1,
+        "min": 0,
+        "max": 1,
+        "step": 0.001,
+        "grouping": "appearance",
+        "value": 1
+      }
+    ],
+    "description": "STL Format, supports textures",
+    "groups": [
+      {
+        "name": "loader"
+      },
+      {
+        "name": "visibility"
+      },
+      {
+        "name": "animation",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      },
+      {
+        "name": "appearance"
+      }
+    ]
+  },
+  {
+    "component": "Dae",
+    "schemas": [
+      {
+        "name": "src",
+        "dtype": "string",
+        "grouping": "loader"
+      },
+      {
+        "name": "mtl",
+        "dtype": "string",
+        "grouping": "loader"
+      },
+      {
+        "name": "hide",
+        "dtype": "boolean",
+        "grouping": "visibility"
+      },
+      {
+        "name": "playAnimation",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "animation",
+        "value": true
+      },
+      {
+        "name": "animationIndex",
+        "dtype": "number-int",
+        "default": 0,
+        "min": 0,
+        "grouping": "animation",
+        "value": 0
+      },
+      {
+        "name": "animationSpeed",
+        "dtype": "number",
+        "default": 1,
+        "min": 0.01,
+        "grouping": "animation",
+        "value": 1
+      },
+      {
+        "name": "position",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "rotation",
+        "dtype": "vector3",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "scale",
+        "dtype": "vector3",
+        "default": [
+          1,
+          1,
+          1
+        ],
+        "min": -1000,
+        "max": 1000,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "name": "quaternion",
+        "dtype": "quaternion",
+        "step": 0.001,
+        "grouping": "transform"
+      },
+      {
+        "name": "color",
+        "dtype": "color",
+        "grouping": "appearance"
+      },
+      {
+        "name": "opacity",
+        "dtype": "number",
+        "default": 1,
+        "min": 0,
+        "max": 1,
+        "step": 0.001,
+        "grouping": "appearance",
+        "value": 1
+      }
+    ],
+    "groups": [
+      {
+        "name": "loader"
+      },
+      {
+        "name": "visibility"
+      },
+      {
+        "name": "animation",
+        "gridCols": 2
+      },
+      {
+        "name": "transform",
+        "gridCols": 3
+      },
+      {
+        "name": "appearance",
+        "gridCols": 2
+      }
+    ]
+  },
+  {
+    "component": "Gamepad",
+    "schemas": [
+      {
+        "name": "index",
+        "dtype": "number-int",
+        "default": 0,
+        "min": 0,
+        "max": 3,
+        "grouping": "controls",
+        "value": 0
+      }
+    ],
+    "description": "Gamepad input controller component\nCaptures gamepad input and sends it via websocket",
+    "groups": [
+      {
+        "name": "controls"
+      }
+    ]
+  },
+  {
+    "component": "Hands",
+    "schemas": [
+      {
+        "name": "fps",
+        "dtype": "number-int",
+        "default": 30,
+        "min": 1,
+        "max": 60,
+        "step": 1,
+        "grouping": "performance",
+        "value": 30
+      },
+      {
+        "name": "disableLeft",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "controls",
+        "value": false
+      },
+      {
+        "name": "disableRight",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "controls",
+        "value": false
+      },
+      {
+        "name": "hideLeft",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "visibility",
+        "value": false
+      },
+      {
+        "name": "hideRight",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "visibility",
+        "value": false
+      },
+      {
+        "name": "showFrame",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "visualization",
+        "value": true
+      },
+      {
+        "name": "frameScale",
+        "dtype": "number",
+        "default": 0.02,
+        "min": 0.001,
+        "max": 5,
+        "step": 0.001,
+        "grouping": "visualization",
+        "value": 0.02
+      },
+      {
+        "name": "stream",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "performance",
+        "value": false
+      },
+      {
+        "name": "scale",
+        "dtype": "number",
+        "default": 1,
+        "min": 0.1,
+        "max": 10,
+        "step": 0.001,
+        "grouping": "transform",
+        "value": 1
+      }
+    ],
+    "description": "Hands component",
+    "groups": [
+      {
+        "name": "performance"
+      },
+      {
+        "name": "controls"
+      },
+      {
+        "name": "visibility"
+      },
+      {
+        "name": "visualization"
+      },
+      {
+        "name": "transform"
+      }
+    ]
+  },
+  {
+    "component": "MotionControllers",
+    "schemas": [
+      {
+        "name": "fps",
+        "dtype": "number-int",
+        "default": 30,
+        "min": 1,
+        "max": 120,
+        "step": 1,
+        "grouping": "performance",
+        "value": 30
+      },
+      {
+        "name": "left",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "controls",
+        "value": true
+      },
+      {
+        "name": "right",
+        "dtype": "boolean",
+        "default": true,
+        "grouping": "controls",
+        "value": true
+      },
+      {
+        "name": "stream",
+        "dtype": "boolean",
+        "default": false,
+        "grouping": "performance",
+        "value": false
+      },
+      {
+        "name": "pulseLeftStrength",
+        "dtype": "number",
+        "default": 0.5,
+        "min": 0,
+        "max": 1,
+        "step": 0.01,
+        "grouping": "haptics",
+        "value": 0.5
+      },
+      {
+        "name": "pulseLeftDuration",
+        "dtype": "number-int",
+        "default": 100,
+        "min": 0,
+        "max": 5000,
+        "step": 10,
+        "grouping": "haptics",
+        "value": 100
+      },
+      {
+        "name": "pulseLeftHash",
+        "dtype": "string",
+        "grouping": "haptics",
+        "value": null
+      },
+      {
+        "name": "pulseRightStrength",
+        "dtype": "number",
+        "default": 0.5,
+        "min": 0,
+        "max": 1,
+        "step": 0.01,
+        "grouping": "haptics",
+        "value": 0.5
+      },
+      {
+        "name": "pulseRightDuration",
+        "dtype": "number-int",
+        "default": 100,
+        "min": 0,
+        "max": 5000,
+        "step": 10,
+        "grouping": "haptics",
+        "value": 100
+      },
+      {
+        "name": "pulseRightHash",
+        "dtype": "string",
+        "grouping": "haptics",
+        "value": null
+      }
+    ],
+    "groups": [
+      {
+        "name": "performance"
+      },
+      {
+        "name": "controls"
+      },
+      {
+        "name": "haptics"
+      }
+    ]
+  },
+  {
+    "component": "Body",
+    "schemas": [
+      {
+        "name": "stream",
+        "dtype": "boolean",
+        "default": true,
+        "value": true
+      },
+      {
+        "name": "leftHand",
+        "dtype": "boolean",
+        "default": false,
+        "value": false
+      },
+      {
+        "name": "rightHand",
+        "dtype": "boolean",
+        "default": false,
+        "value": false
+      },
+      {
+        "name": "fps",
+        "dtype": "number-int",
+        "default": 30,
+        "min": 1,
+        "max": 120,
+        "value": 30
+      },
+      {
+        "name": "showFrame",
+        "dtype": "boolean",
+        "default": true,
+        "value": true
+      },
+      {
+        "name": "frameScale",
+        "dtype": "number",
+        "default": 0.02,
+        "min": 0.001,
+        "max": 0.1,
+        "step": 0.001,
+        "value": 0.02
+      }
+    ]
+  },
+  {
+    "component": "KeyboardMonitor",
+    "schemas": [
+      {
+        "name": "enableKeyDown",
+        "dtype": "boolean",
+        "grouping": "KeyDown",
+        "value": false
+      },
+      {
+        "name": "enableKeyUp",
+        "dtype": "boolean",
+        "grouping": "KeyUp",
+        "value": false
+      },
+      {
+        "name": "enableKeyPress",
+        "dtype": "boolean",
+        "grouping": "KeyPress",
+        "value": false
+      }
+    ],
+    "groups": [
+      {
+        "name": "KeyDown"
+      },
+      {
+        "name": "KeyUp"
+      },
+      {
+        "name": "KeyPress"
+      }
+    ]
+  },
+  {
+    "component": "AmbientLightStage",
+    "schemas": [
+      {
+        "name": "something",
+        "dtype": "boolean",
+        "value": "100 *"
+      }
+    ]
+  },
+  {
+    "component": "HemisphereLightStage",
+    "schemas": [
+      {
+        "name": "something",
+        "dtype": "boolean",
+        "value": "100 *"
+      }
+    ]
+  },
+  {
+    "component": "ContribLoader",
+    "schemas": [
+      {
+        "name": "url",
+        "dtype": "string",
+        "labelPosition": "left"
+      },
+      {
+        "name": "async",
+        "dtype": "boolean",
+        "labelPosition": "left",
+        "value": false
+      },
+      {
+        "name": "library",
+        "dtype": "string",
+        "labelPosition": "left"
+      },
+      {
+        "name": "version",
+        "dtype": "string",
+        "labelPosition": "left",
+        "value": "latest"
+      },
+      {
+        "name": "main",
+        "dtype": "string",
+        "labelPosition": "left",
+        "value": "dist/index.js"
+      },
+      {
+        "name": "devMode",
+        "dtype": "boolean",
+        "labelPosition": "left",
+        "value": "import.meta.env.MODE === 'development'"
+      }
+    ],
+    "description": "ContribLoader dynamically loads external JavaScript libraries/modules at runtime.\nIt supports loading from CDN (jsDelivr), local development modules, or custom URLs."
+  }
+]

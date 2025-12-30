@@ -2913,6 +2913,228 @@ class BBox(SceneElement):
     super().__init__(min=min, max=max, color=color, scale=scale, **kwargs)
 
 
+class RenderRoot(SceneElement):
+  """Render root component for controlling render modes and output.
+
+  :param mode: Render mode (postprocess, rgb, depth, normal, pathtracer)
+  :type mode: str, optional
+  """
+
+  tag = "RenderRoot"
+
+
+class VuerSplat(SceneElement):
+  """Vuer Splat component for Gaussian Splat rendering.
+
+  Wrapper around the Splat component with position, rotation, and scale transforms.
+
+  :param position: Position in 3D space
+  :type position: tuple[float, float, float], optional
+  :param rotation: Rotation in Euler angles
+  :type rotation: tuple[float, float, float], optional
+  :param scale: Scale factors
+  :type scale: tuple[float, float, float], optional
+  :param quaternion: Rotation as quaternion
+  :type quaternion: tuple[float, float, float, float], optional
+  :param src: URL to splat file
+  :type src: str, optional
+  :param flipCoords: Flip coordinate system
+  :type flipCoords: bool, optional
+  :param toneMapped: Apply tone mapping
+  :type toneMapped: bool, optional
+  :param alphaTest: Alpha test threshold
+  :type alphaTest: float, optional
+  :param alphaHash: Use alpha hash
+  :type alphaHash: bool, optional
+  :param chunkSize: Chunk size for streaming
+  :type chunkSize: int, optional
+  """
+
+  tag = "VuerSplat"
+
+
+class VuerGroup(SceneElement):
+  """Vuer Group component for grouping and transforming child elements.
+
+  :param matrix: Transformation matrix
+  :type matrix: list[float], optional
+  :param position: Position in 3D space
+  :type position: tuple[float, float, float], optional
+  :param rotation: Rotation in Euler angles
+  :type rotation: tuple[float, float, float], optional
+  :param quaternion: Rotation as quaternion
+  :type quaternion: tuple[float, float, float, float], optional
+  :param scale: Scale factors
+  :type scale: tuple[float, float, float], optional
+  :param children: Child elements
+  :type children: list, optional
+  """
+
+  tag = "VuerGroup"
+  children = []
+
+
+class SceneCamera(SceneElement):
+  """Camera component for setting scene camera properties.
+
+  :param position: Camera position
+  :type position: tuple[float, float, float], optional
+  :param lookAt: Point to look at
+  :type lookAt: tuple[float, float, float], optional
+  :param fov: Field of view in degrees
+  :type fov: float, optional
+  :param near: Near clipping plane
+  :type near: float, optional
+  :param far: Far clipping plane
+  :type far: float, optional
+  """
+
+  tag = "SceneCamera"
+
+
+class SceneControl(SceneElement):
+  """Advanced camera control component.
+
+  Provides fine-grained control over camera movement and rotation speeds.
+
+  :param moveSpeed: Speed of camera movement
+  :type moveSpeed: float, optional
+  :param keyboardRotateSpeed: Speed of keyboard rotation
+  :type keyboardRotateSpeed: float, optional
+  :param mouseRotateSpeed: Speed of mouse rotation
+  :type mouseRotateSpeed: float, optional
+  :param dollySpeed: Speed of dolly motion
+  :type dollySpeed: float, optional
+  :param truckSpeed: Speed of truck motion
+  :type truckSpeed: float, optional
+  """
+
+  tag = "SceneControl"
+
+
+class AmbientLightStage(SceneElement):
+  """Ambient light stage component.
+
+  :param something: Configuration flag
+  :type something: bool, optional
+  """
+
+  tag = "AmbientLightStage"
+
+
+class CameraPreviewThumbs(SceneElement):
+  """Camera preview thumbnails component.
+
+  Displays thumbnail previews of multiple camera views.
+
+  :param previewHeight: Height of preview thumbnails in pixels
+  :type previewHeight: int, optional
+  :param gap: Gap between thumbnails in pixels
+  :type gap: int, optional
+  :param margin: Margin around thumbnails in pixels
+  :type margin: int, optional
+  :param showLabels: Show camera labels
+  :type showLabels: bool, optional
+  """
+
+  tag = "CameraPreviewThumbs"
+
+
+class CameraPreviewOverlay(SceneElement):
+  """Camera preview overlay component.
+
+  Overlays camera preview information on the scene.
+
+  :param margin: Margin from edge
+  :type margin: float, optional
+  :param showLabel: Show camera label
+  :type showLabel: bool, optional
+  :param showCornerBrackets: Show corner brackets
+  :type showCornerBrackets: bool, optional
+  :param showCenterFocus: Show center focus indicator
+  :type showCenterFocus: bool, optional
+  :param cornerBracketColor: Color of corner brackets
+  :type cornerBracketColor: str, optional
+  :param centerFocusColor: Color of center focus
+  :type centerFocusColor: str, optional
+  """
+
+  tag = "CameraPreviewOverlay"
+
+
+class AnimationClip(SceneElement):
+  """Animation clip component.
+
+  Defines a single animation clip for use in animations.
+
+  :param duration: Duration of the animation clip in seconds
+  :type duration: float, optional
+  """
+
+  tag = "AnimationClip"
+  children = []
+
+
+class VectorTrack(SceneElement):
+  """Vector animation track component.
+
+  Defines keyframe animation for vector properties.
+
+  :param times: Array of time values for keyframes
+  :type times: list[float], optional
+  :param values: Array of vector values for keyframes
+  :type values: list[list[float]], optional
+  """
+
+  tag = "VectorTrack"
+
+
+class QuaternionTrack(SceneElement):
+  """Quaternion animation track component.
+
+  Defines keyframe animation for quaternion (rotation) properties.
+
+  :param times: Array of time values for keyframes
+  :type times: list[float], optional
+  :param values: Array of quaternion values for keyframes
+  :type values: list[list[float]], optional
+  """
+
+  tag = "QuaternionTrack"
+
+
+class ThreeAnimate(SceneElement):
+  """Three.js animation component.
+
+  Controls animation playback for Three.js animations.
+
+  :param clipIndex: Index of animation clip to play
+  :type clipIndex: int, optional
+  :param play: Whether animation is playing
+  :type play: bool, optional
+  :param speed: Playback speed multiplier
+  :type speed: float, optional
+  """
+
+  tag = "ThreeAnimate"
+
+
+class PlaybackAnimate(SceneElement):
+  """Playback animation component.
+
+  Controls playback of pre-recorded animations.
+
+  :param clipIndex: Index of animation clip to play
+  :type clipIndex: int, optional
+  :param play: Whether animation is playing
+  :type play: bool, optional
+  :param speed: Playback speed multiplier
+  :type speed: float, optional
+  """
+
+  tag = "PlaybackAnimate"
+
+
 class Scene(BlockElement):
   tag = "Scene"
 

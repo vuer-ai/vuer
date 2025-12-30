@@ -307,3 +307,82 @@ class PerspectiveCamera(SceneElement):
 
     tag = "PerspectiveCamera"
     key = "perspective-camera"
+
+
+class OrthographicCamera(SceneElement):
+    """Orthographic camera with parallel projection.
+
+    OrthographicCamera renders objects at the same size regardless of distance.
+    Parallel lines remain parallel, making it ideal for technical drawings and 2D games.
+
+    :param position: Camera position as [x, y, z]. Default: [0, 0, 0]
+    :type position: list[float], optional
+    :param rotation: Camera rotation in Euler angles. Default: [0, 0, 0]
+    :type rotation: list[float], optional
+    :param lookAt: Point the camera looks at [x, y, z]
+    :type lookAt: list[float], optional
+    :param left: Left boundary of view frustum. Default: -1
+    :type left: float, optional
+    :param right: Right boundary of view frustum. Default: 1
+    :type right: float, optional
+    :param top: Top boundary of view frustum. Default: 1
+    :type top: float, optional
+    :param bottom: Bottom boundary of view frustum. Default: -1
+    :type bottom: float, optional
+    :param near: Near clipping plane distance. Default: 0.1
+    :type near: float, optional
+    :param far: Far clipping plane distance. Default: 1000
+    :type far: float, optional
+    :param makeDefault: Make this the default camera. Default: False
+    :type makeDefault: bool, optional
+    :param active: Whether this camera is active
+    :type active: bool, optional
+    :param zoom: Zoom factor. Default: 1.0
+    :type zoom: float, optional
+
+    Usage::
+
+        session.set @ Scene(
+            Box(args=[0.2, 0.2, 0.2], key="box"),
+            bgChildren=[
+                OrthographicCamera(
+                    left=-100,
+                    right=100,
+                    top=100,
+                    bottom=-100,
+                    position=[0, 3, 5],
+                    lookAt=[0, 0, 0],
+                    makeDefault=True,
+                    key="camera",
+                ),
+            ],
+        )
+    """
+
+    tag = "OrthographicCamera"
+    key = "orthographic-camera"
+
+
+class FisheyeCamera(SceneElement):
+    """Fisheye camera with ultra-wide angle projection.
+
+    FisheyeCamera provides a distorted wide-angle view similar to fisheye lenses.
+
+    :param position: Camera position as [x, y, z]
+    :type position: list[float], optional
+    :param rotation: Camera rotation in Euler angles
+    :type rotation: list[float], optional
+    :param segments: Number of segments for distortion
+    :type segments: int, optional
+    :param near: Near clipping plane distance
+    :type near: float, optional
+    :param far: Far clipping plane distance
+    :type far: float, optional
+    :param makeDefault: Make this the default camera
+    :type makeDefault: bool, optional
+    :param active: Whether this camera is active
+    :type active: bool, optional
+    """
+
+    tag = "FisheyeCamera"
+    key = "fisheye-camera"
