@@ -33,6 +33,34 @@ Choose the approach that best fits your needs:
 
 When using any TLS setup (proxy or certificate), you need to configure two things correctly:
 
+### 0. Client Certificate Configuration
+
+By default, Vuer's HTTPS server does **not** require client certificates. If you see your browser asking for a client certificate when connecting:
+
+**This means your server is configured for mutual TLS (mTLS)**. To fix this:
+
+1. **Remove client certificate requirement** - Don't set `VUER_SSL_CA_CERT`
+2. **Use standard HTTPS** - Just provide server cert and key:
+   ```python
+   app = Vuer(
+       cert='/path/to/server.pem',
+       key='/path/to/server-key.pem'
+   )
+   ```
+
+**Mutual TLS is only activated when you provide a CA certificate** for client verification:
+
+```python
+# This requires client certificates
+app = Vuer(
+    cert='/path/to/server.pem',
+    key='/path/to/server-key.pem',
+    ca_cert='/path/to/ca.pem'  # Only set this if you want mTLS
+)
+```
+
+For standard WebXR and local development, just use the first approach (no `ca_cert`).
+
 ### 1. Setting the WebSocket Endpoint
 
 Pass the secure WebSocket endpoint to the Vuer web client using the `?ws=` query parameter:
