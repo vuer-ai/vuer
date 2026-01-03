@@ -512,10 +512,11 @@ class Vuer(Server):
   def __post_init__(self):
     """Initialize Vuer after params-proto sets up fields."""
     if self.verbose:
-      print("========= Arguments =========")
+      print("       ========= Arguments =========")
       for k, v in vars(self).items():
-        print(f" {k} = {v},")
-      print("-----------------------------")
+        if not k.startswith("_") and not callable(v):
+          print(f"{k:>20} : {v}")
+      print("       -----------------------------")
 
     # Initialize base Server (app, cors_context)
     self._init_app()

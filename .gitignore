@@ -1,5 +1,11 @@
 # OS
 .DS_Store
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
 # PyCharm project files
 .idea
 # since this is public

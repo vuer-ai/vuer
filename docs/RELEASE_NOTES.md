@@ -13,6 +13,25 @@
   main.start(free_port=True)
   ```
 
+### Bug Fixes
+
+#### SSL/TLS Client Certificate Handling
+
+Fixed an issue where the HTTPS server would request client certificates even when mutual TLS (mTLS) was not configured.
+
+**Before:** Setting `cert` and `key` alone would still prompt browsers for client certificates.
+
+**After:** Client certificates are only requested when `ca_cert` is explicitly provided:
+```python
+# Standard HTTPS - no client cert required
+app = Vuer(cert='/path/to/cert.pem', key='/path/to/key.pem')
+
+# Mutual TLS - client cert required
+app = Vuer(cert='/path/to/cert.pem', key='/path/to/key.pem', ca_cert='/path/to/ca.pem')
+```
+
+This fix allows WebXR applications to work seamlessly with self-signed certificates without browser prompts for client authentication.
+
 ### New Features
 
 #### Improved Decorator Pattern
@@ -63,6 +82,23 @@ async def main(session: VuerSession):
 ```
 
 This replaces manual event waiting patterns.
+
+#### Comprehensive Component Definitions
+
+Added 18 new component definitions from schema specification:
+
+**Scene Components (16 new):**
+- **Transform & Render:** `VuerSplat`, `VuerGroup`, `RenderRoot`
+- **Camera:** `SceneCamera`, `SceneControl`
+- **Lighting:** `AmbientLightStage`
+- **Preview:** `CameraPreviewThumbs`, `CameraPreviewOverlay`
+- **Animation:** `AnimationClip`, `VectorTrack`, `QuaternionTrack`, `ThreeAnimate`, `PlaybackAnimate`
+- **Model Loaders:** `Fbx`, `Stl`, `Dae`
+
+**Three.js Components (2 new):**
+- **Cameras:** `OrthographicCamera`, `FisheyeCamera`
+
+Total component count now: **101 classes** across all schema modules. Complete schema definitions available in `schema.dial`.
 
 ### Improvements
 
