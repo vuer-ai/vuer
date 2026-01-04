@@ -2022,9 +2022,11 @@ class Body(SceneElement):
           # Important: stream=True is required to receive BODY_MOVE events
           session.upsert @ Body(
               stream=True,
-              leftHand=True,   # Include left hand joints
-              rightHand=True,  # Include right hand joints
-              fps=30,
+              leftHand=True,    # Include left hand joints
+              rightHand=True,   # Include right hand joints
+              fps=60,           # 60 frames per second
+              showBody=True,    # Show body visualization
+              showFrame=True,   # Show joint coordinate frames
           )
 
           while True:
@@ -2034,17 +2036,17 @@ class Body(SceneElement):
   :type key: str, optional
   :param stream: Whether to enable streaming of body pose data to the server.
   :type stream: bool, optional
-  :param leftHand: Whether to include left hand tracking data (25 joints).
+  :param leftHand: Whether to include left hand tracking data (25 joints). Default: True
   :type leftHand: bool, optional
-  :param rightHand: Whether to include right hand tracking data (25 joints).
+  :param rightHand: Whether to include right hand tracking data (25 joints). Default: True
   :type rightHand: bool, optional
-  :param fps: Frames per second at which body pose data should be sent.
+  :param fps: Frames per second at which body pose data should be sent. Default: 60
   :type fps: int, optional
-  :param hideBody: Whether to hide body tracking visualization.
-  :type hideBody: bool, optional
-  :param showFrame: Whether to display coordinate frames at each joint position.
+  :param showBody: Whether to show body tracking visualization. Default: True
+  :type showBody: bool, optional
+  :param showFrame: Whether to display coordinate frames at each joint position. Default: True
   :type showFrame: bool, optional
-  :param frameScale: Scale factor for the coordinate frames or joint markers.
+  :param frameScale: Scale factor for the coordinate frames or joint markers. Default: 0.02
   :type frameScale: float, optional
   """
 
@@ -2054,7 +2056,7 @@ class Body(SceneElement):
   leftHand = False
   rightHand = False
   fps = 30
-  hideBody = False
+  showBody = True
   showFrame = True
   frameScale = 0.02
 
