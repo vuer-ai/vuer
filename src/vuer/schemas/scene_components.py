@@ -3110,7 +3110,7 @@ class SceneCamera(SceneElement):
   tag = "SceneCamera"
 
 
-class SceneControl(SceneElement):
+class SceneCameraControl(SceneElement):
   """Advanced camera control component.
 
   Provides fine-grained control over camera movement and rotation speeds.
@@ -3127,7 +3127,7 @@ class SceneControl(SceneElement):
   :type truckSpeed: float, optional
   """
 
-  tag = "SceneControl"
+  tag = "SceneCameraControl"
 
 
 class AmbientLightStage(SceneElement):
