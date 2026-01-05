@@ -4455,7 +4455,7 @@
     ]
   },
   {
-    "component": "SceneControl",
+    "component": "SceneCameraControl",
     "schemas": [
       {
         "name": "moveSpeed",
