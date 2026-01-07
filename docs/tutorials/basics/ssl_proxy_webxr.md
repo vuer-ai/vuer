@@ -2,8 +2,6 @@
 
 ## Why TLS is Required
 
-**To use Vuer with your VR headset (Quest, Vision Pro, etc.) or AR device, you must set up TLS/HTTPS.**
-
 Vuer is built on the WebXR protocol, which requires a secure (TLS/HTTPS) connection for security reasons. This means:
 
 - **Web client** must be loaded via `https://` (e.g., `https://vuer.ai` or `https://<your-server>`)
