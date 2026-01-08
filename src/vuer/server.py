@@ -1009,3 +1009,7 @@ class Vuer(Server):
     print("Visit: " + self.get_url())
 
     super().start()
+
+  async def loop_forever(self):
+    while True:
+      await sleep(1000_000_000_000.0)
