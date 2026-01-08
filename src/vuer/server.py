@@ -489,6 +489,8 @@ class Vuer(Server):
   domain: str = EnvVar @ "VUER_DOMAIN" | "https://vuer.ai"
 
   port: int = EnvVar @ "VUER_PORT" | DEFAULT_PORT
+  web_port: int = None  # Web development server port; None means same as port
+  workspace_path: str = ""  # Path on vuer.ai workspace (e.g., "/workspace/scratch")
   cors: str = EnvVar @ "VUER_CORS" | DEFAULT_CORS
   static_root: str = EnvVar @ "VUER_STATIC_ROOT" | "."
 
@@ -588,6 +590,81 @@ class Vuer(Server):
   def static_prefix(self):
     return Url(f"http://localhost:{self.port}/static")
 
+  def format_urls(self) -> list:
+    """Generate all relevant URLs for display based on connection context.
+
+    Returns a list of tuples (label, url) for different connection modes.
+    Intelligently handles:
+    - Local development (localhost)
+    - LAN connections
+    - Remote vuer.ai connections
+    - Port display (hides default ports)
+    - WebSocket parameter inclusion (when needed)
+
+    :return: List of (label, url) tuples
+    """
+    urls = []
+
+    # Determine if this is remote or local
+    # Remote if: domain is set AND not localhost/127.0.0.1
+    # Check by domain value (strip protocol if present)
+    domain_lower = self.domain.lower() if self.domain else ""
+    is_local = not domain_lower or domain_lower in ["localhost", "127.0.0.1", "http://localhost", "https://localhost"]
+    is_remote = not is_local
+
+    # Determine protocols and ports
+    use_ssl = is_remote
+    protocol = "https" if use_ssl else "http"
+    ws_protocol = "wss" if use_ssl else "ws"
+
+    effective_web_port = self.web_port if self.web_port is not None else self.port
+    default_web_port = 443 if use_ssl else 80
+
+    # Build path from workspace_path
+    path = self.workspace_path.rstrip("/") if self.workspace_path else ""
+
+    # Helper to build URL
+    def build_url(host, port, ws_host, ws_port, label):
+      # Base URL with path
+      if port != default_web_port:
+        base = f"{protocol}://{host}:{port}{path}"
+      else:
+        base = f"{protocol}://{host}{path}"
+
+      # Add WebSocket parameter if needed
+      if ws_port != effective_web_port or is_remote:
+        ws_url = f"{ws_protocol}://{ws_host}:{ws_port}"
+        return (label, f"{base}?ws={ws_url}")
+      else:
+        return (label, base)
+
+    # Generate URLs based on context
+    if is_local:
+      # Local localhost
+      urls.append(build_url(
+        "localhost", effective_web_port,
+        "localhost", self.port,
+        "Local (localhost)"
+      ))
+
+      # Local LAN (if different from localhost)
+      if self.local_ip not in ["127.0.0.1", "localhost"]:
+        urls.append(build_url(
+          self.local_ip, effective_web_port,
+          self.local_ip, self.port,
+          "Local (LAN)"
+        ))
+    else:
+      # Remote URL - strip protocol from domain if present
+      remote_domain = domain_lower.replace("https://", "").replace("http://", "")
+      urls.append(build_url(
+        remote_domain, effective_web_port,
+        self.local_ip, self.port,
+        f"Remote ({remote_domain})"
+      ))
+
+    return urls
+
   # ** downlink message queue methods**
   async def bound_fn(self, session_proxy: VuerSession):
     """This is the default generator function in the socket connection handler"""
@@ -654,23 +731,19 @@ class Vuer(Server):
 
   def get_url(self):
     """
-    Get the URL for the Tassa.
-    :return: The URL for the Tassa.
+    Get the primary URL for the Vuer server.
+
+    Returns the first available URL from format_urls(), which is typically
+    the localhost URL for local development or the remote vuer.ai URL for
+    remote connections.
+
+    :return: The primary URL string for the Vuer server
     """
-    if self.port != DEFAULT_PORT:
-      uri = f"ws://localhost:{self.port}"
-
-      if self.queries:
-        query_str = "&".join([f"{k}={v}" for k, v in self.queries.items()])
-        return f"{self.domain}?ws={uri}&" + query_str
-
-      return f"{self.domain}?ws={uri}"
-    else:
-      if self.queries:
-        query_str = "&".join([f"{k}={v}" for k, v in self.queries.items()])
-        return f"{self.domain}?" + query_str
-
-      return f"{self.domain}"
+    urls = self.format_urls()
+    if urls:
+      return urls[0][1]
+    # Fallback to domain if no URLs generated
+    return self.domain
 
   async def send(self, ws_id, event: ServerEvent = None, event_bytes=None):
     ws = self.ws[ws_id]
@@ -1006,7 +1079,23 @@ class Vuer(Server):
     print("Serving file://" + os.path.abspath(self.static_root), "at", "/static")
     self._add_route("/relay", self.relay, method="POST")
 
-    print("Visit: " + self.get_url())
+    # Print all available URLs
+    urls = self.format_urls()
+    print("\n╔════════════════════════════════════════════════════════════════╗")
+    print("║                   Vuer Server Started                          ║")
+    print("╚════════════════════════════════════════════════════════════════╝\n")
+
+    for label, url in urls:
+      print(f"{label}:")
+      print(f"  → {url}\n")
+
+    # Print additional server info
+    print(f"WebSocket Port: {self.port}")
+    if self.web_port and self.web_port != self.port:
+      print(f"Web Server Port: {self.web_port}")
+    if self.static_root and self.static_root != ".":
+      print(f"Static Root: {self.static_root}")
+    print()
 
     super().start()
 
