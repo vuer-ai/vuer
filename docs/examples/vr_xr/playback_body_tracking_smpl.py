@@ -15,11 +15,20 @@ from asyncio import sleep
 import dotvar.auto_load  # noqa
 
 import json
+import yaml
 from pathlib import Path
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-RECORDING_PATH = Path("body_tracking_recording.json")
+from docs.examples.vr_xr.data_utils import load_tracks
+
+# Load joint name lists from YAML files
+_dir = Path(__file__).parent
+with open(_dir / "smpl_joint_names.yaml") as f:
+    smpl_joint_names = yaml.safe_load(f)
+with open(_dir / "webxr_wholebody.yaml") as f:
+    webxr_wholebody = yaml.safe_load(f)
+
 FPS = 30  # Playback frequency (must match recording frequency)
 
 
@@ -358,15 +367,6 @@ def create_animation_tracks_from_frames(frames, mocap_joint_names, smpl_joint_na
     return {"name": "body_tracking_animation", "fps": fps, "duration": float(duration), "tracks": tracks}
 
 
-# Load recording data
-with open("body_tracking_recording.json", "r") as f:
-    s = f.read()
-    data = json.loads(s)
-
-frames = np.array(data["frames"])
-joint_names = data["joint_names"]
-
-
 app = Vuer(
     domain="192.168.2.141",
     cors="https://192.168.2.141:3012",
@@ -377,120 +377,17 @@ app = Vuer(
     port=8012,
 )
 
-smpl_joint_names = [
-    "m_mosh_cmu88_8806_Pelvis.position",
-    "m_mosh_cmu88_8806_Pelvis.quaternion",
-    "m_mosh_cmu88_8806_L_Hip.quaternion",
-    "m_mosh_cmu88_8806_L_Knee.quaternion",
-    "m_mosh_cmu88_8806_L_Ankle.quaternion",
-    "m_mosh_cmu88_8806_L_Foot.quaternion",
-    "m_mosh_cmu88_8806_R_Hip.quaternion",
-    "m_mosh_cmu88_8806_R_Knee.quaternion",
-    "m_mosh_cmu88_8806_R_Ankle.quaternion",
-    "m_mosh_cmu88_8806_R_Foot.quaternion",
-    "m_mosh_cmu88_8806_Spine1.quaternion",
-    "m_mosh_cmu88_8806_Spine2.quaternion",
-    "m_mosh_cmu88_8806_Spine3.quaternion",
-    "m_mosh_cmu88_8806_Neck.quaternion",
-    "m_mosh_cmu88_8806_Head.quaternion",
-    "m_mosh_cmu88_8806_L_Collar.quaternion",
-    "m_mosh_cmu88_8806_L_Shoulder.quaternion",
-    "m_mosh_cmu88_8806_L_Elbow.quaternion",
-    "m_mosh_cmu88_8806_L_Wrist.quaternion",
-    "m_mosh_cmu88_8806_L_Hand.quaternion",
-    "m_mosh_cmu88_8806_R_Collar.quaternion",
-    "m_mosh_cmu88_8806_R_Shoulder.quaternion",
-    "m_mosh_cmu88_8806_R_Elbow.quaternion",
-    "m_mosh_cmu88_8806_R_Wrist.quaternion",
-    "m_mosh_cmu88_8806_R_Hand.quaternion",
-]
+# Load recording data from JSONL
+df = load_tracks(".data")
 
-webxr_wholebody = [
-    "root",
-    "hips",
-    "spine-lower",
-    "spine-middle",
-    "spine-upper",
-    "chest",
-    "neck",
-    "head",
-    "left-shoulder",
-    "left-scapula",
-    "left-arm-upper",
-    "left-arm-lower",
-    "left-hand-wrist-twist",
-    "right-shoulder",
-    "right-scapula",
-    "right-arm-upper",
-    "right-arm-lower",
-    "right-hand-wrist-twist",
-    "left-hand-palm",
-    "left-hand-wrist",
-    "left-hand-thumb-metacarpal",
-    "left-hand-thumb-phalanx-proximal",
-    "left-hand-thumb-phalanx-distal",
-    "left-hand-thumb-tip",
-    "left-hand-index-metacarpal",
-    "left-hand-index-phalanx-proximal",
-    "left-hand-index-phalanx-intermediate",
-    "left-hand-index-phalanx-distal",
-    "left-hand-index-tip",
-    "left-hand-middle-metacarpal",
-    "left-hand-middle-phalanx-proximal",
-    "left-hand-middle-phalanx-intermediate",
-    "left-hand-middle-phalanx-distal",
-    "left-hand-middle-tip",
-    "left-hand-ring-metacarpal",
-    "left-hand-ring-phalanx-proximal",
-    "left-hand-ring-phalanx-intermediate",
-    "left-hand-ring-phalanx-distal",
-    "left-hand-ring-tip",
-    "left-hand-little-metacarpal",
-    "left-hand-little-phalanx-proximal",
-    "left-hand-little-phalanx-intermediate",
-    "left-hand-little-phalanx-distal",
-    "left-hand-little-tip",
-    "right-hand-palm",
-    "right-hand-wrist",
-    "right-hand-thumb-metacarpal",
-    "right-hand-thumb-phalanx-proximal",
-    "right-hand-thumb-phalanx-distal",
-    "right-hand-thumb-tip",
-    "right-hand-index-metacarpal",
-    "right-hand-index-phalanx-proximal",
-    "right-hand-index-phalanx-intermediate",
-    "right-hand-index-phalanx-distal",
-    "right-hand-index-tip",
-    "right-hand-middle-metacarpal",
-    "right-hand-middle-phalanx-proximal",
-    "right-hand-middle-phalanx-intermediate",
-    "right-hand-middle-phalanx-distal",
-    "right-hand-middle-tip",
-    "right-hand-ring-metacarpal",
-    "right-hand-ring-phalanx-proximal",
-    "right-hand-ring-phalanx-intermediate",
-    "right-hand-ring-phalanx-distal",
-    "right-hand-ring-tip",
-    "right-hand-little-metacarpal",
-    "right-hand-little-phalanx-proximal",
-    "right-hand-little-phalanx-intermediate",
-    "right-hand-little-phalanx-distal",
-    "right-hand-little-tip",
-    "left-upper-leg",
-    "left-lower-leg",
-    "left-foot-ankle-twist",
-    "left-foot-ankle",
-    "left-foot-subtalar",
-    "left-foot-transverse",
-    "left-foot-ball",
-    "right-upper-leg",
-    "right-lower-leg",
-    "right-foot-ankle-twist",
-    "right-foot-ankle",
-    "right-foot-subtalar",
-    "right-foot-transverse",
-    "right-foot-ball",
-]
+# Extract body frames (filter out rows without body data)
+body_rows = df[df["body"].notna()]["body"].tolist()
+if not body_rows:
+    raise ValueError("No body tracking data found in recording")
+
+frames = np.array(body_rows)
+joint_names = webxr_wholebody  # Use WebXR joint names
+print(f"[playback] Loaded {len(frames)} frames with {frames.shape[1] // 16} joints")
 
 
 @app.spawn(start=True)

@@ -1,9 +1,9 @@
 import os
 from contextlib import nullcontext
-from datetime import datetime
 
 import dotvar.auto_load  # noqa
 from cmx import doc
+from docs.examples.vr_xr.data_utils import TrackStore
 
 MAKE_DOCS = os.getenv("MAKE_DOCS", "false").lower() == "true"
 
@@ -67,52 +67,75 @@ Here’s what Body Tracking looks like on devices that support it (e.g., Meta Qu
 
 """
 
+tracks = TrackStore()
+print(f"[TrackStore] Initialized, saving to {tracks._root}/")
+
+# Ensure data is flushed on exit
+import atexit
+
+atexit.register(tracks.stop)
+
 with doc, doc.skip if MAKE_DOCS else nullcontext():
   from asyncio import sleep
 
   from vuer import Vuer, VuerSession
-  from vuer.schemas import Body
+  from vuer.schemas import Body, SceneCameraControl
 
   app = Vuer(verbose=True)
 
-  @app.add_handler("BODY_MOVE")
-  async def on_body_move(event, session):
-    """
-    Handle incoming BODY_MOVE events from the client.
-    event.value contains flattened Float32Arrays:
-      { body: [...], leftHand: [...], rightHand: [...] }
-    Each array contains 16 floats per joint (4x4 matrix) concatenated.
-    """
+  class BodyRecorder(Body):
+    key = "body-tracking"  # Optional unique identifier (default: "body_tracking")
+    stream = True  # Must be True to start streaming data
+    leftHand = False  # Include left hand tracking data
+    rightHand = False  # Include right hand tracking data
+    fps = 60  # Send data at 60 frames per second
+    showBody = True  # enable body tracking and show visualization but still stream data
+    showFrame = True  # Display coordinate frames at each joint
+    frameScale = 0.02  # Scale of the coordinate frames or markers
 
-    if event.value:
-      body_data = event.value.get("body", [])
-      print(
-        f"BODY_MOVE {datetime.now() - event.ts} "
-        f"body: {len(body_data)} floats ({len(body_data) // 16} joints)"
-      )
-      # left_hand = event.value.get("leftHand", [])
-      # right_hand = event.value.get("rightHand", [])
-      # print(f"leftHand: {len(left_hand)} floats, rightHand: {len(right_hand)} floats")
+  @app.add_handler("BODY_MOVE")
+  async def on_body_move(event, sess):
+    print(
+      f"[BODY_MOVE] received, value keys: {event.value.keys() if event.value else None}"
+    )
+    body_frame = event.value.get("body", None)
+
+    if body_frame is not None:
+      tracks.append(body=body_frame, _ts=event.ts)
+      print(f"[BODY_MOVE] logged {len(body_frame)} floats, total rows: {len(tracks)}")
+
+  class SceneCameraControlRecorder(SceneCameraControl):
+    key = "scene-tracking"  # Optional unique identifier (default: "body_tracking")
+    stream = True
+
+  @app.add_handler("ON_CAMERA_MOVE")
+  async def on_camera_move(event, sess):
+    print(
+      f"[CAMERA_MOVE] received, value keys: {event.value.keys() if event.value else None}"
+    )
+    camera_pose = event.value.get("matrix", None)
+
+    if camera_pose is not None:
+      tracks.append(camera=camera_pose, _ts=event.ts)
+      print(f"[CAMERA_MOVE] logged, total rows: {len(tracks)}")
 
   @app.spawn(start=True)
   async def main(session: VuerSession):
     """
     Add the Body element to the scene and start streaming body tracking data.
     """
-    session.upsert @ Body(
-      key="body_tracking",  # Optional unique identifier (default: "body_tracking")
-      stream=True,  # Must be True to start streaming data
-      leftHand=False,  # Include left hand tracking data
-      rightHand=False,  # Include right hand tracking data
-      fps=60,  # Send data at 60 frames per second
-      showBody=True,  # enable body tracking and show visualization but still stream data
-      showFrame=True,  # Display coordinate frames at each joint
-      frameScale=0.02,  # Scale of the coordinate frames or markers
-    )
+    session.upsert @ BodyRecorder()
+    session.upsert @ SceneCameraControlRecorder()
 
-    # Keep the session alive
-    while True:
-      await sleep(1)
+    try:
+      # Keep the session alive
+      while True:
+        await sleep(1)
+    finally:
+      # Flush data on disconnect
+      print(f"[TrackStore] Session ended, flushing {len(tracks)} rows...")
+      tracks.stop()
+      print(f"[TrackStore] Data saved to {tracks._root}/")
 
 
 doc @ """

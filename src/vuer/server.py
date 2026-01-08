@@ -1,4 +1,5 @@
 import asyncio
+import socket as stdlib_socket
 from asyncio import sleep
 from collections import defaultdict, deque
 from functools import partial
@@ -526,6 +527,26 @@ class Vuer(Server):
     self.ws: Dict[str, WebSocketResponse] = {}
     self.socket_handler: SocketHandler = None
     self.spawned_coroutines = []
+
+  @property
+  def local_ip(self) -> str:
+    """Get the local LAN IP address.
+
+    This is a well-known and safe approach for determining your local IP.
+    It uses a UDP socket connection to determine the local IP address
+    that would be used to reach external networks. No data is actually
+    sent to the remote address.
+
+    :return: The local IP address as a string, or "127.0.0.1" if unavailable.
+    """
+    try:
+      s = stdlib_socket.socket(stdlib_socket.AF_INET, stdlib_socket.SOCK_DGRAM)
+      s.connect(("8.8.8.8", 80))
+      ip = s.getsockname()[0]
+      s.close()
+      return ip
+    except Exception:
+      return "127.0.0.1"
 
   async def relay(self, request):
     """This is the relay object for sending events to the server.
