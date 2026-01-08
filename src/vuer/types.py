@@ -1,12 +1,23 @@
 from math import pi
-from typing import NamedTuple, Callable, Union, Coroutine
+from typing import NamedTuple, Callable, Union, Coroutine, TYPE_CHECKING
 from uuid import UUID
 
-from vuer.events import ClientEvent
 
-from typing import TYPE_CHECKING
+class Url(str):
+  """URL string that supports path concatenation with / and +."""
+
+  def __truediv__(self, other):
+    return Url(f"{self.rstrip('/')}/{str(other).lstrip('/')}")
+
+  def __add__(self, other):
+    return Url(f"{self}{other}")
+
+  def __radd__(self, other):
+    return Url(f"{other}{self}")
+
 
 if TYPE_CHECKING:
+    from vuer.events import ClientEvent
     from vuer.server import VuerSession
 
 IDType = Union[UUID, str]
@@ -16,7 +27,7 @@ CoroutineFn = Callable[[], Coroutine]
 """A function that returns a coroutine. Not in use."""
 
 # SendProxy = Callable[[ServerEvent], None]
-EventHandler = Callable[[ClientEvent, "VuerSession"], None]
+EventHandler = Callable[["ClientEvent", "VuerSession"], None]
 """Defines a function that handles a client event. Second argument is the VuerSession instance bound
 to a specific client connected through a websocket session."""
 

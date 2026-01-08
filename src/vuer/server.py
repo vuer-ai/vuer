@@ -32,7 +32,7 @@ from vuer.events import (
   Upsert,
 )
 from vuer.schemas import Page
-from vuer.types import EventHandler, SocketHandler
+from vuer.types import EventHandler, SocketHandler, Url
 
 
 class At:
@@ -583,6 +583,10 @@ class Vuer(Server):
       return Response(status=200)
     else:
       return Response(status=400)
+
+  @property
+  def static_prefix(self):
+    return Url(f"http://localhost:{self.port}/static")
 
   # ** downlink message queue methods**
   async def bound_fn(self, session_proxy: VuerSession):
