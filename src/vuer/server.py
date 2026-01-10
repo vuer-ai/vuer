@@ -149,9 +149,7 @@ class VuerSession:
         :param subsample: The subsample of the render.
         :param ttl: The time to live for the handler. If the handler is not called within the time it gets removed from the handler list.
         """
-        assert self.CURRENT_WS_ID is not None, (
-            "Websocket session is missing. CURRENT_WS_ID is None."
-        )
+        assert self.CURRENT_WS_ID is not None, "Websocket session is missing. CURRENT_WS_ID is None."
 
         event = GrabRender(**kwargs)
 
@@ -204,9 +202,7 @@ class VuerSession:
         :raises asyncio.TimeoutError: If the client doesn't respond within ttl seconds
         :raises AssertionError: If websocket session is missing
         """
-        assert self.CURRENT_WS_ID is not None, (
-            "Websocket session is missing. CURRENT_WS_ID is None."
-        )
+        assert self.CURRENT_WS_ID is not None, "Websocket session is missing. CURRENT_WS_ID is None."
 
         from vuer.events import GetWebXRMesh
 
@@ -218,9 +214,7 @@ class VuerSession:
         """
         Sending the event through the uplink queue.
         """
-        assert self.CURRENT_WS_ID is not None, (
-            "Websocket session is missing. CURRENT_WS_ID is None."
-        )
+        assert self.CURRENT_WS_ID is not None, "Websocket session is missing. CURRENT_WS_ID is None."
 
         event_obj = event._serialize()
 
@@ -521,6 +515,16 @@ class Vuer(Server):
 
     def __post_init__(self):
         """Initialize Vuer after params-proto sets up fields."""
+
+        if self.client_url:
+            self.client_url = self.client_url.format(
+                ssl=self.ssl,
+                local_ip=self.local_ip,
+                port=self.port,
+            )
+        # this has to be done before self._init_app where cors is used.
+        self.cors += "," + self.client_url
+
         if self.verbose:
             print("       ========= Arguments =========")
             for k, v in vars(self).items():
@@ -695,10 +699,7 @@ class Vuer(Server):
         :param host: The host to use in the websocket URL (e.g., "localhost" or IP address).
         :return: The URL for the Vuer client.
         """
-        if self.client_url:
-            base_url = self.client_url.format(ssl=self.ssl, local_ip=host, port=self.port)
-        else:
-            base_url = self.domain
+        base_url = self.client_url or self.domain
         uri = f"ws{self.ssl}://{host}:{self.port}"
 
         if self.queries:
@@ -881,10 +882,10 @@ class Vuer(Server):
             await self.close_ws(ws_id)
 
     def add_handler(
-            self,
-            event_type: str,
-            fn: EventHandler = None,
-            once: bool = False,
+        self,
+        event_type: str,
+        fn: EventHandler = None,
+        once: bool = False,
     ) -> Callable[[], None]:
         """Adding event handlers to the vuer server.
 
