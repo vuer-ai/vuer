@@ -34,6 +34,14 @@ from vuer.events import (
 from vuer.schemas import Page
 from vuer.types import EventHandler, SocketHandler, Url
 
+# ANSI color codes
+BOLD = "\033[1m"
+DIM = "\033[2m"
+CYAN = "\033[36m"
+GREEN = "\033[32m"
+YELLOW = "\033[33m"
+RESET = "\033[0m"
+
 
 class At:
   """Proxy Object for using the @ notation. Also
@@ -519,6 +527,13 @@ class Vuer(Server):
         if not k.startswith("_") and not callable(v):
           print(f"{k:>20} : {v}")
       print("       -----------------------------")
+      print(f"""
+{YELLOW}Tip:{RESET} Import {CYAN}dotvar.auto_load{RESET} {BOLD}before{RESET} vuer to load .env defaults.
+{DIM}     Supports recursive variable resolution: ${{OTHER_VAR}}/path{RESET}
+
+    {GREEN}import{RESET} {CYAN}dotvar.auto_load{RESET}  {DIM}# noqa{RESET}
+    {GREEN}from{RESET} {CYAN}vuer{RESET} {GREEN}import{RESET} Vuer
+""")
 
     # Initialize base Server (app, cors_context)
     self._init_app()
@@ -1018,13 +1033,6 @@ class Vuer(Server):
     else:
       base_url = self.domain
     static_path = os.path.abspath(self.static_root)
-
-    # ANSI color codes
-    BOLD = "\033[1m"
-    DIM = "\033[2m"
-    CYAN = "\033[36m"
-    GREEN = "\033[32m"
-    RESET = "\033[0m"
 
     print(f"""{BOLD}Vuer Server{RESET}
 
