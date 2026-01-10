@@ -522,8 +522,8 @@ class Vuer(Server):
                 local_ip=self.local_ip,
                 port=self.port,
             )
-        # this has to be done before self._init_app where cors is used.
-        self.cors += "," + self.client_url
+            # this has to be done before self._init_app where cors is used.
+            self.cors += "," + self.client_url
 
         if self.verbose:
             print("       ========= Arguments =========")
