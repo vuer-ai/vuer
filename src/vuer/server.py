@@ -520,7 +520,7 @@ class Vuer(Server):
             self.client_url = self.client_url.format(
                 ssl=self.ssl,
                 local_ip=self.local_ip,
-                port=self.port,
+                **vars(self),
             )
             # this has to be done before self._init_app where cors is used.
             self.cors += "," + self.client_url
