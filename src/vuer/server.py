@@ -4,7 +4,7 @@ from asyncio import sleep
 from collections import defaultdict, deque
 from functools import partial
 from pathlib import Path
-from typing import Callable, Deque, Dict, Union, cast
+from typing import Callable, Deque, Dict, Union, cast, Optional
 from uuid import uuid4
 
 from aiohttp.hdrs import UPGRADE
@@ -487,6 +487,7 @@ class Vuer(Server):
 
   # Vuer-specific settings (host, cert, key, ca_cert inherited from Server)
   domain: str = EnvVar @ "VUER_DOMAIN" | "https://vuer.ai"
+  client_url: str = Optional[str]  # Optional override for domain (e.g., local client build)
 
   port: int = EnvVar @ "VUER_PORT" | DEFAULT_PORT
   cors: str = EnvVar @ "VUER_CORS" | DEFAULT_CORS
@@ -527,6 +528,14 @@ class Vuer(Server):
     self.ws: Dict[str, WebSocketResponse] = {}
     self.socket_handler: SocketHandler = None
     self.spawned_coroutines = []
+
+  @property
+  def ssl(self) -> str:
+    """Returns "s" if SSL is enabled, "" otherwise.
+
+    Use in URL construction: f"http{self.ssl}://" or f"ws{self.ssl}://"
+    """
+    return "s" if self.cert else ""
 
   @property
   def local_ip(self) -> str:
@@ -652,25 +661,24 @@ class Vuer(Server):
     else:
       return wrapper(fn)
 
-  def get_url(self):
+  def get_url(self, host: str = "localhost"):
     """
-    Get the URL for the Tassa.
-    :return: The URL for the Tassa.
+    Get the URL for the Vuer client.
+
+    :param host: The host to use in the websocket URL (e.g., "localhost" or IP address).
+    :return: The URL for the Vuer client.
     """
-    if self.port != DEFAULT_PORT:
-      uri = f"ws://localhost:{self.port}"
-
-      if self.queries:
-        query_str = "&".join([f"{k}={v}" for k, v in self.queries.items()])
-        return f"{self.domain}?ws={uri}&" + query_str
-
-      return f"{self.domain}?ws={uri}"
+    if self.client_url:
+      base_url = self.client_url.format(ssl=self.ssl, local_ip=host, port=self.port)
     else:
-      if self.queries:
-        query_str = "&".join([f"{k}={v}" for k, v in self.queries.items()])
-        return f"{self.domain}?" + query_str
+      base_url = self.domain
+    uri = f"ws{self.ssl}://{host}:{self.port}"
 
-      return f"{self.domain}"
+    if self.queries:
+      query_str = "&".join([f"{k}={v}" for k, v in self.queries.items()])
+      return f"{base_url}?ws={uri}&" + query_str
+
+    return f"{base_url}?ws={uri}"
 
   async def send(self, ws_id, event: ServerEvent = None, event_bytes=None):
     ws = self.ws[ws_id]
@@ -1003,10 +1011,31 @@ class Vuer(Server):
 
     # serve local files via /static endpoint
     self._add_static("/static", self.static_root)
-    print("Serving file://" + os.path.abspath(self.static_root), "at", "/static")
     self._add_route("/relay", self.relay, method="POST")
 
-    print("Visit: " + self.get_url())
+    if self.client_url:
+      base_url = self.client_url.format(**vars(self))
+    else:
+      base_url = self.domain
+    static_path = os.path.abspath(self.static_root)
+
+    # ANSI color codes
+    BOLD = "\033[1m"
+    DIM = "\033[2m"
+    CYAN = "\033[36m"
+    GREEN = "\033[32m"
+    RESET = "\033[0m"
+
+    print(f"""{BOLD}Vuer Server{RESET}
+
+{CYAN}Local:{RESET}   {base_url}?ws=ws{self.ssl}://localhost:{self.port}
+{CYAN}Network:{RESET} {base_url}?ws=ws{self.ssl}://{self.local_ip}:{self.port}
+
+{CYAN}Serving files from:{RESET}
+
+ {DIM}·{RESET} file://{static_path}
+{DIM}->{RESET} {base_url}/static
+""")
 
     super().start()
 
