@@ -17,19 +17,19 @@ from websockets import ConnectionClosedError
 
 from vuer.base import Server, handle_file_request, websocket_handler
 from vuer.events import (
-  INIT,
-  NOOP,
-  Add,
-  ClientEvent,
-  Frame,
-  GrabRender,
-  NullEvent,
-  Remove,
-  ServerEvent,
-  ServerRPC,
-  Set,
-  Update,
-  Upsert,
+    INIT,
+    NOOP,
+    Add,
+    ClientEvent,
+    Frame,
+    GrabRender,
+    NullEvent,
+    Remove,
+    ServerEvent,
+    ServerRPC,
+    Set,
+    Update,
+    Upsert,
 )
 from vuer.schemas import Page
 from vuer.types import EventHandler, SocketHandler, Url
@@ -44,414 +44,414 @@ RESET = "\033[0m"
 
 
 class At:
-  """Proxy Object for using the @ notation. Also
-  supports being called direction, which supports
-  more complex arguments."""
+    """Proxy Object for using the @ notation. Also
+    supports being called direction, which supports
+    more complex arguments."""
 
-  def __init__(self, fn):
-    self.fn = fn
+    def __init__(self, fn):
+        self.fn = fn
 
-  def __matmul__(self, arg):
-    return self.fn(arg)
+    def __matmul__(self, arg):
+        return self.fn(arg)
 
-  def __call__(self, *args, **kwargs):
-    return self.fn(*args, **kwargs)
+    def __call__(self, *args, **kwargs):
+        return self.fn(*args, **kwargs)
 
 
 class BoundFn:
-  """Generic wrapper for decorators that bind functions and enable .start() method.
+    """Generic wrapper for decorators that bind functions and enable .start() method.
 
-  This class wraps a function and optionally starts the Vuer server.
-  It provides a .start() method that can be called to start the server later.
+    This class wraps a function and optionally starts the Vuer server.
+    It provides a .start() method that can be called to start the server later.
 
-  Example::
+    Example::
 
-      @app.spawn()
-      async def main(session):
-          ...
+        @app.spawn()
+        async def main(session):
+            ...
 
-      # Later, start the server
-      main.start()
-  """
-
-  def __init__(self, inst: "Vuer", attr_name: str, start: bool = False):
+        # Later, start the server
+        main.start()
     """
-    :param inst: Vuer instance
-    :param attr_name: Name of the attribute to set on the Vuer instance
-    :param start: Whether to start the server immediately
-    """
-    self.vuer = inst
-    self.attr_name = attr_name
-    self.auto_start = start
 
-  def __call__(self, fn):
-    """Bind the function and optionally start the server."""
-    setattr(self.vuer, self.attr_name, fn)
-    if self.auto_start:
-      self.vuer.start()
-    return self
+    def __init__(self, inst: "Vuer", attr_name: str, start: bool = False):
+        """
+        :param inst: Vuer instance
+        :param attr_name: Name of the attribute to set on the Vuer instance
+        :param start: Whether to start the server immediately
+        """
+        self.vuer = inst
+        self.attr_name = attr_name
+        self.auto_start = start
 
-  def start(self, **kwargs):
-    """Start the Vuer server with optional keyword arguments."""
-    return self.vuer.start(**kwargs)
+    def __call__(self, fn):
+        """Bind the function and optionally start the server."""
+        setattr(self.vuer, self.attr_name, fn)
+        if self.auto_start:
+            self.vuer.start()
+        return self
+
+    def start(self, **kwargs):
+        """Start the Vuer server with optional keyword arguments."""
+        return self.vuer.start(**kwargs)
 
 
 class VuerSession:
-  def __init__(self, vuer: "Vuer", ws_id: int, queue_len=100):
-    self.vuer = vuer
-    self.CURRENT_WS_ID = ws_id
+    def __init__(self, vuer: "Vuer", ws_id: int, queue_len=100):
+        self.vuer = vuer
+        self.CURRENT_WS_ID = ws_id
 
-    que_maker = partial(deque, maxlen=queue_len)
+        que_maker = partial(deque, maxlen=queue_len)
 
-    self.downlink_queue: Deque[ClientEvent] = que_maker()
-    self.uplink_queue: Deque[ServerEvent] = que_maker()
+        self.downlink_queue: Deque[ClientEvent] = que_maker()
+        self.uplink_queue: Deque[ServerEvent] = que_maker()
 
-  @property
-  def socket(self):
-    """Getter for the websocket object.
+    @property
+    def socket(self):
+        """Getter for the websocket object.
 
-    this is useful for closing the socket session from the client side.
+        this is useful for closing the socket session from the client side.
 
-    Example Usage::
+        Example Usage::
 
-        @app.spawn(start=True):
-        async def main(session: VuerSession):
-            print("doing something...")
-            await sleep(1.0)
+            @app.spawn(start=True):
+            async def main(session: VuerSession):
+                print("doing something...")
+                await sleep(1.0)
 
-            print("I am done! closing the socket.")
-            session.socket.close()
-    """
-    return self.vuer.ws[self.CURRENT_WS_ID]
+                print("I am done! closing the socket.")
+                session.socket.close()
+        """
+        return self.vuer.ws[self.CURRENT_WS_ID]
 
-  def __matmul__(self, event: ServerEvent):
-    """
-    Send a ServerEvent to the client.
+    def __matmul__(self, event: ServerEvent):
+        """
+        Send a ServerEvent to the client.
 
-    !!Under construction!!
+        !!Under construction!!
 
-    Does NOT need to be awaited. this function assumes the ws_id is the last one in the ws pool.
+        Does NOT need to be awaited. this function assumes the ws_id is the last one in the ws pool.
 
-    :param event:
-    :return: dqueue
-    """
-    assert isinstance(event, ServerEvent), "msg must be a ServerEvent type object."
-    assert not isinstance(event, Frame), "Frame event is only used in vuer.bind method."
+        :param event:
+        :return: dqueue
+        """
+        assert isinstance(event, ServerEvent), "msg must be a ServerEvent type object."
+        assert not isinstance(event, Frame), "Frame event is only used in vuer.bind method."
 
-    self.send(event)
-    return None
+        self.send(event)
+        return None
 
-  async def grab_render(self, ttl=2.0, **kwargs) -> ClientEvent:
-    """
-    Grab a render from the client.
+    async def grab_render(self, ttl=2.0, **kwargs) -> ClientEvent:
+        """
+        Grab a render from the client.
 
-    :param quality: The quality of the render. 0.0 - 1.0
-    :param subsample: The subsample of the render.
-    :param ttl: The time to live for the handler. If the handler is not called within the time it gets removed from the handler list.
-    """
-    assert self.CURRENT_WS_ID is not None, (
-      "Websocket session is missing. CURRENT_WS_ID is None."
-    )
+        :param quality: The quality of the render. 0.0 - 1.0
+        :param subsample: The subsample of the render.
+        :param ttl: The time to live for the handler. If the handler is not called within the time it gets removed from the handler list.
+        """
+        assert self.CURRENT_WS_ID is not None, (
+            "Websocket session is missing. CURRENT_WS_ID is None."
+        )
 
-    event = GrabRender(**kwargs)
+        event = GrabRender(**kwargs)
 
-    return await self.vuer.rpc(self.CURRENT_WS_ID, event, ttl=ttl)
+        return await self.vuer.rpc(self.CURRENT_WS_ID, event, ttl=ttl)
 
-  async def get_webxr_mesh(self, key: str = "webxr-mesh", ttl=2.0) -> ClientEvent:
-    """
-    Request WebXR mesh data from the client.
+    async def get_webxr_mesh(self, key: str = "webxr-mesh", ttl=2.0) -> ClientEvent:
+        """
+        Request WebXR mesh data from the client.
 
-    This method sends a GET_WEBXR_MESH RPC request to the client and waits for
-    a response containing the detected environmental meshes from the WebXR AR session.
+        This method sends a GET_WEBXR_MESH RPC request to the client and waits for
+        a response containing the detected environmental meshes from the WebXR AR session.
 
-    The response contains mesh data including vertices, indices, semantic labels,
-    and transformation matrices for each detected mesh.
+        The response contains mesh data including vertices, indices, semantic labels,
+        and transformation matrices for each detected mesh.
 
-    Usage Example::
+        Usage Example::
 
-        from vuer import Vuer, VuerSession
-        from vuer.schemas import WebXRMesh, Scene
-        from asyncio import sleep
+            from vuer import Vuer, VuerSession
+            from vuer.schemas import WebXRMesh, Scene
+            from asyncio import sleep
 
-        app = Vuer()
+            app = Vuer()
 
-        @app.spawn(start=True)
-        async def main(session: VuerSession):
-            session.set @ Scene(
-                children=[WebXRMesh(key="webxr-mesh", stream=False)]
-            )
+            @app.spawn(start=True)
+            async def main(session: VuerSession):
+                session.set @ Scene(
+                    children=[WebXRMesh(key="webxr-mesh", stream=False)]
+                )
 
-            await sleep(2)  # Wait for meshes to be detected
+                await sleep(2)  # Wait for meshes to be detected
 
-            # Request mesh data on-demand
-            mesh_data = await session.get_webxr_mesh(key="webxr-mesh")
+                # Request mesh data on-demand
+                mesh_data = await session.get_webxr_mesh(key="webxr-mesh")
 
-            meshes = mesh_data.value.get('meshes', [])
-            print(f"Retrieved {len(meshes)} meshes")
+                meshes = mesh_data.value.get('meshes', [])
+                print(f"Retrieved {len(meshes)} meshes")
 
-            for mesh in meshes:
-                vertices = mesh['vertices']
-                indices = mesh['indices']
-                semantic_label = mesh.get('semanticLabel', 'unknown')
-                matrix = mesh['matrix']
+                for mesh in meshes:
+                    vertices = mesh['vertices']
+                    indices = mesh['indices']
+                    semantic_label = mesh.get('semanticLabel', 'unknown')
+                    matrix = mesh['matrix']
 
-                print(f"Mesh: {len(vertices)/3:.0f} vertices, label={semantic_label}")
+                    print(f"Mesh: {len(vertices)/3:.0f} vertices, label={semantic_label}")
 
-    :param key: The key of the WebXRMesh component to query (default: "webxr-mesh")
-    :param ttl: The time to live for the handler in seconds. If no response is received
-                within this time, a TimeoutError is raised (default: 2.0)
-    :return: ClientEvent containing mesh data in event.value['meshes']
-    :raises asyncio.TimeoutError: If the client doesn't respond within ttl seconds
-    :raises AssertionError: If websocket session is missing
-    """
-    assert self.CURRENT_WS_ID is not None, (
-      "Websocket session is missing. CURRENT_WS_ID is None."
-    )
+        :param key: The key of the WebXRMesh component to query (default: "webxr-mesh")
+        :param ttl: The time to live for the handler in seconds. If no response is received
+                    within this time, a TimeoutError is raised (default: 2.0)
+        :return: ClientEvent containing mesh data in event.value['meshes']
+        :raises asyncio.TimeoutError: If the client doesn't respond within ttl seconds
+        :raises AssertionError: If websocket session is missing
+        """
+        assert self.CURRENT_WS_ID is not None, (
+            "Websocket session is missing. CURRENT_WS_ID is None."
+        )
 
-    from vuer.events import GetWebXRMesh
+        from vuer.events import GetWebXRMesh
 
-    event = GetWebXRMesh(key=key)
+        event = GetWebXRMesh(key=key)
 
-    return await self.vuer.rpc(self.CURRENT_WS_ID, event, ttl=ttl)
+        return await self.vuer.rpc(self.CURRENT_WS_ID, event, ttl=ttl)
 
-  def send(self, event: ServerEvent) -> None:
-    """
-    Sending the event through the uplink queue.
-    """
-    assert self.CURRENT_WS_ID is not None, (
-      "Websocket session is missing. CURRENT_WS_ID is None."
-    )
+    def send(self, event: ServerEvent) -> None:
+        """
+        Sending the event through the uplink queue.
+        """
+        assert self.CURRENT_WS_ID is not None, (
+            "Websocket session is missing. CURRENT_WS_ID is None."
+        )
 
-    event_obj = event._serialize()
+        event_obj = event._serialize()
 
-    # Since ts is a float, using use_single_float=True may cause precision loss.
-    # Also, browsers only support millisecond precision for timestamps.
-    # Therefore, convert ts to an integer in milliseconds before sending to the frontend.
-    if "ts" in event_obj and isinstance(event_obj["ts"], float):
-      event_obj["ts"] = int(event_obj["ts"] * 1000)
-    event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
+        # Since ts is a float, using use_single_float=True may cause precision loss.
+        # Also, browsers only support millisecond precision for timestamps.
+        # Therefore, convert ts to an integer in milliseconds before sending to the frontend.
+        if "ts" in event_obj and isinstance(event_obj["ts"], float):
+            event_obj["ts"] = int(event_obj["ts"] * 1000)
+        event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
 
-    return self.uplink_queue.append(event_bytes)
+        return self.uplink_queue.append(event_bytes)
 
-  async def rpc(self, event: ServerRPC, ttl=2.0) -> Union[ClientEvent, None]:
-    """
-    Send a ServerRPC event to the client and wait for a response through the session queue
+    async def rpc(self, event: ServerRPC, ttl=2.0) -> Union[ClientEvent, None]:
+        """
+        Send a ServerRPC event to the client and wait for a response through the session queue
 
-    :param event: The ServerRPC event to send.
-    :param ttl: The time to live for the handler. If the handler is not called within the time it gets removed from the handler list.
-    :return: ClientEvent
-    """
-    rtype = event.rtype
+        :param event: The ServerRPC event to send.
+        :param ttl: The time to live for the handler. If the handler is not called within the time it gets removed from the handler list.
+        :return: ClientEvent
+        """
+        rtype = event.rtype
 
-    rpc_event = asyncio.Event()
-    response = None
+        rpc_event = asyncio.Event()
+        response = None
 
-    async def response_handler(response_event: ClientEvent, _: "VuerSession") -> None:
-      nonlocal response
+        async def response_handler(response_event: ClientEvent, _: "VuerSession") -> None:
+            nonlocal response
 
-      response = response_event
-      rpc_event.set()
+            response = response_event
+            rpc_event.set()
 
-    # handle timeout
-    clean = self.vuer.add_handler(rtype, response_handler, once=True)
+        # handle timeout
+        clean = self.vuer.add_handler(rtype, response_handler, once=True)
 
-    self.send(event)
-    # await sleep(0.5)
-    try:
-      await asyncio.wait_for(rpc_event.wait(), ttl)
-    except asyncio.TimeoutError as e:
-      clean()
-      raise e
+        self.send(event)
+        # await sleep(0.5)
+        try:
+            await asyncio.wait_for(rpc_event.wait(), ttl)
+        except asyncio.TimeoutError as e:
+            clean()
+            raise e
 
-    return response
+        return response
 
-  @property
-  def set(self) -> At:
-    """Used exclusively to set the scene.
+    @property
+    def set(self) -> At:
+        """Used exclusively to set the scene.
 
-    the @SET operator is responsible for setting the root node of the scene.
+        the @SET operator is responsible for setting the root node of the scene.
 
-    Examples:
-        proxy @ Set(Scene(children=[...]))
+        Examples:
+            proxy @ Set(Scene(children=[...]))
 
-        or
+            or
 
-        app.set @ Scene(children=[...])
-    """
-    return At(lambda element: self @ Set(element))
+            app.set @ Scene(children=[...])
+        """
+        return At(lambda element: self @ Set(element))
 
-  @property
-  def update(self) -> At:
-    """Used to update existing elements. NOOP if an element does not exist.
+    @property
+    def update(self) -> At:
+        """Used to update existing elements. NOOP if an element does not exist.
 
-    Supports passing in a list of elements. (Thank God I implemented this...
-    so handy! - Ge)
+        Supports passing in a list of elements. (Thank God I implemented this...
+        so handy! - Ge)
 
-    Example Usage::
+        Example Usage::
 
-        app.update @ [element1, element2, ...]
-    """
+            app.update @ [element1, element2, ...]
+        """
 
-    @At
-    def _update(element):
-      if isinstance(element, list):
-        self @ Update(*element)
-      elif isinstance(element, tuple):
-        self @ Update(*element)
-      else:
-        self @ Update(element)
+        @At
+        def _update(element):
+            if isinstance(element, list):
+                self @ Update(*element)
+            elif isinstance(element, tuple):
+                self @ Update(*element)
+            else:
+                self @ Update(element)
 
-    return _update
+        return _update
 
-  @property
-  def add(self) -> At:
-    """Used to add elements to a specific parent.
+    @property
+    def add(self) -> At:
+        """Used to add elements to a specific parent.
 
-    Requires a parentKey, or treats the Scene root node as the default parent.
+        Requires a parentKey, or treats the Scene root node as the default parent.
 
-    Example Usage::
+        Example Usage::
 
-        app.add(element1, element2, ..., to=parentKey.)
+            app.add(element1, element2, ..., to=parentKey.)
 
-    or using the Scene root node as the default parent: ::
+        or using the Scene root node as the default parent: ::
 
-        app.add @ element1
+            app.add @ element1
 
-    """
+        """
 
-    @At
-    def _add(element, to=None):
-      if isinstance(element, list):
-        self @ Add(*element, to=to)
-      elif isinstance(element, tuple):
-        self @ Add(*element, to=to)
-      else:
-        self @ Add(element, to=to)
+        @At
+        def _add(element, to=None):
+            if isinstance(element, list):
+                self @ Add(*element, to=to)
+            elif isinstance(element, tuple):
+                self @ Add(*element, to=to)
+            else:
+                self @ Add(element, to=to)
 
-    return _add
+        return _add
 
-  @property
-  def upsert(self) -> At:
-    """Upsert elements to a specific parent.
+    @property
+    def upsert(self) -> At:
+        """Upsert elements to a specific parent.
 
-    Requires a parentKey, or treats the Scene root node as the default parent.
+        Requires a parentKey, or treats the Scene root node as the default parent.
 
-    Example Usage::
+        Example Usage::
 
-        app.upsert(element1, element2, ..., to=parentKey.)
+            app.upsert(element1, element2, ..., to=parentKey.)
 
-    or using the Scene root node as the default parent: ::
+        or using the Scene root node as the default parent: ::
 
-        app.upsert @ element1
+            app.upsert @ element1
 
-    """
+        """
 
-    @At
-    def _upsert(element, to=None, strict=False):
-      if isinstance(element, list):
-        self @ Upsert(*element, to=to, strict=strict)
-      elif isinstance(element, tuple):
-        self @ Upsert(*element, to=to, strict=strict)
-      else:
-        self @ Upsert(element, to=to, strict=strict)
+        @At
+        def _upsert(element, to=None, strict=False):
+            if isinstance(element, list):
+                self @ Upsert(*element, to=to, strict=strict)
+            elif isinstance(element, tuple):
+                self @ Upsert(*element, to=to, strict=strict)
+            else:
+                self @ Upsert(element, to=to, strict=strict)
 
-    return _upsert
+        return _upsert
 
-  @property
-  def remove(self) -> At:
-    """Remove elements by keys.
+    @property
+    def remove(self) -> At:
+        """Remove elements by keys.
 
-    Example Usage::
+        Example Usage::
 
-        app.remove @ ["key1", "key2", ...]
+            app.remove @ ["key1", "key2", ...]
 
-    or a single key: ::
+        or a single key: ::
 
-        app.remove @ "key1"
+            app.remove @ "key1"
 
-    """
+        """
 
-    @At
-    def _remove(keys):
-      if isinstance(keys, list):
-        self @ Remove(*keys)
-      elif isinstance(keys, tuple):
-        self @ Remove(*keys)
-      else:
-        self @ Remove(keys)
+        @At
+        def _remove(keys):
+            if isinstance(keys, list):
+                self @ Remove(*keys)
+            elif isinstance(keys, tuple):
+                self @ Remove(*keys)
+            else:
+                self @ Remove(keys)
 
-    return _remove
+        return _remove
 
-  def popleft(self):
-    try:
-      return self.downlink_queue.popleft()
-    except IndexError:
-      return None
+    def popleft(self):
+        try:
+            return self.downlink_queue.popleft()
+        except IndexError:
+            return None
 
-  def pop(self):
-    try:
-      return self.downlink_queue.pop()
-    except IndexError:
-      return None
+    def pop(self):
+        try:
+            return self.downlink_queue.pop()
+        except IndexError:
+            return None
 
-  def clear(self):
-    """clears all client messages"""
-    self.downlink_queue.clear()
+    def clear(self):
+        """clears all client messages"""
+        self.downlink_queue.clear()
 
-  def stream(self):
-    yield from self.downlink_queue
+    def stream(self):
+        yield from self.downlink_queue
 
-  def spawn_task(self, task, name=None):
-    """Spawn a task in the running asyncio event loop
+    def spawn_task(self, task, name=None):
+        """Spawn a task in the running asyncio event loop
 
-    Useful for background tasks. Returns an asyncio task that can be canceled.
+        Useful for background tasks. Returns an asyncio task that can be canceled.
 
-    .. code-block:: python
-        :linenos:
+        .. code-block:: python
+            :linenos:
 
-        async background_task():
-            print('\\rthis ran once')
+            async background_task():
+                print('\\rthis ran once')
 
-        async long_running_bg_task():
-            while True:
-                await asyncio.sleep(1.0)
-                print("\\rlong running background task is still running")
+            async long_running_bg_task():
+                while True:
+                    await asyncio.sleep(1.0)
+                    print("\\rlong running background task is still running")
 
-        @app.spawn_task
-        async def main_fn(sess: VuerSession):
-            # Prepare background tasks here:
-            task = sess.spawn_task(background_task)
-            long_running_task = sess.spawn_task(long_running_bg_task)
+            @app.spawn_task
+            async def main_fn(sess: VuerSession):
+                # Prepare background tasks here:
+                task = sess.spawn_task(background_task)
+                long_running_task = sess.spawn_task(long_running_bg_task)
 
-    Now to cancel a running task, simply
+        Now to cancel a running task, simply
 
-    .. code-block:: python
-        :linenos:
+        .. code-block:: python
+            :linenos:
 
-        task.cancel()
+            task.cancel()
 
-    **Todos**
+        **Todos**
 
-    ▫️ Add a way to automatically clean up when exiting the main_fn.
-    """
-    loop = asyncio.get_running_loop()
-    return loop.create_task(task, name=name)
+        ▫️ Add a way to automatically clean up when exiting the main_fn.
+        """
+        loop = asyncio.get_running_loop()
+        return loop.create_task(task, name=name)
 
-  async def forever(self):
-    """Keep the session alive indefinitely.
+    async def forever(self):
+        """Keep the session alive indefinitely.
 
-    This is useful when you want to set up a scene and keep the server running
-    without the session closing. The session will remain active until the client
-    disconnects or the server is stopped.
+        This is useful when you want to set up a scene and keep the server running
+        without the session closing. The session will remain active until the client
+        disconnects or the server is stopped.
 
-    Example Usage::
+        Example Usage::
 
-        @app.spawn(start=True)
-        async def main(session: VuerSession):
-            session.set @ Scene(Box(args=[0.2, 0.2, 0.2], key="box"))
-            await session.forever()
-    """
-    await asyncio.Event().wait()
+            @app.spawn(start=True)
+            async def main(session: VuerSession):
+                session.set @ Scene(Box(args=[0.2, 0.2, 0.2], key="box"))
+                await session.forever()
+        """
+        await asyncio.Event().wait()
 
 
 DEFAULT_PORT = 8012
@@ -461,73 +461,73 @@ DEFAULT_CLIENT_ROOT: Path = Path(__file__).parent / "client_build"
 
 @proto.prefix
 class Vuer(Server):
-  """Vuer Server
+    """Vuer Server
 
-  This is the server for the Vuer client.
+    This is the server for the Vuer client.
 
-  Usage::
+    Usage::
 
-      app = Vuer()
+        app = Vuer()
 
-      @app.spawn
-      async def main(session: VuerSession):
-           session.set @ Scene(children=[...])
+        @app.spawn
+        async def main(session: VuerSession):
+             session.set @ Scene(children=[...])
 
-      app.run()
+        app.run()
 
 
-  .. automethod:: bind
-  .. automethod:: spawn
-  .. automethod:: relay
-  .. automethod:: bound_fn
-  .. automethod:: spawn_task
-  .. automethod:: get_url
-  .. automethod:: send
-  .. automethod:: rpc
-  .. automethod:: rpc_stream
-  .. automethod:: close_ws
-  .. automethod:: uplink
-  .. automethod:: downlink
-  .. automethod:: add_handler
-  .. automethod:: _ttl_handler
-  .. automethod:: run
-  """
-
-  # Vuer-specific settings (host, cert, key, ca_cert inherited from Server)
-  domain: str = EnvVar @ "VUER_DOMAIN" | "https://vuer.ai"
-  client_url: str = Optional[str]  # Optional override for domain (e.g., local client build)
-
-  port: int = EnvVar @ "VUER_PORT" | DEFAULT_PORT
-  cors: str = EnvVar @ "VUER_CORS" | DEFAULT_CORS
-  static_root: str = EnvVar @ "VUER_STATIC_ROOT" | "."
-
-  free_port: bool = False
-  queue_len: int = 100
-  queries: Dict = None  # URL query parameters to pass to client
-  client_root: Path = DEFAULT_CLIENT_ROOT  # Path to client build directory
-  verbose: bool = False  # Print server settings on startup
-
-  def _proxy(self, ws_id) -> "VuerSession":
-    """This is a proxy object that allows us to use the @ notation
-    to send events to the client.
-
-    :param ws_id: The websocket id.
-    :return: A proxy object.
+    .. automethod:: bind
+    .. automethod:: spawn
+    .. automethod:: relay
+    .. automethod:: bound_fn
+    .. automethod:: spawn_task
+    .. automethod:: get_url
+    .. automethod:: send
+    .. automethod:: rpc
+    .. automethod:: rpc_stream
+    .. automethod:: close_ws
+    .. automethod:: uplink
+    .. automethod:: downlink
+    .. automethod:: add_handler
+    .. automethod:: _ttl_handler
+    .. automethod:: run
     """
-    # todo: check if shallow copy suffices
-    proxy = VuerSession(self, ws_id, queue_len=self.queue_len)
 
-    return proxy
+    # Vuer-specific settings (host, cert, key, ca_cert inherited from Server)
+    domain: str = EnvVar @ "VUER_DOMAIN" | "https://vuer.ai"
+    client_url: str = Optional[str]  # Optional override for domain (e.g., local client build)
 
-  def __post_init__(self):
-    """Initialize Vuer after params-proto sets up fields."""
-    if self.verbose:
-      print("       ========= Arguments =========")
-      for k, v in vars(self).items():
-        if not k.startswith("_") and not callable(v):
-          print(f"{k:>20} : {v}")
-      print("       -----------------------------")
-      print(f"""
+    port: int = EnvVar @ "VUER_PORT" | DEFAULT_PORT
+    cors: str = EnvVar @ "VUER_CORS" | DEFAULT_CORS
+    static_root: str = EnvVar @ "VUER_STATIC_ROOT" | "."
+
+    free_port: bool = False
+    queue_len: int = 100
+    queries: Dict = None  # URL query parameters to pass to client
+    client_root: Path = DEFAULT_CLIENT_ROOT  # Path to client build directory
+    verbose: bool = False  # Print server settings on startup
+
+    def _proxy(self, ws_id) -> "VuerSession":
+        """This is a proxy object that allows us to use the @ notation
+        to send events to the client.
+
+        :param ws_id: The websocket id.
+        :return: A proxy object.
+        """
+        # todo: check if shallow copy suffices
+        proxy = VuerSession(self, ws_id, queue_len=self.queue_len)
+
+        return proxy
+
+    def __post_init__(self):
+        """Initialize Vuer after params-proto sets up fields."""
+        if self.verbose:
+            print("       ========= Arguments =========")
+            for k, v in vars(self).items():
+                if not k.startswith("_") and not callable(v):
+                    print(f"{k:>20} : {v}")
+            print("       -----------------------------")
+            print(f"""
 {YELLOW}Tip:{RESET} Import {CYAN}dotvar.auto_load{RESET} {BOLD}before{RESET} vuer to load .env defaults.
 {DIM}     Supports recursive variable resolution: ${{OTHER_VAR}}/path{RESET}
 
@@ -535,506 +535,519 @@ class Vuer(Server):
     {GREEN}from{RESET} {CYAN}vuer{RESET} {GREEN}import{RESET} Vuer
 """)
 
-    # Initialize base Server (app, cors_context)
-    self._init_app()
+        # Initialize base Server (app, cors_context)
+        self._init_app()
 
-    self.handlers = defaultdict(dict)
-    self.page = Page()
-    self.ws: Dict[str, WebSocketResponse] = {}
-    self.socket_handler: SocketHandler = None
-    self.spawned_coroutines = []
+        self.handlers = defaultdict(dict)
+        self.page = Page()
+        self.ws: Dict[str, WebSocketResponse] = {}
+        self.socket_handler: SocketHandler = None
+        self.spawned_coroutines = []
 
-  @property
-  def ssl(self) -> str:
-    """Returns "s" if SSL is enabled, "" otherwise.
+    @property
+    def ssl(self) -> str:
+        """Returns "s" if SSL is enabled, "" otherwise.
 
-    Use in URL construction: f"http{self.ssl}://" or f"ws{self.ssl}://"
-    """
-    return "s" if self.cert else ""
+        Use in URL construction: f"http{self.ssl}://" or f"ws{self.ssl}://"
+        """
+        return "s" if self.cert else ""
 
-  @property
-  def local_ip(self) -> str:
-    """Get the local LAN IP address.
+    @property
+    def local_ip(self) -> str:
+        """Get the local LAN IP address.
 
-    This is a well-known and safe approach for determining your local IP.
-    It uses a UDP socket connection to determine the local IP address
-    that would be used to reach external networks. No data is actually
-    sent to the remote address.
+        This is a well-known and safe approach for determining your local IP.
+        It uses a UDP socket connection to determine the local IP address
+        that would be used to reach external networks. No data is actually
+        sent to the remote address.
 
-    :return: The local IP address as a string, or "127.0.0.1" if unavailable.
-    """
-    try:
-      s = stdlib_socket.socket(stdlib_socket.AF_INET, stdlib_socket.SOCK_DGRAM)
-      s.connect(("8.8.8.8", 80))
-      ip = s.getsockname()[0]
-      s.close()
-      return ip
-    except Exception:
-      return "127.0.0.1"
-
-  async def relay(self, request):
-    """This is the relay object for sending events to the server.
-
-    Todo: add API for specifying the websocket ID. Or just broadcast to all.
-    Todo: add type hint
-
-    Interface:
-        <uri>/relay?sid=<websocket_id>
-
-    :return:
-        - Status 200
-        - Status 400
-
-    """
-    # todo: need to implement msgpack encoding, interface
-    bytes = request.bytes()
-    session_id = request.rel_url.query.get("sid", None)
-    if session_id is None:
-      return Response(400)
-    elif session_id in self.ws:
-      self.send(ws_id=session_id, event_bytes=bytes)
-
-      return Response(status=200)
-    elif session_id == "*":
-      # print broadcast
-      for ws_id in self.ws:
+        :return: The local IP address as a string, or "127.0.0.1" if unavailable.
+        """
         try:
-          self.send(ws_id=ws_id, event_bytes=bytes)
-        except Exception as e:
-          print("Exception: ", e)
-          return Response(status=502, text=str(e))
+            s = stdlib_socket.socket(stdlib_socket.AF_INET, stdlib_socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))
+            ip = s.getsockname()[0]
+            s.close()
+            return ip
+        except Exception:
+            return "127.0.0.1"
 
-      return Response(status=200)
-    else:
-      return Response(status=400)
+    async def relay(self, request):
+        """This is the relay object for sending events to the server.
 
-  @property
-  def static_prefix(self):
-    return Url(f"http://localhost:{self.port}/static")
+        Todo: add API for specifying the websocket ID. Or just broadcast to all.
+        Todo: add type hint
 
-  # ** downlink message queue methods**
-  async def bound_fn(self, session_proxy: VuerSession):
-    """This is the default generator function in the socket connection handler"""
-    print("default socket worker is up, adding clientEvents ")
-    session_proxy.downlink_queue.append(INIT)
+        Interface:
+            <uri>/relay?sid=<websocket_id>
 
-    while True:
-      client_event = yield NOOP
+        :return:
+            - Status 200
+            - Status 400
 
-      if client_event.etype in self.handlers:
-        handlers = self.handlers[client_event.etype]
+        """
+        # todo: need to implement msgpack encoding, interface
+        bytes = request.bytes()
+        session_id = request.rel_url.query.get("sid", None)
+        if session_id is None:
+            return Response(400)
+        elif session_id in self.ws:
+            self.send(ws_id=session_id, event_bytes=bytes)
 
-        # make a copy of the keys to avoid dict size change during iteration.
-        handler_keys = list(handlers.keys())
+            return Response(status=200)
+        elif session_id == "*":
+            # print broadcast
+            for ws_id in self.ws:
+                try:
+                    self.send(ws_id=ws_id, event_bytes=bytes)
+                except Exception as e:
+                    print("Exception: ", e)
+                    return Response(status=502, text=str(e))
 
-        for key in handler_keys:  # type: EventHandler
-          # todo: see if we want to add throttling here.
+            return Response(status=200)
+        else:
+            return Response(status=400)
 
-          fn_factory = handlers.get(key, None)
-          # the handler dict can change size during iteration, so we need to
-          #   handle the None case.
-          if fn_factory is None:
-            print("this handler is gone")
-            continue
+    @property
+    def static_prefix(self) -> "Url":
+        """URL prefix for static files, accessible over the network.
 
-          self._add_task(fn_factory(client_event, session_proxy))
-          await sleep(0.0)
+        Uses local_ip and respects SSL settings for network access (e.g., VR devices).
+        """
+        return Url(f"http{self.ssl}://{self.local_ip}:{self.port}/static")
 
-      session_proxy.downlink_queue.append(client_event)
+    @property
+    def localhost_prefix(self) -> "Url":
+        """URL prefix for static files, localhost only.
 
-  def spawn(self, fn: SocketHandler = None, start=False):
-    """Bind the socket handler function `fn` to vuer, and start
-    the event loop if `start` is `True`.
+        Use this for local development when network access is not needed.
+        """
+        return Url(f"http{self.ssl}://localhost:{self.port}/static")
 
-    Note: this is really a misnomer.
+    # ** downlink message queue methods**
+    async def bound_fn(self, session_proxy: VuerSession):
+        """This is the default generator function in the socket connection handler"""
+        print("default socket worker is up, adding clientEvents ")
+        session_proxy.downlink_queue.append(INIT)
 
-    :param fn: The function to spawn.
-    :param start: Start server after binding
-    :return: BoundFn instance that can be called later with .start()
-    """
-    wrapper = BoundFn(self, "socket_handler", start=start)
+        while True:
+            client_event = yield NOOP
 
-    if fn is None:
-      # this returns a decorator
-      return wrapper
-    else:
-      return wrapper(fn)
+            if client_event.etype in self.handlers:
+                handlers = self.handlers[client_event.etype]
 
-  def bind(self, fn=None, start=False):
-    """
-    Bind an asynchronous generator function for use in socket connection handler. The function should be a generator that yields Page objects.
+                # make a copy of the keys to avoid dict size change during iteration.
+                handler_keys = list(handlers.keys())
 
-    :param fn: The function to bind.
-    :param start: Start server after binding
-    :return: BoundFn instance that can be called later with .start()
-    """
-    wrapper = BoundFn(self, "bound_fn", start=start)
+                for key in handler_keys:  # type: EventHandler
+                    # todo: see if we want to add throttling here.
 
-    if fn is None:
-      # this returns a decorator
-      return wrapper
-    else:
-      return wrapper(fn)
+                    fn_factory = handlers.get(key, None)
+                    # the handler dict can change size during iteration, so we need to
+                    #   handle the None case.
+                    if fn_factory is None:
+                        print("this handler is gone")
+                        continue
 
-  def get_url(self, host: str = "localhost"):
-    """
-    Get the URL for the Vuer client.
+                    self._add_task(fn_factory(client_event, session_proxy))
+                    await sleep(0.0)
 
-    :param host: The host to use in the websocket URL (e.g., "localhost" or IP address).
-    :return: The URL for the Vuer client.
-    """
-    if self.client_url:
-      base_url = self.client_url.format(ssl=self.ssl, local_ip=host, port=self.port)
-    else:
-      base_url = self.domain
-    uri = f"ws{self.ssl}://{host}:{self.port}"
+            session_proxy.downlink_queue.append(client_event)
 
-    if self.queries:
-      query_str = "&".join([f"{k}={v}" for k, v in self.queries.items()])
-      return f"{base_url}?ws={uri}&" + query_str
+    def spawn(self, fn: SocketHandler = None, start=False):
+        """Bind the socket handler function `fn` to vuer, and start
+        the event loop if `start` is `True`.
 
-    return f"{base_url}?ws={uri}"
+        Note: this is really a misnomer.
 
-  async def send(self, ws_id, event: ServerEvent = None, event_bytes=None):
-    ws = self.ws[ws_id]
+        :param fn: The function to spawn.
+        :param start: Start server after binding
+        :return: BoundFn instance that can be called later with .start()
+        """
+        wrapper = BoundFn(self, "socket_handler", start=start)
 
-    if event_bytes is None:
-      assert isinstance(event, ServerEvent), "event must be a ServerEvent type object."
-      event_obj = event._serialize()
-      # Since ts is a float, using use_single_float=True may cause precision loss.
-      # Also, browsers only support millisecond precision for timestamps.
-      # Therefore, convert ts to an integer in milliseconds before sending to the frontend.
-      if "ts" in event_obj and isinstance(event_obj["ts"], float):
-        event_obj["ts"] = int(event_obj["ts"] * 1000)
-      event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
-    else:
-      assert event is None, "Can not pass in both at the same time."
+        if fn is None:
+            # this returns a decorator
+            return wrapper
+        else:
+            return wrapper(fn)
 
-    return await ws.send_bytes(event_bytes)
+    def bind(self, fn=None, start=False):
+        """
+        Bind an asynchronous generator function for use in socket connection handler. The function should be a generator that yields Page objects.
 
-  async def rpc(self, ws_id, event: ServerRPC, ttl=2.0) -> Union[ClientEvent, None]:
-    """RPC only takes a single response. For multi-response streaming,
-    we need to build a new one
+        :param fn: The function to bind.
+        :param start: Start server after binding
+        :return: BoundFn instance that can be called later with .start()
+        """
+        wrapper = BoundFn(self, "bound_fn", start=start)
 
-    Question is whether we want to make this RPC an awaitable funciton.
+        if fn is None:
+            # this returns a decorator
+            return wrapper
+        else:
+            return wrapper(fn)
 
-    :param ttl: The time to live for the handler. If the handler is not called within the time it gets removed from the handler list.
-    """
-    etype = event.etype
+    def get_url(self, host: str = "localhost"):
+        """
+        Get the URL for the Vuer client.
 
-    # this is the event type for responses
-    rtype = f"{etype}_RESPONSE@{event.uuid}"
+        :param host: The host to use in the websocket URL (e.g., "localhost" or IP address).
+        :return: The URL for the Vuer client.
+        """
+        if self.client_url:
+            base_url = self.client_url.format(ssl=self.ssl, local_ip=host, port=self.port)
+        else:
+            base_url = self.domain
+        uri = f"ws{self.ssl}://{host}:{self.port}"
 
-    rpc_event = asyncio.Event()
-    response = None
+        if self.queries:
+            query_str = "&".join([f"{k}={v}" for k, v in self.queries.items()])
+            return f"{base_url}?ws={uri}&" + query_str
 
-    async def response_handler(response_event: ClientEvent, _: "VuerSession") -> None:
-      nonlocal response
+        return f"{base_url}?ws={uri}"
 
-      response = response_event
-      rpc_event.set()
+    async def send(self, ws_id, event: ServerEvent = None, event_bytes=None):
+        ws = self.ws[ws_id]
 
-    # handle timeout
-    clean = self.add_handler(rtype, response_handler, once=True)
+        if event_bytes is None:
+            assert isinstance(event, ServerEvent), "event must be a ServerEvent type object."
+            event_obj = event._serialize()
+            # Since ts is a float, using use_single_float=True may cause precision loss.
+            # Also, browsers only support millisecond precision for timestamps.
+            # Therefore, convert ts to an integer in milliseconds before sending to the frontend.
+            if "ts" in event_obj and isinstance(event_obj["ts"], float):
+                event_obj["ts"] = int(event_obj["ts"] * 1000)
+            event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
+        else:
+            assert event is None, "Can not pass in both at the same time."
 
-    # note: by-pass the uplink message queue entirely, rendering it immune
-    #   to the effects of queue length.
-    await self.send(ws_id, event)
-    # await sleep(0.5)
-    try:
-      await asyncio.wait_for(rpc_event.wait(), ttl)
-    except asyncio.TimeoutError as e:
-      clean()
-      raise e
+        return await ws.send_bytes(event_bytes)
 
-    return response
+    async def rpc(self, ws_id, event: ServerRPC, ttl=2.0) -> Union[ClientEvent, None]:
+        """RPC only takes a single response. For multi-response streaming,
+        we need to build a new one
 
-  async def rpc_stream(self, ws_id, event: ServerEvent = None, event_bytes=None):
-    """This RPC offers multiple responses."""
-    raise NotImplementedError("This is not implemented yet.")
+        Question is whether we want to make this RPC an awaitable funciton.
 
-  async def close_ws(self, ws_id):
-    # uplink is moved to the proxy object. Cleaned by garbage collection.
-    # self.uplink_queue.pop(ws_id)
-    try:
-      ws = self.ws.pop(ws_id)
-      await ws.close()
-    except KeyError:
-      pass
+        :param ttl: The time to live for the handler. If the handler is not called within the time it gets removed from the handler list.
+        """
+        etype = event.etype
 
-  async def uplink(self, proxy: VuerSession):
-    ws_id = proxy.CURRENT_WS_ID
-    queue = proxy.uplink_queue
+        # this is the event type for responses
+        rtype = f"{etype}_RESPONSE@{event.uuid}"
 
-    print(f"\rUplink task running. id:{ws_id}")
-    while True:
-      if ws_id not in self.ws:
-        print(f"uplink:{ws_id} is not in websocket pool")
-        return
+        rpc_event = asyncio.Event()
+        response = None
 
-      if queue:
-        msg_bytes = queue.popleft()
+        async def response_handler(response_event: ClientEvent, _: "VuerSession") -> None:
+            nonlocal response
+
+            response = response_event
+            rpc_event.set()
+
+        # handle timeout
+        clean = self.add_handler(rtype, response_handler, once=True)
+
+        # note: by-pass the uplink message queue entirely, rendering it immune
+        #   to the effects of queue length.
+        await self.send(ws_id, event)
+        # await sleep(0.5)
         try:
-          # todo: spawn new uplink everytime connections happen
-          await self.send(ws_id, event_bytes=msg_bytes)
-        except ConnectionResetError as e:
-          await self.close_ws(ws_id)
-          print("Connection closed due to", e)
-          break
-        except ConnectionClosedError as e:
-          await self.close_ws(ws_id)
-          print("Connection error, closed due to", e)
-          break
-        except Exception as e:
-          await self.close_ws(ws_id)
-          print(f"Connection error, closed.\nError: [{e}]")
-          raise e
-          break
-      else:
-        await sleep(0.0)
+            await asyncio.wait_for(rpc_event.wait(), ttl)
+        except asyncio.TimeoutError as e:
+            clean()
+            raise e
 
-  async def downlink(self, request: Request, ws: WebSocketResponse):
-    """
-    The websocket handler for receiving messages from the client.
+        return response
 
-    :param ws: The websocket.
-    :param request: The request (unused).
-    :return: None
-    """
-    # generate an ID to save in the connection pool
-    ws_id = uuid4()
-    self.ws[ws_id] = ws
+    async def rpc_stream(self, ws_id, event: ServerEvent = None, event_bytes=None):
+        """This RPC offers multiple responses."""
+        raise NotImplementedError("This is not implemented yet.")
 
-    print(f"websocket is connected. id:{ws_id}")
-    vuer_proxy = self._proxy(ws_id)
-
-    generator = self.bound_fn(vuer_proxy)
-
-    self._add_task(self.uplink(vuer_proxy))
-
-    if self.socket_handler is not None:
-
-      async def handler():
+    async def close_ws(self, ws_id):
+        # uplink is moved to the proxy object. Cleaned by garbage collection.
+        # self.uplink_queue.pop(ws_id)
         try:
-          await self.socket_handler(vuer_proxy)
-        except Exception as e:
-          await self.close_ws(ws_id)
-          # todo: absorb non-user induced exceptions.
-          raise e
+            ws = self.ws.pop(ws_id)
+            await ws.close()
+        except KeyError:
+            pass
 
-        await self.close_ws(ws_id)
+    async def uplink(self, proxy: VuerSession):
+        ws_id = proxy.CURRENT_WS_ID
+        queue = proxy.uplink_queue
 
-      task = self._add_task(handler())
+        print(f"\rUplink task running. id:{ws_id}")
+        while True:
+            if ws_id not in self.ws:
+                print(f"uplink:{ws_id} is not in websocket pool")
+                return
 
-    if hasattr(generator, "__anext__"):
-      serverEvent = await generator.__anext__()
-    else:
-      serverEvent = next(generator)
+            if queue:
+                msg_bytes = queue.popleft()
+                try:
+                    # todo: spawn new uplink everytime connections happen
+                    await self.send(ws_id, event_bytes=msg_bytes)
+                except ConnectionResetError as e:
+                    await self.close_ws(ws_id)
+                    print("Connection closed due to", e)
+                    break
+                except ConnectionClosedError as e:
+                    await self.close_ws(ws_id)
+                    print("Connection error, closed due to", e)
+                    break
+                except Exception as e:
+                    await self.close_ws(ws_id)
+                    print(f"Connection error, closed.\nError: [{e}]")
+                    raise e
+                    break
+            else:
+                await sleep(0.0)
 
-    assert serverEvent != "FRAME", "The first event can not be a FRAME event."
+    async def downlink(self, request: Request, ws: WebSocketResponse):
+        """
+        The websocket handler for receiving messages from the client.
 
-    if serverEvent != "NOOP":
-      # todo: use the uplink stream instead of sending out directly
-      vuer_proxy @ serverEvent
-      await sleep(0.0)
+        :param ws: The websocket.
+        :param request: The request (unused).
+        :return: None
+        """
+        # generate an ID to save in the connection pool
+        ws_id = uuid4()
+        self.ws[ws_id] = ws
 
-    try:
-      async for msg in ws:
-        payload = unpackb(msg.data, raw=False)
-        clientEvent = ClientEvent(**payload)
+        print(f"websocket is connected. id:{ws_id}")
+        vuer_proxy = self._proxy(ws_id)
+
+        generator = self.bound_fn(vuer_proxy)
+
+        self._add_task(self.uplink(vuer_proxy))
+
+        if self.socket_handler is not None:
+
+            async def handler():
+                try:
+                    await self.socket_handler(vuer_proxy)
+                except Exception as e:
+                    await self.close_ws(ws_id)
+                    # todo: absorb non-user induced exceptions.
+                    raise e
+
+                await self.close_ws(ws_id)
+
+            task = self._add_task(handler())
 
         if hasattr(generator, "__anext__"):
-          serverEvent = await generator.asend(clientEvent)
+            serverEvent = await generator.__anext__()
         else:
-          serverEvent = generator.send(clientEvent)
+            serverEvent = next(generator)
 
-        while serverEvent == "FRAME":
-          serverEvent = cast(Frame, serverEvent)
-          # Frame object is a macro, only send the payload.
-          vuer_proxy @ serverEvent.data
-          await sleep(1 / serverEvent.frame_rate)
-          if hasattr(generator, "__anext__"):
-            serverEvent = await generator.asend(NullEvent())
-          else:
-            serverEvent = generator.send(NullEvent())
+        assert serverEvent != "FRAME", "The first event can not be a FRAME event."
 
         if serverEvent != "NOOP":
-          vuer_proxy @ serverEvent
+            # todo: use the uplink stream instead of sending out directly
+            vuer_proxy @ serverEvent
+            await sleep(0.0)
 
-      print("websocket is now disconnected. Removing the socket.")
-      await self.close_ws(ws_id)
-    except Exception as e:
-      print("websocket is now disconnected. Removing the socket.")
-      raise e
-      await self.close_ws(ws_id)
+        try:
+            async for msg in ws:
+                payload = unpackb(msg.data, raw=False)
+                clientEvent = ClientEvent(**payload)
 
-  def add_handler(
-    self,
-    event_type: str,
-    fn: EventHandler = None,
-    once: bool = False,
-  ) -> Callable[[], None]:
-    """Adding event handlers to the vuer server.
+                if hasattr(generator, "__anext__"):
+                    serverEvent = await generator.asend(clientEvent)
+                else:
+                    serverEvent = generator.send(clientEvent)
 
-    :param event_type: The event type to handle.
-    :param fn: The function to handle the event.
-    :param once: Whether to remove the handler after the first call.
-        This is useful for RPC, which cleans up after itself.
-        The issue is for RPC, the `key` also needs to match. So we hack it here to use
-        a call specific event_type to enforce the cleanup.
+                while serverEvent == "FRAME":
+                    serverEvent = cast(Frame, serverEvent)
+                    # Frame object is a macro, only send the payload.
+                    vuer_proxy @ serverEvent.data
+                    await sleep(1 / serverEvent.frame_rate)
+                    if hasattr(generator, "__anext__"):
+                        serverEvent = await generator.asend(NullEvent())
+                    else:
+                        serverEvent = generator.send(NullEvent())
 
-    # Usage:
+                if serverEvent != "NOOP":
+                    vuer_proxy @ serverEvent
 
-    As a decorator::
+            print("websocket is now disconnected. Removing the socket.")
+            await self.close_ws(ws_id)
+        except Exception as e:
+            print("websocket is now disconnected. Removing the socket.")
+            raise e
+            await self.close_ws(ws_id)
 
-        app = Vuer()
-        @app.add_handler("CAMERA_MOVE")
-        def on_camera(event: ClientEvent, session: VuerSession):
-            print("camera event", event.etype, event.value)
+    def add_handler(
+            self,
+            event_type: str,
+            fn: EventHandler = None,
+            once: bool = False,
+    ) -> Callable[[], None]:
+        """Adding event handlers to the vuer server.
 
-    As a function::
+        :param event_type: The event type to handle.
+        :param fn: The function to handle the event.
+        :param once: Whether to remove the handler after the first call.
+            This is useful for RPC, which cleans up after itself.
+            The issue is for RPC, the `key` also needs to match. So we hack it here to use
+            a call specific event_type to enforce the cleanup.
 
-        app = Vuer()
-        def on_camera(event: ClientEvent, session: VuerSession):
-            print("camera event", event.etype, event.value)
+        # Usage:
 
-        app.add_handler("CAMERA_MOVE", on_camera)
-        app.run()
-    """
+        As a decorator::
 
-    if fn is None:
-      return lambda fn: self.add_handler(event_type, fn, once=once)
+            app = Vuer()
+            @app.add_handler("CAMERA_MOVE")
+            def on_camera(event: ClientEvent, session: VuerSession):
+                print("camera event", event.etype, event.value)
 
-    handler_id = uuid4()
+        As a function::
 
-    def cleanup():
-      del self.handlers[event_type][handler_id]
+            app = Vuer()
+            def on_camera(event: ClientEvent, session: VuerSession):
+                print("camera event", event.etype, event.value)
 
-    if once:
+            app.add_handler("CAMERA_MOVE", on_camera)
+            app.run()
+        """
 
-      async def fn_once(*args, **kwargs):
-        """This is a wrapper function removes the handler on the first trigger."""
-        cleanup()
-        return await fn(*args, **kwargs)
+        if fn is None:
+            return lambda fn: self.add_handler(event_type, fn, once=once)
 
-      self.handlers[event_type][handler_id] = fn_once
-    else:
-      self.handlers[event_type][handler_id] = fn
+        handler_id = uuid4()
 
-    return cleanup
+        def cleanup():
+            del self.handlers[event_type][handler_id]
 
-  def _ttl_handler(self, ttl, cleanup):
-    async def ttl_handler():
-      await sleep(ttl)
-      "remove the handler after ttl"
-      try:
-        cleanup()
-      except:
-        pass
+        if once:
 
-    return ttl_handler()
+            async def fn_once(*args, **kwargs):
+                """This is a wrapper function removes the handler on the first trigger."""
+                cleanup()
+                return await fn(*args, **kwargs)
 
-  async def socket_index(self, request: BaseRequest):
-    """This is the relay object for sending events to the server.
-
-    Todo: add API for specifying the websocket ID. Or just broadcast to all.
-    Todo: add type hint
-
-    Interface:
-        <uri>/relay?sid=<websocket_id>
-
-    :return:
-        - Status 200
-        - Status 400
-
-    """
-    headers = request.headers
-    if "websocket" != headers.get(UPGRADE, "").lower().strip():
-      return await handle_file_request(request, self.client_root, filename="index.html")
-    else:
-      return await websocket_handler(request, self.downlink)
-
-  def add_route(self, path, fn: Callable, method="GET", content_type="text/html"):
-    if self.verbose:
-      print("========= Adding Route =========")
-      print("        path:", path)
-      print("          fn:", fn)
-      print("      method:", method)
-      print("content_type:", content_type)
-      print("--------------------------------")
-
-    async def handler(request: Request):
-      try:
-        output = fn()
-        return Response(text=output, content_type=content_type)
-      except Exception as e:
-        print("\033[91m" + str(e) + "\033[0m", flush=True)
-        return Response(status=500, text=str(e))
-
-    self._add_route(path, handler, method=method)
-
-  def run(self, free_port=None, *args, **kwargs):
-    """
-    Run the server.
-
-    .. deprecated::
-        Use :meth:`start` instead. This method will be removed in a future version.
-    """
-    import warnings
-
-    warnings.warn(
-      "Vuer.run() is deprecated, use Vuer.start() instead",
-      DeprecationWarning,
-      stacklevel=2,
-    )
-    self.start(free_port=free_port, *args, **kwargs)
-
-  def start(self, free_port=None, *args, **kwargs):
-    import os
-
-    # protocol, host, _ = self.uri.split(":")
-    # port = int(_)
-    if free_port or self.free_port:
-      import time
-
-      from killport import kill_ports
-
-      try:
-        kill_ports(ports=[self.port])
-      except ProcessLookupError:
-        # Race condition - process disappeared during check
-        pass  # Port may already be free
-      except ImportError as e:
-        # psutil not available
-        print(f"Note: killport requires psutil: {e}")
-      except Exception as e:
-        # Catch psutil.NoSuchProcess and other killport failures
-        if "NoSuchProcess" in type(e).__name__ or "process no longer exists" in str(e):
-          pass  # Race condition - process disappeared
+            self.handlers[event_type][handler_id] = fn_once
         else:
-          print(f"Warning: Could not free port {self.port}: {type(e).__name__}: {e}")
-      time.sleep(0.01)
+            self.handlers[event_type][handler_id] = fn
 
-    # Serve the client build locally.
-    # self._socket("", self.downlink)
-    # self._static_file("", Path(__file__).parent / "client_build", filename="index.html")
+        return cleanup
 
-    # use the same endpoint for websocket and file serving.
-    self._add_route("", self.socket_index, method="GET")
-    self._add_static("/assets", self.client_root / "assets")
-    self._static_file("/editor", self.client_root, "editor/index.html")
+    def _ttl_handler(self, ttl, cleanup):
+        async def ttl_handler():
+            await sleep(ttl)
+            "remove the handler after ttl"
+            try:
+                cleanup()
+            except:
+                pass
 
-    # serve local files via /static endpoint
-    self._add_static("/static", self.static_root)
-    self._add_route("/relay", self.relay, method="POST")
+        return ttl_handler()
 
-    if self.client_url:
-      base_url = self.client_url.format(**vars(self))
-    else:
-      base_url = self.domain
-    static_path = os.path.abspath(self.static_root)
+    async def socket_index(self, request: BaseRequest):
+        """This is the relay object for sending events to the server.
 
-    print(f"""{BOLD}Vuer Server{RESET}
+        Todo: add API for specifying the websocket ID. Or just broadcast to all.
+        Todo: add type hint
+
+        Interface:
+            <uri>/relay?sid=<websocket_id>
+
+        :return:
+            - Status 200
+            - Status 400
+
+        """
+        headers = request.headers
+        if "websocket" != headers.get(UPGRADE, "").lower().strip():
+            return await handle_file_request(request, self.client_root, filename="index.html")
+        else:
+            return await websocket_handler(request, self.downlink)
+
+    def add_route(self, path, fn: Callable, method="GET", content_type="text/html"):
+        if self.verbose:
+            print("========= Adding Route =========")
+            print("        path:", path)
+            print("          fn:", fn)
+            print("      method:", method)
+            print("content_type:", content_type)
+            print("--------------------------------")
+
+        async def handler(request: Request):
+            try:
+                output = fn()
+                return Response(text=output, content_type=content_type)
+            except Exception as e:
+                print("\033[91m" + str(e) + "\033[0m", flush=True)
+                return Response(status=500, text=str(e))
+
+        self._add_route(path, handler, method=method)
+
+    def run(self, free_port=None, *args, **kwargs):
+        """
+        Run the server.
+
+        .. deprecated::
+            Use :meth:`start` instead. This method will be removed in a future version.
+        """
+        import warnings
+
+        warnings.warn(
+            "Vuer.run() is deprecated, use Vuer.start() instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.start(free_port=free_port, *args, **kwargs)
+
+    def start(self, free_port=None, *args, **kwargs):
+        import os
+
+        # protocol, host, _ = self.uri.split(":")
+        # port = int(_)
+        if free_port or self.free_port:
+            import time
+
+            from killport import kill_ports
+
+            try:
+                kill_ports(ports=[self.port])
+            except ProcessLookupError:
+                # Race condition - process disappeared during check
+                pass  # Port may already be free
+            except ImportError as e:
+                # psutil not available
+                print(f"Note: killport requires psutil: {e}")
+            except Exception as e:
+                # Catch psutil.NoSuchProcess and other killport failures
+                if "NoSuchProcess" in type(e).__name__ or "process no longer exists" in str(e):
+                    pass  # Race condition - process disappeared
+                else:
+                    print(f"Warning: Could not free port {self.port}: {type(e).__name__}: {e}")
+            time.sleep(0.01)
+
+        # Serve the client build locally.
+        # self._socket("", self.downlink)
+        # self._static_file("", Path(__file__).parent / "client_build", filename="index.html")
+
+        # use the same endpoint for websocket and file serving.
+        self._add_route("", self.socket_index, method="GET")
+        self._add_static("/assets", self.client_root / "assets")
+        self._static_file("/editor", self.client_root, "editor/index.html")
+
+        # serve local files via /static endpoint
+        self._add_static("/static", self.static_root)
+        self._add_route("/relay", self.relay, method="POST")
+
+        if self.client_url:
+            # the ssl is a property.
+            base_url = self.client_url.format(ssl=self.ssl, local_ip=self.local_ip, **vars(self))
+        else:
+            base_url = self.domain
+        static_path = os.path.abspath(self.static_root)
+
+        print(f"""{BOLD}Vuer Server{RESET}
 
 {CYAN}Local:{RESET}   {base_url}?ws=ws{self.ssl}://localhost:{self.port}
 {CYAN}Network:{RESET} {base_url}?ws=ws{self.ssl}://{self.local_ip}:{self.port}
@@ -1045,8 +1058,8 @@ class Vuer(Server):
 {DIM}->{RESET} {base_url}/static
 """)
 
-    super().start()
+        super().start()
 
-  async def loop_forever(self):
-    while True:
-      await sleep(1000_000_000_000.0)
+    async def loop_forever(self):
+        while True:
+            await sleep(1000_000_000_000.0)
