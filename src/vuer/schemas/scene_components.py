@@ -64,6 +64,122 @@ class Frustum(SceneElement):
   tag = "Frustum"
 
 
+class PerspectiveFrustum(SceneElement):
+  """
+  Frustum visualization for perspective cameras.
+
+  Shows the typical pyramid-shaped frustum with optional up vector indicator.
+  Children are inserted inside the frustum group.
+
+  :param position: Position of the frustum in 3D space [x, y, z].
+  :type position: tuple[float, float, float], optional
+  :param rotation: Rotation of the frustum in Euler angles [x, y, z].
+  :type rotation: tuple[float, float, float], optional
+  :param fov: Field of view in degrees. Defaults to 50.
+  :type fov: float, optional
+  :param aspect: Aspect ratio (width/height). Defaults to 4/3.
+  :type aspect: float, optional
+  :param zoom: Zoom factor. Defaults to 1.
+  :type zoom: float, optional
+  :param near: Near clipping plane distance. Defaults to 0.1.
+  :type near: float, optional
+  :param far: Far clipping plane distance. Defaults to 1.0.
+  :type far: float, optional
+  :param showFrustum: Whether to show the frustum wireframe. Defaults to True.
+  :type showFrustum: bool, optional
+  :param showUp: Whether to show the up vector indicator. Defaults to True.
+  :type showUp: bool, optional
+  :param colorFrustum: Color of the frustum wireframe. Defaults to 0xffaa00.
+  :type colorFrustum: int, optional
+  :param colorCone: Color of the cone indicator. Defaults to 0xff0000.
+  :type colorCone: int, optional
+  :param colorUp: Color of the up vector indicator. Defaults to 0x00aaff.
+  :type colorUp: int, optional
+  :param layer: Scene layer for this frustum visualization.
+  :type layer: int, optional
+  :param children: Child elements rendered inside the frustum group.
+  :type children: list, optional
+  """
+
+  tag = "PerspectiveFrustum"
+
+
+class FisheyeFrustum(SceneElement):
+  """
+  Frustum visualization for fisheye/equidistant cameras.
+
+  Shows a spherical frustum for wide-angle fisheye lenses.
+  Children are inserted inside the frustum group.
+
+  :param position: Position of the frustum in 3D space [x, y, z].
+  :type position: tuple[float, float, float], optional
+  :param rotation: Rotation of the frustum in Euler angles [x, y, z].
+  :type rotation: tuple[float, float, float], optional
+  :param fov: Field of view in degrees. Defaults to 180.
+  :type fov: float, optional
+  :param aspect: Aspect ratio (width/height). Defaults to 1.
+  :type aspect: float, optional
+  :param near: Near clipping plane distance. Defaults to 0.1.
+  :type near: float, optional
+  :param far: Far clipping plane distance. Defaults to 1.0.
+  :type far: float, optional
+  :param showFrustum: Whether to show the frustum wireframe. Defaults to True.
+  :type showFrustum: bool, optional
+  :param showUp: Whether to show the up vector indicator. Defaults to True.
+  :type showUp: bool, optional
+  :param colorFrustum: Color of the frustum wireframe. Defaults to 0xffaa00.
+  :type colorFrustum: int, optional
+  :param colorCone: Color of the cone indicator. Defaults to 0xff0000.
+  :type colorCone: int, optional
+  :param colorUp: Color of the up vector indicator. Defaults to 0x00aaff.
+  :type colorUp: int, optional
+  :param layer: Scene layer for this frustum visualization.
+  :type layer: int, optional
+  :param children: Child elements rendered inside the frustum group.
+  :type children: list, optional
+  """
+
+  tag = "FisheyeFrustum"
+
+
+class OrthographicFrustum(SceneElement):
+  """
+  Frustum visualization for orthographic cameras.
+
+  Shows a box-shaped frustum for orthographic projection.
+  Children are inserted inside the frustum group.
+
+  :param position: Position of the frustum in 3D space [x, y, z].
+  :type position: tuple[float, float, float], optional
+  :param rotation: Rotation of the frustum in Euler angles [x, y, z].
+  :type rotation: tuple[float, float, float], optional
+  :param width: Width of the orthographic view. Defaults to 1.
+  :type width: float, optional
+  :param height: Height of the orthographic view. Defaults to 1.
+  :type height: float, optional
+  :param zoom: Zoom factor. Defaults to 1.
+  :type zoom: float, optional
+  :param near: Near clipping plane distance. Defaults to 0.1.
+  :type near: float, optional
+  :param far: Far clipping plane distance. Defaults to 1.0.
+  :type far: float, optional
+  :param showFrustum: Whether to show the frustum wireframe. Defaults to True.
+  :type showFrustum: bool, optional
+  :param showUp: Whether to show the up vector indicator. Defaults to True.
+  :type showUp: bool, optional
+  :param colorFrustum: Color of the frustum wireframe. Defaults to 0xffaa00.
+  :type colorFrustum: int, optional
+  :param colorUp: Color of the up vector indicator. Defaults to 0x00aaff.
+  :type colorUp: int, optional
+  :param layer: Scene layer for this frustum visualization.
+  :type layer: int, optional
+  :param children: Child elements rendered inside the frustum group.
+  :type children: list, optional
+  """
+
+  tag = "OrthographicFrustum"
+
+
 class CameraHelper(SceneElement):
   tag = "CameraHelper"
 
