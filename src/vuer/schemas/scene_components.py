@@ -3,7 +3,7 @@ from typing import List, Literal
 import numpy as np
 from numpy.typing import NDArray
 
-from .html_components import BlockElement, Element, Image
+from .html_components import BlockElement, Element, Img
 
 
 class SceneElement(BlockElement):
@@ -1004,7 +1004,7 @@ class CameraView(SceneElement):
   tag = "CameraView"
 
 
-class SceneBackground(Image, SceneElement):
+class SceneBackground(Img, SceneElement):
   """
   Sets the background of the scene to a static image or texture.
 
@@ -1040,7 +1040,7 @@ class SceneBackground(Image, SceneElement):
   tag = "SceneBackground"
 
 
-class ImageBackground(Image, SceneElement):
+class ImageBackground(Img, SceneElement):
   """
   Sets the background to a dynamically updating image plane.
 
@@ -1074,13 +1074,13 @@ class ImageBackground(Image, SceneElement):
   tag = "ImageBackground"
 
 
-class HUDPlane(Image, SceneElement):
+class HUDPlane(SceneElement):
   """
-  Head-up display plane that always faces the camera.
+  Geometry helper that orients a quad plane to always face the camera.
 
-  Creates a plane that automatically orients itself to face the camera,
-  similar to a billboard. Useful for UI elements, annotations, or information
-  displays that should always be visible to the user.
+  This is a geometry-only component that does not handle textures or materials.
+  It is used as a base for other components (e.g., VideoPlane, DepthImagePlane)
+  that need camera-facing orientation.
 
   :param distanceToCamera: Distance from camera to the plane
   :type distanceToCamera: float, optional, default 10
@@ -1101,7 +1101,7 @@ class HUDPlane(Image, SceneElement):
 
       from vuer.schemas import HUDPlane
 
-      # Simple HUD plane
+      # Simple HUD plane geometry
       HUDPlane(
           distanceToCamera=5,
           height=1,
@@ -1112,7 +1112,7 @@ class HUDPlane(Image, SceneElement):
   tag = "HUDPlane"
 
 
-class VideoMaterial(Image, SceneElement):
+class VideoMaterial(Img, SceneElement):
   """
   Material for displaying video from a URL.
 
@@ -1140,7 +1140,7 @@ class VideoMaterial(Image, SceneElement):
   tag = "VideoMaterial"
 
 
-class WebRTCVideoMaterial(Image, SceneElement):
+class WebRTCVideoMaterial(Img, SceneElement):
   """
   Material for displaying real-time video from WebRTC media stream.
 
@@ -1163,7 +1163,7 @@ class WebRTCVideoMaterial(Image, SceneElement):
   tag = "WebRTCVideoMaterial"
 
 
-class VideoPlane(Image, SceneElement):
+class VideoPlane(Img, SceneElement):
   """
   Plane for displaying video content that faces the camera.
 
@@ -1225,7 +1225,7 @@ class WebRTCVideoPlane(SceneElement):
   tag = "WebRTCVideoPlane"
 
 
-class StereoVideoPlane(Image, SceneElement):
+class StereoVideoPlane(Img, SceneElement):
   """
   Plane for displaying stereoscopic (3D) video content.
 
@@ -1285,7 +1285,7 @@ class WebRTCStereoVideoPlane(SceneElement):
   tag = "WebRTCStereoVideoPlane"
 
 
-class ImagePlane(Image, SceneElement):
+class Image(Img, SceneElement):
   """
   Displays a static image on a plane in 3D space.
 
@@ -1308,14 +1308,14 @@ class ImagePlane(Image, SceneElement):
       from vuer.schemas import ImagePlane
 
       # Simple image plane
-      ImagePlane(
+      Image(
           src="image.png",
           position=[0, 1, -2],
           key="img1"
       )
 
       # Rotated and scaled image
-      ImagePlane(
+      Image(
           src="poster.jpg",
           position=[2, 1.5, -1],
           rotation=[0, 0.5, 0],
@@ -1324,7 +1324,22 @@ class ImagePlane(Image, SceneElement):
       )
   """
 
-  tag = "ImagePlane"
+  tag = "Image"
+
+  def __post_init__(self, src=None, _width=None, _height=None, **kwargs):
+    if src is not None:
+      self.rgb = src
+      del self.src
+
+    # todo: current abstraction does not allow width overwrite. Need restructure
+    #   in the next iteration. This might require taking the width/height out of
+    #   the parent class.
+    if _width is not None and _height is not None:
+      if not hasattr(self, "aspect") or self.aspect is None:
+        self.aspect = _width / _height
+
+      if not hasattr(self, "height") or self.height is None:
+        self.height = _height * 0.001
 
 
 class Group(SceneElement):

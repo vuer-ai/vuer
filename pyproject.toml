@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "vuer"
-version = "0.0.72"
+version = "0.0.73"
 description = ""
 readme = "README.md"
 license = { text = "MIT" }
@@ -14,7 +14,7 @@ classifiers = [
     "Programming Language :: Python",
 ]
 dependencies = [
-    "params-proto>=3.0.0rc23",
+    "params-proto>=3.0.0",
     "pillow",
     "msgpack",
     "numpy>=1.21", # because we require numpy.typing.NDArray
@@ -47,6 +47,7 @@ dev = [
     "killport",
     "pylint>=2.13.4",
     "pytest>=7.1.2",
+    "pytest-asyncio>=0.21.0", # if you need async test support
     "sphinx>=7.1.2",
     "furo",
     "sphinx-autobuild",
@@ -101,8 +102,8 @@ dev = [
 [tool.uv]
 # Force newer versions with pre-built wheels to avoid compilation issues
 override-dependencies = [
-    "multidict>=6.0",  # Older versions need compilation
-    "docutils<0.21",  # Newer versions have compatibility issues with Sphinx 8.x
+    "multidict>=6.0", # Older versions need compilation
+    "docutils<0.21", # Newer versions have compatibility issues with Sphinx 8.x
 ]
 
 # ruff

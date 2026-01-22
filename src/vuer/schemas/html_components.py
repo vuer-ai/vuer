@@ -2,7 +2,7 @@ from fnmatch import fnmatch
 from io import BytesIO
 from itertools import count
 from pathlib import Path
-from typing import Literal, Union
+from typing import Literal, Tuple, Union
 
 import numpy as np
 from PIL import Image as pil_image
@@ -42,14 +42,14 @@ class Element:
   def __post_init__(self, **kwargs):
     pass
 
-  def __init__(self, key=None, **kwargs):
+  def __init__(self, *, key=None, **kwargs):
     self.key = key or getattr(self, "key", None) or str(next(element_counter))
 
     class_kwargs = omit(vars(self), "_*", "tag", "key")
     kwargs = {**class_kwargs, **kwargs}
 
     self.__dict__.update(tag=self.tag, key=self.key, **kwargs)
-    self.__post_init__(**{k: v for k, v in kwargs.items() if k.startswith("_")})
+    self.__post_init__(**kwargs)
 
   def _serialize(self):
     """
@@ -76,19 +76,20 @@ class Element:
 
 
 class BlockElement(Element):
+  children: Tuple[Element]
+
   def __init__(self, *children, **kwargs):
-    self.children = children
+    if children:
+      self.children = children
     super().__init__(**kwargs)
 
   def _serialize(self):
-    # writ this as multiple lines
-    children = []
-    for e in self.children:
-      if isinstance(e, str):
-        children.append(e)
-      else:
-        children.append(e._serialize())
-    return {**super()._serialize(), "children": children}
+    result = super()._serialize()
+    if children := getattr(self, "children", None):
+      result["children"] = [
+        e if isinstance(e, str) else e._serialize() for e in children
+      ]
+    return result
 
 
 class AutoScroll(BlockElement):
@@ -120,9 +121,6 @@ class InputBox(Element):
 
   tag = "Input"
 
-  def __init__(self, **kwargs):
-    super().__init__(**kwargs)
-
 
 class Header1(BlockElement):
   """
@@ -131,10 +129,6 @@ class Header1(BlockElement):
   """
 
   tag = "h1"
-
-  def __init__(self, *children, **kwargs):
-    children = [span(c) if isinstance(c, str) else c for c in children]
-    super().__init__(*children, **kwargs)
 
 
 Header = Header1
@@ -160,10 +154,6 @@ class Paragraph(BlockElement):
 
   tag = "p"
 
-  def __init__(self, *children, **kwargs):
-    children = [span(c) if isinstance(c, str) else c for c in children]
-    super().__init__(*children, **kwargs)
-
 
 class span(Element):
   """
@@ -179,24 +169,21 @@ class span(Element):
 
 
 class Bold(span):
-  def __init__(self, text, style=None, **kwargs):
+  def __post_init__(self, text, style=None, **_):
     _style = {"fontWeight": "bold"}
     _style.update(style or {})
-    super().__init__(text, style=_style, **kwargs)
+    self.style = _style
 
 
 class Italic(span):
-  def __init__(self, text, style=None, **kwargs):
+  def __post_init__(self, text, style=None, **_):
     _style = {"fontStyle": "italic"}
     _style.update(style or {})
-    super().__init__(text, style=_style, **kwargs)
+    self.style = _style
 
 
 class Link(span):
   tag = "a"
-
-  def __init__(self, text, src, **kwargs):
-    super().__init__(text, src=src, **kwargs)
 
 
 class Button(Element):
@@ -207,40 +194,78 @@ class Button(Element):
 
   tag = "Button"
 
-  def __init__(self, **kwargs):
-    super().__init__(**kwargs)
-
 
 class Slider(Element):
   """
   A Slider element is an element that allows the user to slide a value.
   It is represented by a slider element in the DOM.
-  """
 
-  tag = "Slider"
-
-  def __init__(self, **kwargs):
-    """
+  Args:
     :param min: Minimum value of the slider
     :param max: Maximum value of the slider
     :param step: Step size of the slider
     :param value: Initial value of the slider
     :param kwargs:
-    """
-    super().__init__(**kwargs)
-
-
-class Image(Element):
   """
-  An Image element is an element that displays an image.
-  It is represented by an img element in the DOM.
+
+  tag = "Slider"
+
+
+class Img(Element):
+  """
+  An Image element that displays an image in the DOM.
+
+  Supports multiple input formats: URL strings, local file paths, PIL Images,
+  and numpy arrays. The image data is automatically converted to binary for
+  efficient transfer.
+
+  :param data: Image data as a file path (str), numpy array, or PIL Image.
+    - str: Local file path, will be read and converted to binary.
+    - np.ndarray: Image array (H, W, C). If dtype is not uint8, values are
+      scaled by 255 and converted.
+    - PIL.Image: PIL Image object, saved to binary format.
+  :type data: str | np.ndarray | PIL.Image.Image, optional
+  :param src: Direct URL or binary data. Cannot be used together with `data`.
+  :type src: str | bytes, optional
+  :param format: Output format for encoding. Defaults to "png".
+  :type format: "png" | "jpeg" | "b64png" | "b64jpeg", optional
+  :param quality: JPEG quality (1-100). Only used with jpeg format.
+  :type quality: int, optional
+
+  .. note::
+      When used in multiple inheritance (e.g., ``ImagePlane(Img, SceneElement)``),
+      ``Img.__init__`` takes precedence due to Python's MRO (Method Resolution Order).
+      This ensures image data is properly processed before being passed to parent classes.
+
+  Example Usage::
+
+      from vuer.schemas import Img
+      import numpy as np
+      from PIL import Image as PILImage
+
+      # From URL (pass directly to src)
+      Img(src="https://example.com/image.png", key="url-img")
+
+      # From local file path (reads and converts to binary)
+      Img("/path/to/image.png", key="file-img")
+
+      # From numpy array (H, W, C), uint8 or float [0-1]
+      img_array = np.random.randint(0, 255, (480, 640, 3), dtype=np.uint8)
+      Img(img_array, key="numpy-img")
+
+      # From PIL Image
+      pil_img = PILImage.open("/path/to/image.png")
+      Img(pil_img, key="pil-img")
+
+      # With JPEG format and quality
+      Img(img_array, format="jpeg", quality=85, key="jpeg-img")
   """
 
   tag = "Img"
 
   def __init__(
     self,
-    data: Union[str, np.ndarray, pil_image.Image] = None,
+    data: Union[str, Path, np.ndarray, pil_image.Image] = None,
     *,
     src: Union[str, bytes] = None,
     format: Literal["png", "jpeg", "b64png", "b64jpeg"] = "png",
@@ -253,7 +278,6 @@ class Image(Element):
       return
 
     elif data is None or isinstance(data, list) and len(data) == 0:
-      super().__init__(**kwargs)
       return
 
     elif isinstance(data, pil_image.Image):
@@ -263,10 +287,14 @@ class Image(Element):
       )
       data.save(buff, format=format)
       binary = buff.getbuffer().tobytes()
-      super().__init__(src=binary, **kwargs)
+      # Pass image dimensions to __post_init__ so subclasses (e.g., Image)
+      # can use them for geometry calculations without re-decoding the binary.
+      # Allow explicit width/height kwargs to override the computed values.
+      width, height = data.size
+      super().__init__(src=binary, _width=width, _height=height, **kwargs)
       return
 
-    elif isinstance(data, str):
+    elif isinstance(data, str) or isinstance(data, Path):
       buff = BytesIO()
       img = pil_image.open(data)
       assert not format.startswith("b64"), (
@@ -274,7 +302,11 @@ class Image(Element):
       )
       img.save(buff, format=format)
       binary = buff.getbuffer().tobytes()
-      super().__init__(src=binary, **kwargs)
+      # Pass image dimensions to __post_init__ so subclasses (e.g., Image)
+      # can use them for geometry calculations without re-decoding the binary.
+      # Allow explicit width/height kwargs to override the computed values.
+      width, height = img.size
+      super().__init__(src=binary, _width=width, _height=height, **kwargs)
       return
 
     if isinstance(data, np.ndarray):
@@ -288,16 +320,25 @@ class Image(Element):
       else:
         src = IMAGE_FORMATS[format](data)
 
+      # Pass image dimensions to __post_init__ so subclasses (e.g., Image)
+      # can use them for geometry calculations without re-decoding the binary.
+      # numpy array shape is (H, W, C) or (H, W), so height=shape[0], width=shape[1]
+      # Allow explicit width/height kwargs to override the computed values.
+      height, width = data.shape[:2]
+      super().__init__(src=src, _width=width, _height=height, **kwargs)
+      return
+
+    print("Warning: this should never be hit", src)
     super().__init__(src=src, **kwargs)
 
 
-class ImageUpload(Element):
-  """
-  A ImageUpload element is an element that allows the user to upload a file.
-  It is represented by a file upload element in the DOM.
-  """
-
-  tag = "ImageUpload"
-
-  def __init__(self, **kwargs):
-    super().__init__(**kwargs)
+# class ImageUpload(Element):
+#   """
+#   A ImageUpload element is an element that allows the user to upload a file.
+#   It is represented by a file upload element in the DOM.
+#   """
+#
+#   tag = "ImageUpload"
+#
+#   def __init__(self, **kwargs):
+#     super().__init__(**kwargs)

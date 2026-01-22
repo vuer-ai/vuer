@@ -63,6 +63,24 @@ session.remove @ "box-key"
 session.remove @ ["key1", "key2", "key3"]
 ```
 
+## Custom Client Events
+
+Define custom events by subclassing `ClientEvent` with an `etype` class attribute:
+
+```python
+from vuer.events import ClientEvent
+
+class SetPositionEvent(ClientEvent):
+    etype = "SET_POSITION"
+    value = [0, 0, 0]  # optional default
+
+class ControlEvent(ClientEvent):
+    etype = "CONTROL"
+
+# Usage (from VuerClient)
+await client.send @ SetPositionEvent(value=[1, 2, 3])
+```
+
 ## Event Handlers
 
 Register handlers for client events:
@@ -71,6 +89,11 @@ Register handlers for client events:
 @app.add_handler("CAMERA_MOVE")
 async def on_camera(event: ClientEvent, session: VuerSession):
     print(f"Camera position: {event.value}")
+
+# Handle custom event
+@app.add_handler("SET_POSITION")
+async def on_position(event: ClientEvent, session: VuerSession):
+    session.upsert @ Box(key="box", position=event.value)
 ```
 
 ### Common Event Types

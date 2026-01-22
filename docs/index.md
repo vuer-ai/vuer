@@ -84,6 +84,7 @@ For more details:
    Render Modes <guides/first_3d_scene/05_render_modes.md>
    Session API <guides/session_apis.md>
    Static Files & Hot Loading <guides/static_files.md>
+   Python Client Connection <guides/client_connection.md>
 
 .. toctree::
    :maxdepth: 3
@@ -144,6 +145,7 @@ For more details:
    :hidden:
    
    vuer <api/vuer.md>
+   vuer.client — Python Client <api/client.md>
    vuer.frame <api/frame.md>
    vuer.base <api/base.md>
    vuer.types — Type Interafce <api/types.md>
