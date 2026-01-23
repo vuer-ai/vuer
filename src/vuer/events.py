@@ -1,6 +1,5 @@
 from datetime import datetime as Datetime
-from datetime import timedelta as Timedelta
-from typing import List, Optional, TypedDict, Union
+from typing import List, Optional, TypedDict
 from uuid import uuid4
 
 from vuer.schemas import Element, Scene
@@ -29,56 +28,89 @@ class Event:
 
 
 class ClientEvent(Event):
+  """
+  Event received from the client (browser).
+
+  Subclasses must define ``etype`` as a class attribute. For deserialization,
+  ``etype`` is passed via kwargs and set via ``__dict__.update()``.
+
+  Example::
+
+      class MyEvent(ClientEvent):
+          etype = "MY_EVENT"
+  """
+
+  etype: str
   value = None
 
   def __repr__(self):
     return f"client<{self.etype}>({self.value})"
 
-  def __init__(self, etype=None, ts=None, **kwargs):
+  def __init__(self, ts=None, **kwargs):
+    # todo: double check the timing convention and sort this out.
     if ts is None:
       self.ts = Datetime.timestamp(Datetime.now())
     else:
-      self.ts = Datetime.fromtimestamp(ts / 1000)
+      self.ts = ts
 
-    self.etype = etype
     self.__dict__.update(kwargs)
 
-    if self == "UPLOAD":
-      import base64
-      import io
+  @classmethod
+  def _deserialize(cls, *, etype, ts=None, **kwargs):
+    if ts is None:
+      msg = f"ClientEvent<{etype}> is missing client timestamp."
+      print("Deprecation Warning:", msg)
+    return ClientEvent(etype=etype, ts=ts, **kwargs)
 
-      from PIL import Image
-
-      image = Image.open(io.BytesIO(base64.b64decode(self.value)))
-      self.value = image
+  def _serialize(self):
+    """
+    Serialize the event to a dictionary for sending over the websocket.
+    :return: A dictionary representing the event.
+    """
+    # Sequence includes text
+    # Include etype explicitly to support class attribute definitions
+    return {**self.__dict__, "etype": self.etype, "value": serializer(self.value)}
 
 
 class InitEvent(ClientEvent):
-  def __init__(self, **kwargs):
-    super().__init__(etype="Init", **kwargs)
+  etype = "Init"
 
 
 INIT = InitEvent()
 
 
 class NullEvent(ClientEvent):
-  def __init__(self, **kwargs):
-    super().__init__(etype="NULL", **kwargs)
+  etype = "NULL"
 
 
 NULL = NullEvent()
 
 
 class ServerEvent(Event):
-  def __init__(self, data, etype=None, ts: Union[Datetime, Timedelta] = None, **kwargs):
+  """
+  Event sent from the server to the client (browser).
+
+  Subclasses must define ``etype`` as a class attribute. The ``__init__``
+  copies ``self.etype`` to the instance dict for serialization.
+
+  Example::
+
+      class MyServerEvent(ServerEvent):
+          etype = "MY_SERVER_EVENT"
+
+          def __init__(self, data):
+              super().__init__(data)
+  """
+
+  etype: str
+
+  def __init__(self, data, ts: float = None, **kwargs):
     if ts is None:
       self.ts = Datetime.timestamp(Datetime.now())
     else:
-      self.ts = Datetime.fromtimestamp(ts / 1000)
-    self.data = data
+      self.ts = ts
 
-    if etype is not None:
-      self.etype = etype
+    self.data = data
 
     self.__dict__.update(etype=self.etype, **kwargs)
 

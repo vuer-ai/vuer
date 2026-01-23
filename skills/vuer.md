@@ -41,7 +41,8 @@ View at https://vuer.ai (connects to ws://localhost:8012 by default).
 ## Core Concepts
 
 - **Vuer**: Server class that manages WebSocket connections
-- **VuerSession**: Client session with scene manipulation APIs
+- **VuerSession**: Server-side session with scene manipulation APIs
+- **VuerClient**: Python client for connecting to a Vuer server
 - **Components**: Declarative 3D elements (Box, Sphere, TriMesh, Urdf, etc.)
 - **Events**: Bidirectional communication via `@app.add_handler()`
 
@@ -58,6 +59,7 @@ View at https://vuer.ai (connects to ws://localhost:8012 by default).
 ## Related Skills
 
 - [vuer/server](vuer/server.md) - Server configuration and lifecycle
+- [vuer/client](vuer/client.md) - Python client for remote connections
 - [vuer/components](vuer/components.md) - Component reference
 - [vuer/events](vuer/events.md) - Event system and handlers
 - [vuer/examples](vuer/examples.md) - Common patterns

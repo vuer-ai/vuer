@@ -208,6 +208,111 @@ Scene(
 DefaultScene(...)  # Includes default lighting and controls
 ```
 
+## Images
+
+### Img (DOM Image)
+Display images in the HTML DOM. Supports multiple input formats.
+
+```python
+from vuer.schemas import Img
+import numpy as np
+from PIL import Image as PILImage
+
+# From URL (direct)
+Img(src="https://example.com/image.png", key="url-img")
+
+# From local file path (reads and converts to binary)
+Img("/path/to/image.png", key="file-img")
+
+# From numpy array (H, W, C), uint8
+img_array = np.random.randint(0, 255, (480, 640, 3), dtype=np.uint8)
+Img(img_array, key="numpy-img")
+
+# From numpy array with float [0-1] (auto-scaled to 255)
+img_float = np.random.rand(480, 640, 3).astype(np.float32)
+Img(img_float, key="float-img")
+
+# From PIL Image
+pil_img = PILImage.open("/path/to/image.png")
+Img(pil_img, key="pil-img")
+
+# With JPEG format and quality
+Img(img_array, format="jpeg", quality=85, key="jpeg-img")
+```
+
+**Parameters:**
+- `data`: Image data that needs processing (file path, numpy array, or PIL Image)
+- `src`: Direct URL string or raw binary bytes (cannot use with `data`)
+- `format`: Output format - "png" (default), "jpeg"
+- `quality`: JPEG quality (1-100), only for jpeg format
+
+**When to use `data` vs `src`:**
+- Use `data=` for inputs that need conversion (numpy, PIL, file paths)
+- Use `src=` for ready-to-use data (URLs, pre-encoded bytes)
+
+```python
+# Raw bytes go through src=
+image_bytes = open("image.png", "rb").read()
+Img(src=image_bytes, key="bytes-img")
+```
+
+### Image (3D Scene Image Plane)
+Display images on a plane in 3D space. Inherits from Img, so accepts same input formats.
+
+```python
+from vuer.schemas import Image
+
+# From URL
+Image(src="https://example.com/image.png", position=[0, 1, -2], key="url-plane")
+
+# From numpy array
+img_array = np.random.randint(0, 255, (480, 640, 3), dtype=np.uint8)
+Image(img_array, position=[0, 1, -2], key="numpy-plane")
+
+# From file path
+Image("/path/to/image.png", position=[0, 1, -2], key="file-plane")
+
+# From PIL Image
+pil_img = PILImage.open("/path/to/image.png")
+Image(pil_img, position=[0, 1, -2], key="pil-plane")
+
+# Full transform with JPEG format
+Image(
+    img_array,
+    format="jpeg",
+    quality=80,
+    position=[0, 1, -2],
+    rotation=[0, 0.5, 0],
+    scale=2,
+    opacity=0.8,
+    key="transformed-plane"
+)
+```
+
+**Additional parameters (3D scene):**
+- `position`: [x, y, z] position in world space
+- `rotation`: [x, y, z] Euler rotation in radians
+- `scale`: Uniform float or [x, y, z] scale factors
+- `opacity`: Transparency (0-1), default 1.0
+
+### ImageBackground
+Camera-facing background image plane. Inherits from Img, expects `src` attribute.
+
+```python
+# From URL
+ImageBackground(src="background.jpg", distance=10, key="bg")
+
+# From numpy/PIL (inherits Img processing)
+ImageBackground(img_array, distance=10, key="bg")
+```
+
+### HUDPlane
+Geometry helper that orients a quad to face the camera. Used as base for VideoPlanes and other components. Does not handle textures directly.
+
+```python
+HUDPlane(distanceToCamera=10, aspect=1.6, height=2, key="hud")
+```
+
 ## Helpers
 
 ```python
