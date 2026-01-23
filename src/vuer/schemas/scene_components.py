@@ -2192,6 +2192,98 @@ class Body(SceneElement):
   frameScale = 0.02
 
 
+class Head(SceneElement):
+  """
+  Head tracking component for 6DOF head pose using standard WebXR API.
+
+  .. admonition:: tip Setting stream to True
+
+      Important: You need to set the `stream` option to `True` to
+      start streaming the head pose data to the server.
+
+  The Head component tracks the user's head position and orientation using the
+  standard WebXR API (XRFrame.getViewerPose). This is useful for devices like PICO
+  that don't support full body tracking via xrFrame.body but still provide head
+  tracking through the standard viewer pose.
+
+  You can listen to the `HEAD_MOVE` event to receive head pose data.
+
+  **Returned Data**
+
+  The `HEAD_MOVE` event sends an object containing the head transformation:
+
+  .. code-block:: typescript
+
+      {
+        ts: number,           // timestamp
+        etype: 'HEAD_MOVE',
+        key: string,          // default: 'head_tracking'
+        value: {
+          matrix: number[]    // 4x4 transformation matrix (16 floats)
+        }
+      }
+
+  **Matrix Format**
+
+  The 4x4 transform matrix is stored in 16-element arrays in column-major order:
+
+  .. code-block::
+
+                                    ⌈  a0 a4 a8 a12  ⌉
+                                    |  a1 a5 a9 a13  |
+                                    |  a2 a6 a10 a14 |
+                                    ⌊  a3 a7 a11 a15 ⌋
+
+  **Usage Example**
+
+  .. code-block:: python
+
+      from asyncio import sleep
+      from vuer import Vuer, VuerSession
+      from vuer.schemas import Head
+
+      app = Vuer()
+
+
+      @app.add_handler("HEAD_MOVE")
+      async def on_head_move(event, session):
+          matrix = event.value.get("matrix", [])
+          print(f"Head matrix: {len(matrix)} floats")
+
+
+      @app.spawn(start=True)
+      async def main(session: VuerSession):
+          # Important: stream=True is required to receive HEAD_MOVE events
+          session.upsert @ Head(
+              stream=True,
+              fps=30,
+              show=True,        # Show head pose visualization
+              frameScale=0.05,  # Scale of coordinate frame marker
+          )
+
+          while True:
+              await sleep(1)
+
+  :param key: Unique identifier for the head tracking instance. Default: 'head_tracking'
+  :type key: str, optional
+  :param stream: Whether to enable streaming of head pose data to the server. Default: True
+  :type stream: bool, optional
+  :param fps: Frames per second at which head pose data should be sent. Default: 30
+  :type fps: int, optional
+  :param show: Whether to show head pose visualization with coordinate frame. Default: False
+  :type show: bool, optional
+  :param frameScale: Scale factor for the coordinate frame marker. Default: 0.05
+  :type frameScale: float, optional
+  """
+
+  tag = "Head"
+  key = "head_tracking"
+  stream = True
+  fps = 30
+  show = False
+  frameScale = 0.05
+
+
 class WebXRMesh(SceneElement):
   """
   WebXR Mesh Detection component for real-world environment geometry detection in AR sessions.
