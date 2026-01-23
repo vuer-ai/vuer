@@ -86,14 +86,17 @@ class VuerClient:
             print(event)
     """
 
-    def __init__(self, uri: str = "ws://localhost:8012", max_size: int = 2**30):
+    # Default max websocket message size (256MB, matches server default)
+    WEBSOCKET_MAX_SIZE: int = 2**28
+
+    def __init__(self, uri: str = "ws://localhost:8012", max_size: int = None):
         """Initialize the Vuer client.
 
         :param uri: Websocket URI to connect to (e.g., "ws://localhost:8012")
-        :param max_size: Maximum websocket message size in bytes (default 1GB)
+        :param max_size: Maximum websocket message size in bytes (default 256MB)
         """
         self.uri = uri
-        self.max_size = max_size
+        self.max_size = max_size if max_size is not None else self.WEBSOCKET_MAX_SIZE
         self._ws = None
         self._connected = False
 
