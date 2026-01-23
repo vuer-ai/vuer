@@ -70,11 +70,11 @@ class MoveBoxEvent(ClientEvent):
 
 
 async def main():
-    async with VuerClient("ws://localhost:8012") as client:
-        # Send event using @ syntax
-        await client.send @ HelloEvent(value={"message": "Hi!"})
+    async with VuerClient(URI="ws://localhost:8012") as client:
+        # Fire-and-forget with @ syntax (no await needed)
+        client.send @ HelloEvent(value={"message": "Hi!"})
 
-        # Or using parentheses
+        # Awaitable with parentheses
         await client.send(MoveBoxEvent(value={"position": [1, 0.5, 0]}))
         print("Events sent!")
 
@@ -100,13 +100,20 @@ from vuer import VuerClient
 client = VuerClient()
 
 # Custom URI
-client = VuerClient("ws://192.168.1.100:8012")
+client = VuerClient(URI="ws://192.168.1.100:8012")
+
+# With custom max message size (default 256MB)
+client = VuerClient(URI="ws://localhost:8012", WEBSOCKET_MAX_SIZE=2**30)
 ```
+
+Configuration can also be set via environment variables:
+- `VUER_CLIENT_URI`: WebSocket URI (default `ws://localhost:8012`)
+- `WEBSOCKET_MAX_SIZE`: Maximum message size in bytes (default 256MB)
 
 ### Context Manager (Recommended)
 
 ```python
-async with VuerClient("ws://localhost:8012") as client:
+async with VuerClient(URI="ws://localhost:8012") as client:
     await client.send(event)
 ```
 
@@ -129,10 +136,10 @@ from vuer.events import ClientEvent
 class MyEvent(ClientEvent):
     etype = "MY_EVENT"
 
-# Using @ syntax (awaitable)
-await client.send @ MyEvent(value={"data": 123})
+# Fire-and-forget with @ syntax (no await needed)
+client.send @ MyEvent(value={"data": 123})
 
-# Using parentheses
+# Awaitable with parentheses
 await client.send(MyEvent(value={"data": 123}))
 ```
 
@@ -143,11 +150,11 @@ class SetPositionEvent(ClientEvent):
     etype = "SET_POSITION"
     value = [0, 0, 0]
 
-# Uses default value
-await client.send @ SetPositionEvent()
+# Uses default value (fire-and-forget)
+client.send @ SetPositionEvent()
 
-# Override value
-await client.send @ SetPositionEvent(value=[1, 2, 3])
+# Override value (awaitable)
+await client.send(SetPositionEvent(value=[1, 2, 3]))
 ```
 
 ### Receiving Events
@@ -208,7 +215,7 @@ async def main():
             x = math.sin(t) * 2
             y = 0.5 + math.sin(t * 2) * 0.3
 
-            await client.send @ SetPositionEvent(value=[x, y, 0])
+            client.send @ SetPositionEvent(value=[x, y, 0])
             await asyncio.sleep(0.016)  # ~60 FPS
 
 asyncio.run(main())

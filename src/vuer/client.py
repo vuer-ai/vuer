@@ -10,7 +10,7 @@ Example usage::
         etype = "MY_EVENT"
 
     async def main():
-        async with VuerClient("ws://localhost:8012") as client:
+        async with VuerClient(URI="ws://localhost:8012") as client:
             # Fire-and-forget with @ syntax (no await needed)
             client.send @ MyEvent(value={"key": "value"})
 
@@ -22,6 +22,10 @@ Example usage::
                 print(f"Received: {event}")
 
     asyncio.run(main())
+
+Configuration via environment variables:
+    VUER_CLIENT_URI: WebSocket URI to connect to (default ws://localhost:8012)
+    WEBSOCKET_MAX_SIZE: Maximum WebSocket message size in bytes (default 256MB)
 """
 
 import asyncio
@@ -76,7 +80,7 @@ class VuerClient:
 
     Example::
 
-        async with VuerClient("ws://localhost:8012") as client:
+        async with VuerClient(URI="ws://localhost:8012") as client:
             # Using @ syntax (fire and forget)
             client.send @ ClientEvent(etype="CUSTOM", value="hello")
 
@@ -86,9 +90,9 @@ class VuerClient:
             event = await client.recv()
             print(event)
 
-    Configuration:
-        URI: WebSocket URI to connect to (default ws://localhost:8012).
-        WEBSOCKET_MAX_SIZE: Maximum WebSocket message size (default 256MB).
+    Configuration (via constructor or environment variables):
+        URI: WebSocket URI to connect to (env: VUER_CLIENT_URI, default ws://localhost:8012).
+        WEBSOCKET_MAX_SIZE: Maximum WebSocket message size (env: WEBSOCKET_MAX_SIZE, default 256MB).
     """
 
     URI: str = EnvVar @ "VUER_CLIENT_URI" | "ws://localhost:8012"
@@ -230,7 +234,7 @@ if __name__ == "__main__":
         print("Connecting to Vuer server at ws://localhost:8012...")
 
         try:
-            async with VuerClient("ws://localhost:8012") as client:
+            async with VuerClient(URI="ws://localhost:8012") as client:
                 print("Connected!")
 
                 # Send a client event using @ syntax (fire-and-forget)
