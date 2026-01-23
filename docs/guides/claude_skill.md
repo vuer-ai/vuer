@@ -4,14 +4,19 @@ Vuer includes a **Claude Code skill** that teaches Claude how to use the library
 
 ## Quick Setup
 
-Copy the `skills/` folder from the Vuer repository to your project:
+Import the skill by running this slash command in Claude Code:
 
-```bash
-# From your project directory
-cp -r path/to/vuer/skills ./skills
+```
+/plugin add /path/to/vuer/skills
 ```
 
-Claude Code will automatically detect and use the skill when working with Vuer code.
+If you cloned the vuer repo alongside your project:
+
+```
+/plugin add ../vuer/skills
+```
+
+Once imported, Claude Code will automatically use the skill when working with Vuer code.
 
 ## What the Skill Provides
 
@@ -76,18 +81,15 @@ Once the skill is set up, you can ask Claude things like:
 
 The skill files are markdown documents that you can customize. If you add new components or patterns to your project, consider updating the skill files so Claude stays informed.
 
-To get the latest skill from Vuer:
+To get the latest skill, pull the latest vuer repo and re-import:
 
 ```bash
-# Update from the latest Vuer release
-pip install --upgrade vuer
-# Copy the updated skills
-cp -r $(python -c "import vuer; print(vuer.__path__[0])")/../../skills ./skills
+cd vuer
+git pull
 ```
 
-Or clone the repository directly:
+Then in Claude Code:
 
-```bash
-git clone https://github.com/vuer-ai/vuer.git
-cp -r vuer/skills ./skills
+```
+/plugin add /path/to/vuer/skills
 ```
