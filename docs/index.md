@@ -50,25 +50,12 @@ Vuer is built by researchers at MIT and UCSD in fields including robotics, compu
 
 ## 🤖 Using Vuer with Claude Code
 
-Vuer includes a Claude Code skill that teaches Claude how to use the library effectively. To import the skill, run this slash command in Claude Code:
+Vuer includes a Claude Code skill that teaches Claude how to use the library effectively. To import, run in Claude Code:
 
 ```
-/plugin add /path/to/vuer/skills
+/plugin marketplace add vuer-ai/vuer
+/plugin install vuer@vuer
 ```
-
-Or if you cloned the vuer repo alongside your project:
-
-```
-/plugin add ../vuer/skills
-```
-
-Once imported, Claude Code will have knowledge about:
-- Server setup and configuration
-- All visualization components (Box, Sphere, TriMesh, URDF, PointCloud, etc.)
-- Image handling (Img, Image, ImageBackground) with numpy/PIL support
-- Event system and session APIs
-- VR/AR/WebXR features
-- Common patterns and examples
 
 See the [full guide](guides/claude_skill.md) for more details.
 

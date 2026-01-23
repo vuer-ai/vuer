@@ -86,12 +86,14 @@ class VuerClient:
             print(event)
     """
 
-    def __init__(self, uri: str = "ws://localhost:8012"):
+    def __init__(self, uri: str = "ws://localhost:8012", max_size: int = 2**30):
         """Initialize the Vuer client.
 
         :param uri: Websocket URI to connect to (e.g., "ws://localhost:8012")
+        :param max_size: Maximum websocket message size in bytes (default 1GB)
         """
         self.uri = uri
+        self.max_size = max_size
         self._ws = None
         self._connected = False
 
@@ -105,7 +107,7 @@ class VuerClient:
         except ImportError:
             from websockets import connect
 
-        self._ws = await connect(self.uri)
+        self._ws = await connect(self.uri, max_size=self.max_size)
         self._connected = True
         return self
 
