@@ -11,10 +11,10 @@ Example usage::
 
     async def main():
         async with VuerClient("ws://localhost:8012") as client:
-            # Send an event using @ syntax
-            await client.send @ MyEvent(value={"key": "value"})
+            # Fire-and-forget with @ syntax (no await needed)
+            client.send @ MyEvent(value={"key": "value"})
 
-            # Or using parentheses
+            # Awaitable with parentheses
             await client.send(MyEvent(value={"data": 123}))
 
             # Receive events from the server
@@ -32,18 +32,39 @@ from msgpack import packb, unpackb
 from vuer.events import ClientEvent, ServerEvent
 
 
+def _default_encoder(obj):
+    """Custom encoder for msgpack to handle numpy types."""
+    try:
+        import numpy as np
+
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        if isinstance(obj, (np.integer, np.floating)):
+            return obj.item()
+    except ImportError:
+        pass
+    raise TypeError(f"Cannot serialize object of type {type(obj)}")
+
+
 class AsyncAt:
-    """Wrapper to support both @ syntax and await for async operations."""
+    """Wrapper to support both @ syntax (fire-and-forget) and await for async operations."""
 
     def __init__(self, coro_fn):
         self._coro_fn = coro_fn
 
+    async def _fire_and_forget(self, event: ClientEvent):
+        """Wrapper that suppresses connection closed exceptions."""
+        try:
+            await self._coro_fn(event)
+        except Exception:
+            pass  # Silently ignore errors in fire-and-forget mode
+
     def __matmul__(self, event: ClientEvent):
-        """Support @ syntax: await client.send @ event"""
-        return self._coro_fn(event)
+        """Fire-and-forget: client.send @ event (no await needed)"""
+        asyncio.create_task(self._fire_and_forget(event))
 
     def __call__(self, event: ClientEvent):
-        """Support await: await client.send(event)"""
+        """Awaitable: await client.send(event)"""
         return self._coro_fn(event)
 
 
@@ -138,7 +159,7 @@ class VuerClient:
         if "ts" in event_obj and isinstance(event_obj["ts"], float):
             event_obj["ts"] = int(event_obj["ts"] * 1000)
 
-        event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
+        event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True, default=_default_encoder)
         await self._ws.send(event_bytes)
 
     @property
@@ -202,8 +223,8 @@ if __name__ == "__main__":
             async with VuerClient("ws://localhost:8012") as client:
                 print("Connected!")
 
-                # Send a client event using @ syntax
-                await client.send @ HelloEvent(value={"message": "Hello from client!"})
+                # Send a client event using @ syntax (fire-and-forget)
+                client.send @ HelloEvent(value={"message": "Hello from client!"})
                 print("Sent event using @ syntax")
 
                 # Send a client event using parentheses

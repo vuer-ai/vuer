@@ -12,6 +12,20 @@ from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import Response
 from aiohttp.web_ws import WebSocketResponse
 from msgpack import packb, unpackb
+
+
+def _default_encoder(obj):
+    """Custom encoder for msgpack to handle numpy types."""
+    try:
+        import numpy as np
+
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        if isinstance(obj, (np.integer, np.floating)):
+            return obj.item()
+    except ImportError:
+        pass
+    raise TypeError(f"Cannot serialize object of type {type(obj)}")
 from params_proto import EnvVar, proto
 from websockets import ConnectionClosedError
 
@@ -229,7 +243,7 @@ class VuerSession:
     # Therefore, convert ts to an integer in milliseconds before sending to the frontend.
     if "ts" in event_obj and isinstance(event_obj["ts"], float):
       event_obj["ts"] = int(event_obj["ts"] * 1000)
-    event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
+    event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True, default=_default_encoder)
 
     return self.uplink_queue.append(event_bytes)
 
@@ -727,7 +741,7 @@ class Vuer(Server):
       # Therefore, convert ts to an integer in milliseconds before sending to the frontend.
       if "ts" in event_obj and isinstance(event_obj["ts"], float):
         event_obj["ts"] = int(event_obj["ts"] * 1000)
-      event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
+      event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True, default=_default_encoder)
     else:
       assert event is None, "Can not pass in both at the same time."
 
