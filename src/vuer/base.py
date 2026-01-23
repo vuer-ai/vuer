@@ -91,8 +91,8 @@ class Server:
       cert: Path to SSL certificate file for HTTPS.
       key: Path to SSL private key file for HTTPS.
       ca_cert: Path to CA certificate for client certificate verification.
-      WEBSOCKET_MAX_SIZE: Maximum WebSocket message size (default 256MB).
-      REQUEST_MAX_SIZE: Maximum HTTP request size (default 256MB).
+      max_size: Maximum WebSocket message size (default 256MB).
+      request_max_size: Maximum HTTP request size (default 256MB).
   """
 
   host: str = EnvVar @ "VUER_HOST" | "localhost"
@@ -103,8 +103,8 @@ class Server:
   key: str = EnvVar @ "VUER_SSL_KEY" | None
   ca_cert: str = EnvVar @ "VUER_SSL_CA_CERT" | None
 
-  WEBSOCKET_MAX_SIZE: int = EnvVar @ "WEBSOCKET_MAX_SIZE" | 2**28
-  REQUEST_MAX_SIZE: int = EnvVar @ "REQUEST_MAX_SIZE" | 2**28
+  max_size: int = EnvVar @ "WEBSOCKET_MAX_SIZE" | 2**28
+  request_max_size: int = EnvVar @ "REQUEST_MAX_SIZE" | 2**28
 
   def _init_app(self):
     """Initialize the aiohttp application and CORS context.
@@ -118,7 +118,7 @@ class Server:
     """
     if hasattr(self, "app"):
       return
-    self.app = web.Application(client_max_size=self.REQUEST_MAX_SIZE)
+    self.app = web.Application(client_max_size=self.request_max_size)
     default = aiohttp_cors.ResourceOptions(
       allow_credentials=True,
       expose_headers="*",
@@ -139,7 +139,7 @@ class Server:
 
   def _socket(self, path: str, handler: callable):
     ws_handler = partial(
-      websocket_handler, handler=handler, max_msg_size=self.WEBSOCKET_MAX_SIZE
+      websocket_handler, handler=handler, max_msg_size=self.max_size
     )
     self._add_route(path, ws_handler)
 

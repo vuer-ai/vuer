@@ -28,6 +28,7 @@ import asyncio
 from typing import AsyncIterator, Optional, Union
 
 from msgpack import packb, unpackb
+from params_proto import EnvVar
 
 from vuer.events import ClientEvent, ServerEvent
 
@@ -84,19 +85,23 @@ class VuerClient:
 
             event = await client.recv()
             print(event)
+
+    Configuration:
+        URI: WebSocket URI to connect to (default ws://localhost:8012).
+        WEBSOCKET_MAX_SIZE: Maximum WebSocket message size (default 256MB).
     """
 
-    # Default max websocket message size (256MB, matches server default)
-    WEBSOCKET_MAX_SIZE: int = 2**28
+    URI: str = EnvVar @ "VUER_CLIENT_URI" | "ws://localhost:8012"
+    WEBSOCKET_MAX_SIZE: int = EnvVar @ "WEBSOCKET_MAX_SIZE" | 2**28
 
-    def __init__(self, uri: str = "ws://localhost:8012", max_size: int = None):
+    def __init__(self, URI: str = None, WEBSOCKET_MAX_SIZE: int = None):
         """Initialize the Vuer client.
 
-        :param uri: Websocket URI to connect to (e.g., "ws://localhost:8012")
-        :param max_size: Maximum websocket message size in bytes (default 256MB)
+        :param URI: WebSocket URI to connect to (e.g., "ws://localhost:8012")
+        :param WEBSOCKET_MAX_SIZE: Maximum websocket message size in bytes (default 256MB)
         """
-        self.uri = uri
-        self.max_size = max_size if max_size is not None else self.WEBSOCKET_MAX_SIZE
+        self.URI = URI if URI is not None else self.__class__.URI
+        self.WEBSOCKET_MAX_SIZE = WEBSOCKET_MAX_SIZE if WEBSOCKET_MAX_SIZE is not None else self.__class__.WEBSOCKET_MAX_SIZE
         self._ws = None
         self._connected = False
 
@@ -110,7 +115,7 @@ class VuerClient:
         except ImportError:
             from websockets import connect
 
-        self._ws = await connect(self.uri, max_size=self.max_size)
+        self._ws = await connect(self.URI, max_size=self.WEBSOCKET_MAX_SIZE)
         self._connected = True
         return self
 
