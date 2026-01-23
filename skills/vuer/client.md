@@ -24,10 +24,22 @@ class MyEvent(ClientEvent):
     etype = "MY_EVENT"
 
 async def main():
-    async with VuerClient("ws://localhost:8012") as client:
-        await client.send @ MyEvent(value={"data": 123})
+    async with VuerClient(URI="ws://localhost:8012") as client:
+        # Fire-and-forget with @ syntax (no await needed)
+        client.send @ MyEvent(value={"data": 123})
 
 asyncio.run(main())
+```
+
+## Configuration
+
+```python
+# Via constructor
+client = VuerClient(URI="ws://localhost:8012", WEBSOCKET_MAX_SIZE=2**30)
+
+# Via environment variables
+# VUER_CLIENT_URI=ws://localhost:8012
+# WEBSOCKET_MAX_SIZE=268435456  (256MB default)
 ```
 
 ## Custom Events
@@ -47,13 +59,13 @@ class ControlEvent(ClientEvent):
 
 ## Sending Events
 
-Both syntaxes are awaitable:
+Two syntaxes with different semantics:
 
 ```python
-# @ syntax
-await client.send @ MyEvent(value="data")
+# Fire-and-forget with @ syntax (no await needed)
+client.send @ MyEvent(value="data")
 
-# Parentheses syntax
+# Awaitable with parentheses (waits for send to complete)
 await client.send(MyEvent(value="data"))
 ```
 
@@ -120,7 +132,7 @@ async def main():
             t = i * 0.05
             x = math.sin(t) * 2
             y = 0.5 + math.sin(t * 2) * 0.3
-            await client.send @ SetPositionEvent(value=[x, y, 0])
+            client.send @ SetPositionEvent(value=[x, y, 0])
             await asyncio.sleep(0.016)
 
 asyncio.run(main())
@@ -130,11 +142,19 @@ asyncio.run(main())
 
 | Method | Description |
 |--------|-------------|
-| `VuerClient(uri)` | Create client (default: `ws://localhost:8012`) |
+| `VuerClient(URI, WEBSOCKET_MAX_SIZE)` | Create client |
 | `await client.connect()` | Connect to server |
 | `await client.close()` | Close connection |
-| `await client.send @ event` | Send ClientEvent |
+| `client.send @ event` | Fire-and-forget send (no await) |
+| `await client.send(event)` | Awaitable send |
 | `await client.recv(timeout)` | Receive event |
 | `client.connected` | Check connection status |
 | `async with VuerClient() as client` | Context manager |
 | `async for event in client` | Iterate events |
+
+## Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VUER_CLIENT_URI` | `ws://localhost:8012` | WebSocket URI |
+| `WEBSOCKET_MAX_SIZE` | `268435456` (256MB) | Max message size |

@@ -227,6 +227,8 @@ Run the server first, then run the client in a separate terminal to see the anim
 
 - Define custom events by subclassing `ClientEvent` with an `etype` class attribute
 - The server handles events via `@app.add_handler("EVENT_TYPE")`
-- Both `await client.send @ Event()` and `await client.send(Event())` are awaitable
+- Use `client.send @ Event()` for fire-and-forget (no await needed)
+- Use `await client.send(Event())` when you need to wait for the send to complete
 - Use `client.connected` to check connection status
 - Reconnect by calling `connect()` again if disconnected
+- Configure via environment variables: `VUER_CLIENT_URI`, `WEBSOCKET_MAX_SIZE`
