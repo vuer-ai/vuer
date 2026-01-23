@@ -48,6 +48,23 @@ Vuer is built by researchers at MIT and UCSD in fields including robotics, compu
 - Hackable and extensible
 - Open source, licensed under MIT
 
+## 🤖 Using Vuer with Claude Code
+
+Vuer includes a Claude Code skill that teaches Claude how to use the library effectively. To enable it:
+
+1. Copy the `skills/` folder to your project
+2. Claude Code will automatically use it when working with Vuer
+
+The skill provides Claude with knowledge about:
+- Server setup and configuration
+- All visualization components (Box, Sphere, TriMesh, URDF, PointCloud, etc.)
+- Image handling (Img, Image, ImageBackground) with numpy/PIL support
+- Event system and session APIs
+- VR/AR/WebXR features
+- Common patterns and examples
+
+This means you can ask Claude to help you build Vuer visualizations and it will know the correct APIs and patterns.
+
 To get a quick overview of what you can do with  <code style="font-size: 1.3em; background-clip: text; color: transparent; background-image: linear-gradient(to right, rgb(0,140,220), rgb(226,213,79), rgb(210,0,12));">vuer</code>, check out the following:
 
 - take a look at the basic tutorial or the tutorial for robotics:
@@ -85,6 +102,7 @@ For more details:
    Session API <guides/session_apis.md>
    Static Files & Hot Loading <guides/static_files.md>
    Python Client Connection <guides/client_connection.md>
+   Using Vuer with Claude Code <guides/claude_skill.md>
 
 .. toctree::
    :maxdepth: 3
