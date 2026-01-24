@@ -1,5 +1,4 @@
-
-## Body Tracking
+# Body Tracking
 
 The **Body** component allows you to stream the full 3D pose of the human body to the server in real time using the [WebXR Body Tracking API](https://immersive-web.github.io/body-tracking/).
 
