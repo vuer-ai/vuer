@@ -140,11 +140,13 @@ For more details:
    :caption: Examples
    :hidden:
 
+   Hand Tracking <examples/vr_xr/hand_tracking.md>
+   Controller Tracking <examples/vr_xr/motion_controllers.md>
+   Body Tracking <examples/vr_xr/body_tracking.md>
    examples/meshes.md
    examples/point_clouds.md
    examples/urdf_go1_stairs.md
    examples/spline_frustum.md
-   Hand, Controller and Body Tracking <examples/vr_ar_xr.md>
    3DGS from Sora video <examples/openai_sora.md>
    3D Text, 2D Text, and Billboard <examples/visualization/3d_text.md>
    Depth Texture <examples/visualization/depth_texture.md>
