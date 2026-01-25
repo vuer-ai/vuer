@@ -215,7 +215,7 @@ async def main():
             x = math.sin(t) * 2
             y = 0.5 + math.sin(t * 2) * 0.3
 
-            client.send @ SetPositionEvent(value=[x, y, 0])
+            client.send @ SetPositionEvent(value={"position": [x, y, 0]})
             await asyncio.sleep(0.016)  # ~60 FPS
 
 asyncio.run(main())
