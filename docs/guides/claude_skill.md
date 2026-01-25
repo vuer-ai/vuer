@@ -7,13 +7,14 @@ Vuer includes a **Claude Code skill** that teaches Claude how to use the library
 Import the skill by running this slash command in Claude Code:
 
 ```
-/plugin add /path/to/vuer/skills
+/plugin marketplace add vuer-ai/vuer
+/plugin install vuer@vuer-ai-vuer
 ```
 
-If you cloned the vuer repo alongside your project:
+For local development (if you cloned the vuer repo):
 
 ```
-/plugin add ../vuer/skills
+claude --plugin-dir /path/to/vuer
 ```
 
 Once imported, Claude Code will automatically use the skill when working with Vuer code.
