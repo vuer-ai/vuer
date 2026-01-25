@@ -10,13 +10,13 @@ VR and AR ready, and can be run on mobile devices. To get started, just run:
 pip install 'vuer=={VERSION}'
 ```
 
-```{admonition} Pyodide / WebAssembly
+```{admonition} Running Vuer from the Browser
 :class: tip
-Vuer auto-detects Pyodide (Emscripten) environments and excludes server dependencies. In browser environments, use `VuerClient`:
+Vuer can run directly in the browser via PyScript and Pyodide. Server dependencies are auto-excluded on Emscripten:
 
     import micropip
     await micropip.install("vuer")
-    from vuer.client import VuerClient
+    from vuer.schemas import Scene, Box, Urdf
 ```
 
 ```{admonition} Note for Mac Users

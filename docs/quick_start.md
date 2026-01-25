@@ -11,15 +11,15 @@ You can install `vuer` with `pip`:
 pip install -U 'vuer=={VERSION}'
 ```
 
-### Pyodide / WebAssembly
+### Running Vuer from the Browser
 
-Vuer auto-detects Pyodide (Emscripten) environments and excludes server dependencies (`websockets`, `aiohttp`). In browser environments, use `VuerClient` to connect to an existing vuer.ai session:
+Vuer can run directly in the web browser via PyScript and Pyodide. Server dependencies (`websockets`, `aiohttp`) are auto-excluded on Emscripten:
 
 ```python
 import micropip
 await micropip.install("vuer")
 
-from vuer.client import VuerClient
+from vuer.schemas import Scene, Box, Urdf
 ```
 
 Now you should be able to run scripts show in the examples, and look at the 

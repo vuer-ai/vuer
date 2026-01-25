@@ -31,17 +31,6 @@ You can install `vuer` with `pip`:
 pip install -U vuer
 ```
 
-### Pyodide / WebAssembly
-
-Vuer auto-detects Pyodide (Emscripten) environments and excludes server dependencies (`websockets`, `aiohttp`). In browser environments, use `VuerClient` to connect to an existing vuer.ai session:
-
-```python
-import micropip
-await micropip.install("vuer")
-
-from vuer.client import VuerClient
-```
-
 Here is an example that loads a URDF file and displays it in the browser. For more examples, see the
 the [examples](https://docs.vuer.ai/en/latest/examples/meshes/mesh_loading.html) page.
 
@@ -85,6 +74,22 @@ Vuer includes a Claude Code plugin that teaches Claude how to use the library. T
 ```
 
 See the [full guide](https://docs.vuer.ai/en/latest/guides/claude_skill.html) for details.
+
+## Running Vuer from the Browser
+
+Vuer can run directly in the web browser via PyScript and Pyodide. To support this, server dependencies (`websockets`, `aiohttp`) are automatically excluded when `platform_system == 'Emscripten'`.
+
+```python
+import micropip
+await micropip.install("vuer")
+
+from vuer.schemas import Scene, Box, Sphere, Urdf
+```
+
+This enables use cases like:
+- Building interactive 3D scene editors in the browser
+- Running Python-based scene generation in JupyterLite notebooks
+- Prototyping robotics visualizations without a local Python server
 
 ## Examples
 
