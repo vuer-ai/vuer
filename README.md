@@ -70,7 +70,7 @@ Vuer includes a Claude Code plugin that teaches Claude how to use the library. T
 
 ```
 /plugin marketplace add vuer-ai/vuer
-/plugin install vuer@vuer-ai-vuer
+/plugin install vuer@vuer
 ```
 
 See the [full guide](https://docs.vuer.ai/en/latest/guides/claude_skill.html) for details.

@@ -1,10 +1,13 @@
 {
   "name": "vuer",
-  "description": "3D visualization toolkit for robotics and GenAI",
   "version": "0.0.79",
+  "description": "3D visualization toolkit for robotics and GenAI",
   "author": {
-    "name": "vuer-ai"
+    "name": "Ge Yang"
   },
   "repository": "https://github.com/vuer-ai/vuer",
-  "homepage": "https://docs.vuer.ai"
+  "homepage": "https://docs.vuer.ai",
+  "license": "MIT",
+  "keywords": ["3d-visualization", "robotics", "genai", "webxr", "vr", "ar"],
+  "skills": "../skills/"
 }

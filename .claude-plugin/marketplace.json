@@ -1,0 +1,14 @@
+{
+  "name": "vuer",
+  "owner": {
+    "name": "Ge Yang"
+  },
+  "description": "3D visualization toolkit for robotics and GenAI",
+  "plugins": [
+    {
+      "name": "vuer",
+      "source": "./",
+      "description": "vuer skills for 3D visualization and robotics"
+    }
+  ]
+}
