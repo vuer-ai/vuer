@@ -1,7 +1,7 @@
 
-# Loading 3D Meshes
+# Mesh Loading
 
-This example demonstrates **4 different ways** to load and display 3D mesh files in Vuer, and how to update the mesh in real-time.
+This example shows **4 different ways** to load and display Mesh in Vuer, and how to update the Mesh in real-time.
 
 ![](../figures/trimesh.png)
 
