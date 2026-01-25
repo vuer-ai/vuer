@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "vuer"
-version = "0.0.79rc4"
+version = "0.0.79"
 description = ""
 readme = "README.md"
 license = { text = "MIT" }
