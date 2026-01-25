@@ -75,6 +75,17 @@ For more details:
 
 - A full list of data types: [API documentation on Data Types](https://docs.vuer.ai/en/latest/api/types.html).
 
+## Using Vuer with Claude Code
+
+Vuer includes a Claude Code plugin that teaches Claude how to use the library. To install:
+
+```
+/plugin marketplace add vuer-ai/vuer
+/plugin install vuer@vuer
+```
+
+See the [full guide](https://docs.vuer.ai/en/latest/guides/claude_skill.html) for details.
+
 ## Examples
 
 To run the examples, you'll need to download the required assets:
