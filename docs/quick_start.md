@@ -7,8 +7,19 @@ To get a quick overview of what you can do with `vuer`, check out the following:
 
 You can install `vuer` with `pip`:
 
+```shell
+pip install -U 'vuer=={VERSION}'
+```
+
+### Pyodide / WebAssembly
+
+Vuer auto-detects Pyodide (Emscripten) environments and excludes server dependencies (`websockets`, `aiohttp`). In browser environments, use `VuerClient` to connect to an existing vuer.ai session:
+
 ```python
-pip install -U 'vuer[all]=={VERSION}'
+import micropip
+await micropip.install("vuer")
+
+from vuer.client import VuerClient
 ```
 
 Now you should be able to run scripts show in the examples, and look at the 

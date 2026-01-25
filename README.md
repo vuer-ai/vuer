@@ -9,7 +9,7 @@
 </a>
 </h2>
 <p>
-<strong><code>pip install 'vuer[all]'</code></strong>
+<strong><code>pip install vuer</code></strong>
 &nbsp;&nbsp;⬝&nbsp;&nbsp;
 <a href="https://docs.vuer.ai">docs</a>
 &nbsp;&nbsp;⬝&nbsp;&nbsp;
@@ -28,7 +28,18 @@ VR and AR ready, and can be run on mobile devices.
 You can install `vuer` with `pip`:
 
 ```shell
-pip install -U 'vuer[all]'
+pip install -U vuer
+```
+
+### Pyodide / WebAssembly
+
+Vuer auto-detects Pyodide (Emscripten) environments and excludes server dependencies (`websockets`, `aiohttp`). In browser environments, use `VuerClient` to connect to an existing vuer.ai session:
+
+```python
+import micropip
+await micropip.install("vuer")
+
+from vuer.client import VuerClient
 ```
 
 Here is an example that loads a URDF file and displays it in the browser. For more examples, see the

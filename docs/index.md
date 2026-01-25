@@ -7,7 +7,16 @@ Vuer is a light-weight visualization toolkit for interacting with dynamic 3D and
 VR and AR ready, and can be run on mobile devices. To get started, just run:
 
 ```shell
-pip install 'vuer[all]=={VERSION}'
+pip install 'vuer=={VERSION}'
+```
+
+```{admonition} Pyodide / WebAssembly
+:class: tip
+Vuer auto-detects Pyodide (Emscripten) environments and excludes server dependencies. In browser environments, use `VuerClient`:
+
+    import micropip
+    await micropip.install("vuer")
+    from vuer.client import VuerClient
 ```
 
 ```{admonition} Note for Mac Users
@@ -140,13 +149,11 @@ For more details:
    :caption: Examples
    :hidden:
 
-   Hand Tracking <examples/vr_xr/hand_tracking.md>
-   Controller Tracking <examples/vr_xr/motion_controllers.md>
-   Body Tracking <examples/vr_xr/body_tracking.md>
    examples/meshes.md
    examples/point_clouds.md
    examples/urdf_go1_stairs.md
    examples/spline_frustum.md
+   Hand, Controller and Body Tracking <examples/vr_ar_xr.md>
    3DGS from Sora video <examples/openai_sora.md>
    3D Text, 2D Text, and Billboard <examples/visualization/3d_text.md>
    Depth Texture <examples/visualization/depth_texture.md>

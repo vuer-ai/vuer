@@ -509,9 +509,7 @@ class Vuer(Server):
 
   # Vuer-specific settings (host, cert, key, ca_cert inherited from Server)
   domain: str = EnvVar @ "VUER_DOMAIN" | "https://vuer.ai"
-  client_url: str = Optional[
-    str
-  ]  # Optional override for domain (e.g., local client build)
+  client_url: Optional[str] = None  # Optional override for domain (e.g., local client build)
 
   port: int = EnvVar @ "VUER_PORT" | DEFAULT_PORT
   cors: str = EnvVar @ "VUER_CORS" | DEFAULT_CORS
