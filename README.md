@@ -64,33 +64,6 @@ For more details:
 
 - A full list of data types: [API documentation on Data Types](https://docs.vuer.ai/en/latest/api/types.html).
 
-## Using Vuer with Claude Code
-
-Vuer includes a Claude Code plugin that teaches Claude how to use the library. To install:
-
-```
-/plugin marketplace add vuer-ai/vuer
-/plugin install vuer@vuer
-```
-
-See the [full guide](https://docs.vuer.ai/en/latest/guides/claude_skill.html) for details.
-
-## Running Vuer from the Browser
-
-Vuer can run directly in the web browser via PyScript and Pyodide. To support this, server dependencies (`websockets`, `aiohttp`) are automatically excluded when `platform_system == 'Emscripten'`.
-
-```python
-import micropip
-await micropip.install("vuer")
-
-from vuer.schemas import Scene, Box, Sphere, Urdf
-```
-
-This enables use cases like:
-- Building interactive 3D scene editors in the browser
-- Running Python-based scene generation in JupyterLite notebooks
-- Prototyping robotics visualizations without a local Python server
-
 ## Examples
 
 To run the examples, you'll need to download the required assets:
@@ -146,6 +119,33 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed gu
 - Code quality standards (ruff formatting and linting)
 - Documentation workflow
 - Publishing releases
+
+## Using Vuer with Claude Code
+
+Vuer includes a Claude Code plugin that teaches Claude how to use the library. To install:
+
+```
+/plugin marketplace add vuer-ai/vuer
+/plugin install vuer@vuer
+```
+
+See the [full guide](https://docs.vuer.ai/en/latest/guides/claude_skill.html) for details.
+
+## Running Vuer from the Browser
+
+Vuer can run directly in the web browser via PyScript and Pyodide. To support this, server dependencies (`websockets`, `aiohttp`) are automatically excluded when `platform_system == 'Emscripten'`.
+
+```python
+import micropip
+await micropip.install("vuer")
+
+from vuer.schemas import Scene, Box, Sphere, Urdf
+```
+
+This enables use cases like:
+- Building interactive 3D scene editors in the browser
+- Running Python-based scene generation in JupyterLite notebooks
+- Prototyping robotics visualizations without a local Python server
 
 ## To Cite
 
