@@ -3,7 +3,7 @@ from typing import List, Literal
 import numpy as np
 from numpy.typing import NDArray
 
-from .html_components import BlockElement, Element, Image
+from .html_components import BlockElement, Element, Img
 
 
 class SceneElement(BlockElement):
@@ -62,6 +62,122 @@ class Frustum(SceneElement):
   """
 
   tag = "Frustum"
+
+
+class PerspectiveFrustum(SceneElement):
+  """
+  Frustum visualization for perspective cameras.
+
+  Shows the typical pyramid-shaped frustum with optional up vector indicator.
+  Children are inserted inside the frustum group.
+
+  :param position: Position of the frustum in 3D space [x, y, z].
+  :type position: tuple[float, float, float], optional
+  :param rotation: Rotation of the frustum in Euler angles [x, y, z].
+  :type rotation: tuple[float, float, float], optional
+  :param fov: Field of view in degrees. Defaults to 50.
+  :type fov: float, optional
+  :param aspect: Aspect ratio (width/height). Defaults to 4/3.
+  :type aspect: float, optional
+  :param zoom: Zoom factor. Defaults to 1.
+  :type zoom: float, optional
+  :param near: Near clipping plane distance. Defaults to 0.1.
+  :type near: float, optional
+  :param far: Far clipping plane distance. Defaults to 1.0.
+  :type far: float, optional
+  :param showFrustum: Whether to show the frustum wireframe. Defaults to True.
+  :type showFrustum: bool, optional
+  :param showUp: Whether to show the up vector indicator. Defaults to True.
+  :type showUp: bool, optional
+  :param colorFrustum: Color of the frustum wireframe. Defaults to 0xffaa00.
+  :type colorFrustum: int, optional
+  :param colorCone: Color of the cone indicator. Defaults to 0xff0000.
+  :type colorCone: int, optional
+  :param colorUp: Color of the up vector indicator. Defaults to 0x00aaff.
+  :type colorUp: int, optional
+  :param layer: Scene layer for this frustum visualization.
+  :type layer: int, optional
+  :param children: Child elements rendered inside the frustum group.
+  :type children: list, optional
+  """
+
+  tag = "PerspectiveFrustum"
+
+
+class FisheyeFrustum(SceneElement):
+  """
+  Frustum visualization for fisheye/equidistant cameras.
+
+  Shows a spherical frustum for wide-angle fisheye lenses.
+  Children are inserted inside the frustum group.
+
+  :param position: Position of the frustum in 3D space [x, y, z].
+  :type position: tuple[float, float, float], optional
+  :param rotation: Rotation of the frustum in Euler angles [x, y, z].
+  :type rotation: tuple[float, float, float], optional
+  :param fov: Field of view in degrees. Defaults to 180.
+  :type fov: float, optional
+  :param aspect: Aspect ratio (width/height). Defaults to 1.
+  :type aspect: float, optional
+  :param near: Near clipping plane distance. Defaults to 0.1.
+  :type near: float, optional
+  :param far: Far clipping plane distance. Defaults to 1.0.
+  :type far: float, optional
+  :param showFrustum: Whether to show the frustum wireframe. Defaults to True.
+  :type showFrustum: bool, optional
+  :param showUp: Whether to show the up vector indicator. Defaults to True.
+  :type showUp: bool, optional
+  :param colorFrustum: Color of the frustum wireframe. Defaults to 0xffaa00.
+  :type colorFrustum: int, optional
+  :param colorCone: Color of the cone indicator. Defaults to 0xff0000.
+  :type colorCone: int, optional
+  :param colorUp: Color of the up vector indicator. Defaults to 0x00aaff.
+  :type colorUp: int, optional
+  :param layer: Scene layer for this frustum visualization.
+  :type layer: int, optional
+  :param children: Child elements rendered inside the frustum group.
+  :type children: list, optional
+  """
+
+  tag = "FisheyeFrustum"
+
+
+class OrthographicFrustum(SceneElement):
+  """
+  Frustum visualization for orthographic cameras.
+
+  Shows a box-shaped frustum for orthographic projection.
+  Children are inserted inside the frustum group.
+
+  :param position: Position of the frustum in 3D space [x, y, z].
+  :type position: tuple[float, float, float], optional
+  :param rotation: Rotation of the frustum in Euler angles [x, y, z].
+  :type rotation: tuple[float, float, float], optional
+  :param width: Width of the orthographic view. Defaults to 1.
+  :type width: float, optional
+  :param height: Height of the orthographic view. Defaults to 1.
+  :type height: float, optional
+  :param zoom: Zoom factor. Defaults to 1.
+  :type zoom: float, optional
+  :param near: Near clipping plane distance. Defaults to 0.1.
+  :type near: float, optional
+  :param far: Far clipping plane distance. Defaults to 1.0.
+  :type far: float, optional
+  :param showFrustum: Whether to show the frustum wireframe. Defaults to True.
+  :type showFrustum: bool, optional
+  :param showUp: Whether to show the up vector indicator. Defaults to True.
+  :type showUp: bool, optional
+  :param colorFrustum: Color of the frustum wireframe. Defaults to 0xffaa00.
+  :type colorFrustum: int, optional
+  :param colorUp: Color of the up vector indicator. Defaults to 0x00aaff.
+  :type colorUp: int, optional
+  :param layer: Scene layer for this frustum visualization.
+  :type layer: int, optional
+  :param children: Child elements rendered inside the frustum group.
+  :type children: list, optional
+  """
+
+  tag = "OrthographicFrustum"
 
 
 class CameraHelper(SceneElement):
@@ -888,7 +1004,7 @@ class CameraView(SceneElement):
   tag = "CameraView"
 
 
-class SceneBackground(Image, SceneElement):
+class SceneBackground(Img, SceneElement):
   """
   Sets the background of the scene to a static image or texture.
 
@@ -924,7 +1040,7 @@ class SceneBackground(Image, SceneElement):
   tag = "SceneBackground"
 
 
-class ImageBackground(Image, SceneElement):
+class ImageBackground(Img, SceneElement):
   """
   Sets the background to a dynamically updating image plane.
 
@@ -958,13 +1074,13 @@ class ImageBackground(Image, SceneElement):
   tag = "ImageBackground"
 
 
-class HUDPlane(Image, SceneElement):
+class HUDPlane(SceneElement):
   """
-  Head-up display plane that always faces the camera.
+  Geometry helper that orients a quad plane to always face the camera.
 
-  Creates a plane that automatically orients itself to face the camera,
-  similar to a billboard. Useful for UI elements, annotations, or information
-  displays that should always be visible to the user.
+  This is a geometry-only component that does not handle textures or materials.
+  It is used as a base for other components (e.g., VideoPlane, DepthImagePlane)
+  that need camera-facing orientation.
 
   :param distanceToCamera: Distance from camera to the plane
   :type distanceToCamera: float, optional, default 10
@@ -985,7 +1101,7 @@ class HUDPlane(Image, SceneElement):
 
       from vuer.schemas import HUDPlane
 
-      # Simple HUD plane
+      # Simple HUD plane geometry
       HUDPlane(
           distanceToCamera=5,
           height=1,
@@ -996,7 +1112,7 @@ class HUDPlane(Image, SceneElement):
   tag = "HUDPlane"
 
 
-class VideoMaterial(Image, SceneElement):
+class VideoMaterial(Img, SceneElement):
   """
   Material for displaying video from a URL.
 
@@ -1024,7 +1140,7 @@ class VideoMaterial(Image, SceneElement):
   tag = "VideoMaterial"
 
 
-class WebRTCVideoMaterial(Image, SceneElement):
+class WebRTCVideoMaterial(Img, SceneElement):
   """
   Material for displaying real-time video from WebRTC media stream.
 
@@ -1047,7 +1163,7 @@ class WebRTCVideoMaterial(Image, SceneElement):
   tag = "WebRTCVideoMaterial"
 
 
-class VideoPlane(Image, SceneElement):
+class VideoPlane(Img, SceneElement):
   """
   Plane for displaying video content that faces the camera.
 
@@ -1109,7 +1225,7 @@ class WebRTCVideoPlane(SceneElement):
   tag = "WebRTCVideoPlane"
 
 
-class StereoVideoPlane(Image, SceneElement):
+class StereoVideoPlane(Img, SceneElement):
   """
   Plane for displaying stereoscopic (3D) video content.
 
@@ -1169,7 +1285,7 @@ class WebRTCStereoVideoPlane(SceneElement):
   tag = "WebRTCStereoVideoPlane"
 
 
-class ImagePlane(Image, SceneElement):
+class Image(Img, SceneElement):
   """
   Displays a static image on a plane in 3D space.
 
@@ -1192,14 +1308,14 @@ class ImagePlane(Image, SceneElement):
       from vuer.schemas import ImagePlane
 
       # Simple image plane
-      ImagePlane(
+      Image(
           src="image.png",
           position=[0, 1, -2],
           key="img1"
       )
 
       # Rotated and scaled image
-      ImagePlane(
+      Image(
           src="poster.jpg",
           position=[2, 1.5, -1],
           rotation=[0, 0.5, 0],
@@ -1208,7 +1324,22 @@ class ImagePlane(Image, SceneElement):
       )
   """
 
-  tag = "ImagePlane"
+  tag = "Image"
+
+  def __post_init__(self, src=None, _width=None, _height=None, **kwargs):
+    if src is not None:
+      self.rgb = src
+      del self.src
+
+    # todo: current abstraction does not allow width overwrite. Need restructure
+    #   in the next iteration. This might require taking the width/height out of
+    #   the parent class.
+    if _width is not None and _height is not None:
+      if not hasattr(self, "aspect") or self.aspect is None:
+        self.aspect = _width / _height
+
+      if not hasattr(self, "height") or self.height is None:
+        self.height = _height * 0.001
 
 
 class Group(SceneElement):
@@ -2059,6 +2190,98 @@ class Body(SceneElement):
   showBody = True
   showFrame = True
   frameScale = 0.02
+
+
+class Head(SceneElement):
+  """
+  Head tracking component for 6DOF head pose using standard WebXR API.
+
+  .. admonition:: tip Setting stream to True
+
+      Important: You need to set the `stream` option to `True` to
+      start streaming the head pose data to the server.
+
+  The Head component tracks the user's head position and orientation using the
+  standard WebXR API (XRFrame.getViewerPose). This is useful for devices like PICO
+  that don't support full body tracking via xrFrame.body but still provide head
+  tracking through the standard viewer pose.
+
+  You can listen to the `HEAD_MOVE` event to receive head pose data.
+
+  **Returned Data**
+
+  The `HEAD_MOVE` event sends an object containing the head transformation:
+
+  .. code-block:: typescript
+
+      {
+        ts: number,           // timestamp
+        etype: 'HEAD_MOVE',
+        key: string,          // default: 'head_tracking'
+        value: {
+          matrix: number[]    // 4x4 transformation matrix (16 floats)
+        }
+      }
+
+  **Matrix Format**
+
+  The 4x4 transform matrix is stored in 16-element arrays in column-major order:
+
+  .. code-block::
+
+                                    ⌈  a0 a4 a8 a12  ⌉
+                                    |  a1 a5 a9 a13  |
+                                    |  a2 a6 a10 a14 |
+                                    ⌊  a3 a7 a11 a15 ⌋
+
+  **Usage Example**
+
+  .. code-block:: python
+
+      from asyncio import sleep
+      from vuer import Vuer, VuerSession
+      from vuer.schemas import Head
+
+      app = Vuer()
+
+
+      @app.add_handler("HEAD_MOVE")
+      async def on_head_move(event, session):
+          matrix = event.value.get("matrix", [])
+          print(f"Head matrix: {len(matrix)} floats")
+
+
+      @app.spawn(start=True)
+      async def main(session: VuerSession):
+          # Important: stream=True is required to receive HEAD_MOVE events
+          session.upsert @ Head(
+              stream=True,
+              fps=30,
+              show=True,        # Show head pose visualization
+              frameScale=0.05,  # Scale of coordinate frame marker
+          )
+
+          while True:
+              await sleep(1)
+
+  :param key: Unique identifier for the head tracking instance. Default: 'head_tracking'
+  :type key: str, optional
+  :param stream: Whether to enable streaming of head pose data to the server. Default: True
+  :type stream: bool, optional
+  :param fps: Frames per second at which head pose data should be sent. Default: 30
+  :type fps: int, optional
+  :param show: Whether to show head pose visualization with coordinate frame. Default: False
+  :type show: bool, optional
+  :param frameScale: Scale factor for the coordinate frame marker. Default: 0.05
+  :type frameScale: float, optional
+  """
+
+  tag = "Head"
+  key = "head_tracking"
+  stream = True
+  fps = 30
+  show = False
+  frameScale = 0.05
 
 
 class WebXRMesh(SceneElement):

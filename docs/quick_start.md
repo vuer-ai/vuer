@@ -7,8 +7,19 @@ To get a quick overview of what you can do with `vuer`, check out the following:
 
 You can install `vuer` with `pip`:
 
+```shell
+pip install -U 'vuer=={VERSION}'
+```
+
+### Running Vuer from the Browser
+
+Vuer can run directly in the web browser via PyScript and Pyodide. Server dependencies (`websockets`, `aiohttp`) are auto-excluded on Emscripten:
+
 ```python
-pip install -U 'vuer[all]=={VERSION}'
+import micropip
+await micropip.install("vuer")
+
+from vuer.schemas import Scene, Box, Urdf
 ```
 
 Now you should be able to run scripts show in the examples, and look at the 

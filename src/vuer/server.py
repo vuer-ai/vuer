@@ -4,7 +4,7 @@ from asyncio import sleep
 from collections import defaultdict, deque
 from functools import partial
 from pathlib import Path
-from typing import Callable, Deque, Dict, Union, cast
+from typing import Callable, Deque, Dict, Optional, Union, cast
 from uuid import uuid4
 
 from aiohttp.hdrs import UPGRADE
@@ -12,6 +12,20 @@ from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import Response
 from aiohttp.web_ws import WebSocketResponse
 from msgpack import packb, unpackb
+
+
+def _default_encoder(obj):
+    """Custom encoder for msgpack to handle numpy types."""
+    try:
+        import numpy as np
+
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        if isinstance(obj, (np.integer, np.floating)):
+            return obj.item()
+    except ImportError:
+        pass
+    raise TypeError(f"Cannot serialize object of type {type(obj)}")
 from params_proto import EnvVar, proto
 from websockets import ConnectionClosedError
 
@@ -33,6 +47,14 @@ from vuer.events import (
 )
 from vuer.schemas import Page
 from vuer.types import EventHandler, SocketHandler, Url
+
+# ANSI color codes
+BOLD = "\033[1m"
+DIM = "\033[2m"
+CYAN = "\033[36m"
+GREEN = "\033[32m"
+YELLOW = "\033[33m"
+RESET = "\033[0m"
 
 
 class At:
@@ -221,7 +243,7 @@ class VuerSession:
     # Therefore, convert ts to an integer in milliseconds before sending to the frontend.
     if "ts" in event_obj and isinstance(event_obj["ts"], float):
       event_obj["ts"] = int(event_obj["ts"] * 1000)
-    event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
+    event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True, default=_default_encoder)
 
     return self.uplink_queue.append(event_bytes)
 
@@ -487,6 +509,7 @@ class Vuer(Server):
 
   # Vuer-specific settings (host, cert, key, ca_cert inherited from Server)
   domain: str = EnvVar @ "VUER_DOMAIN" | "https://vuer.ai"
+  client_url: Optional[str] = None  # Optional override for domain (e.g., local client build)
 
   port: int = EnvVar @ "VUER_PORT" | DEFAULT_PORT
   web_port: int = None  # Web development server port; None means same as port
@@ -514,12 +537,29 @@ class Vuer(Server):
 
   def __post_init__(self):
     """Initialize Vuer after params-proto sets up fields."""
+
+    if self.client_url:
+      self.client_url = self.client_url.format(
+        ssl=self.ssl,
+        local_ip=self.local_ip,
+        **vars(self),
+      )
+      # this has to be done before self._init_app where cors is used.
+      self.cors += "," + self.client_url
+
     if self.verbose:
       print("       ========= Arguments =========")
       for k, v in vars(self).items():
         if not k.startswith("_") and not callable(v):
           print(f"{k:>20} : {v}")
       print("       -----------------------------")
+      print(f"""
+{YELLOW}Tip:{RESET} Import {CYAN}dotvar.auto_load{RESET} {BOLD}before{RESET} vuer to load .env defaults.
+{DIM}     Supports recursive variable resolution: ${{OTHER_VAR}}/path{RESET}
+
+    {GREEN}import{RESET} {CYAN}dotvar.auto_load{RESET}  {DIM}# noqa{RESET}
+    {GREEN}from{RESET} {CYAN}vuer{RESET} {GREEN}import{RESET} Vuer
+""")
 
     # Initialize base Server (app, cors_context)
     self._init_app()
@@ -529,6 +569,14 @@ class Vuer(Server):
     self.ws: Dict[str, WebSocketResponse] = {}
     self.socket_handler: SocketHandler = None
     self.spawned_coroutines = []
+
+  @property
+  def ssl(self) -> str:
+    """Returns "s" if SSL is enabled, "" otherwise.
+
+    Use in URL construction: f"http{self.ssl}://" or f"ws{self.ssl}://"
+    """
+    return "s" if self.cert else ""
 
   @property
   def local_ip(self) -> str:
@@ -587,8 +635,20 @@ class Vuer(Server):
       return Response(status=400)
 
   @property
-  def static_prefix(self):
-    return Url(f"http://localhost:{self.port}/static")
+  def static_prefix(self) -> "Url":
+    """URL prefix for static files, accessible over the network.
+
+    Uses local_ip and respects SSL settings for network access (e.g., VR devices).
+    """
+    return Url(f"http{self.ssl}://{self.local_ip}:{self.port}/static")
+
+  @property
+  def localhost_prefix(self) -> "Url":
+    """URL prefix for static files, localhost only.
+
+    Use this for local development when network access is not needed.
+    """
+    return Url(f"http{self.ssl}://localhost:{self.port}/static")
 
   def format_urls(self) -> list:
     """Generate all relevant URLs for display based on connection context.
@@ -729,21 +789,21 @@ class Vuer(Server):
     else:
       return wrapper(fn)
 
-  def get_url(self):
+  def get_url(self, host: str = "localhost"):
     """
-    Get the primary URL for the Vuer server.
+    Get the URL for the Vuer client.
 
-    Returns the first available URL from format_urls(), which is typically
-    the localhost URL for local development or the remote vuer.ai URL for
-    remote connections.
-
-    :return: The primary URL string for the Vuer server
+    :param host: The host to use in the websocket URL (e.g., "localhost" or IP address).
+    :return: The URL for the Vuer client.
     """
-    urls = self.format_urls()
-    if urls:
-      return urls[0][1]
-    # Fallback to domain if no URLs generated
-    return self.domain
+    base_url = self.client_url or self.domain
+    uri = f"ws{self.ssl}://{host}:{self.port}"
+
+    if self.queries:
+      query_str = "&".join([f"{k}={v}" for k, v in self.queries.items()])
+      return f"{base_url}?ws={uri}&" + query_str
+
+    return f"{base_url}?ws={uri}"
 
   async def send(self, ws_id, event: ServerEvent = None, event_bytes=None):
     ws = self.ws[ws_id]
@@ -756,7 +816,7 @@ class Vuer(Server):
       # Therefore, convert ts to an integer in milliseconds before sending to the frontend.
       if "ts" in event_obj and isinstance(event_obj["ts"], float):
         event_obj["ts"] = int(event_obj["ts"] * 1000)
-      event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True)
+      event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True, default=_default_encoder)
     else:
       assert event is None, "Can not pass in both at the same time."
 
@@ -891,7 +951,8 @@ class Vuer(Server):
     try:
       async for msg in ws:
         payload = unpackb(msg.data, raw=False)
-        clientEvent = ClientEvent(**payload)
+        # todo: we want to enforce the payload to contain the timestamp.
+        clientEvent = ClientEvent._deserialize(**payload)
 
         if hasattr(generator, "__anext__"):
           serverEvent = await generator.asend(clientEvent)
@@ -1076,26 +1137,27 @@ class Vuer(Server):
 
     # serve local files via /static endpoint
     self._add_static("/static", self.static_root)
-    print("Serving file://" + os.path.abspath(self.static_root), "at", "/static")
     self._add_route("/relay", self.relay, method="POST")
 
-    # Print all available URLs
-    urls = self.format_urls()
-    print("\n╔════════════════════════════════════════════════════════════════╗")
-    print("║                   Vuer Server Started                          ║")
-    print("╚════════════════════════════════════════════════════════════════╝\n")
+    if self.client_url:
+      # the ssl is a property.
+      base_url = self.client_url.format(
+        ssl=self.ssl, local_ip=self.local_ip, **vars(self)
+      )
+    else:
+      base_url = self.domain
+    static_path = os.path.abspath(self.static_root)
 
-    for label, url in urls:
-      print(f"{label}:")
-      print(f"  → {url}\n")
+    print(f"""{BOLD}Vuer Server{RESET}
 
-    # Print additional server info
-    print(f"WebSocket Port: {self.port}")
-    if self.web_port and self.web_port != self.port:
-      print(f"Web Server Port: {self.web_port}")
-    if self.static_root and self.static_root != ".":
-      print(f"Static Root: {self.static_root}")
-    print()
+{CYAN}Local:{RESET}   {base_url}?ws=ws{self.ssl}://localhost:{self.port}
+{CYAN}Network:{RESET} {base_url}?ws=ws{self.ssl}://{self.local_ip}:{self.port}
+
+{CYAN}Serving files from:{RESET}
+
+ {DIM}·{RESET} file://{static_path}
+{DIM}->{RESET} {base_url}/static
+""")
 
     super().start()
 

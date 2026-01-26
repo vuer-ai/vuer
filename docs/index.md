@@ -7,7 +7,16 @@ Vuer is a light-weight visualization toolkit for interacting with dynamic 3D and
 VR and AR ready, and can be run on mobile devices. To get started, just run:
 
 ```shell
-pip install 'vuer[all]=={VERSION}'
+pip install 'vuer=={VERSION}'
+```
+
+```{admonition} Running Vuer from the Browser
+:class: tip
+Vuer can run directly in the browser via PyScript and Pyodide. Server dependencies are auto-excluded on Emscripten:
+
+    import micropip
+    await micropip.install("vuer")
+    from vuer.schemas import Scene, Box, Urdf
 ```
 
 ```{admonition} Note for Mac Users
@@ -48,6 +57,17 @@ Vuer is built by researchers at MIT and UCSD in fields including robotics, compu
 - Hackable and extensible
 - Open source, licensed under MIT
 
+## 🤖 Using Vuer with Claude Code
+
+Vuer includes a Claude Code skill that teaches Claude how to use the library effectively. To import, run in Claude Code:
+
+```
+/plugin marketplace add vuer-ai/vuer
+/plugin install vuer@vuer
+```
+
+See the [full guide](guides/claude_skill.md) for more details.
+
 To get a quick overview of what you can do with  <code style="font-size: 1.3em; background-clip: text; color: transparent; background-image: linear-gradient(to right, rgb(0,140,220), rgb(226,213,79), rgb(210,0,12));">vuer</code>, check out the following:
 
 - take a look at the basic tutorial or the tutorial for robotics:
@@ -84,6 +104,8 @@ For more details:
    Render Modes <guides/first_3d_scene/05_render_modes.md>
    Session API <guides/session_apis.md>
    Static Files & Hot Loading <guides/static_files.md>
+   Python Client Connection <guides/client_connection.md>
+   Using Vuer with Claude Code <guides/claude_skill.md>
 
 .. toctree::
    :maxdepth: 3
@@ -144,6 +166,7 @@ For more details:
    :hidden:
    
    vuer <api/vuer.md>
+   vuer.client — Python Client <api/client.md>
    vuer.frame <api/frame.md>
    vuer.base <api/base.md>
    vuer.types — Type Interafce <api/types.md>

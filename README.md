@@ -9,7 +9,7 @@
 </a>
 </h2>
 <p>
-<strong><code>pip install 'vuer[all]'</code></strong>
+<strong><code>pip install vuer</code></strong>
 &nbsp;&nbsp;⬝&nbsp;&nbsp;
 <a href="https://docs.vuer.ai">docs</a>
 &nbsp;&nbsp;⬝&nbsp;&nbsp;
@@ -28,7 +28,7 @@ VR and AR ready, and can be run on mobile devices.
 You can install `vuer` with `pip`:
 
 ```shell
-pip install -U 'vuer[all]'
+pip install -U vuer
 ```
 
 Here is an example that loads a URDF file and displays it in the browser. For more examples, see the
@@ -63,6 +63,17 @@ For more details:
 - A full list of visualization components: [API documentation on Components](https://docs.vuer.ai/en/latest/api/vuer.html).
 
 - A full list of data types: [API documentation on Data Types](https://docs.vuer.ai/en/latest/api/types.html).
+
+## Using Vuer with Claude Code
+
+Vuer includes a Claude Code plugin that teaches Claude how to use the library. To install:
+
+```
+/plugin marketplace add vuer-ai/vuer
+/plugin install vuer@vuer
+```
+
+See the [full guide](https://docs.vuer.ai/en/latest/guides/claude_skill.html) for details.
 
 ## Examples
 
@@ -119,6 +130,22 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed gu
 - Code quality standards (ruff formatting and linting)
 - Documentation workflow
 - Publishing releases
+
+## Running Vuer from the Browser
+
+Vuer can run directly in the web browser via PyScript and Pyodide. To support this, server dependencies (`websockets`, `aiohttp`) are automatically excluded when `platform_system == 'Emscripten'`.
+
+```python
+import micropip
+await micropip.install("vuer")
+
+from vuer.schemas import Scene, Box, Sphere, Urdf
+```
+
+This enables use cases like:
+- Building interactive 3D scene editors in the browser
+- Running Python-based scene generation in JupyterLite notebooks
+- Prototyping robotics visualizations without a local Python server
 
 ## To Cite
 
