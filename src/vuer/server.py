@@ -512,6 +512,8 @@ class Vuer(Server):
   client_url: Optional[str] = None  # Optional override for domain (e.g., local client build)
 
   port: int = EnvVar @ "VUER_PORT" | DEFAULT_PORT
+  web_port: int = None  # Web development server port; None means same as port
+  workspace_path: str = ""  # Path on vuer.ai workspace (e.g., "/workspace/scratch")
   cors: str = EnvVar @ "VUER_CORS" | DEFAULT_CORS
   static_root: str = EnvVar @ "VUER_STATIC_ROOT" | "."
 
@@ -647,6 +649,81 @@ class Vuer(Server):
     Use this for local development when network access is not needed.
     """
     return Url(f"http{self.ssl}://localhost:{self.port}/static")
+
+  def format_urls(self) -> list:
+    """Generate all relevant URLs for display based on connection context.
+
+    Returns a list of tuples (label, url) for different connection modes.
+    Intelligently handles:
+    - Local development (localhost)
+    - LAN connections
+    - Remote vuer.ai connections
+    - Port display (hides default ports)
+    - WebSocket parameter inclusion (when needed)
+
+    :return: List of (label, url) tuples
+    """
+    urls = []
+
+    # Determine if this is remote or local
+    # Remote if: domain is set AND not localhost/127.0.0.1
+    # Check by domain value (strip protocol if present)
+    domain_lower = self.domain.lower() if self.domain else ""
+    is_local = not domain_lower or domain_lower in ["localhost", "127.0.0.1", "http://localhost", "https://localhost"]
+    is_remote = not is_local
+
+    # Determine protocols and ports
+    use_ssl = is_remote
+    protocol = "https" if use_ssl else "http"
+    ws_protocol = "wss" if use_ssl else "ws"
+
+    effective_web_port = self.web_port if self.web_port is not None else self.port
+    default_web_port = 443 if use_ssl else 80
+
+    # Build path from workspace_path
+    path = self.workspace_path.rstrip("/") if self.workspace_path else ""
+
+    # Helper to build URL
+    def build_url(host, port, ws_host, ws_port, label):
+      # Base URL with path
+      if port != default_web_port:
+        base = f"{protocol}://{host}:{port}{path}"
+      else:
+        base = f"{protocol}://{host}{path}"
+
+      # Add WebSocket parameter if needed
+      if ws_port != effective_web_port or is_remote:
+        ws_url = f"{ws_protocol}://{ws_host}:{ws_port}"
+        return (label, f"{base}?ws={ws_url}")
+      else:
+        return (label, base)
+
+    # Generate URLs based on context
+    if is_local:
+      # Local localhost
+      urls.append(build_url(
+        "localhost", effective_web_port,
+        "localhost", self.port,
+        "Local (localhost)"
+      ))
+
+      # Local LAN (if different from localhost)
+      if self.local_ip not in ["127.0.0.1", "localhost"]:
+        urls.append(build_url(
+          self.local_ip, effective_web_port,
+          self.local_ip, self.port,
+          "Local (LAN)"
+        ))
+    else:
+      # Remote URL - strip protocol from domain if present
+      remote_domain = domain_lower.replace("https://", "").replace("http://", "")
+      urls.append(build_url(
+        remote_domain, effective_web_port,
+        self.local_ip, self.port,
+        f"Remote ({remote_domain})"
+      ))
+
+    return urls
 
   # ** downlink message queue methods**
   async def bound_fn(self, session_proxy: VuerSession):
