@@ -8,7 +8,7 @@ Import the skill by running this slash command in Claude Code:
 
 ```
 /plugin marketplace add vuer-ai/vuer
-/plugin install vuer@vuer
+/plugin install vuer@vuer-ai-vuer
 ```
 
 For local development (if you cloned the vuer repo):

@@ -63,7 +63,7 @@ Vuer includes a Claude Code skill that teaches Claude how to use the library eff
 
 ```
 /plugin marketplace add vuer-ai/vuer
-/plugin install vuer@vuer
+/plugin install vuer@vuer-ai-vuer
 ```
 
 See the [full guide](guides/claude_skill.md) for more details.
