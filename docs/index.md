@@ -59,11 +59,11 @@ Vuer is built by researchers at MIT and UCSD in fields including robotics, compu
 
 ## 🤖 Using Vuer with Claude Code
 
-Vuer includes a Claude Code skill that teaches Claude how to use the library effectively. To import, run in Claude Code:
+Vuer includes a [Claude Code skill](https://github.com/vuer-ai/vuer-skill) that teaches Claude how to use the library effectively. To import, run in Claude Code:
 
 ```
-/plugin marketplace add vuer-ai/vuer
-/plugin install vuer@vuer-ai-vuer
+/plugin marketplace add vuer-ai/vuer-skill
+/plugin install vuer@vuer-ai-vuer-skill
 ```
 
 See the [full guide](guides/claude_skill.md) for more details.

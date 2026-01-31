@@ -1,14 +1,14 @@
 # Using Vuer with Claude Code
 
-Vuer includes a **Claude Code skill** that teaches Claude how to use the library effectively. This enables Claude to help you build 3D visualizations, debug issues, and write Vuer code with accurate knowledge of the APIs.
+Vuer includes a **[Claude Code skill](https://github.com/vuer-ai/vuer-skill)** that teaches Claude how to use the library effectively. This enables Claude to help you build 3D visualizations, debug issues, and write Vuer code with accurate knowledge of the APIs.
 
 ## Quick Setup
 
 Import the skill by running this slash command in Claude Code:
 
 ```
-/plugin marketplace add vuer-ai/vuer
-/plugin install vuer@vuer-ai-vuer
+/plugin marketplace add vuer-ai/vuer-skill
+/plugin install vuer@vuer-ai-vuer-skill
 ```
 
 For local development (if you cloned the vuer repo):

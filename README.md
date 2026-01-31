@@ -66,11 +66,11 @@ For more details:
 
 ## Using Vuer with Claude Code
 
-Vuer includes a Claude Code plugin that teaches Claude how to use the library. To install:
+Vuer includes a [Claude Code skill](https://github.com/vuer-ai/vuer-skill) that teaches Claude how to use the library. To install:
 
 ```
-/plugin marketplace add vuer-ai/vuer
-/plugin install vuer@vuer-ai-vuer
+/plugin marketplace add vuer-ai/vuer-skill
+/plugin install vuer@vuer-ai-vuer-skill
 ```
 
 See the [full guide](https://docs.vuer.ai/en/latest/guides/claude_skill.html) for details.
