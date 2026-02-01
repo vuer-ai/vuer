@@ -29,12 +29,73 @@ Configuration via environment variables:
 """
 
 import asyncio
+import platform
 from typing import AsyncIterator, Optional, Union
 
 from msgpack import packb, unpackb
 from params_proto import EnvVar
 
 from vuer.events import ClientEvent
+
+
+def get_client_info() -> dict:
+  """Gather Python client system information.
+
+  Returns a dictionary with system info for the INIT event:
+
+  Common fields (shared with browser client):
+    - client: Always "vuer-py" to distinguish from browser clients
+    - clientVersion: The vuer library version
+    - timezone: IANA timezone name (e.g., "America/Los_Angeles")
+    - timezoneOffset: Timezone offset in minutes from UTC
+
+  Python-specific fields:
+    - pythonVersion: Python version string (e.g., "3.11.13")
+    - platform: Operating system name (e.g., "Darwin", "Linux", "Windows")
+    - platformVersion: OS kernel version string
+    - machine: Machine architecture (e.g., "x86_64", "arm64")
+  """
+  try:
+    from datetime import datetime
+
+    # Get IANA timezone name (Python 3.9+ with zoneinfo)
+    try:
+      tz_info = datetime.now().astimezone().tzinfo
+      tz_name = getattr(tz_info, 'key', None) or getattr(tz_info, 'zone', None)
+    except Exception:
+      tz_name = None
+
+    # Fallback to time.tzname if IANA name not available
+    if tz_name is None:
+      import time
+      tz_name = time.tzname[0] if time.tzname else None
+
+    # Calculate offset in minutes from UTC (positive for west of UTC, like browser)
+    local_offset = datetime.now().astimezone().utcoffset()
+    tz_offset = int(-local_offset.total_seconds() // 60) if local_offset else None
+  except Exception:
+    tz_name = None
+    tz_offset = None
+
+  # Get vuer version
+  try:
+    from importlib.metadata import version
+    client_version = version("vuer")
+  except Exception:
+    client_version = "unknown"
+
+  return {
+    # Common fields
+    "client": "vuer-py",
+    "clientVersion": client_version,
+    "timezone": tz_name,
+    "timezoneOffset": tz_offset,
+    # Python-specific fields
+    "pythonVersion": platform.python_version(),
+    "platform": platform.system(),
+    "platformVersion": platform.release(),
+    "machine": platform.machine(),
+  }
 
 
 def _default_encoder(obj):
@@ -108,7 +169,7 @@ class VuerClient:
     self._connected = False
 
   async def connect(self) -> "VuerClient":
-    """Connect to the Vuer server.
+    """Connect to the Vuer server and send INIT event with client info.
 
     :return: Self for chaining
     """
@@ -119,6 +180,11 @@ class VuerClient:
 
     self._ws = await connect(self.URI, max_size=self.WEBSOCKET_MAX_SIZE)
     self._connected = True
+
+    # Send INIT event with Python client system info (matches browser's INIT event)
+    init_event = ClientEvent(etype="INIT", value=get_client_info())
+    await self._send(init_event)
+
     return self
 
   async def close(self) -> None:
