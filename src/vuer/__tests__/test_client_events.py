@@ -1,7 +1,5 @@
 """Tests for client events."""
 
-from datetime import datetime as Datetime
-
 from vuer.events import INIT, NULL, ClientEvent, InitEvent, NullEvent
 
 
@@ -25,11 +23,11 @@ def test_client_event_with_kwargs():
 
 def test_client_event_with_timestamp():
   """Test ClientEvent with explicit timestamp."""
-  ts_ms = 1704067200000  # 2024-01-01 00:00:00 UTC in milliseconds
-  event = ClientEvent(etype="TEST_EVENT", ts=ts_ms)
+  ts = 1704067200.0  # 2024-01-01 00:00:00 UTC in seconds
+  event = ClientEvent(etype="TEST_EVENT", ts=ts)
 
   assert event.etype == "TEST_EVENT"
-  assert isinstance(event.ts, Datetime)
+  assert event.ts == ts
 
 
 def test_client_event_equality():

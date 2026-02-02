@@ -6,30 +6,32 @@ Vuer includes a built-in static file server that allows you to serve 3D models, 
 
 ## Static File Configuration
 
-### The `static_root` Parameter
+### The `workspace` Parameter
 
-When initializing your Vuer application, you can specify where static files are served from using the `static_root` parameter:
+When initializing your Vuer application, you can specify where static files are served from using the `workspace` parameter:
 
 ```python
 from vuer import Vuer
 
 # Serve static files from the current directory (default)
-app = Vuer(static_root=".")
+app = Vuer(workspace=".")
 
 # Or specify a custom path
-app = Vuer(static_root="/path/to/your/assets")
+app = Vuer(workspace="/path/to/your/assets")
 
 # Or use Path objects
 from pathlib import Path
-app = Vuer(static_root=Path(__file__).parent / "assets")
+app = Vuer(workspace=Path(__file__).parent / "assets")
 ```
+
+> **Note:** The `static_root` parameter is deprecated. Use `workspace` instead.
 
 ### URL Structure
 
 Static files are served under the `/static` endpoint. For example:
 
 ```python
-app = Vuer(static_root="./my_assets")
+app = Vuer(workspace="./my_assets")
 
 # File at: ./my_assets/models/robot.obj
 # Accessible via: /static/models/robot.obj
@@ -43,7 +45,7 @@ Once configured, you can reference static files in your Vuer components:
 from vuer import Vuer, VuerSession
 from vuer.schemas import DefaultScene, Obj, ImageBackground
 
-app = Vuer(static_root="./assets")
+app = Vuer(workspace="./assets")
 
 @app.spawn(start=True)
 async def main(session: VuerSession):
@@ -166,7 +168,7 @@ from pathlib import Path
 from vuer import Vuer, VuerSession
 from vuer.schemas import DefaultScene, Obj, Pcd
 
-app = Vuer(static_root=Path(__file__).parent / "assets")
+app = Vuer(workspace=Path(__file__).parent / "assets")
 
 @app.spawn(start=True)
 async def main(session: VuerSession):
@@ -202,7 +204,7 @@ import os
 from vuer import Vuer, VuerSession
 from vuer.schemas import DefaultScene, Obj
 
-app = Vuer(static_root="./assets")
+app = Vuer(workspace="./assets")
 
 # Check if running in production
 IS_PRODUCTION = os.getenv("PRODUCTION", "false").lower() == "true"
@@ -275,7 +277,7 @@ from vuer import Vuer, VuerSession
 from vuer.schemas import DefaultScene, Obj, Pcd, ImageBackground
 
 app = Vuer(
-    static_root=Path(__file__).parent / "assets",
+    workspace=Path(__file__).parent / "assets",
     port=8012
 )
 
@@ -306,7 +308,7 @@ async def main(session: VuerSession):
 
 ## Summary
 
-- **`static_root`**: Configure where static files are served from
+- **`workspace`**: Configure where static files are served from (replaces deprecated `static_root`)
 - **`?hot`**: Mark frequently changing assets for instant updates
 - **Hot loading**: A development concept for assets that change often
 - **Production**: Remove `?hot` for optimal caching and performance
