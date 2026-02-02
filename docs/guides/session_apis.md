@@ -4,12 +4,13 @@
 
 Vuer provides a set of intuitive APIs for managing your 3D scene dynamically. Understanding when to use each API is crucial for building efficient, interactive applications.
 
-This guide covers the five core session APIs:
+This guide covers the six core session APIs:
 - `session.set` - Initialize the scene
 - `session.upsert` - Update or insert elements
 - `session.update` - Update existing elements only
 - `session.add` - Add new elements
 - `session.remove` - Remove elements
+- `session.till` - Wait for client events
 
 ## Quick Reference
 
@@ -20,6 +21,7 @@ This guide covers the five core session APIs:
 | `session.update` | Modify existing only | Updates it | Does nothing (NOOP) |
 | `session.add` | Add new elements | Error/duplicate | Creates it |
 | `session.remove` | Delete elements | Removes it | Does nothing |
+| `session.till` | Wait for event | N/A | Waits until received |
 
 ## 1. session.set - Initialize the Scene
 
@@ -401,12 +403,17 @@ for i in range(10):
 3. **Only update if exists, otherwise skip?** → Use `session.update`
 4. **Adding definitely new elements?** → Use `session.add`
 5. **Removing elements?** → Use `session.remove`
+6. **Need to wait for a client event?** → Use `session.till`
 
 **Most Common Usage:**
 
 ```python
 @app.spawn(start=True)
 async def main(session: VuerSession):
+    # Step 0: Identify client type (optional)
+    e = await session.till("INIT")
+    print(f"Client: {e.value.get('client')}")
+
     # Step 1: Initialize scene (once)
     session.set @ DefaultScene()
 
@@ -420,7 +427,103 @@ async def main(session: VuerSession):
         await session.sleep(0.016)  # ~60 FPS
 ```
 
+## 6. session.till - Wait for Client Events
+
+**Purpose:** Wait for and receive a specific event type from the client. This is useful for awaiting events like INIT to identify the client type.
+
+**When to use:**
+- When you need to wait for a specific event before proceeding
+- To identify client type (browser vs Python client) on connection
+- For handshake or initialization sequences
+
+**Behavior:**
+- Registers a one-time handler for the specified event type
+- Returns the event when received
+- Optionally times out if event doesn't arrive
+
+```python
+@app.spawn(start=True)
+async def main(session: VuerSession):
+    # Wait for the INIT event from the client
+    e = await session.till("INIT")
+
+    # Check if it's a Python client or browser
+    client = e.value.get('client')
+
+    if client == 'python':
+        print("Python client connected!")
+        print(f"  Platform: {e.value.get('platform')}")
+        print(f"  Python: {e.value.get('pythonVersion')}")
+    else:
+        # Browser client
+        print(f"Browser connected!")
+        print(f"  User Agent: {e.value.get('userAgent')}")
+        print(f"  Screen: {e.value.get('screenWidth')}x{e.value.get('screenHeight')}")
+
+    session.set @ DefaultScene()
+    await session.forever()
+```
+
+**With timeout:**
+
+```python
+import asyncio
+
+@app.spawn(start=True)
+async def main(session: VuerSession):
+    try:
+        # Wait up to 5 seconds for INIT
+        e = await session.till("INIT", timeout=5.0)
+        print(f"Client connected: {e.value.get('clientType')}")
+    except asyncio.TimeoutError:
+        print("No INIT received within 5 seconds")
+
+    await session.forever()
+```
+
+**Client Info (INIT Event Value):**
+
+Common fields (both clients):
+- `client` — `"browser"` or `"python"`
+- `clientVersion` — library version
+- `timezone` — IANA format, e.g., `"America/Los_Angeles"`
+- `timezoneOffset` — minutes from UTC
+
+Python clients send:
+```python
+{
+    "client": "python",
+    "clientVersion": "0.1.x",
+    "pythonVersion": "3.11.13",
+    "platform": "Darwin",
+    "platformVersion": "24.2.0",
+    "machine": "arm64",
+    "timezone": "America/Los_Angeles",
+    "timezoneOffset": 480
+}
+```
+
+Browser clients send:
+```python
+{
+    "client": "browser",
+    "clientVersion": "0.0.97",
+    "userAgent": "Mozilla/5.0...",
+    "screenWidth": 2560,
+    "screenHeight": 1440,
+    "devicePixelRatio": 2,
+    "timezone": "America/Los_Angeles",
+    "timezoneOffset": 480
+}
+```
+
+```{admonition} Use Case
+:class: info
+Use `session.till("INIT")` to identify client types and customize behavior accordingly—for example, sending different scenes to VR headsets vs desktop browsers vs Python automation scripts.
+```
+
 ## See Also
 
 - [Constructing a Scene](first_3d_scene/01_constructing_a_scene.md) - Learn about scene structure
 - [Event Handling](../api/events.md) - Responding to user interactions
+- [Client Connection](client_connection.md) - Connecting Python clients to Vuer

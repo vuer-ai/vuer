@@ -44,7 +44,7 @@ def get_client_info() -> dict:
   Returns a dictionary with system info for the INIT event:
 
   Common fields (shared with browser client):
-    - client: Always "vuer-py" to distinguish from browser clients
+    - client: Always "python" to distinguish from browser clients
     - clientVersion: The vuer library version
     - timezone: IANA timezone name (e.g., "America/Los_Angeles")
     - timezoneOffset: Timezone offset in minutes from UTC
@@ -86,7 +86,7 @@ def get_client_info() -> dict:
 
   return {
     # Common fields
-    "client": "vuer-py",
+    "client": "python",
     "clientVersion": client_version,
     "timezone": tz_name,
     "timezoneOffset": tz_offset,

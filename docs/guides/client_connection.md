@@ -126,6 +126,45 @@ await client.connect()
 await client.close()
 ```
 
+### INIT Event (Automatic)
+
+When a `VuerClient` connects, it automatically sends an `INIT` event with system information. This allows the server to identify the client type and environment.
+
+The INIT event includes:
+
+```python
+{
+    # Common fields (shared with browser client)
+    "client": "python",            # Always "python" for VuerClient
+    "clientVersion": "0.1.x",      # Library version
+    "timezone": "America/Los_Angeles",
+    "timezoneOffset": 480,
+
+    # Python-specific fields
+    "pythonVersion": "3.11.13",
+    "platform": "Darwin",          # or "Linux", "Windows"
+    "platformVersion": "24.2.0",
+    "machine": "arm64",
+}
+```
+
+On the server, you can await this event to identify the client:
+
+```python
+@app.spawn(start=True)
+async def main(session: VuerSession):
+    # Wait for the INIT event
+    e = await session.till("INIT")
+
+    if e.value.get('client') == 'python':
+        print(f"Python client v{e.value.get('clientVersion')}")
+    else:
+        print(f"Browser client: {e.value.get('userAgent')}")
+
+    session.set @ DefaultScene()
+    await session.forever()
+```
+
 ### Sending Events
 
 Define custom event classes by setting `etype` as a class attribute:
