@@ -61,13 +61,14 @@ def get_client_info() -> dict:
     # Get IANA timezone name (Python 3.9+ with zoneinfo)
     try:
       tz_info = datetime.now().astimezone().tzinfo
-      tz_name = getattr(tz_info, 'key', None) or getattr(tz_info, 'zone', None)
+      tz_name = getattr(tz_info, "key", None) or getattr(tz_info, "zone", None)
     except Exception:
       tz_name = None
 
     # Fallback to time.tzname if IANA name not available
     if tz_name is None:
       import time
+
       tz_name = time.tzname[0] if time.tzname else None
 
     # Calculate offset in minutes from UTC (positive for west of UTC, like browser)
@@ -80,6 +81,7 @@ def get_client_info() -> dict:
   # Get vuer version
   try:
     from importlib.metadata import version
+
     client_version = version("vuer")
   except Exception:
     client_version = "unknown"
@@ -141,7 +143,7 @@ class VuerClient:
 
   Example::
 
-      async with VuerClient(URI="ws://localhost:8012") as client:
+      async with VuerClient(uri="ws://localhost:8012") as client:
           # Using @ syntax (fire and forget)
           client.send @ ClientEvent(etype="CUSTOM", value="hello")
 
@@ -152,21 +154,26 @@ class VuerClient:
           print(event)
 
   Configuration (via constructor or environment variables):
-      URI: WebSocket URI to connect to (env: VUER_CLIENT_URI, default ws://localhost:8012).
-      WEBSOCKET_MAX_SIZE: Maximum WebSocket message size (env: WEBSOCKET_MAX_SIZE, default 256MB).
+      uri: WebSocket URI to connect to (env: VUER_CLIENT_URI, default ws://localhost:8012).
+      max_size: Maximum WebSocket message size (env: WEBSOCKET_MAX_SIZE, default 256MB).
   """
 
-  URI: str = EnvVar @ "VUER_CLIENT_URI" | "ws://localhost:8012"
-  WEBSOCKET_MAX_SIZE: int = EnvVar @ "WEBSOCKET_MAX_SIZE" | 2**28
+  uri: str = EnvVar @ "VUER_CLIENT_URI" | "ws://localhost:8012"
+  websocket_max_size: int = EnvVar @ "WEBSOCKET_MAX_SIZE" | 2**28
 
-  def __init__(self, URI: str = None, WEBSOCKET_MAX_SIZE: int = None):
+  _ws = None
+  _connected = False
+
+  def __init__(self, uri: str = None, max_size: int = None):
     """Initialize the Vuer client.
 
-    :param URI: WebSocket URI to connect to (e.g., "ws://localhost:8012")
-    :param WEBSOCKET_MAX_SIZE: Maximum websocket message size in bytes (default 256MB)
+    :param uri: WebSocket URI to connect to (e.g., "ws://localhost:8012")
+    :param max_size: Maximum websocket message size in bytes (default 256MB)
     """
-    self._ws = None
-    self._connected = False
+    if uri is not None:
+      self.uri = uri
+    if max_size is not None:
+      self.websocket_max_size = max_size
 
   async def connect(self) -> "VuerClient":
     """Connect to the Vuer server and send INIT event with client info.
@@ -178,7 +185,7 @@ class VuerClient:
     except ImportError:
       from websockets import connect
 
-    self._ws = await connect(self.URI, max_size=self.WEBSOCKET_MAX_SIZE)
+    self._ws = await connect(self.uri, max_size=self.websocket_max_size)
     self._connected = True
 
     # Send INIT event with Python client system info (matches browser's INIT event)

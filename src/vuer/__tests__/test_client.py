@@ -113,19 +113,27 @@ def test_async_at_call_returns_coroutine():
     result.close()
 
 
-def test_async_at_matmul_returns_coroutine():
-    """Test AsyncAt __matmul__ returns a coroutine (awaitable)."""
+def test_async_at_matmul_fire_and_forget():
+    """Test AsyncAt __matmul__ fires and forgets (creates task, returns None)."""
 
-    async def mock_fn(event):
-        pass
+    async def _test():
+        called = []
 
-    at = AsyncAt(mock_fn)
-    event = MockEvent()
-    result = at @ event
+        async def mock_fn(event):
+            called.append(event)
 
-    assert asyncio.iscoroutine(result)
-    # Clean up coroutine
-    result.close()
+        at = AsyncAt(mock_fn)
+        event = MockEvent()
+        result = at @ event
+
+        # @ operator returns None (fire-and-forget)
+        assert result is None
+
+        # Let the task run
+        await asyncio.sleep(0)
+        assert len(called) == 1
+
+    asyncio.run(_test())
 
 
 def test_custom_event_class():

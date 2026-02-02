@@ -1,7 +1,5 @@
 """Tests for server events."""
 
-from datetime import datetime as Datetime
-
 from vuer.events import (
   END,
   NOOP,
@@ -49,11 +47,11 @@ def test_server_event_with_timestamp():
   class TestServerEvent(ServerEvent):
     etype = "TEST"
 
-  ts_ms = 1704067200000
-  event = TestServerEvent(data={"key": "value"}, ts=ts_ms)
+  ts = 1704067200.0  # seconds
+  event = TestServerEvent(data={"key": "value"}, ts=ts)
 
   assert event.etype == "TEST"
-  assert isinstance(event.ts, Datetime)
+  assert event.ts == ts
 
 
 def test_server_event_equality():

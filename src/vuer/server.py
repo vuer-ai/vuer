@@ -17,17 +17,19 @@ from msgpack import packb, unpackb
 
 
 def _default_encoder(obj):
-    """Custom encoder for msgpack to handle numpy types."""
-    try:
-        import numpy as np
+  """Custom encoder for msgpack to handle numpy types."""
+  try:
+    import numpy as np
 
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        if isinstance(obj, (np.integer, np.floating)):
-            return obj.item()
-    except ImportError:
-        pass
-    raise TypeError(f"Cannot serialize object of type {type(obj)}")
+    if isinstance(obj, np.ndarray):
+      return obj.tolist()
+    if isinstance(obj, (np.integer, np.floating)):
+      return obj.item()
+  except ImportError:
+    pass
+  raise TypeError(f"Cannot serialize object of type {type(obj)}")
+
+
 from params_proto import EnvVar, proto
 from websockets import ConnectionClosedError
 
@@ -132,12 +134,12 @@ class _SpawnWrapper:
     return self.vuer.start(**kwargs)
 
 
-def _match_filters(client_info: dict, filters: dict) -> bool:
+def _match_filters(obj: dict, **filters) -> bool:
   """Check if client_info matches all filters.
 
   Supports fnmatch wildcards (e.g., "*" matches any value).
 
-  :param client_info: The client's INIT event value (e.g., {"client": "python", ...})
+  :param obj: The client's INIT event value (e.g., {"client": "python", ...})
   :param filters: Filter criteria (e.g., {"client": "python", "platform": "Darwin"})
   :return: True if all filters match, False otherwise
   """
@@ -145,7 +147,7 @@ def _match_filters(client_info: dict, filters: dict) -> bool:
     return True  # No filters = match all
 
   for key, pattern in filters.items():
-    value = client_info.get(key)
+    value = obj.get(key)
     if value is None:
       return False
     # Convert both to string for fnmatch comparison
@@ -288,7 +290,9 @@ class VuerSession:
     # Therefore, convert ts to an integer in milliseconds before sending to the frontend.
     if "ts" in event_obj and isinstance(event_obj["ts"], float):
       event_obj["ts"] = int(event_obj["ts"] * 1000)
-    event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True, default=_default_encoder)
+    event_bytes = packb(
+      event_obj, use_single_float=True, use_bin_type=True, default=_default_encoder
+    )
 
     return self.uplink_queue.append(event_bytes)
 
@@ -599,7 +603,9 @@ class Vuer(Server):
 
   # Vuer-specific settings (host, cert, key, ca_cert inherited from Server)
   domain: str = EnvVar @ "VUER_DOMAIN" | "https://vuer.ai"
-  client_url: Optional[str] = None  # Optional override for domain (e.g., local client build)
+  client_url: Optional[str] = (
+    None  # Optional override for domain (e.g., local client build)
+  )
 
   port: int = EnvVar @ "VUER_PORT" | DEFAULT_PORT
   web_port: int = None  # Web development server port; None means same as port
@@ -771,7 +777,12 @@ class Vuer(Server):
     # Remote if: domain is set AND not localhost/127.0.0.1
     # Check by domain value (strip protocol if present)
     domain_lower = self.domain.lower() if self.domain else ""
-    is_local = not domain_lower or domain_lower in ["localhost", "127.0.0.1", "http://localhost", "https://localhost"]
+    is_local = not domain_lower or domain_lower in [
+      "localhost",
+      "127.0.0.1",
+      "http://localhost",
+      "https://localhost",
+    ]
     is_remote = not is_local
 
     # Determine protocols and ports
@@ -803,27 +814,31 @@ class Vuer(Server):
     # Generate URLs based on context
     if is_local:
       # Local localhost
-      urls.append(build_url(
-        "localhost", effective_web_port,
-        "localhost", self.port,
-        "Local (localhost)"
-      ))
+      urls.append(
+        build_url(
+          "localhost", effective_web_port, "localhost", self.port, "Local (localhost)"
+        )
+      )
 
       # Local LAN (if different from localhost)
       if self.local_ip not in ["127.0.0.1", "localhost"]:
-        urls.append(build_url(
-          self.local_ip, effective_web_port,
-          self.local_ip, self.port,
-          "Local (LAN)"
-        ))
+        urls.append(
+          build_url(
+            self.local_ip, effective_web_port, self.local_ip, self.port, "Local (LAN)"
+          )
+        )
     else:
       # Remote URL - strip protocol from domain if present
       remote_domain = domain_lower.replace("https://", "").replace("http://", "")
-      urls.append(build_url(
-        remote_domain, effective_web_port,
-        self.local_ip, self.port,
-        f"Remote ({remote_domain})"
-      ))
+      urls.append(
+        build_url(
+          remote_domain,
+          effective_web_port,
+          self.local_ip,
+          self.port,
+          f"Remote ({remote_domain})",
+        )
+      )
 
     return urls
 
@@ -950,7 +965,9 @@ class Vuer(Server):
       # Therefore, convert ts to an integer in milliseconds before sending to the frontend.
       if "ts" in event_obj and isinstance(event_obj["ts"], float):
         event_obj["ts"] = int(event_obj["ts"] * 1000)
-      event_bytes = packb(event_obj, use_single_float=True, use_bin_type=True, default=_default_encoder)
+      event_bytes = packb(
+        event_obj, use_single_float=True, use_bin_type=True, default=_default_encoder
+      )
     else:
       assert event is None, "Can not pass in both at the same time."
 
@@ -1069,7 +1086,7 @@ class Vuer(Server):
 
       matching = []
       for entry in self.spawn_handlers:
-        if _match_filters(client_info, entry["filters"]):
+        if _match_filters(client_info, **entry["filters"]):
           matching.append(entry)
 
       if not matching:
@@ -1078,9 +1095,9 @@ class Vuer(Server):
       if len(matching) > 1:
         handler_names = [e["fn"].__name__ for e in matching]
         warnings.warn(
-          f"Multiple spawn handlers match client {client_info.get('client', 'unknown')}: "
+          f"Multiple spawn handlers match {client_info}: "
           f"{handler_names}. Only the first ({handler_names[0]}) will run.",
-          stacklevel=2
+          stacklevel=2,
         )
 
       matched_handler = matching[0]["fn"]
