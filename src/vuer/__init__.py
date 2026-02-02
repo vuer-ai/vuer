@@ -2,9 +2,10 @@ from vuer._compat import handle_server_import_error
 
 try:
     from vuer.server import Vuer, VuerSession
+    from vuer.workspace import Workspace
 except ImportError as e:
     handle_server_import_error(e)
-    Vuer, VuerSession = None, None
+    Vuer, VuerSession, Workspace = None, None, None
 
 from vuer.client import VuerClient
 
@@ -15,4 +16,4 @@ def entrypoint():
     app.run()
 
 
-__all__ = ["Vuer", "VuerSession", "VuerClient", "entrypoint"]
+__all__ = ["Vuer", "VuerSession", "VuerClient", "Workspace", "entrypoint"]

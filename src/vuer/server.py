@@ -34,6 +34,7 @@ from params_proto import EnvVar, proto
 from websockets import ConnectionClosedError
 
 from vuer.base import Server, handle_file_request, websocket_handler
+from vuer.workspace import Workspace, workspace_from_config
 from vuer.events import (
   INIT,
   NOOP,
@@ -611,9 +612,9 @@ class Vuer(Server):
   web_port: int = None  # Web development server port; None means same as port
   workspace_path: str = ""  # Path on vuer.ai workspace (e.g., "/workspace/scratch")
   cors: str = EnvVar @ "VUER_CORS" | DEFAULT_CORS
-  workspace: Union[str, Path] = EnvVar @ "VUER_WORKSPACE" | "."
+  workspace: Union[str, Path, List[Union[str, Path]], Workspace] = EnvVar @ "VUER_WORKSPACE" | "."
   # Deprecated: use workspace instead
-  static_root: Union[str, Path] = None
+  static_root: Union[str, Path, List[Union[str, Path]]] = None
 
   free_port: bool = False
   queue_len: int = 100
@@ -644,6 +645,10 @@ class Vuer(Server):
         stacklevel=2,
       )
       self.workspace = self.static_root
+
+    # Convert workspace to Workspace instance if needed
+    self.workspace = workspace_from_config(self.workspace)
+    self.workspace.bind(self)
 
     if self.client_url:
       self.client_url = self.client_url.format(
@@ -1318,7 +1323,7 @@ class Vuer(Server):
     self._static_file("/editor", self.client_root, "editor/index.html")
 
     # serve local files via /static endpoint
-    self._add_static("/static", self.workspace)
+    self.workspace.link("/static")
     self._add_route("/relay", self.relay, method="POST")
 
     if self.client_url:
@@ -1328,7 +1333,12 @@ class Vuer(Server):
       )
     else:
       base_url = self.domain
-    workspace_path = os.path.abspath(self.workspace)
+
+    # Format workspace paths for display
+    workspace_lines = []
+    for path in self.workspace.absolute_paths:
+      workspace_lines.append(f" {DIM}·{RESET} file://{path}")
+    workspace_display = "\n".join(workspace_lines)
 
     print(f"""{BOLD}Vuer Server{RESET}
 
@@ -1337,7 +1347,7 @@ class Vuer(Server):
 
 {CYAN}Workspace:{RESET}
 
- {DIM}·{RESET} file://{workspace_path}
+{workspace_display}
 {DIM}->{RESET} {base_url}/static
 """)
 
