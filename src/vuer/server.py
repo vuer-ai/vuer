@@ -605,7 +605,9 @@ class Vuer(Server):
   web_port: int = None  # Web development server port; None means same as port
   workspace_path: str = ""  # Path on vuer.ai workspace (e.g., "/workspace/scratch")
   cors: str = EnvVar @ "VUER_CORS" | DEFAULT_CORS
-  static_root: str = EnvVar @ "VUER_STATIC_ROOT" | "."
+  workspace: Union[str, Path] = EnvVar @ "VUER_WORKSPACE" | "."
+  # Deprecated: use workspace instead
+  static_root: Union[str, Path] = None
 
   free_port: bool = False
   queue_len: int = 100
@@ -627,6 +629,15 @@ class Vuer(Server):
 
   def __post_init__(self):
     """Initialize Vuer after params-proto sets up fields."""
+
+    # Handle deprecated static_root parameter
+    if self.static_root is not None:
+      warnings.warn(
+        "static_root is deprecated, use workspace instead",
+        DeprecationWarning,
+        stacklevel=2,
+      )
+      self.workspace = self.static_root
 
     if self.client_url:
       self.client_url = self.client_url.format(
@@ -1290,7 +1301,7 @@ class Vuer(Server):
     self._static_file("/editor", self.client_root, "editor/index.html")
 
     # serve local files via /static endpoint
-    self._add_static("/static", self.static_root)
+    self._add_static("/static", self.workspace)
     self._add_route("/relay", self.relay, method="POST")
 
     if self.client_url:
@@ -1300,16 +1311,16 @@ class Vuer(Server):
       )
     else:
       base_url = self.domain
-    static_path = os.path.abspath(self.static_root)
+    workspace_path = os.path.abspath(self.workspace)
 
     print(f"""{BOLD}Vuer Server{RESET}
 
 {CYAN}Local:{RESET}   {base_url}?ws=ws{self.ssl}://localhost:{self.port}
 {CYAN}Network:{RESET} {base_url}?ws=ws{self.ssl}://{self.local_ip}:{self.port}
 
-{CYAN}Serving files from:{RESET}
+{CYAN}Workspace:{RESET}
 
- {DIM}·{RESET} file://{static_path}
+ {DIM}·{RESET} file://{workspace_path}
 {DIM}->{RESET} {base_url}/static
 """)
 
