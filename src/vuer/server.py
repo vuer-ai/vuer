@@ -1,10 +1,12 @@
 import asyncio
 import socket as stdlib_socket
+import warnings
 from asyncio import sleep
 from collections import defaultdict, deque
+from fnmatch import fnmatch
 from functools import partial
 from pathlib import Path
-from typing import Callable, Deque, Dict, Optional, Union, cast
+from typing import Callable, Deque, Dict, List, Optional, Union, cast
 from uuid import uuid4
 
 from aiohttp.hdrs import UPGRADE
@@ -108,6 +110,49 @@ class BoundFn:
   def start(self, **kwargs):
     """Start the Vuer server with optional keyword arguments."""
     return self.vuer.start(**kwargs)
+
+
+class _SpawnWrapper:
+  """Wrapper for spawn decorator with filter support."""
+
+  def __init__(self, vuer: "Vuer", decorator: Callable, start: bool = False):
+    self.vuer = vuer
+    self.decorator = decorator
+    self.auto_start = start
+
+  def __call__(self, fn):
+    """Register the handler and optionally start the server."""
+    self.decorator(fn)
+    if self.auto_start:
+      self.vuer.start()
+    return self
+
+  def start(self, **kwargs):
+    """Start the Vuer server with optional keyword arguments."""
+    return self.vuer.start(**kwargs)
+
+
+def _match_filters(client_info: dict, filters: dict) -> bool:
+  """Check if client_info matches all filters.
+
+  Supports fnmatch wildcards (e.g., "*" matches any value).
+
+  :param client_info: The client's INIT event value (e.g., {"client": "python", ...})
+  :param filters: Filter criteria (e.g., {"client": "python", "platform": "Darwin"})
+  :return: True if all filters match, False otherwise
+  """
+  if not filters:
+    return True  # No filters = match all
+
+  for key, pattern in filters.items():
+    value = client_info.get(key)
+    if value is None:
+      return False
+    # Convert both to string for fnmatch comparison
+    if not fnmatch(str(value), str(pattern)):
+      return False
+
+  return True
 
 
 class VuerSession:
@@ -451,6 +496,51 @@ class VuerSession:
     loop = asyncio.get_running_loop()
     return loop.create_task(task, name=name)
 
+  async def till(self, event: str, timeout: float = None) -> ClientEvent:
+    """Wait for and return an event of the specified type.
+
+    This method registers a one-time handler for the specified event type
+    and awaits its arrival. Useful for waiting on specific events like INIT.
+
+    Example Usage::
+
+        @app.spawn(start=True)
+        async def main(session: VuerSession):
+            # Wait for the INIT event from the client
+            e = await session.till("INIT")
+            client_type = e.value.get('clientType')  # 'python' or browser info
+
+            if client_type == 'python':
+                print("Python client connected!")
+            else:
+                print(f"Browser connected: {e.value.get('userAgent')}")
+
+    :param event: The event type to wait for (e.g., "INIT", "CAMERA_MOVE")
+    :param timeout: Optional timeout in seconds. Raises asyncio.TimeoutError if exceeded.
+    :return: The ClientEvent of the specified type
+    :raises asyncio.TimeoutError: If timeout is specified and exceeded
+    """
+    event_received = asyncio.Event()
+    result = None
+
+    async def handler(client_event: ClientEvent, _: "VuerSession") -> None:
+      nonlocal result
+      result = client_event
+      event_received.set()
+
+    cleanup = self.vuer.add_handler(event, handler, once=True)
+
+    try:
+      if timeout is not None:
+        await asyncio.wait_for(event_received.wait(), timeout)
+      else:
+        await event_received.wait()
+    except asyncio.TimeoutError:
+      cleanup()
+      raise
+
+    return result
+
   async def forever(self):
     """Keep the session alive indefinitely.
 
@@ -567,7 +657,8 @@ class Vuer(Server):
     self.handlers = defaultdict(dict)
     self.page = Page()
     self.ws: Dict[str, WebSocketResponse] = {}
-    self.socket_handler: SocketHandler = None
+    # List of spawn handlers with their filters: [{"fn": handler, "filters": {...}}, ...]
+    self.spawn_handlers: List[Dict] = []
     self.spawned_coroutines = []
 
   @property
@@ -755,22 +846,54 @@ class Vuer(Server):
 
       session_proxy.downlink_queue.append(client_event)
 
-  def spawn(self, fn: SocketHandler = None, start=False):
-    """Bind the socket handler function `fn` to vuer, and start
-    the event loop if `start` is `True`.
+  def spawn(self, fn: SocketHandler = None, start=False, **filters):
+    """Register a spawn handler with optional client filtering.
 
-    Note: this is really a misnomer.
+    Handlers are matched against the client's INIT event. Only the first
+    matching handler runs; a warning is shown if multiple handlers match.
+
+    Filter syntax supports fnmatch wildcards:
+      - `client="python"` - exact match
+      - `platform="*"` - wildcard match
+
+    Example::
+
+        @app.spawn(client="python")
+        async def python_handler(session: VuerSession):
+            # Only for Python clients
+            ...
+
+        @app.spawn(client="browser")
+        async def browser_handler(session: VuerSession):
+            # Only for browser clients
+            ...
+
+        @app.spawn  # No filter = matches all clients
+        async def default_handler(session: VuerSession):
+            ...
 
     :param fn: The function to spawn.
     :param start: Start server after binding
+    :param filters: Filter criteria to match against INIT event value
+                    (e.g., client="python", platform="Darwin")
     :return: BoundFn instance that can be called later with .start()
     """
-    wrapper = BoundFn(self, "socket_handler", start=start)
+    # Handle @app.spawn without parentheses (fn is the decorated function)
+    if callable(fn) and not start and not filters:
+      self.spawn_handlers.append({"fn": fn, "filters": {}})
+      return fn
+
+    def decorator(handler_fn):
+      self.spawn_handlers.append({"fn": handler_fn, "filters": filters})
+      return handler_fn
+
+    wrapper = _SpawnWrapper(self, decorator, start=start)
 
     if fn is None:
-      # this returns a decorator
+      # Called as @app.spawn() or @app.spawn(client="...")
       return wrapper
     else:
+      # Called as app.spawn(fn)
       return wrapper(fn)
 
   def bind(self, fn=None, start=False):
@@ -922,19 +1045,44 @@ class Vuer(Server):
 
     self._add_task(self.uplink(vuer_proxy))
 
-    if self.socket_handler is not None:
+    # Track if we've received INIT and spawned a handler
+    init_received = False
+    matched_handler = None
+
+    async def spawn_matching_handler(client_info: dict):
+      """Find and spawn the first matching handler based on INIT event."""
+      nonlocal matched_handler
+
+      if not self.spawn_handlers:
+        return
+
+      matching = []
+      for entry in self.spawn_handlers:
+        if _match_filters(client_info, entry["filters"]):
+          matching.append(entry)
+
+      if not matching:
+        return
+
+      if len(matching) > 1:
+        handler_names = [e["fn"].__name__ for e in matching]
+        warnings.warn(
+          f"Multiple spawn handlers match client {client_info.get('client', 'unknown')}: "
+          f"{handler_names}. Only the first ({handler_names[0]}) will run.",
+          stacklevel=2
+        )
+
+      matched_handler = matching[0]["fn"]
 
       async def handler():
         try:
-          await self.socket_handler(vuer_proxy)
+          await matched_handler(vuer_proxy)
         except Exception as e:
           await self.close_ws(ws_id)
-          # todo: absorb non-user induced exceptions.
           raise e
-
         await self.close_ws(ws_id)
 
-      task = self._add_task(handler())
+      self._add_task(handler())
 
     if hasattr(generator, "__anext__"):
       serverEvent = await generator.__anext__()
@@ -953,6 +1101,12 @@ class Vuer(Server):
         payload = unpackb(msg.data, raw=False)
         # todo: we want to enforce the payload to contain the timestamp.
         clientEvent = ClientEvent._deserialize(**payload)
+
+        # Check for INIT event to spawn matching handler
+        if not init_received and clientEvent.etype == "INIT":
+          init_received = True
+          client_info = clientEvent.value if isinstance(clientEvent.value, dict) else {}
+          await spawn_matching_handler(client_info)
 
         if hasattr(generator, "__anext__"):
           serverEvent = await generator.asend(clientEvent)
