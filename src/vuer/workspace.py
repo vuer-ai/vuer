@@ -1,9 +1,45 @@
 """Workspace module for managing static and dynamic file serving in Vuer.
 
 This module provides the Workspace class which handles multiple search paths
-for static files and offers a clean API for serving content.
+(overlay) for static files, similar to how $PATH works for executables.
+
+**Basic Usage**::
+
+    from vuer import Vuer, Workspace
+
+    # Multiple search paths - first match wins (like $PATH)
+    workspace = Workspace("./assets", "/data/robots", "./fallback")
+
+    app = Vuer(workspace=workspace)
+
+    @app.spawn(start=True)
+    async def main(session):
+        # Overlay is served at /static automatically
+        # Add additional routes:
+        app.workspace.mount("./extra", to="/extra")
+        app.workspace.route(lambda r: {"status": "ok"}, "/api/status")
+
+**API Overview**::
+
+    workspace = Workspace(*overlay)       # Define overlay search paths
+    workspace.overlay(at="/static")       # Expose overlay at URL route
+    workspace.mount("./dir", to="/route") # Mount single directory
+    workspace.route(fn, "/api")           # Dynamic handler
+
+**Extensibility**:
+
+This module is designed to support different workspace backends:
+
+- ``Workspace`` - Local filesystem (this module)
+- ``DashWorkspace`` - ML-Dash experiments (future)
+- ``McapWorkspace`` - MCAP recordings (future)
+- ``S3Workspace`` - S3 buckets (future)
+
+All workspace types share the same interface (``overlay()``, ``mount()``, ``route()``).
 """
 
+import json
+import asyncio
 import os
 from functools import partial
 from pathlib import Path
@@ -12,17 +48,18 @@ from typing import Callable, List, Optional, Union
 from aiohttp import web
 
 
-async def handle_file_request_multi(request, roots: List[Path], filename=None):
-    """Handle file requests by searching through multiple root paths.
+async def handle_file_request_overlay(request, roots: List[Path], filename: str = None):
+    """Handle file requests by searching through overlay paths.
 
     Searches through the list of root paths in order and returns the first
-    file found that matches the requested filename.
+    file found that matches the requested filename. This implements overlay
+    filesystem semantics where earlier paths take precedence.
 
     :param request: The aiohttp request object.
-    :param roots: List of root paths to search through.
+    :param roots: List of root paths to search through (overlay).
     :param filename: Optional filename override. If None, extracted from request.
     :return: FileResponse for the first matching file.
-    :raises HTTPNotFound: If file is not found in any of the root paths.
+    :raises HTTPNotFound: If file is not found in any of the overlay paths.
     """
     if filename is None:
         filename = request.match_info["filename"]
@@ -33,6 +70,7 @@ async def handle_file_request_multi(request, roots: List[Path], filename=None):
             response = web.FileResponse(filepath)
 
             # Check if URL contains "hot" parameter for hot loading mode
+            # Hot assets change frequently during development
             hot_key = None
             for key in request.query.keys():
                 if key.lower() == "hot":
@@ -52,71 +90,101 @@ async def handle_file_request_multi(request, roots: List[Path], filename=None):
 class Workspace:
     """Workspace for managing static and dynamic file serving.
 
-    A Workspace manages multiple search paths for serving static files and
-    provides a clean API for configuring routes.
+    A Workspace manages multiple search paths (overlay) for serving static files,
+    similar to how $PATH works for executables. When a file is requested, paths
+    are searched in order and the first match wins.
 
-    Usage::
+    This is useful when assets are spread across multiple directories::
 
-        # Single path
-        workspace = Workspace(paths="./assets")
+        # Robot models in one place, textures in another
+        workspace = Workspace("./local_assets", "/shared/robots", "/data/textures")
 
-        # Multiple paths - first match wins
-        workspace = Workspace(paths=["./local", "./shared", "/data/assets"])
+        # Request for /static/robot.urdf searches:
+        #   1. ./local_assets/robot.urdf
+        #   2. /shared/robots/robot.urdf
+        #   3. /data/textures/robot.urdf
+        # Returns first match
 
-        # Using environment variable
-        workspace = Workspace()  # Uses VUER_WORKSPACE env var or "."
+    **Full API**::
+
+        workspace = Workspace(*overlay)       # Define search paths
+        workspace.paths                       # Access paths (read-only tuple)
+        workspace.find("file.txt")            # Find file in overlay
+        workspace.overlay(at="/static")       # Expose overlay at route
+        workspace.mount("./dir", to="/api")   # Mount single directory
+        workspace.route(fn, "/endpoint")      # Register dynamic handler
 
     Attributes:
-        paths: Single path or list of paths to search for static files.
-               Earlier paths take precedence when files exist in multiple locations.
+        paths: Tuple of paths that form the search overlay.
     """
 
-    def __init__(
-        self,
-        paths: Union[str, Path, List[Union[str, Path]]] = ".",
-    ):
-        """Initialize the Workspace.
+    def __init__(self, *overlay: Union[str, Path]):
+        """Initialize the Workspace with overlay paths.
 
-        :param paths: Single path or list of paths to search for static files.
+        :param overlay: Variable number of paths to search for static files.
+                       Earlier paths take precedence (like $PATH).
+                       If no paths provided, defaults to current directory ".".
+
+        Example::
+
+            # Single path
+            workspace = Workspace("./assets")
+
+            # Multiple paths - first match wins
+            workspace = Workspace("./local", "/shared", "/data")
+
+            # No args = current directory
+            workspace = Workspace()
         """
-        self.paths = paths
+        if not overlay:
+            overlay = (".",)
+
+        self._overlay: tuple[Path, ...] = tuple(Path(p) for p in overlay)
         self._server: Optional["Server"] = None
         self._routes: List[dict] = []
-        self._normalize_paths()
-
-    def _normalize_paths(self):
-        """Normalize paths to a list of Path objects."""
-        if isinstance(self.paths, (str, Path)):
-            self._paths = [Path(self.paths)]
-        else:
-            self._paths = [Path(p) for p in self.paths]
 
     @property
-    def roots(self) -> List[Path]:
-        """Get the list of root paths (normalized)."""
-        return self._paths
+    def paths(self) -> tuple[Path, ...]:
+        """The overlay paths (read-only).
+
+        :return: Tuple of Path objects representing the search paths.
+        """
+        return self._overlay
 
     @property
     def absolute_paths(self) -> List[str]:
-        """Get absolute paths as strings for display."""
-        return [os.path.abspath(p) for p in self._paths]
+        """Get absolute paths as strings for display.
 
-    def find_file(self, filename: str) -> Optional[Path]:
-        """Find a file in the workspace paths.
+        :return: List of absolute path strings.
+        """
+        return [os.path.abspath(p) for p in self._overlay]
+
+    def find(self, filename: str) -> Optional[Path]:
+        """Find a file in the overlay paths.
 
         Searches through paths in order and returns the first match.
 
-        :param filename: The filename to search for.
+        :param filename: The filename (relative path) to search for.
         :return: Path to the file if found, None otherwise.
+
+        Example::
+
+            workspace = Workspace("./assets", "/data")
+            path = workspace.find("models/robot.urdf")
+            if path:
+                print(f"Found at: {path}")
         """
-        for root in self._paths:
+        for root in self._overlay:
             filepath = root / filename
             if filepath.is_file():
                 return filepath
         return None
 
-    def bind(self, server: "Server"):
+    def bind(self, server: "Server") -> "Workspace":
         """Bind the workspace to a server for route registration.
+
+        This is called automatically when passing a Workspace to Vuer.
+        You typically don't need to call this directly.
 
         :param server: The Vuer/Server instance to bind to.
         :return: self for method chaining.
@@ -124,71 +192,125 @@ class Workspace:
         self._server = server
         return self
 
-    def link(self, route: str = "/static"):
-        """Serve workspace files at the given route.
-
-        This is the primary method for making workspace files accessible.
-        Files are searched in path order; first match wins.
-
-        :param route: The URL route prefix (default: "/static").
-        """
+    def _check_bound(self):
+        """Check that workspace is bound to a server."""
         if self._server is None:
             raise RuntimeError(
-                "Workspace is not bound to a server. Call workspace.bind(server) first."
+                "Workspace is not bound to a server. "
+                "Pass the workspace to Vuer(workspace=...) or call workspace.bind(server)."
             )
 
-        _fn = partial(handle_file_request_multi, roots=self._paths)
-        self._server._add_route(f"{route}/{{filename:.*}}", _fn, method="GET")
-        self._routes.append({"type": "static", "route": route, "paths": self._paths})
+    def serve(self, at: str = "/static"):
+        """Serve the overlay paths at a URL route.
 
-    def serve_static(self, path: Union[str, Path], route: str):
-        """Serve a specific directory at a route.
-
-        Unlike `link()` which uses the workspace paths, this serves a
-        specific directory. Useful for additional static directories.
-
-        :param path: The directory path to serve.
-        :param route: The URL route prefix.
+        .. deprecated::
+            Use :meth:`overlay` instead. This method will be removed in a future version.
         """
-        if self._server is None:
-            raise RuntimeError(
-                "Workspace is not bound to a server. Call workspace.bind(server) first."
-            )
+        import warnings
+        warnings.warn(
+            "workspace.serve() is deprecated, use workspace.overlay() instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.overlay(at=at)
 
-        from vuer.base import handle_file_request
+    def overlay(self, at: str = "/static"):
+        """Expose the overlay paths at a URL route.
 
-        _fn = partial(handle_file_request, root=Path(path))
-        self._server._add_route(f"{route}/{{filename:.*}}", _fn, method="GET")
-        self._routes.append({"type": "static", "route": route, "paths": [Path(path)]})
+        This makes all files found in the overlay accessible at the given route.
+        Files are searched in overlay order; first match wins.
 
-    def serve_dynamic(self, fn: Callable, route: str, method: str = "GET", content_type: str = "text/html"):
-        """Serve dynamic content via a function at a route.
-
-        The function should return the content to serve. For async functions,
-        they will be awaited automatically.
-
-        :param fn: Function that returns the content to serve.
-                   Can be sync or async. Receives the request as argument.
-        :param route: The URL route.
-        :param method: HTTP method (default: "GET").
-        :param content_type: Response content type (default: "text/html").
+        :param at: The URL route prefix (default: "/static").
 
         Example::
 
-            @workspace.serve_dynamic
-            def status(request):
-                return {"status": "ok", "count": 42}
+            workspace = Workspace("./assets", "/data/models")
+            workspace.overlay(at="/static")
 
-            # Or with explicit route
-            workspace.serve_dynamic(lambda r: "Hello!", "/hello")
+            # Now accessible:
+            # /static/robot.urdf -> searches ./assets/robot.urdf, then /data/models/robot.urdf
         """
-        if self._server is None:
-            raise RuntimeError(
-                "Workspace is not bound to a server. Call workspace.bind(server) first."
-            )
+        self._check_bound()
 
-        import asyncio
-        import json
+        handler = partial(handle_file_request_overlay, roots=self._overlay)
+        self._server._add_route(f"{at}/{{filename:.*}}", handler, method="GET")
+        self._routes.append({
+            "type": "overlay",
+            "at": at,
+            "paths": self._overlay,
+        })
+
+    def mount(self, path: Union[str, Path], *, to: str):
+        """Mount a single directory at a URL route.
+
+        Unlike serve() which uses the overlay, this mounts a specific
+        directory. Useful for additional static directories outside
+        the main overlay.
+
+        :param path: The local directory path to mount.
+        :param to: The URL route prefix (keyword-only).
+
+        Example::
+
+            workspace.mount("./uploads", to="/uploads")
+            workspace.mount("/var/data/exports", to="/exports")
+
+            # Now accessible:
+            # /uploads/file.txt -> ./uploads/file.txt
+            # /exports/data.csv -> /var/data/exports/data.csv
+        """
+        self._check_bound()
+
+        from vuer.base import handle_file_request
+
+        handler = partial(handle_file_request, root=Path(path))
+        self._server._add_route(f"{to}/{{filename:.*}}", handler, method="GET")
+        self._routes.append({
+            "type": "mount",
+            "path": Path(path),
+            "to": to,
+        })
+
+    def route(
+        self,
+        fn: Callable,
+        path: str,
+        *,
+        method: str = "GET",
+        content_type: str = "text/html",
+    ):
+        """Register a dynamic route handler.
+
+        The function receives the request and returns content to serve.
+        Supports both sync and async functions. Dict/list returns are
+        automatically serialized as JSON.
+
+        :param fn: Handler function. Receives request, returns content.
+                  Can be sync or async. Dict/list -> JSON automatically.
+        :param path: The URL path for this route.
+        :param method: HTTP method (default: "GET").
+        :param content_type: Response content type for non-JSON responses
+                            (default: "text/html").
+
+        Example::
+
+            # Simple handler
+            workspace.route(lambda r: "Hello!", "/hello")
+
+            # JSON response (automatic)
+            workspace.route(lambda r: {"status": "ok", "count": 42}, "/api/status")
+
+            # Async handler
+            async def fetch_data(request):
+                data = await get_data()
+                return {"data": data}
+
+            workspace.route(fetch_data, "/api/data")
+
+            # POST handler
+            workspace.route(handle_submit, "/api/submit", method="POST")
+        """
+        self._check_bound()
 
         async def handler(request):
             try:
@@ -197,35 +319,58 @@ class Workspace:
                 else:
                     result = fn(request)
 
-                # Auto-detect JSON content
+                # Auto-serialize dict/list as JSON
                 if isinstance(result, (dict, list)):
                     return web.Response(
                         text=json.dumps(result),
-                        content_type="application/json"
+                        content_type="application/json",
                     )
                 return web.Response(text=str(result), content_type=content_type)
             except Exception as e:
                 return web.Response(status=500, text=str(e))
 
-        self._server._add_route(route, handler, method=method)
-        self._routes.append({"type": "dynamic", "route": route, "fn": fn.__name__})
+        self._server._add_route(path, handler, method=method)
+        self._routes.append({
+            "type": "route",
+            "path": path,
+            "method": method,
+            "fn": fn.__name__ if hasattr(fn, "__name__") else str(fn),
+        })
 
     def __repr__(self):
-        paths_str = ", ".join(str(p) for p in self._paths)
-        return f"Workspace(paths=[{paths_str}])"
+        paths_str = ", ".join(f'"{p}"' for p in self._overlay)
+        return f"Workspace({paths_str})"
 
 
-# Backwards compatibility: allow string/Path conversion
 def workspace_from_config(
-    config: Union[str, Path, List[Union[str, Path]], "Workspace", None]
-) -> "Workspace":
+    config: Union[str, Path, List[Union[str, Path]], "Workspace", None],
+) -> Workspace:
     """Convert various workspace configurations to a Workspace instance.
 
-    :param config: String, Path, list of paths, or existing Workspace.
+    This handles backwards compatibility with the old workspace parameter
+    that accepted strings, paths, or lists.
+
+    :param config: Workspace configuration. Can be:
+                  - None: returns Workspace() (current directory)
+                  - str or Path: single path
+                  - List of str/Path: multiple paths (overlay)
+                  - Workspace: returned as-is
     :return: A Workspace instance.
+
+    Example::
+
+        # All of these work:
+        ws = workspace_from_config(None)           # Workspace(".")
+        ws = workspace_from_config("./assets")     # Workspace("./assets")
+        ws = workspace_from_config(["./a", "./b"]) # Workspace("./a", "./b")
+        ws = workspace_from_config(existing_ws)    # returns existing_ws
     """
     if config is None:
         return Workspace()
     if isinstance(config, Workspace):
         return config
-    return Workspace(paths=config)
+    if isinstance(config, (str, Path)):
+        return Workspace(config)
+    if isinstance(config, list):
+        return Workspace(*config)
+    raise TypeError(f"Cannot convert {type(config)} to Workspace")

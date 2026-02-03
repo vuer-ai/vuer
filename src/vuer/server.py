@@ -1323,7 +1323,7 @@ class Vuer(Server):
     self._static_file("/editor", self.client_root, "editor/index.html")
 
     # serve local files via /static endpoint
-    self.workspace.link("/static")
+    self.workspace.overlay(at="/static")
     self._add_route("/relay", self.relay, method="POST")
 
     if self.client_url:
