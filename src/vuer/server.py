@@ -33,7 +33,7 @@ def _default_encoder(obj):
 from params_proto import EnvVar, proto
 from websockets import ConnectionClosedError
 
-from vuer.base import Server, handle_file_request, websocket_handler
+from vuer.base import Server, handle_file_request, handle_file_request_overlay, websocket_handler
 from vuer.workspace import Workspace, workspace_from_config
 from vuer.events import (
   INIT,
@@ -648,7 +648,6 @@ class Vuer(Server):
 
     # Convert workspace to Workspace instance if needed
     self.workspace = workspace_from_config(self.workspace)
-    self.workspace.bind(self)
 
     if self.client_url:
       self.client_url = self.client_url.format(
@@ -1322,8 +1321,16 @@ class Vuer(Server):
     self._add_static("/assets", self.client_root / "assets")
     self._static_file("/editor", self.client_root, "editor/index.html")
 
-    # serve local files via /static endpoint
-    self.workspace.overlay(at="/static")
+    # serve local files via /static endpoint (workspace overlay)
+    self._add_route("/static/{filename:.*}", self.workspace.overlay_handler(), method="GET")
+
+    # apply any routes configured on the workspace
+    for route in self.workspace.routes:
+      if route["type"] == "mount":
+        self._add_route(f"{route['path']}/{{filename:.*}}", route["handler"], method="GET")
+      else:
+        self._add_route(route["path"], route["handler"], method=route["method"])
+
     self._add_route("/relay", self.relay, method="POST")
 
     if self.client_url:
