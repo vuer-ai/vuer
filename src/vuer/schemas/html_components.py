@@ -91,6 +91,8 @@ class BlockElement(Element):
       ]
     return result
 
+class Iframe(BlockElement):
+  tag = "iframe"
 
 class AutoScroll(BlockElement):
   tag = "AutoScroll"
