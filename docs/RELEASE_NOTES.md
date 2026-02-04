@@ -1,5 +1,139 @@
 # Release Notes
 
+## v0.0.80rc1 - Workspace Multi-Path & Provider Pattern
+
+This release candidate introduces a powerful new **Workspace** system for multi-path file serving,
+new **Provider** patterns for high-performance instanced rendering, and new visualization components.
+
+### New Features
+
+#### Multi-Path Workspace System
+
+The `workspace` parameter now accepts multiple paths and supports programmatic file serving:
+
+```python
+from vuer import Vuer, Workspace
+
+# Single path (unchanged)
+vuer = Vuer(workspace="./data")
+
+# Multiple paths - files resolved in order
+vuer = Vuer(workspace=["./local_data", "./shared_assets", "/mnt/datasets"])
+
+# Workspace object with mounts
+workspace = Workspace(["./data"])
+workspace.mount("/api/config", lambda req: {"status": "ok"})
+vuer = Vuer(workspace=workspace)
+```
+
+**Key Changes:**
+- `static_root` is deprecated → use `workspace`
+- `/static` endpoint renamed → `/workspace`
+- `vuer.static_prefix` → `vuer.workspace_prefix`
+- `vuer.localhost_prefix` now points to `/workspace`
+
+#### New Blob Class for In-Memory Data
+
+```python
+from vuer import Blob
+
+# Serve in-memory data with explicit content-type
+blob = Blob(data=my_bytes, content_type="image/png")
+```
+
+#### DepthPointCloud Component
+
+Generate point clouds directly from depth images with colormap support:
+
+```python
+from vuer.schemas import DepthPointCloud
+
+sess.upsert @ DepthPointCloud(
+    key="depth-pc",
+    depth=vuer.localhost_prefix / "depth.png",
+    cmap="viridis",      # turbo, viridis, inferno, jet
+    colorMode="worldY",  # depth, camZ, camDist, localY, worldY
+    fov=58,              # RealSense D435 default
+)
+```
+
+#### DepthPointCloudProvider for High Performance
+
+Render thousands of depth point clouds at 120fps with frustum culling and LoD:
+
+```python
+from vuer.schemas import DepthPointCloud, DepthPointCloudProvider
+
+sess.upsert @ DepthPointCloudProvider(
+    DepthPointCloud(key="pc-0", depth="depth_0.png", position=[0, 0, 0]),
+    DepthPointCloud(key="pc-1", depth="depth_1.png", position=[2, 0, 0]),
+    key="provider",
+    frustumCulling=True,
+)
+```
+
+#### BoundingBox Component
+
+Render 3D bounding boxes with customizable edges and walls:
+
+```python
+from vuer.schemas import BoundingBox
+
+sess.upsert @ BoundingBox(
+    key="bbox",
+    color="red",
+    size=[2, 1, 3],
+    edgeOpacity=0.9,
+    wallOpacity=0.08,
+)
+```
+
+#### BoundingBoxProvider for Instanced Rendering
+
+Render tens of thousands of bounding boxes efficiently:
+
+```python
+from vuer.schemas import BoundingBox, BoundingBoxProvider
+
+sess.upsert @ BoundingBoxProvider(
+    key="provider",
+    maxInstances=10000,
+    children=[
+        BoundingBox(key=f"box-{i}", color="green", position=[i*2, 0, 0])
+        for i in range(1000)
+    ]
+)
+```
+
+### API Changes Summary
+
+| Old API | New API | Notes |
+|---------|---------|-------|
+| `static_root="./data"` | `workspace="./data"` | Deprecated with warning |
+| `vuer.static_prefix` | `vuer.workspace_prefix` | Network-accessible URL |
+| `/static/file.png` | `/workspace/file.png` | Endpoint renamed |
+| Single path only | Multiple paths supported | `workspace=["./a", "./b"]` |
+
+### New Exports
+
+```python
+from vuer import Vuer, VuerSession, Workspace, Blob
+from vuer.schemas import (
+    DepthPointCloud,
+    DepthPointCloudProvider,
+    BoundingBox,
+    BoundingBoxProvider,
+)
+```
+
+### Documentation
+
+- New [Depth Point Cloud](examples/point_clouds/depth_pointcloud.md) example
+- New [Bounding Box](components/bounding_box.md) component reference
+- New [Workspace API](api/workspace.md) reference
+
+---
+
 ## Upcoming Release
 
 ### Breaking Changes

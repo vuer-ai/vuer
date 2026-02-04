@@ -166,8 +166,9 @@ For more details:
    :maxdepth: 3
    :caption: Python API
    :hidden:
-   
+
    vuer <api/vuer.md>
+   vuer.workspace — Workspace <api/workspace.md>
    vuer.client — Python Client <api/client.md>
    vuer.frame <api/frame.md>
    vuer.base <api/base.md>

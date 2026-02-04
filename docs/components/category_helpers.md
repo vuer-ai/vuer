@@ -10,4 +10,5 @@ Utility components for debugging and visualization assistance.
    coords_marker
    arrow
    line
+   bounding_box
 ```

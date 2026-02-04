@@ -2,13 +2,49 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vuer.ai/</loc>
-    <lastmod>2026-01-23T00:33:22.521Z</lastmod>
+    <lastmod>2026-01-23T00:33:12.423Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://vuer.ai/community/</loc>
+    <lastmod>2025-12-26T23:06:41.680Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://vuer.ai/headless-render/</loc>
+    <lastmod>2025-12-26T23:06:41.681Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://vuer.ai/landing/</loc>
+    <lastmod>2025-12-26T23:06:41.682Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://vuer.ai/sign-in/</loc>
+    <lastmod>2025-12-26T23:06:41.682Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://vuer.ai/simple/</loc>
+    <lastmod>2025-12-26T23:06:41.683Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://vuer.ai/versions/</loc>
-    <lastmod>2025-12-24T23:19:20.459Z</lastmod>
+    <lastmod>2025-12-26T23:06:41.683Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://vuer.ai/workspace/</loc>
+    <lastmod>2026-01-23T00:33:17.467Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>

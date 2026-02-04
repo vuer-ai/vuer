@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <link rel="stylesheet" type="text/css" href="/assets/static/pages_index-c6b9ae3c.CWSrK-Yb.css">
+        <meta charset="UTF-8" />
+        
+        
+    <title>Vuer UIKit | FortyFive Labs</title><meta property="og:title" content="Vuer UIKit | FortyFive Labs" />
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    
+    
+    <meta name="description" content="Powering the world&#039;s most advanced Physical AI research and education" /><meta property="og:description" content="Powering the world&#039;s most advanced Physical AI research and education" />
+    
+  
+        
+      </head>
+      <body>
+        
+        <div id="root"><script>((defaultBaseTheme, defaultIsLiquid, storageKey, attribute, themes, value, forcedTheme, enableSystem, enableColorScheme) => {
+  const el = document.documentElement;
+  function updateDOM(theme) {
+    const attributes = Array.isArray(attribute) ? attribute : [attribute];
+    attributes.forEach((attr) => {
+      const isClass = attr === "class";
+      const classes = isClass && value ? themes.map((t) => value[t] || t) : themes;
+      if (isClass) {
+        el.classList.remove(...classes);
+        el.classList.add(value && value[theme] ? value[theme] : theme);
+      } else {
+        el.setAttribute(attr, theme);
+      }
+    });
+    setColorScheme(theme);
+  }
+  function setColorScheme(theme) {
+    if (enableColorScheme) {
+      const isDark = theme.includes("dark");
+      el.style.colorScheme = isDark ? "dark" : "light";
+    }
+  }
+  function computeTheme2(baseTheme, isLiquid, systemIsDark) {
+    let resolvedBase;
+    if (baseTheme === "system") {
+      resolvedBase = systemIsDark ? "dark" : "light";
+    } else {
+      resolvedBase = baseTheme;
+    }
+    return isLiquid ? `liquid-${resolvedBase}` : resolvedBase;
+  }
+  function getStoredState() {
+    try {
+      const storedBase = localStorage.getItem(`${storageKey}-base`);
+      const storedLiquid = localStorage.getItem(`${storageKey}-liquid`);
+      if (storedBase !== null && storedLiquid !== null) {
+        return {
+          baseTheme: storedBase,
+          isLiquid: storedLiquid === "true"
+        };
+      }
+      return {
+        baseTheme: defaultBaseTheme,
+        isLiquid: defaultIsLiquid
+      };
+    } catch {
+      return {
+        baseTheme: "system",
+        isLiquid: true
+      };
+    }
+  }
+  if (forcedTheme) {
+    updateDOM(forcedTheme);
+  } else {
+    const { baseTheme, isLiquid } = getStoredState();
+    const hasStoredBase = localStorage.getItem(`${storageKey}-base`) !== null;
+    const hasStoredLiquid = localStorage.getItem(`${storageKey}-liquid`) !== null;
+    if (!hasStoredBase || !hasStoredLiquid) {
+      try {
+        if (!hasStoredBase) {
+          localStorage.setItem(`${storageKey}-base`, baseTheme);
+        }
+        if (!hasStoredLiquid) {
+          localStorage.setItem(`${storageKey}-liquid`, String(isLiquid));
+        }
+      } catch {
+      }
+    }
+    const systemIsDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const computedTheme = computeTheme2(baseTheme, isLiquid, systemIsDark);
+    updateDOM(computedTheme);
+  }
+})("system",true,"vuer-web-theme","class",["light","dark","liquid-light","liquid-dark"],null,null,true,false)</script><div class="relative h-screen w-full bg-[#9bacc1]"><div class="pointer-events-none absolute inset-0 z-10 text-text-primary"><div class="pointer-events-auto absolute top-8 left-8"><h1 class="text-[2.9em] leading-[1em] font-bold md:text-[4.55em] lg:text-[5em] xl:text-[5.7em]"><span class="inline-block overflow-hidden">VUER</span></h1><h3 class="mt-0 text-sm leading-tight font-bold md:text-lg lg:text-xl xl:text-[1.38em]"><span class="">Training,</span> <span class="text-text-primary/80">checkpoints</span> <span class="text-text-primary/60">&amp; visualization</span></h3><h2 class="text-4xl leading-tight font-bold md:text-[3.2em] lg:text-[3.47em] xl:text-[60px]"><span class="align-baseline">ONE</span> <span class="align-baseline text-text-primary/80">Platform</span></h2><p class="ml-0 text-[1.135em] text-text-primary/60 md:text-[1.7em] lg:text-[1.83em] xl:text-[2em]">for <span class="">everybody</span> <span class="text-text-primary/80">on your team.</span></p></div><div class="pointer-events-auto absolute bottom-8 left-8 text-sm text-text-primary/60">A modern ML experiment-tracking dashboard built by<!-- --> <a href="https://fortyfive.ai" class="underline hover:text-text-primary/80">FortyFive Labs</a></div><div class="pointer-events-auto absolute right-8 bottom-8 text-right text-sm leading-relaxed text-text-primary/80">Real-time metrics visualization<br/>Experiment comparison<br/>Hyperparameter tracking<br/>Model versioning<br/>Artifact management<br/>Team collaboration<br/>Performance analytics<br/></div><div class="pointer-events-auto absolute top-8 right-8 flex items-center gap-2"><button data-slot="button" class="inline-flex cursor-pointer items-center justify-center shrink-0 whitespace-nowrap transition-all [&amp;_svg]:shrink-0 [&amp;_svg]:pointer-events-none outline-none disabled:pointer-events-none disabled:bg-bg-tertiary disabled:text-text-tertiary focus-visible:bg-brand-tertiary text-text-primary hover:text-text-highlight hover:bg-alt-primary active:bg-bg-secondary rounded-uk-md text-uk-md gap-xs leading-5 [&amp;_svg:not([class*=&#x27;size-&#x27;])]:size-4 px-sm py-sm size-8" aria-label="Current theme: system"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun-moon" aria-hidden="true"><path d="M12 2v2"></path><path d="M14.837 16.385a6 6 0 1 1-7.223-7.222c.624-.147.97.66.715 1.248a4 4 0 0 0 5.26 5.259c.589-.255 1.396.09 1.248.715"></path><path d="M16 12a4 4 0 0 0-4-4"></path><path d="m19 5-1.256 1.256"></path><path d="M20 12h2"></path></svg></button><span data-slot="avatar" class="relative flex size-[24px] shrink-0 overflow-hidden rounded-full"><svg height="24" stroke="currentColor" viewBox="0 0 44 44" width="24" xmlns="http://www.w3.org/2000/svg"><title>Loading...</title><g fill="none" fill-rule="evenodd" stroke-width="2"><circle cx="22" cy="22" r="1"><animate attributeName="r" begin="0s" calcMode="spline" dur="1.8s" keySplines="0.165, 0.84, 0.44, 1" keyTimes="0; 1" repeatCount="indefinite" values="1; 20"></animate><animate attributeName="stroke-opacity" begin="0s" calcMode="spline" dur="1.8s" keySplines="0.3, 0.61, 0.355, 1" keyTimes="0; 1" repeatCount="indefinite" values="1; 0"></animate></circle><circle cx="22" cy="22" r="1"><animate attributeName="r" begin="-0.9s" calcMode="spline" dur="1.8s" keySplines="0.165, 0.84, 0.44, 1" keyTimes="0; 1" repeatCount="indefinite" values="1; 20"></animate><animate attributeName="stroke-opacity" begin="-0.9s" calcMode="spline" dur="1.8s" keySplines="0.3, 0.61, 0.355, 1" keyTimes="0; 1" repeatCount="indefinite" values="1; 0"></animate></circle></g></svg></span></div></div><div style="position:relative;width:100%;height:100%;overflow:hidden;pointer-events:auto"><div style="width:100%;height:100%"><canvas style="display:block"></canvas></div></div></div><section aria-label="Notifications alt+T" tabindex="-1" aria-live="polite" aria-relevant="additions text" aria-atomic="false"></section></div>
+        
+        <script id="vike_pageContext" type="application/json">{"pageId":"\\/pages\\/landing","routeParams":{},"data":{"theme":"!undefined"}}</script>
+        <script id="vike_globalContext" type="application/json">{}</script>
+        <script src="/assets/entries/entry-client-routing.CwX744rn.js" type="module" async></script>
+        <link rel="modulepreload" href="/assets/entries/pages_landing.BUC2RMMX.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-CF7PZJR8.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-BdvozYt0.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-BGUxsRwc.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-DvrnVFXc.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-BHDKgRpG.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-ChHTQ4Sk.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-DH9VFE1A.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-4_gci6_w.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-BmLiMrPg.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-DS1GWtHl.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-BXl3LOEh.js" as="script" type="text/javascript">
+      </body>
+    </html>

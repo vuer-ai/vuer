@@ -19,6 +19,11 @@ Similar to the animation example above, but uses session-based `proxy.upsert` to
 
 **[View full example →](point_clouds/animation_upsert.md)**
 
+## Depth Point Cloud
+Generate point clouds directly from depth images using the `DepthPointCloud` component with colormap support.
+
+**[View full example →](point_clouds/depth_pointcloud.md)**
+
 ## Example List
 
 ```{eval-rst}
@@ -28,4 +33,5 @@ Similar to the animation example above, but uses session-based `proxy.upsert` to
     Programmatic PointCloud <point_clouds/pointcloud.md>
     PointCloud Animation <point_clouds/animation.md>
     PointCloud Animation (Upsert) <point_clouds/animation_upsert.md>
+    Depth Point Cloud <point_clouds/depth_pointcloud.md>
 ```
