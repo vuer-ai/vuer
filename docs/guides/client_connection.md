@@ -77,6 +77,7 @@ async def main():
         # Awaitable with parentheses
         await client.send(MoveBoxEvent(value={"position": [1, 0.5, 0]}))
         print("Events sent!")
+        await asyncio.sleep(1)
 
 asyncio.run(main())
 ```
