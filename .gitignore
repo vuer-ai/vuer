@@ -2,6 +2,8 @@
 .DS_Store
 .claude
 
+scratch
+
 # Environment variables
 .env
 .env.local

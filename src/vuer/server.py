@@ -30,11 +30,11 @@ def _default_encoder(obj):
   raise TypeError(f"Cannot serialize object of type {type(obj)}")
 
 
+from aiohttp import web
 from params_proto import EnvVar, proto
 from websockets import ConnectionClosedError
 
-from vuer.base import Server, handle_file_request, handle_file_request_overlay, websocket_handler
-from vuer.workspace import Workspace, workspace_from_config
+from vuer.base import Server, handle_file_request, websocket_handler
 from vuer.events import (
   INIT,
   NOOP,
@@ -52,6 +52,62 @@ from vuer.events import (
 )
 from vuer.schemas import Page
 from vuer.types import EventHandler, SocketHandler, Url
+from vuer.workspace import Blob, Workspace, guess_content_type, workspace_from_config
+
+
+async def workspace_handler(request, workspace: Workspace):
+  """Handle workspace file requests.
+
+  Resolves the filename through the workspace and returns appropriate response.
+
+  :param request: The aiohttp request object.
+  :param workspace: The Workspace instance to resolve files from.
+  :return: aiohttp Response object.
+  """
+  filename = request.match_info["filename"]
+  result = await workspace.resolve(filename)
+
+  if result is None:
+    raise web.HTTPNotFound()
+
+  # Convert result to response
+  if isinstance(result, Path):
+    response = web.FileResponse(result)
+    # Override content-type for robotics files (FileResponse doesn't know these)
+    content_type = guess_content_type(filename)
+    if content_type != "application/octet-stream":
+      response.content_type = content_type
+  elif isinstance(result, Blob):
+    response = web.Response(body=result.as_bytes(), content_type=result.content_type)
+  elif isinstance(result, bytes):
+    content_type = guess_content_type(filename)
+    response = web.Response(body=result, content_type=content_type)
+  else:
+    # AsyncIterator - streaming response
+    response = web.StreamResponse()
+    response.content_type = guess_content_type(filename)
+
+  # Handle hot reload header (case-insensitive "hot" parameter)
+  hot_key = None
+  for key in request.query.keys():
+    if key.lower() == "hot":
+      hot_key = key
+      break
+
+  if hot_key:
+    hot_value = request.query.get(hot_key, "")
+    if hot_value.lower() != "false":
+      response.headers["Cache-Control"] = "no-cache"
+
+  # Handle streaming response
+  if hasattr(result, "__aiter__"):
+    await response.prepare(request)
+    async for chunk in result:
+      await response.write(chunk)
+    await response.write_eof()
+
+  return response
+
 
 # ANSI color codes
 BOLD = "\033[1m"
@@ -612,7 +668,9 @@ class Vuer(Server):
   web_port: int = None  # Web development server port; None means same as port
   workspace_path: str = ""  # Path on vuer.ai workspace (e.g., "/workspace/scratch")
   cors: str = EnvVar @ "VUER_CORS" | DEFAULT_CORS
-  workspace: Union[str, Path, List[Union[str, Path]], Workspace] = EnvVar @ "VUER_WORKSPACE" | "."
+  workspace: Union[str, Path, List[Union[str, Path]], Workspace] = (
+    EnvVar @ "VUER_WORKSPACE" | "."
+  )
   # Deprecated: use workspace instead
   static_root: Union[str, Path, List[Union[str, Path]]] = None
 
@@ -644,10 +702,10 @@ class Vuer(Server):
         DeprecationWarning,
         stacklevel=2,
       )
-      self.workspace = self.static_root
-
-    # Convert workspace to Workspace instance if needed
-    self.workspace = workspace_from_config(self.workspace)
+      self.workspace = workspace_from_config(self.static_root)
+    else:
+      # Convert workspace to Workspace instance if needed
+      self.workspace = workspace_from_config(self.workspace)
 
     if self.client_url:
       self.client_url = self.client_url.format(
@@ -747,20 +805,20 @@ class Vuer(Server):
       return Response(status=400)
 
   @property
-  def static_prefix(self) -> "Url":
-    """URL prefix for static files, accessible over the network.
+  def workspace_prefix(self) -> "Url":
+    """URL prefix for workspace files, accessible over the network.
 
     Uses local_ip and respects SSL settings for network access (e.g., VR devices).
     """
-    return Url(f"http{self.ssl}://{self.local_ip}:{self.port}/static")
+    return Url(f"http{self.ssl}://{self.local_ip}:{self.port}/workspace")
 
   @property
   def localhost_prefix(self) -> "Url":
-    """URL prefix for static files, localhost only.
+    """URL prefix for workspace files, localhost only.
 
     Use this for local development when network access is not needed.
     """
-    return Url(f"http{self.ssl}://localhost:{self.port}/static")
+    return Url(f"http{self.ssl}://localhost:{self.port}/workspace")
 
   def format_urls(self) -> list:
     """Generate all relevant URLs for display based on connection context.
@@ -1287,8 +1345,6 @@ class Vuer(Server):
     self.start(free_port=free_port, *args, **kwargs)
 
   def start(self, free_port=None, *args, **kwargs):
-    import os
-
     # protocol, host, _ = self.uri.split(":")
     # port = int(_)
     if free_port or self.free_port:
@@ -1321,15 +1377,19 @@ class Vuer(Server):
     self._add_static("/assets", self.client_root / "assets")
     self._static_file("/editor", self.client_root, "editor/index.html")
 
-    # serve local files via /static endpoint (workspace overlay)
-    self._add_route("/static/{filename:.*}", self.workspace.overlay_handler(), method="GET")
+    # Register workspace routes
+    handler = partial(workspace_handler, workspace=self.workspace)
+    self._add_route("/workspace/{filename:.*}", handler, method="GET")
 
-    # apply any routes configured on the workspace
-    for route in self.workspace.routes:
-      if route["type"] == "mount":
-        self._add_route(f"{route['path']}/{{filename:.*}}", route["handler"], method="GET")
+    for mount in self.workspace.mounts:
+      if mount["type"] == "mount":
+        self._add_route(
+          f"{mount['path']}/{{filename:.*}}", mount["handler"], method="GET"
+        )
       else:
-        self._add_route(route["path"], route["handler"], method=route["method"])
+        self._add_route(
+          mount["path"], mount["handler"], method=mount.get("method", "GET")
+        )
 
     self._add_route("/relay", self.relay, method="POST")
 
@@ -1355,10 +1415,10 @@ class Vuer(Server):
 {CYAN}Workspace:{RESET}
 
 {workspace_display}
-{DIM}->{RESET} {base_url}/static
+{DIM}->{RESET} {base_url}/workspace
 """)
 
-    super().start()
+    Server.start(self)
 
   async def loop_forever(self):
     while True:

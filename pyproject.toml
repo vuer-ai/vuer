@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "vuer"
-version = "0.0.79"
+version = "0.0.80rc1"
 description = ""
 readme = "README.md"
 license = { text = "MIT" }
@@ -14,7 +14,7 @@ classifiers = [
     "Programming Language :: Python",
 ]
 dependencies = [
-    "params-proto>=3.2.1",
+    "params-proto==3.2.1",
     "pillow",
     "msgpack",
     "numpy>=1.21", # because we require numpy.typing.NDArray
@@ -151,10 +151,6 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 docstring-code-format = false
 docstring-code-line-length = "dynamic"
-
-# black (keeping for backward compatibility)
-[tool.black]
-line-length = 120
 
 # pylint
 [tool.pylint.messages_control]

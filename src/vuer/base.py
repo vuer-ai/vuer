@@ -69,44 +69,6 @@ async def handle_file_request(request, root, filename=None):
   return response
 
 
-async def handle_file_request_overlay(request, roots, filename=None):
-  """Handle file requests by searching through overlay paths.
-
-  Searches through the list of root paths in order and returns the first
-  file found that matches the requested filename. This implements overlay
-  filesystem semantics where earlier paths take precedence (like $PATH).
-
-  :param request: The aiohttp request object.
-  :param roots: List/tuple of root paths to search through.
-  :param filename: Optional filename override. If None, extracted from request.
-  :return: FileResponse for the first matching file.
-  :raises HTTPNotFound: If file is not found in any of the overlay paths.
-  """
-  if filename is None:
-    filename = request.match_info["filename"]
-
-  for root in roots:
-    filepath = Path(root) / filename
-    if filepath.is_file():
-      response = web.FileResponse(filepath)
-
-      # Check if URL contains "hot" parameter for hot loading mode
-      hot_key = None
-      for key in request.query.keys():
-        if key.lower() == "hot":
-          hot_key = key
-          break
-
-      if hot_key:
-        hot_value = request.query.get(hot_key, "")
-        if hot_value.lower() != "false":
-          response.headers["Cache-Control"] = "no-cache"
-
-      return response
-
-  raise web.HTTPNotFound()
-
-
 class Server:
   """Base TCP server with HTTP/WebSocket functionality.
 

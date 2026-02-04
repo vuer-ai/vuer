@@ -3315,6 +3315,276 @@ class VuerGroup(SceneElement):
   children = []
 
 
+class BoundingBox(SceneElement):
+  """Bounding Box component with shader-based edge rendering.
+
+  Renders a 3D bounding box with customizable edge and wall opacity.
+
+  .. tip::
+
+      For better performance when rendering multiple BoundingBox instances,
+      wrap them in a :class:`BoundingBoxProvider`. The provider enables
+      instanced rendering with shared shader material and geometry.
+
+  **Parameters:**
+
+  .. list-table::
+     :header-rows: 1
+     :widths: 20 15 10 55
+
+     * - Parameter
+       - Type
+       - Default
+       - Description
+     * - position
+       - tuple
+       - [0, 0, 0]
+       - Position in 3D space [x, y, z]
+     * - rotation
+       - tuple
+       - [0, 0, 0]
+       - Rotation in Euler angles [x, y, z]
+     * - scale
+       - tuple
+       - [1, 1, 1]
+       - Scale factors [x, y, z]
+     * - size
+       - tuple
+       - [1, 1, 1]
+       - Size of the box [width, height, depth]
+     * - min
+       - tuple
+       - None
+       - Minimum corner [x, y, z] (alternative to size)
+     * - max
+       - tuple
+       - None
+       - Maximum corner [x, y, z] (alternative to size)
+     * - color
+       - str/int
+       - "#00ff00"
+       - Color of edges and faces (hex, rgb, rgba, or name)
+     * - edgeOpacity
+       - float
+       - 0.9
+       - Opacity of the edges (0-1)
+     * - wallOpacity
+       - float
+       - 0.08
+       - Opacity of the walls/faces (0-1)
+     * - edgeWidth
+       - float
+       - 0.02
+       - Width of edges relative to box size (0-0.5)
+  """
+
+  tag = "BoundingBox"
+
+
+class BoundingBoxProvider(SceneElement):
+  """Provider for instanced bounding box rendering.
+
+  Enables efficient instanced rendering of multiple :class:`BoundingBox` instances
+  with shared shader material and geometry.
+
+  Use this provider when rendering many bounding boxes to benefit from:
+
+  - **Instanced rendering**: Single draw call for all boxes
+  - **Shared materials**: Reduced GPU memory usage
+  - **Better performance**: Optimized for large numbers of boxes
+
+  **Parameters:**
+
+  .. list-table::
+     :header-rows: 1
+     :widths: 20 15 10 55
+
+     * - Parameter
+       - Type
+       - Default
+       - Description
+     * - edgeWidth
+       - float
+       - 0.05
+       - Width of box edges
+     * - maxInstances
+       - int
+       - 10000
+       - Maximum number of box instances
+     * - children
+       - list
+       - []
+       - Child BoundingBox elements
+
+  **Example:**
+
+  .. code-block:: python
+
+      sess.upsert @ BoundingBoxProvider(
+          key="provider",
+          children=[
+              BoundingBox(key="box-0", color="red", position=[0, 0, 0]),
+              BoundingBox(key="box-1", color="green", position=[2, 0, 0]),
+          ]
+      )
+  """
+
+  tag = "BoundingBoxProvider"
+  children = []
+
+
+class DepthPointCloud(SceneElement):
+  """Depth-based point cloud component with LoD rendering.
+
+  Renders a point cloud from depth and RGB images with support for
+  multiple colormap visualizations and level-of-detail rendering.
+
+  .. tip::
+
+      For better performance when rendering multiple DepthPointCloud instances,
+      wrap them in a :class:`DepthPointCloudProvider`. The provider enables
+      shared caching, frustum culling, and level-of-detail rendering.
+
+  **Parameters:**
+
+  .. list-table::
+     :header-rows: 1
+     :widths: 20 15 10 55
+
+     * - Parameter
+       - Type
+       - Default
+       - Description
+     * - depth
+       - str
+       - (required)
+       - URL to 16-bit depth PNG image
+     * - rgb
+       - str
+       - None
+       - URL to RGB image (uses depth grayscale if not provided)
+     * - position
+       - tuple
+       - [0, 0, 0]
+       - Position in 3D space [x, y, z]
+     * - rotation
+       - tuple
+       - [0, 0, 0]
+       - Rotation in Euler angles [x, y, z]
+     * - scale
+       - tuple
+       - [1, 1, 1]
+       - Scale factors [x, y, z]
+     * - fov
+       - float
+       - 58
+       - Vertical field of view in degrees (58 = RealSense D435)
+     * - depthUnit
+       - float
+       - 0.001
+       - Depth scale factor - converts raw depth values to meters
+     * - pointSize
+       - float
+       - 2.0
+       - Point size in pixels or world units
+     * - screenSpaceSizing
+       - bool
+       - True
+       - If true, points have constant pixel size
+     * - cmap
+       - str
+       - None
+       - Colormap: "turbo", "viridis", "inferno", "jet", or None for RGB
+     * - colorMode
+       - str
+       - "depth"
+       - Color mode: "depth", "camZ", "camDist", "localY", "worldY"
+     * - depthMin
+       - float
+       - 0.1
+       - Minimum depth for visualization mapping
+     * - depthMax
+       - float
+       - 50
+       - Maximum depth for visualization mapping
+     * - heightMin
+       - float
+       - -2
+       - Minimum height for visualization mapping
+     * - heightMax
+       - float
+       - 2
+       - Maximum height for visualization mapping
+     * - hide
+       - bool
+       - False
+       - Hide this point cloud
+  """
+
+  tag = "DepthPointCloud"
+
+
+class DepthPointCloudProvider(SceneElement):
+  """Provider for depth point cloud rendering with LoD and frustum culling.
+
+  Manages multiple :class:`DepthPointCloud` instances with shared caching,
+  level-of-detail rendering, and frustum culling for improved performance.
+
+  Use this provider when rendering many depth point clouds to benefit from:
+
+  - **Frustum culling**: Only renders point clouds visible to the camera
+  - **Level-of-detail (LoD)**: Reduces point density for distant clouds
+  - **Shared caching**: Reuses depth texture processing across instances
+
+  **Parameters:**
+
+  .. list-table::
+     :header-rows: 1
+     :widths: 20 15 10 55
+
+     * - Parameter
+       - Type
+       - Default
+       - Description
+     * - frustumCulling
+       - bool
+       - True
+       - Enable frustum culling to skip off-screen point clouds
+     * - cullingMargin
+       - float
+       - 2.0
+       - Margin multiplier for culling bounds
+     * - lod
+       - dict
+       - None
+       - LoD configuration with strides and distances
+     * - bake
+       - dict
+       - None
+       - Bake configuration for depth processing
+     * - children
+       - list
+       - []
+       - Child DepthPointCloud elements
+
+  **Example:**
+
+  .. code-block:: python
+
+      sess.upsert @ DepthPointCloudProvider(
+          key="provider",
+          frustumCulling=True,
+          children=[
+              DepthPointCloud(key="pc-0", depth="depth_0.png", position=[0, 0, 0]),
+              DepthPointCloud(key="pc-1", depth="depth_1.png", position=[2, 0, 0]),
+          ]
+      )
+  """
+
+  tag = "DepthPointCloudProvider"
+  children = []
+
+
 class SceneCamera(SceneElement):
   """Camera component for setting scene camera properties.
 

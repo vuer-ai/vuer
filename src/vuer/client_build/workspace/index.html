@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <link rel="stylesheet" type="text/css" href="/assets/static/pages_index-c6b9ae3c.CWSrK-Yb.css">
+        <meta charset="UTF-8" />
+        
+        
+    <title>Vuer UIKit | FortyFive Labs</title><meta property="og:title" content="Vuer UIKit | FortyFive Labs" />
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    
+    
+    <meta name="description" content="Powering the world&#039;s most advanced Physical AI research and education" /><meta property="og:description" content="Powering the world&#039;s most advanced Physical AI research and education" />
+    
+  
+        
+      </head>
+      <body>
+        
+        <div id="root"><script>((defaultBaseTheme, defaultIsLiquid, storageKey, attribute, themes, value, forcedTheme, enableSystem, enableColorScheme) => {
+  const el = document.documentElement;
+  function updateDOM(theme) {
+    const attributes = Array.isArray(attribute) ? attribute : [attribute];
+    attributes.forEach((attr) => {
+      const isClass = attr === "class";
+      const classes = isClass && value ? themes.map((t) => value[t] || t) : themes;
+      if (isClass) {
+        el.classList.remove(...classes);
+        el.classList.add(value && value[theme] ? value[theme] : theme);
+      } else {
+        el.setAttribute(attr, theme);
+      }
+    });
+    setColorScheme(theme);
+  }
+  function setColorScheme(theme) {
+    if (enableColorScheme) {
+      const isDark = theme.includes("dark");
+      el.style.colorScheme = isDark ? "dark" : "light";
+    }
+  }
+  function computeTheme2(baseTheme, isLiquid, systemIsDark) {
+    let resolvedBase;
+    if (baseTheme === "system") {
+      resolvedBase = systemIsDark ? "dark" : "light";
+    } else {
+      resolvedBase = baseTheme;
+    }
+    return isLiquid ? `liquid-${resolvedBase}` : resolvedBase;
+  }
+  function getStoredState() {
+    try {
+      const storedBase = localStorage.getItem(`${storageKey}-base`);
+      const storedLiquid = localStorage.getItem(`${storageKey}-liquid`);
+      if (storedBase !== null && storedLiquid !== null) {
+        return {
+          baseTheme: storedBase,
+          isLiquid: storedLiquid === "true"
+        };
+      }
+      return {
+        baseTheme: defaultBaseTheme,
+        isLiquid: defaultIsLiquid
+      };
+    } catch {
+      return {
+        baseTheme: "system",
+        isLiquid: true
+      };
+    }
+  }
+  if (forcedTheme) {
+    updateDOM(forcedTheme);
+  } else {
+    const { baseTheme, isLiquid } = getStoredState();
+    const hasStoredBase = localStorage.getItem(`${storageKey}-base`) !== null;
+    const hasStoredLiquid = localStorage.getItem(`${storageKey}-liquid`) !== null;
+    if (!hasStoredBase || !hasStoredLiquid) {
+      try {
+        if (!hasStoredBase) {
+          localStorage.setItem(`${storageKey}-base`, baseTheme);
+        }
+        if (!hasStoredLiquid) {
+          localStorage.setItem(`${storageKey}-liquid`, String(isLiquid));
+        }
+      } catch {
+      }
+    }
+    const systemIsDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const computedTheme = computeTheme2(baseTheme, isLiquid, systemIsDark);
+    updateDOM(computedTheme);
+  }
+})("system",true,"vuer-web-theme","class",["light","dark","liquid-light","liquid-dark"],null,null,true,false)</script><section aria-label="Notifications alt+T" tabindex="-1" aria-live="polite" aria-relevant="additions text" aria-atomic="false"></section></div>
+        
+        <script id="vike_pageContext" type="application/json">{"pageId":"\\/pages\\/workspace","routeParams":{},"data":{"theme":"!undefined"}}</script>
+        <script id="vike_globalContext" type="application/json">{}</script>
+        <script src="/assets/entries/entry-client-routing.CwX744rn.js" type="module" async></script>
+        <link rel="modulepreload" href="/assets/entries/pages_workspace.CiEkXNOo.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-CF7PZJR8.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-BdvozYt0.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-BmLiMrPg.js" as="script" type="text/javascript">
+        <link rel="modulepreload" href="/assets/chunks/chunk-BXl3LOEh.js" as="script" type="text/javascript">
+      </body>
+    </html>
