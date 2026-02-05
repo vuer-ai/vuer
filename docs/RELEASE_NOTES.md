@@ -1,5 +1,63 @@
 # Release Notes
 
+## v0.0.80rc2 - Workspace Link API & Image Encoders
+
+This release candidate adds convenience methods for serving dynamic content and in-memory images.
+
+### New Features
+
+#### `Workspace.link()` Method
+
+Link callables to URL paths for serving dynamic content:
+
+```python
+from vuer import Workspace, jpg, png
+
+ws = Workspace("./assets")
+
+# Serve in-memory images
+ws.link(lambda: jpg(camera.frame), "/live/frame.jpg")
+ws.link(lambda: png(depth_map), "/depth.png")
+
+# JSON endpoints
+ws.link(lambda: {"status": "ok"}, "/api/status")
+
+# With request parameter for query args
+ws.link(lambda r: render(r.query["angle"]), "/render.jpg")
+```
+
+**Features:**
+- Follows `os.link(src, dst)` convention: source first, destination second
+- Auto-detects content-type from path extension (`.jpg` → `image/jpeg`)
+- Optional request parameter via signature inspection
+- Supports bytes, dict/list (JSON), Blob, and string return types
+
+#### Image Encoders
+
+New encoder utilities for serving in-memory images:
+
+```python
+from vuer import jpg, png, b64jpg, b64png
+
+# Encode as bytes (for HTTP responses)
+jpg(image, quality=90)   # JPEG bytes (strips alpha)
+png(image)               # PNG bytes (supports alpha)
+
+# Encode as base64 data URIs (for embedding in HTML/JSON)
+b64jpg(image)            # "data:image/jpeg;base64,..."
+b64png(image)            # "data:image/png;base64,..."
+```
+
+Images should be numpy arrays or torch tensors with values in [0, 1] range.
+
+### New Exports
+
+```python
+from vuer import Workspace, Blob, jpg, png, b64jpg, b64png
+```
+
+---
+
 ## v0.0.80rc1 - Workspace Multi-Path & Provider Pattern
 
 This release candidate introduces a powerful new **Workspace** system for multi-path file serving,
