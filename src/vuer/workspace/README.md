@@ -15,14 +15,15 @@ app = Vuer(workspace="./assets")
 app = Vuer(workspace=["./local", "/shared/robots", "/data/textures"])
 ```
 
-For advanced configuration (mounts, routes), use the `Workspace` class:
+For advanced configuration (mounts, links), use the `Workspace` class:
 
 ```python
-from vuer import Vuer, Workspace
+from vuer import Vuer, Workspace, jpg
 
 workspace = Workspace("./assets", "/shared")
 workspace.mount("./uploads", to="/uploads")
-workspace.route(lambda r: {"status": "ok"}, "/api/status")
+workspace.link(lambda: {"status": "ok"}, "/api/status")
+workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
 
 app = Vuer(workspace=workspace)
 ```
@@ -44,8 +45,27 @@ workspace.paths                    # Access paths (read-only tuple)
 workspace.find("file.txt")         # Find file in overlay (sync)
 workspace.resolve("file.txt")      # Resolve to Path|bytes|Blob (async)
 workspace.mount("./dir", to="/x")  # Mount directory at route
-workspace.route(fn, "/api")        # Dynamic handler
+workspace.link(fn, "/api")         # Link callable to URL path
 ```
+
+### Image Encoders
+
+Encode in-memory images for serving via `link()`:
+
+```python
+from vuer import jpg, png, b64jpg, b64png
+
+# Encode as bytes (for HTTP responses)
+jpg(image, quality=90)   # JPEG bytes (no alpha)
+png(image)               # PNG bytes (supports alpha)
+
+# Encode as base64 data URIs (for embedding in HTML/JSON)
+b64jpg(image)            # "data:image/jpeg;base64,..."
+b64png(image)            # "data:image/png;base64,..."
+```
+
+Images should be numpy arrays or torch tensors with values in [0, 1] range,
+shape (H, W, C) where C is 1, 3, or 4 channels.
 
 ### Blob
 
@@ -116,22 +136,29 @@ app = Vuer(workspace=workspace)
 # /exports/...    -> /var/exports/...
 ```
 
-### Dynamic Routes
+### Dynamic Links
 
 ```python
-from vuer import Vuer, Workspace
+from vuer import Vuer, Workspace, jpg, png
 
 workspace = Workspace("./assets")
 
-# JSON endpoint
-workspace.route(lambda r: {"status": "ok", "version": "1.0"}, "/api/status")
+# JSON endpoint (no request param needed)
+workspace.link(lambda: {"status": "ok", "version": "1.0"}, "/api/status")
+
+# Serve in-memory images
+workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
+workspace.link(lambda: png(depth_map), "/depth.png")
+
+# With request param for query args
+workspace.link(lambda r: render(angle=r.query.get("angle", 0)), "/render.jpg")
 
 # Async handler
 async def get_data(request):
     data = await fetch_from_database()
     return {"data": data}
 
-workspace.route(get_data, "/api/data")
+workspace.link(get_data, "/api/data")
 
 app = Vuer(workspace=workspace)
 ```

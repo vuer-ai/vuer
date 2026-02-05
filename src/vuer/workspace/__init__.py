@@ -3,10 +3,25 @@
 This package provides different workspace implementations for serving
 static files from various storage backends.
 
-Available workspaces:
+**Available workspaces**:
 
 - ``Workspace`` - Local filesystem (default)
 - ``Blob`` - In-memory data with explicit content-type
+
+**Image encoders** (for serving in-memory images):
+
+- ``jpg(image, quality=90)`` - Encode as JPEG bytes
+- ``png(image)`` - Encode as PNG bytes (supports alpha)
+- ``b64jpg(image, quality=90)`` - Encode as base64 JPEG data URI
+- ``b64png(image)`` - Encode as base64 PNG data URI
+
+**Example**::
+
+    from vuer import Workspace, jpg, png
+
+    ws = Workspace()
+    ws.link(lambda: jpg(camera.frame), "/live/frame.jpg")
+    ws.link(lambda: png(depth_map), "/depth.png")
 
 Future workspaces:
 
@@ -24,8 +39,16 @@ from vuer.workspace.workspace import (
     MIME_TYPES,
     ResolveResult,
 )
+from vuer.workspace.encoders import (
+    jpg,
+    png,
+    b64jpg,
+    b64png,
+    decode_b64png,
+)
 
 __all__ = [
+    # Workspace
     "Blob",
     "Workspace",
     "guess_content_type",
@@ -33,4 +56,10 @@ __all__ = [
     "workspace_from_config",
     "MIME_TYPES",
     "ResolveResult",
+    # Encoders
+    "jpg",
+    "png",
+    "b64jpg",
+    "b64png",
+    "decode_b64png",
 ]
