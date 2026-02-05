@@ -142,10 +142,7 @@ else:
                     opacity=0.2,       # Semi-transparent
                 )
             ],
-            defaultLights=False,        # Disable default lighting
-            defaultOrbitControls=False, # Disable orbit controls
-            grid=False,                 # Disable grid
-            bgChildren=[],              # No background children
+            bgChildren=[],  # No background children (empty scene)
         ))
 
         # Wait a bit for the AR session to initialize

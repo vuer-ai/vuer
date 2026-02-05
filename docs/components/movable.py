@@ -38,7 +38,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 key="movable-gripper",
                 position=[0, 0.5, 0],
             ),
-            show_helper=False,
             bgChildren=[OrbitControls(key="OrbitControls")]
         )
 

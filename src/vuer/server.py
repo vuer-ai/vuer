@@ -58,13 +58,20 @@ from vuer.workspace import Blob, Workspace, guess_content_type, workspace_from_c
 async def workspace_handler(request, workspace: Workspace):
   """Handle workspace file requests.
 
-  Resolves the filename through the workspace and returns appropriate response.
+  First checks for dynamic links, then resolves files through the workspace.
 
   :param request: The aiohttp request object.
   :param workspace: The Workspace instance to resolve files from.
   :return: aiohttp Response object.
   """
   filename = request.match_info["filename"]
+
+  # Check dynamic links first
+  link_response = await workspace.handle_link(filename, request)
+  if link_response is not None:
+    return link_response
+
+  # Fall back to file resolution
   result = await workspace.resolve(filename)
 
   if result is None:
@@ -1381,14 +1388,11 @@ class Vuer(Server):
     handler = partial(workspace_handler, workspace=self.workspace)
     self._add_route("/workspace/{filename:.*}", handler, method="GET")
 
+    # Register directory mounts
     for mount in self.workspace.mounts:
       if mount["type"] == "mount":
         self._add_route(
           f"{mount['path']}/{{filename:.*}}", mount["handler"], method="GET"
-        )
-      else:
-        self._add_route(
-          mount["path"], mount["handler"], method=mount.get("method", "GET")
         )
 
     self._add_route("/relay", self.relay, method="POST")

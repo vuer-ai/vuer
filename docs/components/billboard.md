@@ -31,7 +31,6 @@ async def main(sess: VuerSession):
             key="billboard",
             position=[0, 0.5, 0],
         ),
-        show_helper=False,
         bgChildren=[
             OrbitControls(key="OrbitControls")
         ],

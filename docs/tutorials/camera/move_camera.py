@@ -88,7 +88,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 ),
             ],
             grid=False,
-            show_helper=False,
         )
 
         # Add a box to the scene

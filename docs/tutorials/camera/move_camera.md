@@ -80,7 +80,6 @@ async def main(proxy):
             ),
         ],
         grid=False,
-        show_helper=False,
     )
 
     # Add a box to the scene

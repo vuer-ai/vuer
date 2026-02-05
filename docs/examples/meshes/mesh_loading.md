@@ -94,7 +94,6 @@ async def main(session):
                 color="yellow",
             ),
             # y-up
-            show_helper=False,
             up=[0, 1, 0],
             bgChildren=[
                 OrbitControls(key="OrbitControls")

@@ -1,5 +1,48 @@
 # Release Notes
 
+## v0.0.80rc4 - Dynamic Links & Scene Refactor
+
+### Dynamic Link/Unlink
+
+Links can now be added and removed at runtime via `vuer.workspace`:
+
+```python
+from vuer import Vuer
+from vuer.workspace import jpg
+
+vuer = Vuer()
+
+@vuer.spawn(start=True)
+async def main(session):
+    # Add links dynamically
+    vuer.workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
+    vuer.workspace.link(lambda: {"status": "recording"}, "/api/status")
+
+    # Access at /workspace/live/frame.jpg
+
+    await do_recording()
+
+    # Remove when done
+    vuer.workspace.unlink("/live/frame.jpg")
+
+    await session.forever()
+```
+
+### Scene Refactor
+
+- **`Scene`** is now minimal with empty `bgChildren` by default
+- **`DefaultScene`** includes rich defaults:
+  - Grid, HemisphereLightStage, Gamepad, Hands, MotionControllers
+  - SceneCamera (position `[0, 5, 10]`), SceneCameraControl
+  - CameraPreviewThumbs, CameraPreviewOverlay
+- Removed deprecated parameters: `defaultLights`, `defaultOrbitControls`, `show_helper`
+
+### Other Changes
+
+- Updated `params-proto` to 3.2.4
+
+---
+
 ## v0.0.80rc2 - Workspace Link API & Image Encoders
 
 This release candidate adds convenience methods for serving dynamic content and in-memory images.
@@ -11,20 +54,20 @@ This release candidate adds convenience methods for serving dynamic content and 
 Link callables to URL paths for serving dynamic content:
 
 ```python
-from vuer import Workspace
+from vuer import Vuer
 from vuer.workspace import jpg, png
 
-ws = Workspace("./assets")
+vuer = Vuer()
 
 # Serve in-memory images
-ws.link(lambda: jpg(camera.frame), "/live/frame.jpg")
-ws.link(lambda: png(depth_map), "/depth.png")
+vuer.workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
+vuer.workspace.link(lambda: png(depth_map), "/depth.png")
 
 # JSON endpoints
-ws.link(lambda: {"status": "ok"}, "/api/status")
+vuer.workspace.link(lambda: {"status": "ok"}, "/api/status")
 
 # With request parameter for query args
-ws.link(lambda r: render(r.query["angle"]), "/render.jpg")
+vuer.workspace.link(lambda r: jpg(render(r.query["angle"])), "/render.jpg")
 ```
 
 **Features:**

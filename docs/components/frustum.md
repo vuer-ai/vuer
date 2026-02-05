@@ -37,7 +37,6 @@ async def main(sess: VuerSession):
             )
             for i in range(N)
         ],
-        show_helper=False,
         up=[0, 0, 1],
         bgChildren=[
             OrbitControls(key="OrbitControls")

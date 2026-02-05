@@ -104,7 +104,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                     distanceToCamera=2,
                 ),
             ],
-            show_helper=False,
         )
         await sleep(0.0)
 

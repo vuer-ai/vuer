@@ -59,7 +59,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 key="model-right",
             ),
 
-            show_helper=False,
             bgChildren=[OrbitControls(key="OrbitControls")],
         )
 

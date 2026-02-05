@@ -64,14 +64,13 @@ The scene above automatically includes:
 - `OrbitControls` for interaction
 - Default lighting
 
-### Disabling OrbitControls
+### Fixed Camera (No Controls)
 
-To create a fixed camera view without interaction, set `defaultOrbitControls=False`:
+To create a fixed camera view without interaction, use a custom `bgChildren` without `SceneCameraControl`:
 
 ```python
 from vuer import Vuer, VuerSession
-from vuer.schemas import Scene, Box
-from vuer.schemas import PerspectiveCamera
+from vuer.schemas import Scene, Box, Grid, HemisphereLightStage, SceneCamera
 
 app = Vuer()
 
@@ -80,13 +79,18 @@ async def main(session: VuerSession):
     session.set @ Scene(
         Box(args=[1, 1, 1], position=[0, 0.5, 0], key="box"),
 
-        defaultOrbitControls=False,  # Disable interactive controls
+        bgChildren=[
+            Grid(key="grid"),
+            HemisphereLightStage(key="light-stage"),
+            SceneCamera(key="SceneCamera", position=[0, 5, 10]),
+            # Note: No SceneCameraControl = no mouse interaction
+        ],
     )
 
     await session.forever()
 ```
 
-This keeps all other defaults (Grid, Lights, etc.) while only removing OrbitControls.
+This keeps Grid and lighting while removing camera controls.
 
 **Use cases:**
 - Cinematic presentations or product showcases
@@ -224,16 +228,16 @@ async def main(session: VuerSession):
 
 ## Camera Properties Reference
 
-### Scene Parameters
+### Scene vs DefaultScene
 
-Control default camera and controls behavior through Scene parameters:
+- **`Scene`**: Minimal base class with empty `bgChildren`. Use when you need full control.
+- **`DefaultScene`**: Includes sensible defaults (Grid, HemisphereLightStage, Gamepad, Hands, MotionControllers, SceneCamera, SceneCameraControl, CameraPreviewThumbs, CameraPreviewOverlay).
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `defaultOrbitControls` | `bool` | True | Include OrbitControls in default components |
-| `defaultLights` | `bool` | True | Include default lighting setup |
-| `grid` | `bool` | True | Show ground grid |
 | `up` | `[x, y, z]` | `[0, 1, 0]` | Up vector for the scene |
+| `bgChildren` | `list` | `[]` (Scene) | Background children components |
+| `grid` | `bool` | `True` | Show ground grid (DefaultScene only) |
 
 ### PerspectiveCamera
 

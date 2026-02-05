@@ -41,7 +41,7 @@ with doc:
 
     # Setting stream="ondemand" gives Python control over when frames are rendered
     virtual_camera = CameraView(key="ego", stream="ondemand", monitor=False)
-    scene = DefaultScene(rawChildren=[virtual_camera], show_helper=False)
+    scene = DefaultScene(rawChildren=[virtual_camera])
 
 doc @ """
 ## Step 2: Implement the Job Queue

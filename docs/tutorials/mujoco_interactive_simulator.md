@@ -82,7 +82,6 @@ async def main(session):
                 showCameraFrustum=True,  # Whether to show the camera  in the scene
             ),
             up=[0, 1, 0],
-            show_helper=False,
         ),
     )
     await sleep(2)

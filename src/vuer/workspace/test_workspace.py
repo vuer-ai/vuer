@@ -242,15 +242,21 @@ def test_workspace_overlay_precedence():
 # =============================================================================
 
 
-def test_workspace_link_registers_mount():
-    """Test that link() registers a mount configuration."""
+def test_workspace_link_registers_in_links():
+    """Test that link() registers in the _links dict."""
     ws = Workspace()
     ws.link(lambda: {"ok": True}, "/api/status")
 
-    assert len(ws.mounts) == 1
-    assert ws.mounts[0]["type"] == "link"
-    assert ws.mounts[0]["path"] == "/api/status"
-    assert ws.mounts[0]["method"] == "GET"
+    assert "/api/status" in ws.links
+    assert ws.links["/api/status"]["method"] == "GET"
+
+
+def test_workspace_link_normalizes_path():
+    """Test that link() normalizes paths (adds leading slash, strips trailing)."""
+    ws = Workspace()
+    ws.link(lambda: {}, "api/status/")
+
+    assert "/api/status" in ws.links
 
 
 def test_workspace_link_custom_method():
@@ -258,7 +264,7 @@ def test_workspace_link_custom_method():
     ws = Workspace()
     ws.link(lambda: {}, "/api/submit", method="POST")
 
-    assert ws.mounts[0]["method"] == "POST"
+    assert ws.links["/api/submit"]["method"] == "POST"
 
 
 def test_workspace_link_no_request_param():
@@ -268,8 +274,8 @@ def test_workspace_link_no_request_param():
     # Lambda with no params should work
     ws.link(lambda: b"image data", "/image.jpg")
 
-    # The handler should be registered
-    assert len(ws.mounts) == 1
+    assert "/image.jpg" in ws.links
+    assert ws.links["/image.jpg"]["takes_request"] is False
 
 
 def test_workspace_link_with_request_param():
@@ -279,78 +285,114 @@ def test_workspace_link_with_request_param():
     # Lambda with request param should work
     ws.link(lambda r: {"query": r.query}, "/api/data")
 
-    assert len(ws.mounts) == 1
+    assert "/api/data" in ws.links
+    assert ws.links["/api/data"]["takes_request"] is True
+
+
+def test_workspace_unlink():
+    """Test unlink() removes a link."""
+    ws = Workspace()
+    ws.link(lambda: {}, "/api/status")
+
+    assert "/api/status" in ws.links
+
+    result = ws.unlink("/api/status")
+
+    assert result is True
+    assert "/api/status" not in ws.links
+
+
+def test_workspace_unlink_nonexistent():
+    """Test unlink() returns False for nonexistent path."""
+    ws = Workspace()
+
+    result = ws.unlink("/nonexistent")
+
+    assert result is False
+
+
+def test_workspace_unlink_normalizes_path():
+    """Test unlink() normalizes paths."""
+    ws = Workspace()
+    ws.link(lambda: {}, "/api/status")
+
+    result = ws.unlink("api/status/")
+
+    assert result is True
+    assert "/api/status" not in ws.links
 
 
 @pytest.mark.asyncio
-async def test_workspace_link_handler_bytes():
-    """Test link() handler returns bytes correctly."""
+async def test_workspace_handle_link_bytes():
+    """Test handle_link() returns bytes correctly."""
     ws = Workspace()
     test_bytes = b"raw image bytes"
 
     ws.link(lambda: test_bytes, "/image.jpg")
 
-    # Get the handler and call it
-    handler = ws.mounts[0]["handler"]
     mock_request = MagicMock()
-
-    response = await handler(mock_request)
+    response = await ws.handle_link("/image.jpg", mock_request)
 
     assert response.body == test_bytes
     assert response.content_type == "image/jpeg"
 
 
 @pytest.mark.asyncio
-async def test_workspace_link_handler_dict():
-    """Test link() handler returns dict as JSON."""
+async def test_workspace_handle_link_dict():
+    """Test handle_link() returns dict as JSON."""
     ws = Workspace()
 
     ws.link(lambda: {"status": "ok"}, "/api/status")
 
-    handler = ws.mounts[0]["handler"]
     mock_request = MagicMock()
-
-    response = await handler(mock_request)
+    response = await ws.handle_link("/api/status", mock_request)
 
     assert response.content_type == "application/json"
     assert b'"status"' in response.text.encode()
 
 
 @pytest.mark.asyncio
-async def test_workspace_link_handler_blob():
-    """Test link() handler returns Blob correctly."""
+async def test_workspace_handle_link_blob():
+    """Test handle_link() returns Blob correctly."""
     ws = Workspace()
     test_data = b"custom data"
 
     ws.link(lambda: Blob(data=test_data, content_type="application/custom"), "/data")
 
-    handler = ws.mounts[0]["handler"]
     mock_request = MagicMock()
-
-    response = await handler(mock_request)
+    response = await ws.handle_link("/data", mock_request)
 
     assert response.body == test_data
     assert response.content_type == "application/custom"
 
 
 @pytest.mark.asyncio
-async def test_workspace_link_content_type_auto_detect():
-    """Test link() auto-detects content type from path extension."""
+async def test_workspace_handle_link_content_type_auto_detect():
+    """Test handle_link() auto-detects content type from path extension."""
     ws = Workspace()
 
     ws.link(lambda: b"png data", "/image.png")
 
-    handler = ws.mounts[0]["handler"]
     mock_request = MagicMock()
-
-    response = await handler(mock_request)
+    response = await ws.handle_link("/image.png", mock_request)
 
     assert response.content_type == "image/png"
 
 
 @pytest.mark.asyncio
-async def test_workspace_link_optional_request():
-    """Test link() calls handler with or without request based on signature."""
+async def test_workspace_handle_link_not_found():
+    """Test handle_link() returns None for unknown path."""
+    ws = Workspace()
+
+    mock_request = MagicMock()
+    response = await ws.handle_link("/nonexistent", mock_request)
+
+    assert response is None
+
+
+@pytest.mark.asyncio
+async def test_workspace_handle_link_optional_request():
+    """Test handle_link() calls handler with or without request based on signature."""
     ws = Workspace()
     call_log = []
 
@@ -370,10 +412,31 @@ async def test_workspace_link_optional_request():
     mock_request = MagicMock()
     mock_request.path = "/test"
 
-    await ws.mounts[0]["handler"](mock_request)
-    await ws.mounts[1]["handler"](mock_request)
+    await ws.handle_link("/no-params", mock_request)
+    await ws.handle_link("/with-params", mock_request)
 
     assert call_log == ["no_params", "with_params:/test"]
+
+
+@pytest.mark.asyncio
+async def test_workspace_link_dynamic_update():
+    """Test that links can be added/removed dynamically."""
+    ws = Workspace()
+    mock_request = MagicMock()
+
+    # Initially no link
+    response = await ws.handle_link("/dynamic", mock_request)
+    assert response is None
+
+    # Add link dynamically
+    ws.link(lambda: b"hello", "/dynamic")
+    response = await ws.handle_link("/dynamic", mock_request)
+    assert response.body == b"hello"
+
+    # Remove link dynamically
+    ws.unlink("/dynamic")
+    response = await ws.handle_link("/dynamic", mock_request)
+    assert response is None
 
 
 # =============================================================================

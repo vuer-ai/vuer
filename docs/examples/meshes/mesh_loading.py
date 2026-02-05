@@ -103,7 +103,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                     color="yellow",
                 ),
                 # y-up
-                show_helper=False,
                 up=[0, 1, 0],
                 bgChildren=[
                     OrbitControls(key="OrbitControls")

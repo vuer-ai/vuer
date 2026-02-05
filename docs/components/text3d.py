@@ -38,7 +38,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 scale=0.15,
                 bevelEnabled=True,
             ),
-            show_helper=False,
             bgChildren=[
                 OrbitControls(key="OrbitControls")
             ],

@@ -32,7 +32,6 @@ async def main(sess: VuerSession):
             scale=0.15,
             bevelEnabled=True,
         ),
-        show_helper=False,
         bgChildren=[
             OrbitControls(key="OrbitControls")
         ],

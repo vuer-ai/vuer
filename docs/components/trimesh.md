@@ -31,7 +31,6 @@ async def main(sess: VuerSession):
             faces=faces,
             color="red"
         ),
-        show_helper=False,
         bgChildren=[
             OrbitControls(key="OrbitControls")
         ],

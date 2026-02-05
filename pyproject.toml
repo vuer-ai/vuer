@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "vuer"
-version = "0.0.80rc2"
+version = "0.0.80rc4"
 description = ""
 readme = "README.md"
 license = { text = "MIT" }
@@ -14,7 +14,7 @@ classifiers = [
     "Programming Language :: Python",
 ]
 dependencies = [
-    "params-proto==3.2.1",
+    "params-proto==3.3.0",
     "pillow",
     "msgpack",
     "numpy>=1.21", # because we require numpy.typing.NDArray

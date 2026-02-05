@@ -22,14 +22,14 @@ Let's start by understanding the two fundamental light types: ambient and direct
 
 Ambient light illuminates all objects uniformly from all directions, providing a base level of brightness.
 
-```{admonition} Why defaultLights=False in These Examples?
+```{admonition} Why Use Scene Instead of DefaultScene?
 :class: tip
 
-You'll notice `defaultLights=False` in the code examples throughout this chapter. By default, Vuer adds a `HemisphereLight` and `DirectionalLight` to help you see objects immediately.
+You'll notice we use `Scene` (not `DefaultScene`) in the code examples throughout this chapter. `DefaultScene` includes rich defaults like `HemisphereLightStage`, `Grid`, `SceneCamera`, VR controls, etc. in its `bgChildren`.
 
-Setting `defaultLights=False` disables this automatic lighting, ensuring that only the lights you explicitly define affect the scene. This allows you to see the precise effect of each light type without interference from Vuer's default lighting.
+Using the base `Scene` class gives you a blank canvas with no automatic lighting, ensuring that only the lights you explicitly define affect the scene. This allows you to see the precise effect of each light type.
 
-**Note:** Default lights are part of `bgChildren`, which also includes Grid, OrbitControls, VR devices, etc. Using `bgChildren=[]` clears everything, while `defaultLights=False` only removes the lighting.
+**Note:** Use `DefaultScene` when you want sensible defaults. Use `Scene` with custom `bgChildren` for full control over your scene setup.
 ```
 
 ```python
@@ -45,15 +45,13 @@ async def main(session: VuerSession):
         # ... your scene objects ...
 
         up=[0, 1, 0],
-        grid=False,
-        defaultLights=False,  # Disable default lights
         rawChildren=[
             # Only ambient light - notice how flat it looks
-                AmbientLight(
-                    intensity=20,
-                    color="#4a5568",
-                    key="ambient-light",
-                ),
+            AmbientLight(
+                intensity=20,
+                color="#4a5568",
+                key="ambient-light",
+            ),
         ],
     )
 
@@ -385,8 +383,6 @@ async def main(session: VuerSession):
         ),
 
         up=[0, 1, 0],
-        grid=False,
-        defaultLights=False,  # Disable default lights to use custom lighting
         rawChildren=[
             # Four-light setup with shadows
             AmbientLight(

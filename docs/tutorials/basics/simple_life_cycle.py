@@ -33,7 +33,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     # use `start=True` to start the app immediately
     @app.spawn(start=True)
     async def main(session):
-        session.set @ DefaultScene(grid=False, show_helper=False)
+        session.set @ DefaultScene(grid=False)
 
         wireframe = False
 

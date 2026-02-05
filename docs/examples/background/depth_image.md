@@ -48,7 +48,6 @@ async def show_heatmap(sess: VuerSession):
         # hide the helper to only render the objects.
         up=[0, 1, 0],
         grid=False,
-        show_helper=False,
 
     )
 

@@ -22,7 +22,6 @@ async def main(sess: VuerSession):
             scale=0.5,
             position=[0, -1.0, 0.0],
         ),
-        show_helper=False,
         showGrid=False,
         up=[0, 0, -1],
         bgChildren=[
