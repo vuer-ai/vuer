@@ -29,7 +29,6 @@ async def main(session):
             fontSize=0.15,
             position=[0, 0.5, 0],
         ),
-        show_helper=False,
         bgChildren=[
             OrbitControls(key="OrbitControls")
         ],

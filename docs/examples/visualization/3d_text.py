@@ -88,7 +88,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             # Lighting
             AmbientLight(intensity=2),
             DirectionalLight(intensity=1, position=[1, 2, 2]),
-            show_helper=False,
             bgChildren=[
                 OrbitControls(key="OrbitControls")
             ],

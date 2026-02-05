@@ -34,7 +34,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 rotation=[0, -1.57, 0],
                 scale=1,
             ),
-            show_helper=False,
             up=[0, 0, 1],
             bgChildren=[
                 OrbitControls(key="OrbitControls")

@@ -42,7 +42,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
         session.set @ DefaultScene(
             *markers,
-            show_helper=False,
             bgChildren=[
                 OrbitControls(key="OrbitControls")
             ],

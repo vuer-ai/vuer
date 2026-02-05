@@ -32,7 +32,6 @@ async def main(session: VuerSession):
             key="movable-gripper",
             position=[0, 0.5, 0],
         ),
-        show_helper=False,
         bgChildren=[OrbitControls(key="OrbitControls")]
     )
 

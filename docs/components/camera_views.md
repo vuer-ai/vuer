@@ -34,7 +34,6 @@ async def main(sess: VuerSession):
             position=[0, 0, 0.2],
             material={"color": "red"},
         ),
-        show_helper=False,
         rawChildren=[
             CameraView(
                 key="ego",

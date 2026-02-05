@@ -36,7 +36,7 @@ async def on_camera(event: ClientEvent, session):
 
 @app.spawn(start=True)
 async def show_heatmap(session):
-    session.set @ Scene(grid=False, show_helper=False)
+    session.set @ Scene()  # Empty scene with no defaults
 
     for i, frame in tqdm(enumerate(reader), desc="playing video"):
         # use the upsert(..., to="bgChildren") syntax, so it is in global frame.

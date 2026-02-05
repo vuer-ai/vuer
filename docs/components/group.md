@@ -37,7 +37,6 @@ async def main(sess):
             scale=1.0,
             key="my-group",
         ),
-        show_helper=False,
         bgChildren=[OrbitControls(key="OrbitControls")],
     )
 

@@ -36,7 +36,6 @@ async def main(session):
 
     session.set @ DefaultScene(
         *markers,
-        show_helper=False,
         bgChildren=[
             OrbitControls(key="OrbitControls")
         ],

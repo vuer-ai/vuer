@@ -39,7 +39,6 @@ async def main(session):
             color="red",
             lineWidth=3,
         ),
-        show_helper=False,
         bgChildren=[
             OrbitControls(key="OrbitControls")
         ],

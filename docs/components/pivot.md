@@ -46,7 +46,6 @@ async def main(sess):
             key="pivot-sphere",
         ),
 
-        show_helper=False,
         bgChildren=[OrbitControls(key="OrbitControls")],
     )
 

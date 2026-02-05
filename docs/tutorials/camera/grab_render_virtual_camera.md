@@ -96,7 +96,6 @@ async def main(proxy):
                 distanceToCamera=2,
             ),
         ],
-        show_helper=False,
     )
     await sleep(0.0)
 

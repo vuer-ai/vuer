@@ -59,7 +59,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 # this also extends to other 3D asset components.
                 onLoad="textured stairs are loaded",
             ),
-            show_helper=False,
             up=[0, 1, 0],
             bgChildren=[
                 OrbitControls(key="OrbitControls")

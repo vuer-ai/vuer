@@ -49,7 +49,6 @@ sphere = Sphere(
 async def main(proxy: VuerSession):
     proxy.set @ DefaultScene(
         sphere,
-        show_helper=False,
         bgChildren=[OrbitControls(key="OrbitControls")],
     )
 

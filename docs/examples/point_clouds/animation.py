@@ -48,7 +48,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 TriMesh(vertices=vertices, faces=faces, position=[0, 0, 0], wireframe=True),
                 PointCloud(key="surface", vertices=vertices, size=0.001),
                 PointCloud(key="infill", vertices=vertices, size=0.001),
-                show_helper=False,
             ),
         )
 

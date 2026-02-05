@@ -43,7 +43,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 scale=1.0,
                 key="my-group",
             ),
-            show_helper=False,
             bgChildren=[OrbitControls(key="OrbitControls")],
         )
 

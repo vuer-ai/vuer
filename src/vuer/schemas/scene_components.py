@@ -3755,73 +3755,20 @@ class Scene(BlockElement):
     rawChildren=None,
     htmlChildren=None,
     bgChildren: List[Element] = None,
-    defaultLights: bool = True,
-    defaultOrbitControls: bool = True,
     # default to y-up to be consistent with three.js. Blender uses z-up though.
     up=[0, 1, 0],
     background=None,
-    grid=True,
     toneMapping: str = None,
     toneMappingExposure: float = None,
     frameloop: Literal["always", "demand"] = None,
-    enableOrbitControl: bool = None,
     camPosition: List[float] = None,
     camRotation: List[float] = None,
     **kwargs,
   ):
     super().__init__(*children, up=up, **kwargs)
 
-    # Import components needed for defaults
-    from .drei_components import OrbitControls, PerspectiveCamera
-
-    # Default lighting (controlled by defaultLights parameter)
-    # Using HemisphereLightStage to match frontend scene.vuer defaults
-    default_lighting = (
-      [
-        HemisphereLightStage(
-          key="light-stage",
-        ),
-      ]
-      if defaultLights
-      else []
-    )
-
-    # Default orbit controls (controlled by defaultOrbitControls parameter)
-    default_orbit_controls = (
-      [
-        OrbitControls(key="orb-control", makeDefault=True),
-      ]
-      if defaultOrbitControls
-      else []
-    )
-
-    # Background infrastructure components, matches frontend scene.vuer defaults:
-    # Grid + HemisphereLightStage (lighting) + Gamepad + Hands + MotionControllers + OrbitControls + PerspectiveCamera
-    default_bg_children = (
-      [
-        Grid(key="default-grid", _key="default-grid") if grid else None,
-      ]
-      + default_lighting
-      + [
-        Gamepad(key="gamepad-0", index=0),
-        Hands(fps=30, eventType=["squeeze"], stream=True, key="hands"),
-        MotionControllers(
-          fps=30,
-          eventType=["trigger", "squeeze"],
-          stream=True,
-          key="motion-controllers",
-        ),
-      ]
-      + default_orbit_controls
-      + [
-        PerspectiveCamera(
-          key="perspective-camera", makeDefault=True, position=[0, 2, 2]
-        ),
-      ]
-    )
-
-    # Set bgChildren: use user-provided value, or defaults if None
-    self.bgChildren = default_bg_children if bgChildren is None else bgChildren
+    # Set bgChildren: use user-provided value, or empty list if None
+    self.bgChildren = bgChildren if bgChildren is not None else []
 
     if rawChildren is None:
       self.rawChildren = []
@@ -3844,8 +3791,6 @@ class Scene(BlockElement):
     if frameloop is not None:
       self.frameloop = frameloop
 
-    if enableOrbitControl is not None:
-      self.enableOrbitControl = enableOrbitControl
     if camPosition is not None:
       self.camPosition = camPosition
     if camRotation is not None:
@@ -3863,46 +3808,19 @@ class Scene(BlockElement):
 
 
 class DefaultScene(Scene):
-  """Default Scene that includes a basic setup of ambient lights.
+  """Default Scene with sensible defaults for interactive 3D applications.
 
+  Includes:
+  - Grid, HemisphereLightStage, Gamepad, Hands, MotionControllers
+  - SceneCamera, SceneCameraControl, CameraPreviewThumbs, CameraPreviewOverlay
 
-  :param children: list of children elements to be rendered in the scene.
-  :type children: SceneElement, ...
-  :param rawChildren: list of children elements to be rendered in the scene.
-  :param htmlChildren: list of children elements to be rendered in the scene.
-  :param bgChildren: list of children elements to be rendered in the scene.
-  :param show_helper: list of children elements to be rendered in the scene.
-  :param startStep: list of children elements to be rendered in the scene.
-  :param endStep: list of children elements to be rendered in the scene.
-  :param up: list of children elements to be rendered in the scene.
-  :param kwargs: list of children elements to be rendered in the scene.
-
-  Example Usage::
-
-      DefaultScene(
-          # Ambient Light does not have helper because it is ambient.
-          AmbientLight(intensity=1.0, key="default_ambient_light"),
-          DirectionalLight(
-              intensity=1, key="default_directional_light", helper=show_helper
-          ),
-          *children,
-          rawChildren=rawChildren,
-          htmlChildren=htmlChildren,
-          bgChildren=[
-              GrabRender(),
-              *[
-                  # we use a key here so that we can replace the timeline controls via update
-                  TimelineControls(start=startStep, end=endStep, key="timeline")
-                  if endStep
-                  else None,
-              ],
-              PointerControls(),
-              Grid(),
-              *bgChildren,
-          ],
-          up=up,
-          **kwargs,
-      )
+  :param children: Scene elements to render.
+  :param rawChildren: Raw children elements.
+  :param htmlChildren: HTML overlay elements.
+  :param bgChildren: Additional background children (appended to defaults).
+  :param grid: Whether to include the grid (default: True).
+  :param up: Up vector (default: [0, 1, 0] for y-up).
+  :param kwargs: Additional arguments passed to Scene.
   """
 
   def __init__(
@@ -3910,41 +3828,32 @@ class DefaultScene(Scene):
     *children: SceneElement,
     rawChildren: List[SceneElement] = None,
     htmlChildren: List[Element] = None,
-    bgChildren: List[SceneElement] = [],
-    show_helper=True,
-    startStep=0,
-    endStep=None,
-    # default to z-up
+    bgChildren: List[SceneElement] = None,
+    # default to y-up
     up=[0, 1, 0],
     grid=True,
     **kwargs,
   ):
-    rawChildren = [
-      AmbientLight(intensity=0.5, key="default_ambient_light"),
-      DirectionalLight(
-        intensity=1, key="default_directional_light", helper=show_helper
-      ),
-      *(rawChildren or []),
+    # Default bgChildren: Grid + HemisphereLightStage + Gamepad + Hands + MotionControllers
+    # + SceneCamera + SceneCameraControl + CameraPreviewThumbs + CameraPreviewOverlay
+    default_bg_children = [
+      Grid(key="grid") if grid else None,
+      HemisphereLightStage(key="light-stage"),
+      Gamepad(key="gamepad-0", index=0),
+      Hands(fps=30, stream=True, key="hands"),
+      MotionControllers(fps=30, stream=True, key="motion-controllers"),
+      SceneCamera(key="SceneCamera", position=[0, 5, 10]),
+      SceneCameraControl(key="SceneCameraControl", makeDefault=True),
+      CameraPreviewThumbs(key="CameraPreviewThumbs"),
+      CameraPreviewOverlay(key="CameraPreviewOverlay"),
+      *(bgChildren or []),
     ]
 
     super().__init__(
-      # Ambient Light does not have helper because it is ambient.
       *children,
       rawChildren=rawChildren,
       htmlChildren=htmlChildren,
-      bgChildren=[
-        # skey spec here is a little redundant.
-        GrabRender(key="DEFAULT"),
-        *[
-          # we use a key here so that we can replace the timeline controls via update
-          TimelineControls(start=startStep, end=endStep, key="timeline")
-          if endStep
-          else None,
-        ],
-        PointerControls(),
-        Grid() if grid else None,
-        *bgChildren,
-      ],
+      bgChildren=default_bg_children,
       up=up,
       **kwargs,
     )

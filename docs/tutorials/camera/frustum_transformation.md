@@ -175,7 +175,6 @@ async def main(proxy):
             ),
         ],
         grid=False,
-        show_helper=False,
         bgChildren=[
             OrbitControls(key="OrbitControls")
         ],

@@ -70,7 +70,6 @@ async def main(session):
         # Lighting
         AmbientLight(intensity=2),
         DirectionalLight(intensity=1, position=[1, 2, 2]),
-        show_helper=False,
         bgChildren=[
             OrbitControls(key="OrbitControls")
         ],

@@ -43,7 +43,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
     @app.spawn
     async def main(proxy):
-        proxy.set @ DefaultScene(show_helper=False)
+        proxy.set @ DefaultScene()
 
         while True:
             await asyncio.sleep(1.0)

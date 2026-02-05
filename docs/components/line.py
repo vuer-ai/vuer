@@ -45,7 +45,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 color="red",
                 lineWidth=3,
             ),
-            show_helper=False,
             bgChildren=[
                 OrbitControls(key="OrbitControls")
             ],

@@ -31,7 +31,6 @@ async def main(sess):
             position=[0, 0, 0],
             key="glb-model",
         ),
-        show_helper=False,
         bgChildren=[
             OrbitControls(key="OrbitControls")
         ],

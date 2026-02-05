@@ -96,7 +96,7 @@ def test_noop_singleton():
 
 def test_set_event():
   """Test Set event with Scene."""
-  scene = Scene(key="test-scene", defaultLights=False, defaultOrbitControls=False)
+  scene = Scene(key="test-scene")
   event = Set(data=scene)
 
   assert event.etype == "SET"
@@ -105,7 +105,7 @@ def test_set_event():
 
 def test_set_event_serialize():
   """Test Set event serialization."""
-  scene = Scene(key="test-scene", defaultLights=False, defaultOrbitControls=False)
+  scene = Scene(key="test-scene")
   event = Set(data=scene)
   serialized = event._serialize()
 

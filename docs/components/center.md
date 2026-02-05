@@ -53,7 +53,6 @@ async def main(sess):
             key="model-right",
         ),
 
-        show_helper=False,
         bgChildren=[OrbitControls(key="OrbitControls")],
     )
 

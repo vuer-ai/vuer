@@ -62,7 +62,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                     position=[0, 0, 10],
                     size=0.008,
                 ),
-                show_helper=False,
                 up=[0, 1, 0],
                 bgChildren=[
                     OrbitControls(key="OrbitControls")

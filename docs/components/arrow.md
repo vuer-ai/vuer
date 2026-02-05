@@ -28,7 +28,6 @@ async def main(session):
             rotation=[0, -1.57, 0],
             scale=1,
         ),
-        show_helper=False,
         up=[0, 0, 1],
         bgChildren=[
             OrbitControls(key="OrbitControls")

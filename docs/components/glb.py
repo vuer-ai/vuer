@@ -37,7 +37,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                 position=[0, 0, 0],
                 key="glb-model",
             ),
-            show_helper=False,
             bgChildren=[
                 OrbitControls(key="OrbitControls")
             ],

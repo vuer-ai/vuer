@@ -44,7 +44,6 @@ async def main(sess: VuerSession):
                 position=[0, 1, 0],
                 key="luma-splats",
             ),
-            show_helper=False,
             up=[0, 1, 0],
             bgChildren=[
                 OrbitControls(key="OrbitControls")

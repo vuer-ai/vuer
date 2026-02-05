@@ -55,7 +55,6 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     async def main(proxy: VuerSession):
         proxy.set @ DefaultScene(
             sphere,
-            show_helper=False,
             bgChildren=[OrbitControls(key="OrbitControls")],
         )
 
