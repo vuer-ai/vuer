@@ -109,6 +109,19 @@ async def main(session):
     app.workspace.link(handle_submit, "/api/submit", method="POST")
 ```
 
+## Custom MIME Types
+
+Add custom MIME types for auto-detection in `link()` and static file serving:
+
+```python
+from vuer.workspace import MIME_TYPES
+
+# Add custom extensions
+MIME_TYPES[".npy"] = "application/x-npy"
+MIME_TYPES[".npz"] = "application/x-npz"
+MIME_TYPES[".h5"] = "application/x-hdf5"
+```
+
 ## Future Workspace Types
 
 The Workspace interface is designed for extensibility:

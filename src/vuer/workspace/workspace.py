@@ -57,7 +57,8 @@ from typing import AsyncIterator, Callable, List, Optional, Union
 from aiohttp import web
 
 
-# Extended MIME types for robotics files
+# Extended MIME types for robotics files.
+# Users can add custom types: MIME_TYPES[".custom"] = "application/x-custom"
 MIME_TYPES = {
     ".urdf": "application/xml",
     ".xacro": "application/xml",

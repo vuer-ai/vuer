@@ -272,6 +272,22 @@ The following robotics-related MIME types are auto-detected:
 
 Plus all standard MIME types via Python's `mimetypes` module.
 
+### Adding Custom MIME Types
+
+Add your own MIME types by modifying the `MIME_TYPES` dict:
+
+```python
+from vuer.workspace import MIME_TYPES
+
+# Add custom extensions
+MIME_TYPES[".npy"] = "application/x-npy"
+MIME_TYPES[".npz"] = "application/x-npz"
+MIME_TYPES[".h5"] = "application/x-hdf5"
+MIME_TYPES[".zarr"] = "application/x-zarr"
+```
+
+This affects both static file serving and `link()` content-type auto-detection.
+
 ## Hot Reload
 
 Add `?hot` to any URL to disable caching (useful during development):

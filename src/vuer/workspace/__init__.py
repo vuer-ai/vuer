@@ -23,6 +23,13 @@ static files from various storage backends.
     ws.link(lambda: jpg(camera.frame), "/live/frame.jpg")
     ws.link(lambda: png(depth_map), "/depth.png")
 
+**Custom MIME types**::
+
+    from vuer.workspace import MIME_TYPES
+
+    MIME_TYPES[".npy"] = "application/x-npy"
+    MIME_TYPES[".h5"] = "application/x-hdf5"
+
 Future workspaces:
 
 - ``DashWorkspace`` - ML-Dash experiments
