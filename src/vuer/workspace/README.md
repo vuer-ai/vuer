@@ -18,7 +18,8 @@ app = Vuer(workspace=["./local", "/shared/robots", "/data/textures"])
 For advanced configuration (mounts, links), use the `Workspace` class:
 
 ```python
-from vuer import Vuer, Workspace, jpg
+from vuer import Vuer, Workspace
+from vuer.workspace import jpg, png
 
 workspace = Workspace("./assets", "/shared")
 workspace.mount("./uploads", to="/uploads")
@@ -139,7 +140,8 @@ app = Vuer(workspace=workspace)
 ### Dynamic Links
 
 ```python
-from vuer import Vuer, Workspace, jpg, png
+from vuer import Vuer, Workspace
+from vuer.workspace import jpg, png
 
 workspace = Workspace("./assets")
 

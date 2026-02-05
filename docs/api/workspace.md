@@ -84,7 +84,8 @@ async def main(session):
 Serve dynamic content with functions:
 
 ```python
-from vuer import Vuer, Workspace, jpg, png
+from vuer import Vuer, Workspace
+from vuer.workspace import jpg, png
 
 @app.spawn(start=True)
 async def main(session):

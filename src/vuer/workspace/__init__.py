@@ -8,7 +8,9 @@ static files from various storage backends.
 - ``Workspace`` - Local filesystem (default)
 - ``Blob`` - In-memory data with explicit content-type
 
-**Image encoders** (for serving in-memory images):
+**Image encoders** (for serving in-memory images)::
+
+    from vuer.workspace import jpg, png, b64jpg, b64png
 
 - ``jpg(image, quality=90)`` - Encode as JPEG bytes
 - ``png(image)`` - Encode as PNG bytes (supports alpha)
@@ -17,7 +19,8 @@ static files from various storage backends.
 
 **Example**::
 
-    from vuer import Workspace, jpg, png
+    from vuer import Workspace
+    from vuer.workspace import jpg, png
 
     ws = Workspace()
     ws.link(lambda: jpg(camera.frame), "/live/frame.jpg")
@@ -28,7 +31,7 @@ static files from various storage backends.
     from vuer.workspace import MIME_TYPES
 
     MIME_TYPES[".npy"] = "application/x-npy"
-    MIME_TYPES[".h5"] = "application/x-hdf5"
+    MIME_TYPES.guess("data.npy")  # "application/x-npy"
 
 Future workspaces:
 
@@ -39,6 +42,7 @@ Future workspaces:
 
 from vuer.workspace.workspace import (
     Blob,
+    MimeTypes,
     Workspace,
     guess_content_type,
     sanitize_path,
@@ -57,6 +61,7 @@ from vuer.workspace.encoders import (
 __all__ = [
     # Workspace
     "Blob",
+    "MimeTypes",
     "Workspace",
     "guess_content_type",
     "sanitize_path",

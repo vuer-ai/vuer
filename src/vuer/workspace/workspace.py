@@ -5,7 +5,8 @@ This module provides the Workspace class which defines multiple search paths
 
 **Basic Usage**::
 
-    from vuer import Vuer, Workspace, jpg, png
+    from vuer import Vuer, Workspace
+    from vuer.workspace import jpg, png
 
     # Multiple search paths - first match wins (like $PATH)
     workspace = Workspace("./assets", "/data/robots", "./fallback")
@@ -57,9 +58,33 @@ from typing import AsyncIterator, Callable, List, Optional, Union
 from aiohttp import web
 
 
+class MimeTypes(dict):
+    """Dict subclass for MIME type mappings with a guess method.
+
+    Example::
+
+        MIME_TYPES[".npy"] = "application/x-npy"
+        content_type = MIME_TYPES.guess("data.npy")
+    """
+
+    def guess(self, filename: str) -> str:
+        """Guess content-type from filename.
+
+        Checks this dict first, then falls back to Python's mimetypes module.
+
+        :param filename: Filename or path to guess type for.
+        :return: MIME type string.
+        """
+        ext = Path(filename).suffix.lower()
+        if ext in self:
+            return self[ext]
+        mime_type, _ = mimetypes.guess_type(filename)
+        return mime_type or "application/octet-stream"
+
+
 # Extended MIME types for robotics files.
-# Users can add custom types: MIME_TYPES[".custom"] = "application/x-custom"
-MIME_TYPES = {
+# Add custom types: MIME_TYPES[".custom"] = "application/x-custom"
+MIME_TYPES = MimeTypes({
     ".urdf": "application/xml",
     ".xacro": "application/xml",
     ".srdf": "application/xml",
@@ -76,16 +101,15 @@ MIME_TYPES = {
     ".json": "application/json",
     ".yaml": "application/x-yaml",
     ".yml": "application/x-yaml",
-}
+})
 
 
 def guess_content_type(filename: str) -> str:
-    """Guess content-type from filename, with robotics file support."""
-    ext = Path(filename).suffix.lower()
-    if ext in MIME_TYPES:
-        return MIME_TYPES[ext]
-    mime_type, _ = mimetypes.guess_type(filename)
-    return mime_type or "application/octet-stream"
+    """Guess content-type from filename, with robotics file support.
+
+    Convenience function that calls MIME_TYPES.guess().
+    """
+    return MIME_TYPES.guess(filename)
 
 
 def sanitize_path(filename: str) -> str:
@@ -184,7 +208,13 @@ class Workspace:
 
     Attributes:
         paths: Tuple of paths that form the search overlay.
+        MIME_TYPES: MimeTypes dict for content-type lookup (class attribute).
     """
+
+    # Class-level MIME types with guess() method.
+    # Add custom types: Workspace.MIME_TYPES[".npy"] = "application/x-npy"
+    # Guess type: Workspace.MIME_TYPES.guess("file.npy")
+    MIME_TYPES = MIME_TYPES
 
     def __init__(self, *overlay: Union[str, Path]):
         """Initialize the Workspace with overlay paths.
@@ -203,6 +233,9 @@ class Workspace:
 
             # No args = current directory
             workspace = Workspace()
+
+            # Add custom MIME types (class-level, affects all instances)
+            Workspace.MIME_TYPES[".npy"] = "application/x-npy"
         """
         if not overlay:
             overlay = (".",)
@@ -402,7 +435,7 @@ class Workspace:
             workspace.link(fetch_data, "/api/data")
         """
         # Auto-detect content-type from path extension if not specified
-        effective_content_type = content_type or guess_content_type(to)
+        effective_content_type = content_type or self.MIME_TYPES.guess(to)
 
         # Check if fn accepts parameters
         sig = inspect.signature(fn)

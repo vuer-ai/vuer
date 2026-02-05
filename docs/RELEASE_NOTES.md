@@ -11,7 +11,8 @@ This release candidate adds convenience methods for serving dynamic content and 
 Link callables to URL paths for serving dynamic content:
 
 ```python
-from vuer import Workspace, jpg, png
+from vuer import Workspace
+from vuer.workspace import jpg, png
 
 ws = Workspace("./assets")
 
@@ -28,7 +29,7 @@ ws.link(lambda r: render(r.query["angle"]), "/render.jpg")
 
 **Features:**
 - Follows `os.link(src, dst)` convention: source first, destination second
-- Auto-detects content-type from path extension (`.jpg` → `image/jpeg`)
+- Auto-detects content-type from `MIME_TYPES` (`.jpg` → `image/jpeg`)
 - Optional request parameter via signature inspection
 - Supports bytes, dict/list (JSON), Blob, and string return types
 
@@ -37,7 +38,7 @@ ws.link(lambda r: render(r.query["angle"]), "/render.jpg")
 New encoder utilities for serving in-memory images:
 
 ```python
-from vuer import jpg, png, b64jpg, b64png
+from vuer.workspace import jpg, png, b64jpg, b64png
 
 # Encode as bytes (for HTTP responses)
 jpg(image, quality=90)   # JPEG bytes (strips alpha)
@@ -50,10 +51,26 @@ b64png(image)            # "data:image/png;base64,..."
 
 Images should be numpy arrays or torch tensors with values in [0, 1] range.
 
+#### Custom MIME Types
+
+`MIME_TYPES` is now a `MimeTypes` class with a `guess()` method:
+
+```python
+from vuer.workspace import MIME_TYPES
+
+# Add custom types
+MIME_TYPES[".npy"] = "application/x-npy"
+MIME_TYPES[".h5"] = "application/x-hdf5"
+
+# Guess content-type
+MIME_TYPES.guess("data.npy")  # "application/x-npy"
+```
+
 ### New Exports
 
 ```python
-from vuer import Workspace, Blob, jpg, png, b64jpg, b64png
+from vuer import Workspace, Blob
+from vuer.workspace import jpg, png, b64jpg, b64png, MIME_TYPES
 ```
 
 ---
