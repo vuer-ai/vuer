@@ -168,6 +168,7 @@ For more details:
    :hidden:
 
    vuer <api/vuer.md>
+   vuer.rtc — Real-Time Collaboration <rtc/README.md>
    vuer.workspace — Workspace <api/workspace.md>
    vuer.client — Python Client <api/client.md>
    vuer.frame <api/frame.md>
