@@ -167,20 +167,40 @@ async def main(session):
 ### Link Examples
 
 ```python
+from pathlib import Path
 from vuer import Vuer
 from vuer.workspace import jpg, png
 
 vuer = Vuer()
 
-# JSON endpoint (no request param needed)
+# === Static file links ===
+
+# Link a file directly (alias to a different path)
+vuer.workspace.link("./robots/panda.urdf", "/robot.urdf")
+
+# === Dynamic callable links ===
+
+# JSON endpoint
 vuer.workspace.link(lambda: {"status": "ok", "version": "1.0"}, "/api/status")
 
 # Serve in-memory images
 vuer.workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
 vuer.workspace.link(lambda: png(depth_map), "/depth.png")
 
-# With request param for query args
-vuer.workspace.link(lambda r: jpg(render(angle=r.query.get("angle", 0))), "/render.jpg")
+# Serve file bytes directly
+vuer.workspace.link(lambda: Path("./scene.xml").read_bytes(), "/scene.xml")
+
+# With query params - select file dynamically
+vuer.workspace.link(
+    lambda r: Path(f"./robots/{r.query.get('model', 'panda')}.urdf"),
+    "/robot.urdf"
+)
+
+# With query params - render with angle
+vuer.workspace.link(
+    lambda r: jpg(render(angle=float(r.query.get("angle", 0)))),
+    "/render.jpg"
+)
 
 # Async handler
 async def get_data(request):

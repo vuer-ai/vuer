@@ -380,6 +380,53 @@ async def test_workspace_handle_link_content_type_auto_detect():
 
 
 @pytest.mark.asyncio
+async def test_workspace_handle_link_file():
+    """Test handle_link() serves file path directly."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        # Create a test file
+        test_file = Path(tmpdir) / "robot.urdf"
+        test_file.write_text("<robot>test</robot>")
+
+        ws = Workspace()
+        ws.link(str(test_file), "/robot.urdf")
+
+        mock_request = MagicMock()
+        response = await ws.handle_link("/robot.urdf", mock_request)
+
+        assert response.content_type == "application/xml"
+
+
+@pytest.mark.asyncio
+async def test_workspace_handle_link_file_not_found():
+    """Test handle_link() returns 404 for missing file."""
+    ws = Workspace()
+    ws.link("/nonexistent/file.txt", "/missing.txt")
+
+    mock_request = MagicMock()
+    response = await ws.handle_link("/missing.txt", mock_request)
+
+    assert response.status == 404
+
+
+@pytest.mark.asyncio
+async def test_workspace_handle_link_callable_returns_path():
+    """Test handle_link() handles callable returning Path."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        # Create a test file
+        test_file = Path(tmpdir) / "robot.urdf"
+        test_file.write_text("<robot>test</robot>")
+
+        ws = Workspace()
+        # Callable that returns Path (for dynamic file selection)
+        ws.link(lambda p=test_file: p, "/robot.urdf")
+
+        mock_request = MagicMock()
+        response = await ws.handle_link("/robot.urdf", mock_request)
+
+        assert response.content_type == "application/xml"
+
+
+@pytest.mark.asyncio
 async def test_workspace_handle_link_not_found():
     """Test handle_link() returns None for unknown path."""
     ws = Workspace()

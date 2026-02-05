@@ -172,12 +172,9 @@ disable = [
     "unnecessary-ellipsis",
 ]
 
-#pytest
-#[tool.pytest.ini_options]
-#addopts = "-n=4 --typeguard-packages=vuer --disable-warnings"
-#testpaths = [
-#    "tests",
-#]
+# pytest
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
 
 # pyright
 [tool.pyright]

@@ -392,27 +392,30 @@ class Workspace:
 
     def link(
         self,
-        fn: Callable,
+        target: Union[Callable, str, Path],
         to: str,
         *,
         method: str = "GET",
         content_type: str = None,
     ):
-        """Link a callable to a URL path (dynamic, works at runtime).
+        """Link a file or callable to a URL path (dynamic, works at runtime).
 
         Links are stored in a dict and looked up at request time, so you can
         add/remove links while the server is running.
 
-        The callable can optionally receive the request object. Supports both
-        sync and async functions. Return types are handled automatically:
+        - **File path**: Served directly as a static file (efficient streaming)
+        - **Callable**: Called on each request, return type determines response
+
+        Callable return types are handled automatically:
 
         - ``dict``/``list``: JSON response
+        - ``Path``: File response (efficient streaming)
         - ``bytes``: Binary response (content-type from path extension)
         - ``Blob``: Binary response with explicit content-type
         - ``str``: Text response
 
-        :param fn: Handler function. Can optionally receive request.
-                  Can be sync or async.
+        :param target: File path (str/Path) or handler function.
+                      Functions can optionally receive request, sync or async.
         :param to: The URL path for this handler.
         :param method: HTTP method (default: "GET").
         :param content_type: Response content type. If None, auto-detected
@@ -420,25 +423,29 @@ class Workspace:
 
         Example::
 
+            from pathlib import Path
             from vuer import Vuer
             from vuer.workspace import jpg
 
             vuer = Vuer()
 
-            # Simple callable (no request param)
+            # Static file link (alias to a different path)
+            vuer.workspace.link("./robots/panda.urdf", "/robot.urdf")
+
+            # Dynamic image from camera
             vuer.workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
 
-            # With request param for query args
-            vuer.workspace.link(lambda r: jpg(render(r.query["angle"])), "/render.jpg")
+            # Serve file bytes directly
+            vuer.workspace.link(lambda: Path("./scene.xml").read_bytes(), "/scene.xml")
 
-            # JSON response (automatic)
+            # Dynamic file selection via query params
+            vuer.workspace.link(
+                lambda r: Path(f"./robots/{r.query.get('model', 'panda')}.urdf"),
+                "/robot.urdf"
+            )
+
+            # JSON response
             vuer.workspace.link(lambda: {"status": "ok"}, "/api/status")
-
-            # Async handler
-            async def fetch_data(request):
-                return {"data": await get_data()}
-
-            vuer.workspace.link(fetch_data, "/api/data")
 
             # Remove a link later
             vuer.workspace.unlink("/api/status")
@@ -462,16 +469,27 @@ class Workspace:
         # Auto-detect content-type from path extension if not specified
         effective_content_type = content_type or self.MIME_TYPES.guess(to)
 
-        # Check if fn accepts parameters
-        sig = inspect.signature(fn)
-        takes_request = len(sig.parameters) > 0
-
-        self._links[path] = {
-            "fn": fn,
-            "method": method,
-            "content_type": effective_content_type,
-            "takes_request": takes_request,
-        }
+        # Handle file path vs callable
+        if isinstance(target, (str, Path)):
+            # Static file link
+            file_path = Path(target).resolve()
+            self._links[path] = {
+                "type": "file",
+                "path": file_path,
+                "method": method,
+                "content_type": effective_content_type,
+            }
+        else:
+            # Callable link
+            sig = inspect.signature(target)
+            takes_request = len(sig.parameters) > 0
+            self._links[path] = {
+                "type": "callable",
+                "fn": target,
+                "method": method,
+                "content_type": effective_content_type,
+                "takes_request": takes_request,
+            }
 
     def unlink(self, path: str) -> bool:
         """Remove a linked callable from a URL path.
@@ -506,9 +524,20 @@ class Workspace:
         if link is None:
             return None
 
-        fn = link["fn"]
-        takes_request = link["takes_request"]
         content_type = link["content_type"]
+
+        # Handle file links (static)
+        if link.get("type") == "file":
+            file_path = link["path"]
+            if not file_path.is_file():
+                return web.Response(status=404, text=f"File not found: {file_path}")
+            response = web.FileResponse(file_path)
+            response.content_type = content_type or self.MIME_TYPES.guess(file_path.name)
+            return response
+
+        # Handle callable links (dynamic)
+        fn = link["fn"]
+        takes_request = link.get("takes_request", False)
 
         try:
             # Call with or without request based on signature
@@ -523,6 +552,12 @@ class Workspace:
                     text=json.dumps(result),
                     content_type="application/json",
                 )
+            if isinstance(result, Path):
+                if not result.is_file():
+                    return web.Response(status=404, text=f"File not found: {result}")
+                response = web.FileResponse(result)
+                response.content_type = content_type or self.MIME_TYPES.guess(result.name)
+                return response
             if isinstance(result, Blob):
                 return web.Response(
                     body=result.as_bytes(),
