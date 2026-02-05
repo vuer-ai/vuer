@@ -18,7 +18,7 @@ vuer = Vuer(workspace=["./assets", "/data/robots", "./fallback"])
 
 | Method | Description |
 |--------|-------------|
-| `vuer.workspace.link(fn, "/path")` | Link callable to URL (dynamic) |
+| `vuer.workspace.link(target, "/path")` | Link file or callable to URL |
 | `vuer.workspace.unlink("/path")` | Remove a link |
 | `vuer.workspace.find("file.txt")` | Find file in overlay |
 | `vuer.workspace.mount("./dir", to="/route")` | Mount single directory |
@@ -59,9 +59,11 @@ if path:
 
 ### Dynamic Links
 
-Links can be added and removed at runtime:
+Links can be added and removed at runtime. The `link()` method accepts either a file path
+or a callable:
 
 ```python
+from pathlib import Path
 from vuer import Vuer
 from vuer.workspace import jpg, png
 
@@ -69,15 +71,34 @@ vuer = Vuer()
 
 @vuer.spawn(start=True)
 async def main(session):
-    # JSON response (no request param needed)
+    # === Static file links ===
+
+    # Link a file directly (alias to a different URL path)
+    vuer.workspace.link("./robots/panda.urdf", "/robot.urdf")
+
+    # === Dynamic callable links ===
+
+    # JSON response
     vuer.workspace.link(lambda: {"status": "ok", "count": 42}, "/api/status")
 
     # Serve in-memory images
     vuer.workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
     vuer.workspace.link(lambda: png(depth_map), "/depth.png")
 
-    # With request param for query args
-    vuer.workspace.link(lambda r: jpg(render(r.query.get("id"))), "/render.jpg")
+    # Serve file bytes directly
+    vuer.workspace.link(lambda: Path("./scene.xml").read_bytes(), "/scene.xml")
+
+    # Dynamic file selection via query params
+    vuer.workspace.link(
+        lambda r: Path(f"./robots/{r.query.get('model', 'panda')}.urdf"),
+        "/robot.urdf"
+    )
+
+    # Render with query params
+    vuer.workspace.link(
+        lambda r: jpg(render(angle=float(r.query.get("angle", 0)))),
+        "/render.jpg"
+    )
 
     # Async handler
     async def get_data(request):
