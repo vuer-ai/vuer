@@ -93,6 +93,19 @@ from vuer.rtc.operations import (
     register_apply_fn,
 )
 
+# Scene Store
+from vuer.rtc.scene_store import (
+    SceneStore,
+    SceneState,
+    SceneNode as SceneStoreNode,  # Aliased to avoid conflict with CRDT SceneNode
+    SubscriptionContext,
+    find_by_key,
+    add_node,
+    remove_by_key,
+    update_node,
+    upsert_node,
+)
+
 __all__ = [
     # Types
     "VectorClock",
@@ -127,4 +140,14 @@ __all__ = [
     "apply_messages_mut",
     "registry",
     "register_apply_fn",
+    # Scene Store
+    "SceneStore",
+    "SceneState",
+    "SceneStoreNode",
+    "SubscriptionContext",
+    "find_by_key",
+    "add_node",
+    "remove_by_key",
+    "update_node",
+    "upsert_node",
 ]

@@ -1157,7 +1157,6 @@ class Vuer(Server):
       for entry in self.spawn_handlers:
         if _match_filters(client_info, **entry["filters"]):
           matching.append(entry)
-
       if not matching:
         return
 
@@ -1425,5 +1424,17 @@ class Vuer(Server):
     Server.start(self)
 
   async def loop_forever(self):
+    """Deprecated: Use ``await session.forever()`` instead.
+
+    .. deprecated:: 0.1.2
+        This method will be removed in a future version.
+        Use ``await session.forever()`` for cleaner session-scoped waiting.
+    """
+    import warnings
+    warnings.warn(
+      "vuer.loop_forever() is deprecated, use 'await session.forever()' instead",
+      DeprecationWarning,
+      stacklevel=2,
+    )
     while True:
       await sleep(1000_000_000_000.0)

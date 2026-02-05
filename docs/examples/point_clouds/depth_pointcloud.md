@@ -29,7 +29,7 @@ async def main(sess: VuerSession):
   )
   await asyncio.sleep(0.001)
 
-  await vuer.loop_forever()
+  await sess.forever()
 ```
 
 ```{admonition} Performance Tip
@@ -59,7 +59,7 @@ async def main(sess: VuerSession):
     frustumCulling=True,
   )
 
-  await vuer.loop_forever()
+  await sess.forever()
 ```
 
 ## DepthPointCloud Parameters

@@ -49,7 +49,7 @@ def server():
                     await asyncio.sleep(0.1)
         return False
 
-    if not asyncio.get_event_loop().run_until_complete(wait_for_server()):
+    if not asyncio.run(wait_for_server()):
         proc.terminate()
         pytest.fail("Server failed to start")
 
