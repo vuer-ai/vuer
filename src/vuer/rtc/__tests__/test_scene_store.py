@@ -501,5 +501,128 @@ class TestAtOperator:
         assert len(parent.children) == 1
 
 
+# =============================================================================
+# Deep Nesting Tests
+# =============================================================================
+
+
+class TestDeepNesting:
+    """Tests for deep nesting scenarios."""
+
+    def test_upsert_to_deep_parent(self):
+        """Test that upsert with to='deep-parent' correctly inserts into a nested parent's children."""
+        # Create state with: root -> parent -> grandparent
+        state = SceneState(
+            children=[
+                SceneNode(
+                    key="parent",
+                    tag="Group",
+                    children=[
+                        SceneNode(key="grandparent", tag="Group"),
+                    ],
+                ),
+            ]
+        )
+
+        # Upsert a child to grandparent
+        child = SceneNode(key="child", tag="Box", properties={"color": "red"})
+        new_state = upsert_node(state, child, to="grandparent")
+
+        # Verify it's in grandparent.children
+        grandparent = find_by_key(new_state, "grandparent")
+        assert grandparent is not None
+        assert len(grandparent.children) == 1
+        assert grandparent.children[0].key == "child"
+        assert grandparent.children[0].properties["color"] == "red"
+
+    def test_upsert_updates_grandchild(self):
+        """Test that upsert can update a node that is a grandchild (nested 2+ levels deep)."""
+        # Create state with existing grandchild
+        state = SceneState(
+            children=[
+                SceneNode(
+                    key="parent",
+                    tag="Group",
+                    children=[
+                        SceneNode(
+                            key="child",
+                            tag="Group",
+                            children=[
+                                SceneNode(
+                                    key="grandchild",
+                                    tag="Box",
+                                    properties={"color": "red", "size": 1},
+                                ),
+                            ],
+                        ),
+                    ],
+                ),
+            ]
+        )
+
+        # Upsert with same key, different properties
+        updated = SceneNode(
+            key="grandchild", tag="Box", properties={"color": "blue", "visible": True}
+        )
+        new_state = upsert_node(state, updated)
+
+        # Verify grandchild was updated
+        grandchild = find_by_key(new_state, "grandchild")
+        assert grandchild is not None
+        assert grandchild.properties["color"] == "blue"
+        assert grandchild.properties["visible"] is True
+        # Properties are merged, not replaced
+        assert grandchild.properties["size"] == 1
+
+    def test_upsert_root_finds_deep_node(self):
+        """Test that upserting to root (no 'to' param) still finds and updates a deeply nested node."""
+        # Create state with deeply nested node (4 levels deep)
+        state = SceneState(
+            children=[
+                SceneNode(
+                    key="level1",
+                    tag="Group",
+                    children=[
+                        SceneNode(
+                            key="level2",
+                            tag="Group",
+                            children=[
+                                SceneNode(
+                                    key="level3",
+                                    tag="Group",
+                                    children=[
+                                        SceneNode(
+                                            key="deep-node",
+                                            tag="Sphere",
+                                            properties={"radius": 1.0},
+                                        ),
+                                    ],
+                                ),
+                            ],
+                        ),
+                    ],
+                ),
+            ]
+        )
+
+        # Upsert without 'to' param - should find and update the deep node
+        updated = SceneNode(
+            key="deep-node", tag="Sphere", properties={"radius": 2.0, "color": "green"}
+        )
+        new_state = upsert_node(state, updated)
+
+        # Verify the deep node was found and updated
+        deep_node = find_by_key(new_state, "deep-node")
+        assert deep_node is not None
+        assert deep_node.properties["radius"] == 2.0
+        assert deep_node.properties["color"] == "green"
+
+        # Verify the tree structure is preserved
+        level1 = find_by_key(new_state, "level1")
+        assert level1 is not None
+        assert len(level1.children) == 1
+        assert level1.children[0].key == "level2"
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
