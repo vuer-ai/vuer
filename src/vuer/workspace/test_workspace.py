@@ -409,6 +409,20 @@ async def test_workspace_handle_link_file_not_found():
 
 
 @pytest.mark.asyncio
+async def test_workspace_handle_link_static_bytes():
+    """Test handle_link() serves bytes directly."""
+    ws = Workspace()
+    test_data = b"raw binary data"
+    ws.link(test_data, "/data.bin")
+
+    mock_request = MagicMock()
+    response = await ws.handle_link("/data.bin", mock_request)
+
+    assert response.body == test_data
+    assert response.content_type == "application/octet-stream"
+
+
+@pytest.mark.asyncio
 async def test_workspace_handle_link_callable_returns_path():
     """Test handle_link() handles callable returning Path."""
     with tempfile.TemporaryDirectory() as tmpdir:

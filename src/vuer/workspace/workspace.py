@@ -392,18 +392,19 @@ class Workspace:
 
     def link(
         self,
-        target: Union[Callable, str, Path],
+        target: Union[Callable, str, Path, bytes],
         to: str,
         *,
         method: str = "GET",
         content_type: str = None,
     ):
-        """Link a file or callable to a URL path (dynamic, works at runtime).
+        """Link a file, bytes, or callable to a URL path (dynamic, works at runtime).
 
         Links are stored in a dict and looked up at request time, so you can
         add/remove links while the server is running.
 
         - **File path**: Served directly as a static file (efficient streaming)
+        - **Bytes**: Served directly as binary data
         - **Callable**: Called on each request, return type determines response
 
         Callable return types are handled automatically:
@@ -469,13 +470,21 @@ class Workspace:
         # Auto-detect content-type from path extension if not specified
         effective_content_type = content_type or self.MIME_TYPES.guess(to)
 
-        # Handle file path vs callable
+        # Handle file path, bytes, or callable
         if isinstance(target, (str, Path)):
             # Static file link
             file_path = Path(target).resolve()
             self._links[path] = {
                 "type": "file",
                 "path": file_path,
+                "method": method,
+                "content_type": effective_content_type,
+            }
+        elif isinstance(target, bytes):
+            # Static bytes link
+            self._links[path] = {
+                "type": "bytes",
+                "data": target,
                 "method": method,
                 "content_type": effective_content_type,
             }
@@ -534,6 +543,10 @@ class Workspace:
             response = web.FileResponse(file_path)
             response.content_type = content_type or self.MIME_TYPES.guess(file_path.name)
             return response
+
+        # Handle bytes links (static)
+        if link.get("type") == "bytes":
+            return web.Response(body=link["data"], content_type=content_type)
 
         # Handle callable links (dynamic)
         fn = link["fn"]

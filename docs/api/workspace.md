@@ -71,10 +71,13 @@ vuer = Vuer()
 
 @vuer.spawn(start=True)
 async def main(session):
-    # === Static file links ===
+    # === Static links ===
 
     # Link a file directly (alias to a different URL path)
     vuer.workspace.link("./robots/panda.urdf", "/robot.urdf")
+
+    # Link raw bytes directly
+    vuer.workspace.link(b"raw binary data", "/data.bin")
 
     # === Dynamic callable links ===
 
