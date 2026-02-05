@@ -298,7 +298,32 @@ The CRDT implementation ensures eventual consistency:
 # Result: [0, 1, 0] (higher lamport wins)
 ```
 
+## SceneStore - Reactive Scene Management
+
+For a simpler API focused on scene graph management with multi-session synchronization, see **[SceneStore](scene_store.md)**.
+
+SceneStore provides:
+- Reactive updates to all subscribed sessions
+- Async context manager for safe subscription cleanup
+- Familiar `@` operator pattern matching VuerSession
+- Snapshot access for state recovery
+
+```python
+from vuer.rtc import SceneStore
+
+store = SceneStore()
+
+@app.spawn(start=True)
+async def main(sess):
+    async with store.subscribe(sess):
+        await store.upsert @ Box(key="box", position=[0, 0, 0])
+        while True:
+            await store.update @ {"key": "box", "position": [t, 0, 0]}
+            await asyncio.sleep(0.05)
+```
+
 ## See Also
 
+- [SceneStore documentation](scene_store.md)
 - [vuer-rtc TypeScript package](https://rtc.vuer.ai)
 - [Vuer documentation](https://vuer.ai)
