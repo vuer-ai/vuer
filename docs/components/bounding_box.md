@@ -27,7 +27,7 @@ async def main(sess: VuerSession):
     color="red",
   )
 
-  await vuer.loop_forever()
+  await sess.forever()
 ```
 
 ```{admonition} Performance Tip
@@ -68,7 +68,7 @@ async def main(sess: VuerSession):
     ]
   )
 
-  await vuer.loop_forever()
+  await sess.forever()
 ```
 
 ## BoundingBox Parameters
