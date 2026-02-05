@@ -392,19 +392,19 @@ class Workspace:
 
     def link(
         self,
-        target: Union[Callable, str, Path, bytes],
+        target: Union[Callable, Path, bytes],
         to: str,
         *,
         method: str = "GET",
         content_type: str = None,
     ):
-        """Link a file, bytes, or callable to a URL path (dynamic, works at runtime).
+        """Link a Path, bytes, or callable to a URL path (dynamic, works at runtime).
 
         Links are stored in a dict and looked up at request time, so you can
         add/remove links while the server is running.
 
-        - **File path**: Served directly as a static file (efficient streaming)
-        - **Bytes**: Served directly as binary data
+        - **Path**: Served directly as a static file (efficient streaming)
+        - **bytes**: Served directly as binary data
         - **Callable**: Called on each request, return type determines response
 
         Callable return types are handled automatically:
@@ -415,7 +415,7 @@ class Workspace:
         - ``Blob``: Binary response with explicit content-type
         - ``str``: Text response
 
-        :param target: File path (str/Path) or handler function.
+        :param target: Path, bytes, or handler function.
                       Functions can optionally receive request, sync or async.
         :param to: The URL path for this handler.
         :param method: HTTP method (default: "GET").
@@ -431,7 +431,7 @@ class Workspace:
             vuer = Vuer()
 
             # Static file link (alias to a different path)
-            vuer.workspace.link("./robots/panda.urdf", "/robot.urdf")
+            vuer.workspace.link(Path("./robots/panda.urdf"), "/robot.urdf")
 
             # Dynamic image from camera
             vuer.workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
@@ -470,10 +470,10 @@ class Workspace:
         # Auto-detect content-type from path extension if not specified
         effective_content_type = content_type or self.MIME_TYPES.guess(to)
 
-        # Handle file path, bytes, or callable
-        if isinstance(target, (str, Path)):
+        # Handle Path, bytes, or callable
+        if isinstance(target, Path):
             # Static file link
-            file_path = Path(target).resolve()
+            file_path = target.resolve()
             self._links[path] = {
                 "type": "file",
                 "path": file_path,

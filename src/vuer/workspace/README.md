@@ -175,8 +175,8 @@ vuer = Vuer()
 
 # === Static links ===
 
-# Link a file directly (alias to a different path)
-vuer.workspace.link("./robots/panda.urdf", "/robot.urdf")
+# Link a file directly (Path only, not str)
+vuer.workspace.link(Path("./robots/panda.urdf"), "/robot.urdf")
 
 # Link raw bytes directly
 vuer.workspace.link(b"raw binary data", "/data.bin")
