@@ -26,7 +26,7 @@ app = Vuer(workspace=workspace)
 | `workspace.find("file.txt")` | Find file in overlay |
 | `workspace.overlay(at="/static")` | Expose overlay at URL route |
 | `workspace.mount("./dir", to="/route")` | Mount single directory |
-| `workspace.route(fn, "/api")` | Register dynamic handler |
+| `workspace.link(fn, "/api")` | Link callable to URL path |
 
 ## Usage Examples
 
@@ -79,28 +79,34 @@ async def main(session):
     app.workspace.mount("/var/exports", to="/exports")
 ```
 
-### Dynamic Routes
+### Dynamic Links
 
 Serve dynamic content with functions:
 
 ```python
+from vuer import Vuer, Workspace, jpg, png
+
 @app.spawn(start=True)
 async def main(session):
-    # JSON response (automatic serialization)
-    app.workspace.route(
-        lambda r: {"status": "ok", "count": 42},
-        "/api/status"
-    )
+    # JSON response (no request param needed)
+    app.workspace.link(lambda: {"status": "ok", "count": 42}, "/api/status")
+
+    # Serve in-memory images
+    app.workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
+    app.workspace.link(lambda: png(depth_map), "/depth.png")
+
+    # With request param for query args
+    app.workspace.link(lambda r: render(r.query.get("id")), "/render.jpg")
 
     # Async handler
     async def get_data(request):
         data = await fetch_from_db()
         return {"data": data}
 
-    app.workspace.route(get_data, "/api/data")
+    app.workspace.link(get_data, "/api/data")
 
     # POST handler
-    app.workspace.route(handle_submit, "/api/submit", method="POST")
+    app.workspace.link(handle_submit, "/api/submit", method="POST")
 ```
 
 ## Future Workspace Types
@@ -112,7 +118,7 @@ The Workspace interface is designed for extensibility:
 - `McapWorkspace` - MCAP recordings (future)
 - `S3Workspace` - S3 buckets (future)
 
-All workspace types will share the same interface (`overlay()`, `mount()`, `route()`).
+All workspace types will share the same interface (`overlay()`, `mount()`, `link()`).
 
 ## API Reference
 

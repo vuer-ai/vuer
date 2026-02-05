@@ -1,12 +1,14 @@
 """Tests for the Workspace class."""
 
+import asyncio
 import os
 import tempfile
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import pytest
 
-from vuer.workspace import Workspace, workspace_from_config
+from vuer.workspace import Workspace, Blob, workspace_from_config, jpg, png
 
 
 # =============================================================================
@@ -233,3 +235,187 @@ def test_workspace_overlay_precedence():
 
                 # Non-existent should return None
                 assert ws.find("nonexistent.txt") is None
+
+
+# =============================================================================
+# Workspace.link() tests
+# =============================================================================
+
+
+def test_workspace_link_registers_mount():
+    """Test that link() registers a mount configuration."""
+    ws = Workspace()
+    ws.link(lambda: {"ok": True}, "/api/status")
+
+    assert len(ws.mounts) == 1
+    assert ws.mounts[0]["type"] == "link"
+    assert ws.mounts[0]["path"] == "/api/status"
+    assert ws.mounts[0]["method"] == "GET"
+
+
+def test_workspace_link_custom_method():
+    """Test link() with custom HTTP method."""
+    ws = Workspace()
+    ws.link(lambda: {}, "/api/submit", method="POST")
+
+    assert ws.mounts[0]["method"] == "POST"
+
+
+def test_workspace_link_no_request_param():
+    """Test link() with callable that takes no parameters."""
+    ws = Workspace()
+
+    # Lambda with no params should work
+    ws.link(lambda: b"image data", "/image.jpg")
+
+    # The handler should be registered
+    assert len(ws.mounts) == 1
+
+
+def test_workspace_link_with_request_param():
+    """Test link() with callable that takes request parameter."""
+    ws = Workspace()
+
+    # Lambda with request param should work
+    ws.link(lambda r: {"query": r.query}, "/api/data")
+
+    assert len(ws.mounts) == 1
+
+
+@pytest.mark.asyncio
+async def test_workspace_link_handler_bytes():
+    """Test link() handler returns bytes correctly."""
+    ws = Workspace()
+    test_bytes = b"raw image bytes"
+
+    ws.link(lambda: test_bytes, "/image.jpg")
+
+    # Get the handler and call it
+    handler = ws.mounts[0]["handler"]
+    mock_request = MagicMock()
+
+    response = await handler(mock_request)
+
+    assert response.body == test_bytes
+    assert response.content_type == "image/jpeg"
+
+
+@pytest.mark.asyncio
+async def test_workspace_link_handler_dict():
+    """Test link() handler returns dict as JSON."""
+    ws = Workspace()
+
+    ws.link(lambda: {"status": "ok"}, "/api/status")
+
+    handler = ws.mounts[0]["handler"]
+    mock_request = MagicMock()
+
+    response = await handler(mock_request)
+
+    assert response.content_type == "application/json"
+    assert b'"status"' in response.text.encode()
+
+
+@pytest.mark.asyncio
+async def test_workspace_link_handler_blob():
+    """Test link() handler returns Blob correctly."""
+    ws = Workspace()
+    test_data = b"custom data"
+
+    ws.link(lambda: Blob(data=test_data, content_type="application/custom"), "/data")
+
+    handler = ws.mounts[0]["handler"]
+    mock_request = MagicMock()
+
+    response = await handler(mock_request)
+
+    assert response.body == test_data
+    assert response.content_type == "application/custom"
+
+
+@pytest.mark.asyncio
+async def test_workspace_link_content_type_auto_detect():
+    """Test link() auto-detects content type from path extension."""
+    ws = Workspace()
+
+    ws.link(lambda: b"png data", "/image.png")
+
+    handler = ws.mounts[0]["handler"]
+    mock_request = MagicMock()
+
+    response = await handler(mock_request)
+
+    assert response.content_type == "image/png"
+
+
+@pytest.mark.asyncio
+async def test_workspace_link_optional_request():
+    """Test link() calls handler with or without request based on signature."""
+    ws = Workspace()
+    call_log = []
+
+    # No params - should be called without request
+    def no_params():
+        call_log.append("no_params")
+        return b"ok"
+
+    # With params - should be called with request
+    def with_params(request):
+        call_log.append(f"with_params:{request.path}")
+        return b"ok"
+
+    ws.link(no_params, "/no-params")
+    ws.link(with_params, "/with-params")
+
+    mock_request = MagicMock()
+    mock_request.path = "/test"
+
+    await ws.mounts[0]["handler"](mock_request)
+    await ws.mounts[1]["handler"](mock_request)
+
+    assert call_log == ["no_params", "with_params:/test"]
+
+
+# =============================================================================
+# Encoder tests
+# =============================================================================
+
+
+def test_jpg_encoder():
+    """Test jpg() encodes numpy array to JPEG bytes."""
+    import numpy as np
+
+    # Create a simple 10x10 RGB image
+    img = np.random.rand(10, 10, 3).astype(np.float32)
+
+    result = jpg(img, quality=90)
+
+    assert isinstance(result, bytes)
+    # JPEG magic bytes
+    assert result[:2] == b"\xff\xd8"
+
+
+def test_png_encoder():
+    """Test png() encodes numpy array to PNG bytes."""
+    import numpy as np
+
+    # Create a simple 10x10 RGBA image
+    img = np.random.rand(10, 10, 4).astype(np.float32)
+
+    result = png(img)
+
+    assert isinstance(result, bytes)
+    # PNG magic bytes
+    assert result[:4] == b"\x89PNG"
+
+
+def test_jpg_strips_alpha():
+    """Test jpg() strips alpha channel."""
+    import numpy as np
+
+    # Create RGBA image
+    img = np.random.rand(10, 10, 4).astype(np.float32)
+
+    # Should not raise, alpha is stripped
+    result = jpg(img)
+    assert isinstance(result, bytes)

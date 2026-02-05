@@ -5,14 +5,15 @@ This module provides the Workspace class which defines multiple search paths
 
 **Basic Usage**::
 
-    from vuer import Vuer, Workspace
+    from vuer import Vuer, Workspace, jpg, png
 
     # Multiple search paths - first match wins (like $PATH)
     workspace = Workspace("./assets", "/data/robots", "./fallback")
 
-    # Configure additional mounts
+    # Configure additional mounts and links
     workspace.mount("./uploads", to="/uploads")
-    workspace.route(lambda r: {"status": "ok"}, "/api/status")
+    workspace.link(lambda: {"status": "ok"}, "/api/status")
+    workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
 
     app = Vuer(workspace=workspace)
 
@@ -23,7 +24,7 @@ This module provides the Workspace class which defines multiple search paths
     workspace.find("file.txt")            # Find file in overlay (sync)
     workspace.resolve("file.txt")         # Resolve to Path|bytes|Blob (async)
     workspace.mount("./dir", to="/route") # Mount single directory
-    workspace.route(fn, "/api")           # Dynamic handler
+    workspace.link(fn, to="/api")         # Link callable to URL path
 
 **Extensibility**:
 
@@ -45,6 +46,7 @@ Subclasses override ``resolve()`` for different storage:
 """
 
 import asyncio
+import inspect
 import json
 import mimetypes
 import os
@@ -177,7 +179,7 @@ class Workspace:
         workspace.paths                       # Access paths (read-only tuple)
         workspace.find("file.txt")            # Find file in overlay
         workspace.mount("./dir", to="/route") # Mount single directory
-        workspace.route(fn, "/api")           # Dynamic handler
+        workspace.link(fn, to="/api")         # Link callable to URL path
 
     Attributes:
         paths: Tuple of paths that form the search overlay.
@@ -352,58 +354,90 @@ class Workspace:
             "handler": handler,
         })
 
-    def route(
+    def link(
         self,
         fn: Callable,
-        path: str,
+        to: str,
         *,
         method: str = "GET",
-        content_type: str = "text/html",
+        content_type: str = None,
     ):
-        """Register a dynamic route handler.
+        """Link a callable to a URL path.
 
-        The function receives the request and returns content to serve.
-        Supports both sync and async functions. Dict/list returns are
-        automatically serialized as JSON.
+        The callable can optionally receive the request object. Supports both
+        sync and async functions. Return types are handled automatically:
 
-        :param fn: Handler function. Receives request, returns content.
-                  Can be sync or async. Dict/list -> JSON automatically.
-        :param path: The URL path for this route.
+        - ``dict``/``list``: JSON response
+        - ``bytes``: Binary response (content-type from path extension)
+        - ``Blob``: Binary response with explicit content-type
+        - ``str``: Text response
+
+        :param fn: Handler function. Can optionally receive request.
+                  Can be sync or async.
+        :param to: The URL path for this handler.
         :param method: HTTP method (default: "GET").
-        :param content_type: Response content type for non-JSON responses.
+        :param content_type: Response content type. If None, auto-detected
+                            from path extension.
 
         Example::
 
+            from vuer import Workspace, jpg, png
+
             workspace = Workspace("./assets")
 
+            # Simple callable (no request param)
+            workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
+
+            # With request param for query args
+            workspace.link(lambda r: render(r.query["angle"]), "/render.png")
+
             # JSON response (automatic)
-            workspace.route(lambda r: {"status": "ok"}, "/api/status")
+            workspace.link(lambda: {"status": "ok"}, "/api/status")
 
             # Async handler
             async def fetch_data(request):
                 return {"data": await get_data()}
 
-            workspace.route(fetch_data, "/api/data")
+            workspace.link(fetch_data, "/api/data")
         """
+        # Auto-detect content-type from path extension if not specified
+        effective_content_type = content_type or guess_content_type(to)
+
+        # Check if fn accepts parameters
+        sig = inspect.signature(fn)
+        takes_request = len(sig.parameters) > 0
+
         async def handler(request):
             try:
+                # Call with or without request based on signature
                 if asyncio.iscoroutinefunction(fn):
-                    result = await fn(request)
+                    result = await (fn(request) if takes_request else fn())
                 else:
-                    result = fn(request)
+                    result = fn(request) if takes_request else fn()
 
+                # Handle different return types
                 if isinstance(result, (dict, list)):
                     return web.Response(
                         text=json.dumps(result),
                         content_type="application/json",
                     )
-                return web.Response(text=str(result), content_type=content_type)
+                if isinstance(result, Blob):
+                    return web.Response(
+                        body=result.as_bytes(),
+                        content_type=result.content_type,
+                    )
+                if isinstance(result, bytes):
+                    return web.Response(
+                        body=result,
+                        content_type=effective_content_type,
+                    )
+                return web.Response(text=str(result), content_type=effective_content_type)
             except Exception as e:
                 return web.Response(status=500, text=str(e))
 
         self._mounts.append({
-            "type": "route",
-            "path": path,
+            "type": "link",
+            "path": to,
             "handler": handler,
             "method": method,
         })
