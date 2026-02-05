@@ -363,6 +363,102 @@ class OrthographicCamera(SceneElement):
     key = "orthographic-camera"
 
 
+class SimplePerspectiveCamera(SceneElement):
+    """Simple perspective camera wrapper with UI-exposed properties.
+
+    A lightweight wrapper around Drei's PerspectiveCamera with properties
+    exposed for UI controls. Suitable for use inside ViewportHud or as
+    a standalone camera.
+
+    :param position: Camera position as [x, y, z]. Default: [0, 0, 5]
+    :type position: list[float], optional
+    :param rotation: Camera rotation in Euler angles [x, y, z]. Default: [0, 0, 0]
+    :type rotation: list[float], optional
+    :param fov: Vertical field of view in degrees (1-180). Default: 50
+    :type fov: float, optional
+    :param aspect: Aspect ratio (width/height). Default: 1.777
+    :type aspect: float, optional
+    :param near: Near clipping plane distance. Default: 0.1
+    :type near: float, optional
+    :param far: Far clipping plane distance. Default: 1000
+    :type far: float, optional
+    :param zoom: Zoom factor. Default: 1.0
+    :type zoom: float, optional
+    :param makeDefault: Make this the default camera. Default: False
+    :type makeDefault: bool, optional
+    :param manual: Disable auto-update of projection matrix. Default: False
+    :type manual: bool, optional
+
+    Example Usage::
+
+        from vuer.schemas import SimplePerspectiveCamera, ViewportHud
+
+        # Inside a ViewportHud
+        ViewportHud(
+            SimplePerspectiveCamera(position=[0, 0, 5], fov=50, makeDefault=True),
+            Box(args=[1, 1, 1]),
+            top=10,
+            right=10,
+            width=200,
+            height=150,
+        )
+    """
+
+    tag = "SimplePerspectiveCamera"
+
+
+class SimpleOrthographicCamera(SceneElement):
+    """Simple orthographic camera wrapper with UI-exposed properties.
+
+    A lightweight wrapper around Drei's OrthographicCamera with properties
+    exposed for UI controls. Renders objects at the same size regardless
+    of distance. Suitable for use inside ViewportHud or as a standalone camera.
+
+    :param position: Camera position as [x, y, z]. Default: [0, 0, 5]
+    :type position: list[float], optional
+    :param rotation: Camera rotation in Euler angles [x, y, z]. Default: [0, 0, 0]
+    :type rotation: list[float], optional
+    :param left: Left boundary of view frustum. Default: -5
+    :type left: float, optional
+    :param right: Right boundary of view frustum. Default: 5
+    :type right: float, optional
+    :param top: Top boundary of view frustum. Default: 5
+    :type top: float, optional
+    :param bottom: Bottom boundary of view frustum. Default: -5
+    :type bottom: float, optional
+    :param near: Near clipping plane distance. Default: 0.1
+    :type near: float, optional
+    :param far: Far clipping plane distance. Default: 1000
+    :type far: float, optional
+    :param zoom: Zoom factor. Default: 1.0
+    :type zoom: float, optional
+    :param makeDefault: Make this the default camera. Default: False
+    :type makeDefault: bool, optional
+    :param manual: Disable auto-update of projection matrix. Default: False
+    :type manual: bool, optional
+
+    Example Usage::
+
+        from vuer.schemas import SimpleOrthographicCamera, ViewportHud
+
+        # Inside a ViewportHud for 2D-style rendering
+        ViewportHud(
+            SimpleOrthographicCamera(
+                position=[0, 0, 10],
+                left=-5, right=5, top=5, bottom=-5,
+                makeDefault=True
+            ),
+            Box(args=[1, 1, 1]),
+            bottom=10,
+            left=10,
+            width=200,
+            height=150,
+        )
+    """
+
+    tag = "SimpleOrthographicCamera"
+
+
 class FisheyeCamera(SceneElement):
     """Fisheye camera with ultra-wide angle projection.
 

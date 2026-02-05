@@ -2837,6 +2837,67 @@ class GrabRender(SceneElement):
   key = "DEFAULT"
 
 
+class ViewportHud(SceneElement):
+  """A HUD (Heads-Up Display) component that renders to a specific viewport region.
+
+  Creates an isolated render scene within a rectangular region of the canvas,
+  using CSS-like positioning (top, right, bottom, left). Useful for mini-maps,
+  picture-in-picture views, auxiliary camera feeds, or UI overlays.
+
+  The viewport uses a separate scene and camera, so children are rendered
+  independently of the main scene. You must include a camera (SimplePerspectiveCamera
+  or SimpleOrthographicCamera) as a child with makeDefault=True.
+
+  **Positioning:**
+
+  Position values can be numbers (pixels) or strings with '%' (percentage).
+  Use top/left for top-left anchoring, or bottom/right for other corners.
+
+  :param top: Distance from top edge (pixels or percentage string like '10%')
+  :type top: int | str, optional
+  :param right: Distance from right edge (pixels or percentage string like '10%')
+  :type right: int | str, optional
+  :param bottom: Distance from bottom edge (pixels or percentage string like '10%')
+  :type bottom: int | str, optional
+  :param left: Distance from left edge (pixels or percentage string like '10%')
+  :type left: int | str, optional
+  :param width: Width of the viewport (pixels or percentage). Required.
+  :type width: int | str
+  :param height: Height of the viewport (pixels or percentage). Required.
+  :type height: int | str
+  :param renderPriority: Render priority (1-10). Default: 1
+  :type renderPriority: int, optional
+
+  Example Usage::
+
+      from vuer.schemas import ViewportHud, SimplePerspectiveCamera, Box
+
+      # Mini-map in top-right corner (pixel positioning)
+      ViewportHud(
+          SimplePerspectiveCamera(position=[0, 10, 0], rotation=[-1.57, 0, 0], makeDefault=True),
+          Box(args=[1, 1, 1], materialColor="red"),
+          top=10,
+          right=10,
+          width=200,
+          height=150,
+          key="minimap"
+      )
+
+      # Picture-in-picture with percentage positioning
+      ViewportHud(
+          SimplePerspectiveCamera(position=[5, 5, 5], makeDefault=True),
+          Box(args=[1, 1, 1], materialColor="blue"),
+          bottom="5%",
+          left="5%",
+          width="20%",
+          height="25%",
+          key="pip"
+      )
+  """
+
+  tag = "ViewportHud"
+
+
 class TimelineControls(SceneElement):
   tag = "TimelineControls"
 
