@@ -5,27 +5,28 @@ This module provides the Workspace class which defines multiple search paths
 
 **Basic Usage**::
 
-    from vuer import Vuer, Workspace
-    from vuer.workspace import jpg, png
+    from vuer import Vuer
+    from vuer.workspace import jpg
 
-    # Multiple search paths - first match wins (like $PATH)
-    workspace = Workspace("./assets", "/data/robots", "./fallback")
+    vuer = Vuer(workspace="./assets")
 
-    # Configure additional mounts and links
-    workspace.mount("./uploads", to="/uploads")
-    workspace.link(lambda: {"status": "ok"}, "/api/status")
-    workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
+    @vuer.spawn(start=True)
+    async def main(session):
+        # Add dynamic links at runtime via vuer.workspace
+        vuer.workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
+        vuer.workspace.link(lambda: {"status": "ok"}, "/api/status")
 
-    app = Vuer(workspace=workspace)
+        # Remove when done
+        vuer.workspace.unlink("/live/frame.jpg")
+
+        await session.forever()
 
 **API Overview**::
 
-    workspace = Workspace(*overlay)       # Define overlay search paths
-    workspace.paths                       # Access paths (read-only tuple)
-    workspace.find("file.txt")            # Find file in overlay (sync)
-    workspace.resolve("file.txt")         # Resolve to Path|bytes|Blob (async)
-    workspace.mount("./dir", to="/route") # Mount single directory
-    workspace.link(fn, to="/api")         # Link callable to URL path
+    vuer.workspace.link(fn, "/path")      # Link callable to URL (dynamic)
+    vuer.workspace.unlink("/path")        # Remove a link
+    vuer.workspace.find("file.txt")       # Find file in overlay (sync)
+    vuer.workspace.resolve("file.txt")    # Resolve to Path|bytes|Blob (async)
 
 **Extensibility**:
 
@@ -241,7 +242,8 @@ class Workspace:
             overlay = (".",)
 
         self._overlay: tuple[Path, ...] = tuple(Path(p) for p in overlay)
-        self._mounts: List[dict] = []
+        self._mounts: List[dict] = []  # Directory mounts
+        self._links: dict[str, dict] = {}  # Dynamic links keyed by path
 
     @property
     def paths(self) -> tuple[Path, ...]:
@@ -396,7 +398,10 @@ class Workspace:
         method: str = "GET",
         content_type: str = None,
     ):
-        """Link a callable to a URL path.
+        """Link a callable to a URL path (dynamic, works at runtime).
+
+        Links are stored in a dict and looked up at request time, so you can
+        add/remove links while the server is running.
 
         The callable can optionally receive the request object. Supports both
         sync and async functions. Return types are handled automatically:
@@ -415,25 +420,45 @@ class Workspace:
 
         Example::
 
-            from vuer import Workspace, jpg, png
+            from vuer import Vuer
+            from vuer.workspace import jpg
 
-            workspace = Workspace("./assets")
+            vuer = Vuer()
 
             # Simple callable (no request param)
-            workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
+            vuer.workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
 
             # With request param for query args
-            workspace.link(lambda r: render(r.query["angle"]), "/render.png")
+            vuer.workspace.link(lambda r: jpg(render(r.query["angle"])), "/render.jpg")
 
             # JSON response (automatic)
-            workspace.link(lambda: {"status": "ok"}, "/api/status")
+            vuer.workspace.link(lambda: {"status": "ok"}, "/api/status")
 
             # Async handler
             async def fetch_data(request):
                 return {"data": await get_data()}
 
-            workspace.link(fetch_data, "/api/data")
+            vuer.workspace.link(fetch_data, "/api/data")
+
+            # Remove a link later
+            vuer.workspace.unlink("/api/status")
+
+        .. note:: Lambda Capture
+
+            Lambdas capture variables by reference, not value. In loops, use
+            default arguments to capture the current value::
+
+                # WRONG - all lambdas return the final value of i
+                for i in range(3):
+                    workspace.link(lambda: f"value {i}", f"/api/{i}")
+
+                # CORRECT - each lambda captures its own i
+                for i in range(3):
+                    workspace.link(lambda i=i: f"value {i}", f"/api/{i}")
         """
+        # Normalize path (ensure leading slash, no trailing slash)
+        path = "/" + to.strip("/")
+
         # Auto-detect content-type from path extension if not specified
         effective_content_type = content_type or self.MIME_TYPES.guess(to)
 
@@ -441,40 +466,84 @@ class Workspace:
         sig = inspect.signature(fn)
         takes_request = len(sig.parameters) > 0
 
-        async def handler(request):
-            try:
-                # Call with or without request based on signature
-                if asyncio.iscoroutinefunction(fn):
-                    result = await (fn(request) if takes_request else fn())
-                else:
-                    result = fn(request) if takes_request else fn()
-
-                # Handle different return types
-                if isinstance(result, (dict, list)):
-                    return web.Response(
-                        text=json.dumps(result),
-                        content_type="application/json",
-                    )
-                if isinstance(result, Blob):
-                    return web.Response(
-                        body=result.as_bytes(),
-                        content_type=result.content_type,
-                    )
-                if isinstance(result, bytes):
-                    return web.Response(
-                        body=result,
-                        content_type=effective_content_type,
-                    )
-                return web.Response(text=str(result), content_type=effective_content_type)
-            except Exception as e:
-                return web.Response(status=500, text=str(e))
-
-        self._mounts.append({
-            "type": "link",
-            "path": to,
-            "handler": handler,
+        self._links[path] = {
+            "fn": fn,
             "method": method,
-        })
+            "content_type": effective_content_type,
+            "takes_request": takes_request,
+        }
+
+    def unlink(self, path: str) -> bool:
+        """Remove a linked callable from a URL path.
+
+        :param path: The URL path to unlink.
+        :return: True if the link was removed, False if it didn't exist.
+
+        Example::
+
+            workspace.link(lambda: {"status": "ok"}, "/api/status")
+            # ... later ...
+            workspace.unlink("/api/status")
+        """
+        # Normalize path
+        path = "/" + path.strip("/")
+        if path in self._links:
+            del self._links[path]
+            return True
+        return False
+
+    async def handle_link(self, path: str, request) -> Optional[web.Response]:
+        """Handle a request for a linked path (called by server).
+
+        :param path: The normalized URL path.
+        :param request: The aiohttp request object.
+        :return: Response if path is linked, None otherwise.
+        """
+        # Normalize path
+        path = "/" + path.strip("/")
+
+        link = self._links.get(path)
+        if link is None:
+            return None
+
+        fn = link["fn"]
+        takes_request = link["takes_request"]
+        content_type = link["content_type"]
+
+        try:
+            # Call with or without request based on signature
+            if asyncio.iscoroutinefunction(fn):
+                result = await (fn(request) if takes_request else fn())
+            else:
+                result = fn(request) if takes_request else fn()
+
+            # Handle different return types
+            if isinstance(result, (dict, list)):
+                return web.Response(
+                    text=json.dumps(result),
+                    content_type="application/json",
+                )
+            if isinstance(result, Blob):
+                return web.Response(
+                    body=result.as_bytes(),
+                    content_type=result.content_type,
+                )
+            if isinstance(result, bytes):
+                return web.Response(
+                    body=result,
+                    content_type=content_type,
+                )
+            return web.Response(text=str(result), content_type=content_type)
+        except Exception as e:
+            return web.Response(status=500, text=str(e))
+
+    @property
+    def links(self) -> dict[str, dict]:
+        """Get registered links (read-only view).
+
+        :return: Dict of path -> link config.
+        """
+        return self._links
 
     @property
     def mounts(self) -> List[dict]:

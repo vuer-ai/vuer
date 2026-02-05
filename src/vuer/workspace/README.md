@@ -9,10 +9,10 @@ similar to how `$PATH` works for executables.
 from vuer import Vuer
 
 # Single path
-app = Vuer(workspace="./assets")
+vuer = Vuer(workspace="./assets")
 
 # Multiple paths - first match wins (like $PATH)
-app = Vuer(workspace=["./local", "/shared/robots", "/data/textures"])
+vuer = Vuer(workspace=["./local", "/shared/robots", "/data/textures"])
 ```
 
 For advanced configuration (mounts, links), use the `Workspace` class:
@@ -26,7 +26,7 @@ workspace.mount("./uploads", to="/uploads")
 workspace.link(lambda: {"status": "ok"}, "/api/status")
 workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
 
-app = Vuer(workspace=workspace)
+vuer = Vuer(workspace=workspace)
 ```
 
 When a file is requested at `/workspace/robot.urdf`, the paths are searched in order:
@@ -93,9 +93,9 @@ Blob(json={"status": "ok"})
 from vuer import Vuer
 
 # Serve files from ./assets at /workspace/
-app = Vuer(workspace="./assets")
+vuer = Vuer(workspace="./assets")
 
-@app.spawn(start=True)
+@vuer.spawn(start=True)
 async def main(session):
     # Files accessible at:
     # http://localhost:8012/workspace/robot.urdf
@@ -109,7 +109,7 @@ async def main(session):
 from vuer import Vuer
 
 # Local overrides shared, shared overrides system
-app = Vuer(workspace=[
+vuer = Vuer(workspace=[
     "./local_assets",      # Highest priority
     "/shared/team_assets", # Second priority
     "/opt/system_assets",  # Lowest priority
@@ -129,7 +129,7 @@ workspace.mount("./user_uploads", to="/uploads")
 # Mount exports at /exports
 workspace.mount("/var/exports", to="/exports")
 
-app = Vuer(workspace=workspace)
+vuer = Vuer(workspace=workspace)
 
 # Files accessible at:
 # /workspace/...  -> ./assets/...
@@ -137,32 +137,57 @@ app = Vuer(workspace=workspace)
 # /exports/...    -> /var/exports/...
 ```
 
-### Dynamic Links
+### Dynamic Links (Runtime)
+
+Links can be added and removed while the server is running via `vuer.workspace`:
 
 ```python
-from vuer import Vuer, Workspace
+from vuer import Vuer
+from vuer.workspace import jpg
+
+vuer = Vuer()
+
+@vuer.spawn(start=True)
+async def main(session):
+    # Add links dynamically at runtime
+    vuer.workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
+    vuer.workspace.link(lambda: {"status": "recording"}, "/api/status")
+
+    # Links are immediately accessible at /workspace/live/frame.jpg
+
+    await do_recording()
+
+    # Remove links when done
+    vuer.workspace.unlink("/live/frame.jpg")
+    vuer.workspace.link(lambda: {"status": "idle"}, "/api/status")  # Update
+
+    await session.forever()
+```
+
+### Link Examples
+
+```python
+from vuer import Vuer
 from vuer.workspace import jpg, png
 
-workspace = Workspace("./assets")
+vuer = Vuer()
 
 # JSON endpoint (no request param needed)
-workspace.link(lambda: {"status": "ok", "version": "1.0"}, "/api/status")
+vuer.workspace.link(lambda: {"status": "ok", "version": "1.0"}, "/api/status")
 
 # Serve in-memory images
-workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
-workspace.link(lambda: png(depth_map), "/depth.png")
+vuer.workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
+vuer.workspace.link(lambda: png(depth_map), "/depth.png")
 
 # With request param for query args
-workspace.link(lambda r: render(angle=r.query.get("angle", 0)), "/render.jpg")
+vuer.workspace.link(lambda r: jpg(render(angle=r.query.get("angle", 0))), "/render.jpg")
 
 # Async handler
 async def get_data(request):
     data = await fetch_from_database()
     return {"data": data}
 
-workspace.link(get_data, "/api/data")
-
-app = Vuer(workspace=workspace)
+vuer.workspace.link(get_data, "/api/data")
 ```
 
 ### Custom Workspace (Subclassing)
@@ -206,7 +231,7 @@ class S3Workspace(Workspace):
 
 # Usage
 workspace = S3Workspace("my-bucket", "./local_cache")
-app = Vuer(workspace=workspace)
+vuer = Vuer(workspace=workspace)
 ```
 
 ### Cached Workspace

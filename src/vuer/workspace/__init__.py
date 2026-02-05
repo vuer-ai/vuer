@@ -19,12 +19,12 @@ static files from various storage backends.
 
 **Example**::
 
-    from vuer import Workspace
+    from vuer import Vuer
     from vuer.workspace import jpg, png
 
-    ws = Workspace()
-    ws.link(lambda: jpg(camera.frame), "/live/frame.jpg")
-    ws.link(lambda: png(depth_map), "/depth.png")
+    vuer = Vuer()
+    vuer.workspace.link(lambda: jpg(camera.frame), "/live/frame.jpg")
+    vuer.workspace.link(lambda: png(depth_map), "/depth.png")
 
 **Custom MIME types**::
 
