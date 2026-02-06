@@ -25,10 +25,10 @@ Usage:
 """
 
 import time
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set as TypeSet
 
-from vuer.events import Set, Add, Update, Upsert, Remove
-from vuer.server import At
+from vuer.events import Add, Remove, Set, Update, Upsert
+from vuer.server import SceneOps
 
 if TYPE_CHECKING:
     from vuer.server import VuerSession
@@ -124,11 +124,11 @@ def _upsert_into(children: List[Dict], element: Dict, to: Optional[str] = None) 
     return result
 
 
-class SceneStore:
+class SceneStore(SceneOps):
     """
     A reactive store that maintains scene state and broadcasts to subscribers.
 
-    Mirrors VuerSession's API: set, add, upsert, update, remove.
+    Inherits from SceneOps which provides: set, add, upsert, update, remove.
     Also maintains internal state and operation history.
 
     Example:
@@ -146,7 +146,7 @@ class SceneStore:
     """
 
     def __init__(self):
-        self._subscribers: Set["VuerSession"] = set()
+        self._subscribers: TypeSet["VuerSession"] = set()
         self._scene: Optional[Dict[str, Any]] = None
         self._history: List[Dict[str, Any]] = []
 
@@ -230,60 +230,3 @@ class SceneStore:
         # Broadcast to all subscribers
         for session in self._subscribers:
             session @ event
-
-    @property
-    def set(self) -> At:
-        """Set the scene. Usage: store.set @ Scene(...)"""
-        return At(lambda element: self @ Set(element))
-
-    @property
-    def update(self) -> At:
-        """Update elements. Usage: store.update @ element or store.update @ [elem1, elem2]"""
-
-        @At
-        def _update(element):
-            if isinstance(element, (list, tuple)):
-                self @ Update(*element)
-            else:
-                self @ Update(element)
-
-        return _update
-
-    @property
-    def add(self) -> At:
-        """Add elements. Usage: store.add @ elem or store.add(to="parent") @ elem"""
-
-        @At
-        def _add(element, to=None):
-            if isinstance(element, (list, tuple)):
-                self @ Add(*element, to=to)
-            else:
-                self @ Add(element, to=to)
-
-        return _add
-
-    @property
-    def upsert(self) -> At:
-        """Upsert elements. Usage: store.upsert @ elem or store.upsert(to="parent") @ elem"""
-
-        @At
-        def _upsert(element, to=None):
-            if isinstance(element, (list, tuple)):
-                self @ Upsert(*element, to=to)
-            else:
-                self @ Upsert(element, to=to)
-
-        return _upsert
-
-    @property
-    def remove(self) -> At:
-        """Remove elements by key. Usage: store.remove @ "key" or store.remove @ ["k1", "k2"]"""
-
-        @At
-        def _remove(keys):
-            if isinstance(keys, (list, tuple)):
-                self @ Remove(*keys)
-            else:
-                self @ Remove(keys)
-
-        return _remove
