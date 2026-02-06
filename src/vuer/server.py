@@ -134,7 +134,6 @@ class At:
     self.fn = fn
 
   def __matmul__(self, arg):
-    print(f"DEBUG At.__matmul__: {type(arg)}")
     return self.fn(arg)
 
   def __call__(self, *args, **kwargs):
@@ -261,7 +260,6 @@ class VuerSession:
     :param event:
     :return: dqueue
     """
-    print(f"DEBUG VuerSession.__matmul__: {type(event)}")
     assert isinstance(event, ServerEvent), "msg must be a ServerEvent type object."
     assert not isinstance(event, Frame), "Frame event is only used in vuer.bind method."
 
@@ -349,7 +347,6 @@ class VuerSession:
       "Websocket session is missing. CURRENT_WS_ID is None."
     )
 
-    print(f"DEBUG VuerSession.send: {event.etype}")
     event_obj = event._serialize()
 
     # Since ts is a float, using use_single_float=True may cause precision loss.
