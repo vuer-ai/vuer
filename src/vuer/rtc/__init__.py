@@ -95,7 +95,7 @@ from vuer.rtc.operations import (
 
 # Scene Store
 from vuer.rtc.scene_store import (
-    SceneState,
+    SceneGraph,
     SceneStore,
     SubscriptionContext,
 )
