@@ -58,19 +58,27 @@ class Element:
     :return: Dictionary representing the element.
     """
 
+    def convert_value(v):
+      """Recursively convert numpy types to Python types."""
+      if hasattr(v, "tolist"):
+        return v.tolist()
+      elif isinstance(v, Url):
+        return str(v)
+      elif isinstance(v, Path):
+        return str(v)
+      elif isinstance(v, (list, tuple)):
+        return [convert_value(x) for x in v]
+      elif isinstance(v, dict):
+        return {key: convert_value(val) for key, val in v.items()}
+      else:
+        return v
+
     # note: only return the non-private attributes, allow bypass.
     output = {}
     for k, v in self.__dict__.items():
       if k.startswith("_"):
         continue
-      if hasattr(v, "tolist"):
-        output[k] = v.tolist()
-      elif isinstance(v, Url):
-        output[k] = str(v)
-      elif isinstance(v, Path):
-        output[k] = str(v)
-      else:
-        output[k] = v
+      output[k] = convert_value(v)
 
     return output
 

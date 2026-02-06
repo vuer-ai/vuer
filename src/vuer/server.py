@@ -140,6 +140,79 @@ class At:
     return self.fn(*args, **kwargs)
 
 
+class SceneOps:
+  """Base class providing scene graph operations (set, update, add, upsert, remove).
+
+  Subclasses must implement __matmul__ to handle event dispatch.
+  Used by both VuerSession and SceneStore.
+  """
+
+  @property
+  def set(self) -> At:
+    """Set the scene. Usage: obj.set @ Scene(...)"""
+    return At(lambda element: self @ Set(element))
+
+  @property
+  def update(self) -> At:
+    """Update existing elements. Usage: obj.update @ element or obj.update @ [elem1, elem2]"""
+
+    @At
+    def _update(element):
+      if isinstance(element, list):
+        self @ Update(*element)
+      elif isinstance(element, tuple):
+        self @ Update(*element)
+      else:
+        self @ Update(element)
+
+    return _update
+
+  @property
+  def add(self) -> At:
+    """Add elements. Usage: obj.add @ elem or obj.add(to="parent") @ elem"""
+
+    @At
+    def _add(element, to=None):
+      if isinstance(element, list):
+        self @ Add(*element, to=to)
+      elif isinstance(element, tuple):
+        self @ Add(*element, to=to)
+      else:
+        self @ Add(element, to=to)
+
+    return _add
+
+  @property
+  def upsert(self) -> At:
+    """Upsert elements. Usage: obj.upsert @ elem or obj.upsert(to="parent") @ elem"""
+
+    @At
+    def _upsert(element, to=None, strict=False):
+      if isinstance(element, list):
+        self @ Upsert(*element, to=to, strict=strict)
+      elif isinstance(element, tuple):
+        self @ Upsert(*element, to=to, strict=strict)
+      else:
+        self @ Upsert(element, to=to, strict=strict)
+
+    return _upsert
+
+  @property
+  def remove(self) -> At:
+    """Remove elements by key. Usage: obj.remove @ "key" or obj.remove @ ["k1", "k2"]"""
+
+    @At
+    def _remove(keys):
+      if isinstance(keys, list):
+        self @ Remove(*keys)
+      elif isinstance(keys, tuple):
+        self @ Remove(*keys)
+      else:
+        self @ Remove(keys)
+
+    return _remove
+
+
 class BoundFn:
   """Generic wrapper for decorators that bind functions and enable .start() method.
 
@@ -221,7 +294,7 @@ def _match_filters(obj: dict, **filters) -> bool:
   return True
 
 
-class VuerSession:
+class VuerSession(SceneOps):
   def __init__(self, vuer: "Vuer", ws_id: int, queue_len=100):
     self.vuer = vuer
     self.CURRENT_WS_ID = ws_id
@@ -391,123 +464,6 @@ class VuerSession:
       raise e
 
     return response
-
-  @property
-  def set(self) -> At:
-    """Used exclusively to set the scene.
-
-    the @SET operator is responsible for setting the root node of the scene.
-
-    Examples:
-        proxy @ Set(Scene(children=[...]))
-
-        or
-
-        app.set @ Scene(children=[...])
-    """
-    return At(lambda element: self @ Set(element))
-
-  @property
-  def update(self) -> At:
-    """Used to update existing elements. NOOP if an element does not exist.
-
-    Supports passing in a list of elements. (Thank God I implemented this...
-    so handy! - Ge)
-
-    Example Usage::
-
-        app.update @ [element1, element2, ...]
-    """
-
-    @At
-    def _update(element):
-      if isinstance(element, list):
-        self @ Update(*element)
-      elif isinstance(element, tuple):
-        self @ Update(*element)
-      else:
-        self @ Update(element)
-
-    return _update
-
-  @property
-  def add(self) -> At:
-    """Used to add elements to a specific parent.
-
-    Requires a parentKey, or treats the Scene root node as the default parent.
-
-    Example Usage::
-
-        app.add(element1, element2, ..., to=parentKey.)
-
-    or using the Scene root node as the default parent: ::
-
-        app.add @ element1
-
-    """
-
-    @At
-    def _add(element, to=None):
-      if isinstance(element, list):
-        self @ Add(*element, to=to)
-      elif isinstance(element, tuple):
-        self @ Add(*element, to=to)
-      else:
-        self @ Add(element, to=to)
-
-    return _add
-
-  @property
-  def upsert(self) -> At:
-    """Upsert elements to a specific parent.
-
-    Requires a parentKey, or treats the Scene root node as the default parent.
-
-    Example Usage::
-
-        app.upsert(element1, element2, ..., to=parentKey.)
-
-    or using the Scene root node as the default parent: ::
-
-        app.upsert @ element1
-
-    """
-
-    @At
-    def _upsert(element, to=None, strict=False):
-      if isinstance(element, list):
-        self @ Upsert(*element, to=to, strict=strict)
-      elif isinstance(element, tuple):
-        self @ Upsert(*element, to=to, strict=strict)
-      else:
-        self @ Upsert(element, to=to, strict=strict)
-
-    return _upsert
-
-  @property
-  def remove(self) -> At:
-    """Remove elements by keys.
-
-    Example Usage::
-
-        app.remove @ ["key1", "key2", ...]
-
-    or a single key: ::
-
-        app.remove @ "key1"
-
-    """
-
-    @At
-    def _remove(keys):
-      if isinstance(keys, list):
-        self @ Remove(*keys)
-      elif isinstance(keys, tuple):
-        self @ Remove(*keys)
-      else:
-        self @ Remove(keys)
-
-    return _remove
 
   def popleft(self):
     try:
