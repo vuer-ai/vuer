@@ -101,3 +101,19 @@ https://vuer.ai/?ws=wss://YOUR_USERNAME-vuer-port.ap.ngrok.io
 ngrok http --subdomain=YOUR_USERNAME-vuer-port 3012
 ```
 The connection URL remains the same since you're using a custom subdomain.
+
+## Connecting a Python Client via ngrok
+
+When connecting a `VuerClient` to a Vuer server through ngrok (especially TCP tunnels), you may encounter SSL certificate verification errors with self-signed certificates. Use `ssl_verify=False` to disable verification:
+
+```python
+from vuer import VuerClient
+
+async with VuerClient(uri="wss://7.tcp.ngrok.io:26620", ssl_verify=False) as client:
+    ...
+```
+
+Or set the environment variable:
+```bash
+VUER_SSL_VERIFY=false python client.py
+```
