@@ -59,7 +59,7 @@ dev = [
 
 [project.scripts]
 # Note, add the entrypoint name to scripts/completions/install.py to include CLI percentage
-vuer = "vuer:entrypoint"
+#vuer = "vuer:entrypoint"
 vuer-docs = "sphinx_autobuild.__main__:main"
 vuer-docs-build = "sphinx.cmd.build:main"
 
