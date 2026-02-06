@@ -699,5 +699,160 @@ class TestWithSchemaComponents:
         assert store.has_node("sphere1")
 
 
+# =============================================================================
+# End-to-End Subscriber Notification Tests
+# =============================================================================
+
+
+class MockSetProxy:
+    """Mock for session.set that captures @ operator calls."""
+
+    def __init__(self, calls: list):
+        self._calls = calls
+
+    def __matmul__(self, other):
+        self._calls.append(("set", other))
+        return None
+
+
+class MockSession:
+    """Mock VuerSession that captures all operations."""
+
+    def __init__(self):
+        self.calls = []
+        self.set = MockSetProxy(self.calls)
+
+    def add(self, *elements, to=None):
+        self.calls.append(("add", elements, to))
+
+    def upsert(self, *elements, to=None):
+        self.calls.append(("upsert", elements, to))
+
+    def update(self, *updates):
+        self.calls.append(("update", updates))
+
+    def remove(self, *keys):
+        self.calls.append(("remove", keys))
+
+
+class TestE2ESubscriberNotification:
+    """End-to-end tests verifying operations notify subscribers correctly."""
+
+    @pytest.mark.asyncio
+    async def test_set_scene_notifies_subscriber(self):
+        """Verify set_scene sends Scene to subscriber via session.set @."""
+        store = SceneStore()
+        mock_session = MockSession()
+
+        async with store.subscribe(mock_session):
+            await store.set_scene(
+                children=[Box(key="box", position=[1, 2, 3])]
+            )
+
+        # Should have one set call
+        assert len(mock_session.calls) == 1
+        call_type, scene = mock_session.calls[0]
+        assert call_type == "set"
+        # Scene should have the box as a child
+        assert scene.tag == "Scene"
+
+    @pytest.mark.asyncio
+    async def test_add_notifies_subscriber(self):
+        """Verify add sends elements to subscriber."""
+        store = SceneStore()
+        mock_session = MockSession()
+
+        async with store.subscribe(mock_session):
+            await store.add_async(Box(key="box1"), Sphere(key="sphere1"))
+
+        assert len(mock_session.calls) == 1
+        call_type, elements, to = mock_session.calls[0]
+        assert call_type == "add"
+        assert len(elements) == 2
+        assert to is None
+
+    @pytest.mark.asyncio
+    async def test_add_with_parent_notifies_subscriber(self):
+        """Verify add with to= sends correct parent."""
+        store = SceneStore()
+        mock_session = MockSession()
+
+        async with store.subscribe(mock_session):
+            await store.add_async(Group(key="parent"))
+            await store.add_async(Box(key="child"), to="parent")
+
+        # Should have two add calls
+        assert len(mock_session.calls) == 2
+        # Second call should have to="parent"
+        call_type, elements, to = mock_session.calls[1]
+        assert call_type == "add"
+        assert to == "parent"
+
+    @pytest.mark.asyncio
+    async def test_upsert_notifies_subscriber(self):
+        """Verify upsert sends elements to subscriber."""
+        store = SceneStore()
+        mock_session = MockSession()
+
+        async with store.subscribe(mock_session):
+            await store.upsert_async(Box(key="box"))
+
+        assert len(mock_session.calls) == 1
+        call_type, elements, to = mock_session.calls[0]
+        assert call_type == "upsert"
+        assert len(elements) == 1
+
+    @pytest.mark.asyncio
+    async def test_update_notifies_subscriber(self):
+        """Verify update sends updates to subscriber."""
+        store = SceneStore()
+        mock_session = MockSession()
+
+        # Add a node first (without subscriber)
+        await store.add_async(Box(key="box", material={"color": "red"}))
+
+        async with store.subscribe(mock_session):
+            await store.update_async({"key": "box", "material": {"color": "blue"}})
+
+        assert len(mock_session.calls) == 1
+        call_type, updates = mock_session.calls[0]
+        assert call_type == "update"
+        assert len(updates) == 1
+
+    @pytest.mark.asyncio
+    async def test_remove_notifies_subscriber(self):
+        """Verify remove sends keys to subscriber."""
+        store = SceneStore()
+        mock_session = MockSession()
+
+        # Add nodes first (without subscriber)
+        await store.add_async(Box(key="box1"), Box(key="box2"))
+
+        async with store.subscribe(mock_session):
+            await store.remove_async("box1", "box2")
+
+        assert len(mock_session.calls) == 1
+        call_type, keys = mock_session.calls[0]
+        assert call_type == "remove"
+        assert keys == ("box1", "box2")
+
+    @pytest.mark.asyncio
+    async def test_multiple_subscribers_all_notified(self):
+        """Verify all subscribers receive notifications."""
+        store = SceneStore()
+        session1 = MockSession()
+        session2 = MockSession()
+
+        async with store.subscribe(session1):
+            async with store.subscribe(session2):
+                await store.add_async(Box(key="box"))
+
+        # Both should have received the add
+        assert len(session1.calls) == 1
+        assert len(session2.calls) == 1
+        assert session1.calls[0][0] == "add"
+        assert session2.calls[0][0] == "add"
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
