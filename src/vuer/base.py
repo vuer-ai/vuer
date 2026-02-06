@@ -143,10 +143,41 @@ class Server:
     )
     self._add_route(path, ws_handler)
 
-  @staticmethod
-  def _add_task(fn: Coroutine, name=None):
+  def _add_task(self, fn: Coroutine, name=None, ws_id=None):
+    """Create and track an async task.
+
+    Args:
+        fn: The coroutine to run as a task.
+        name: Optional name for the task.
+        ws_id: Optional websocket ID to associate the task with.
+              If provided, the task will be cancelled when the ws closes.
+    """
+    if not hasattr(self, "_tasks"):
+      self._tasks = {}  # ws_id -> set of tasks
+      self._orphan_tasks = set()  # tasks not tied to a ws
+
     loop = asyncio.get_running_loop()
-    loop.create_task(fn, name=name)
+    task = loop.create_task(fn, name=name)
+
+    if ws_id is not None:
+      if ws_id not in self._tasks:
+        self._tasks[ws_id] = set()
+      self._tasks[ws_id].add(task)
+      task.add_done_callback(lambda t: self._tasks.get(ws_id, set()).discard(t))
+    else:
+      self._orphan_tasks.add(task)
+      task.add_done_callback(lambda t: self._orphan_tasks.discard(t))
+
+    return task
+
+  def _cancel_tasks(self, ws_id):
+    """Cancel all tasks associated with a websocket ID."""
+    if not hasattr(self, "_tasks"):
+      return
+    tasks = self._tasks.pop(ws_id, set())
+    for task in tasks:
+      if not task.done():
+        task.cancel()
 
   def _add_static(self, path, root):
     _fn = partial(handle_file_request, root=root)

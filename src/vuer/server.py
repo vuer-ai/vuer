@@ -749,7 +749,7 @@ class Vuer(Server):
     bytes = request.bytes()
     session_id = request.rel_url.query.get("sid", None)
     if session_id is None:
-      return Response(400)
+      return Response(status=400)
     elif session_id in self.ws:
       self.send(ws_id=session_id, event_bytes=bytes)
 
@@ -892,7 +892,7 @@ class Vuer(Server):
             print("this handler is gone")
             continue
 
-          self._add_task(fn_factory(client_event, session_proxy))
+          self._add_task(fn_factory(client_event, session_proxy), ws_id=session_proxy.CURRENT_WS_ID)
           await sleep(0.0)
 
       session_proxy.downlink_queue.append(client_event)
@@ -1040,6 +1040,8 @@ class Vuer(Server):
     raise NotImplementedError("This is not implemented yet.")
 
   async def close_ws(self, ws_id):
+    # Cancel any spawned tasks associated with this websocket
+    self._cancel_tasks(ws_id)
     # uplink is moved to the proxy object. Cleaned by garbage collection.
     # self.uplink_queue.pop(ws_id)
     try:
@@ -1096,7 +1098,7 @@ class Vuer(Server):
 
     generator = self.bound_fn(vuer_proxy)
 
-    self._add_task(self.uplink(vuer_proxy))
+    self._add_task(self.uplink(vuer_proxy), ws_id=ws_id)
 
     # Track if we've received INIT and spawned a handler
     init_received = False
@@ -1134,7 +1136,7 @@ class Vuer(Server):
           raise e
         await self.close_ws(ws_id)
 
-      self._add_task(handler())
+      self._add_task(handler(), ws_id=ws_id)
 
     if hasattr(generator, "__anext__"):
       serverEvent = await generator.__anext__()

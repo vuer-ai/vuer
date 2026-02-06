@@ -3946,18 +3946,21 @@ class Scene(BlockElement):
     super().__init__(*children, up=up, **kwargs)
 
     # Set bgChildren: use user-provided value, or empty list if None
-    self.bgChildren = bgChildren if bgChildren is not None else []
+    if bgChildren:
+      self.bgChildren = bgChildren
 
     if rawChildren is None:
-      self.rawChildren = []
+        pass
     elif isinstance(rawChildren, list):
       self.rawChildren = rawChildren
     else:
       self.rawChildren = [rawChildren]
 
-    self.htmlChildren = htmlChildren or []
+    if htmlChildren:
+      self.htmlChildren = htmlChildren
 
     self.up = up
+
     if background:
       self.background = background
 
@@ -3976,12 +3979,13 @@ class Scene(BlockElement):
 
   def _serialize(self):
     obj = super()._serialize()
-    if self.rawChildren:
+    if getattr(self, 'rawChildren', None):
       obj["rawChildren"] = [e._serialize() for e in self.rawChildren if e]
-    if self.htmlChildren:
+    if getattr(self, 'htmlChildren', None):
       obj["htmlChildren"] = [e._serialize() for e in self.htmlChildren if e]
-    if self.bgChildren:
+    if getattr(self, 'bgChildren', None):
       obj["bgChildren"] = [e._serialize() for e in self.bgChildren if e]
+      print(obj)
     return obj
 
 
