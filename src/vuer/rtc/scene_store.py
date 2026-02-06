@@ -718,18 +718,17 @@ class SceneStore:
         to: Parent key for ADD/UPSERT operations
     """
 
-    from vuer.schemas import Scene
+    from vuer.events import Set
 
     dead_sessions = []
 
     for session in self._subscribers:
       try:
         if event_type == "SET":
-          # Send full scene using session.set @ Scene(...)
+          # Send the serialized scene dict directly via Set event
+          # (Scene(*children) doesn't work when children are dicts from to_dict())
           scene_dict = self._state.to_dict()
-          children = scene_dict.pop("children", [])
-          scene_dict.pop("tag", None)  # Scene class has its own tag
-          session.set @ Scene(*children, **scene_dict)
+          session @ Set(scene_dict)
         elif event_type == "ADD":
           elements = [self._node_to_element(self._to_node(n)) for n in data]
           session.add(*elements, to=to)

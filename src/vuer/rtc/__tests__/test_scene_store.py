@@ -704,23 +704,16 @@ class TestWithSchemaComponents:
 # =============================================================================
 
 
-class MockSetProxy:
-    """Mock for session.set that captures @ operator calls."""
-
-    def __init__(self, calls: list):
-        self._calls = calls
-
-    def __matmul__(self, other):
-        self._calls.append(("set", other))
-        return None
-
-
 class MockSession:
     """Mock VuerSession that captures all operations."""
 
     def __init__(self):
         self.calls = []
-        self.set = MockSetProxy(self.calls)
+
+    def __matmul__(self, event):
+        """Capture session @ Event(...) calls."""
+        self.calls.append(("@", event))
+        return None
 
     def add(self, *elements, to=None):
         self.calls.append(("add", elements, to))
@@ -740,7 +733,9 @@ class TestE2ESubscriberNotification:
 
     @pytest.mark.asyncio
     async def test_set_scene_notifies_subscriber(self):
-        """Verify set_scene sends Scene to subscriber via session.set @."""
+        """Verify set_scene sends Set event to subscriber."""
+        from vuer.events import Set
+
         store = SceneStore()
         mock_session = MockSession()
 
@@ -749,12 +744,15 @@ class TestE2ESubscriberNotification:
                 children=[Box(key="box", position=[1, 2, 3])]
             )
 
-        # Should have one set call
+        # Should have one @ call with Set event
         assert len(mock_session.calls) == 1
-        call_type, scene = mock_session.calls[0]
-        assert call_type == "set"
-        # Scene should have the box as a child
-        assert scene.tag == "Scene"
+        call_type, event = mock_session.calls[0]
+        assert call_type == "@"
+        assert isinstance(event, Set)
+        # The event data should contain the scene
+        assert event.data["tag"] == "Scene"
+        assert len(event.data["children"]) == 1
+        assert event.data["children"][0]["key"] == "box"
 
     @pytest.mark.asyncio
     async def test_add_notifies_subscriber(self):
