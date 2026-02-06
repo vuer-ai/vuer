@@ -34,6 +34,7 @@ class TestUpsertToNestedParent:
   async def test_upsert_to_depth_point_cloud_provider(self):
     """Test upserting a DepthPointCloud into a DepthPointCloudProvider."""
     store = SceneStore()
+
     session = MockSession()
 
     async with store.subscribe(session):
