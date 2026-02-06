@@ -95,7 +95,7 @@ class BlockElement(Element):
     result = super()._serialize()
     if children := getattr(self, "children", None):
       result["children"] = [
-        e if isinstance(e, str) else e._serialize() for e in children
+        e if isinstance(e, (str, dict)) else e._serialize() for e in children
       ]
     return result
 
