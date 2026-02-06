@@ -3584,6 +3584,14 @@ class DepthPointCloud(SceneElement):
        - float
        - Infinity
        - Maximum world Y for filtering - points above this are discarded
+     * - cx
+       - float
+       - None
+       - Principal point X in pixels (defaults to image center = width/2)
+     * - cy
+       - float
+       - None
+       - Principal point Y in pixels (defaults to image center = height/2)
      * - hide
        - bool
        - False
@@ -3738,6 +3746,14 @@ class InPlaceDepthPointCloud(SceneElement):
        - float
        - Infinity
        - Maximum world Y for filtering - points above this are discarded
+     * - cx
+       - float
+       - None
+       - Principal point X in pixels (defaults to image center = width/2)
+     * - cy
+       - float
+       - None
+       - Principal point Y in pixels (defaults to image center = height/2)
      * - hide
        - bool
        - False
