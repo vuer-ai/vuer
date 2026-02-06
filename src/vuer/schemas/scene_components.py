@@ -3950,7 +3950,7 @@ class Scene(BlockElement):
       self.bgChildren = bgChildren
 
     if rawChildren is None:
-        pass
+      pass
     elif isinstance(rawChildren, list):
       self.rawChildren = rawChildren
     else:
@@ -3979,13 +3979,12 @@ class Scene(BlockElement):
 
   def _serialize(self):
     obj = super()._serialize()
-    if getattr(self, 'rawChildren', None):
+    if getattr(self, "rawChildren", None):
       obj["rawChildren"] = [e._serialize() for e in self.rawChildren if e]
-    if getattr(self, 'htmlChildren', None):
+    if getattr(self, "htmlChildren", None):
       obj["htmlChildren"] = [e._serialize() for e in self.htmlChildren if e]
-    if getattr(self, 'bgChildren', None):
+    if getattr(self, "bgChildren", None):
       obj["bgChildren"] = [e._serialize() for e in self.bgChildren if e]
-      print(obj)
     return obj
 
 
