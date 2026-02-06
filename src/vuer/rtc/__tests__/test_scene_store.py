@@ -81,9 +81,9 @@ class TestSceneStore:
             store.set @ Scene(Box(key="box"))
 
         assert store.scene is not None
-        assert store.scene["tag"] == "Scene"
-        assert len(store.scene["children"]) == 1
-        assert store.scene["children"][0]["key"] == "box"
+        assert store.scene_data["tag"] == "Scene"
+        assert len(store.scene_data["children"]) == 1
+        assert store.scene_data["children"][0]["key"] == "box"
 
     @pytest.mark.asyncio
     async def test_set_broadcasts_to_subscriber(self):
@@ -106,7 +106,7 @@ class TestSceneStore:
             store.upsert @ Sphere(key="sphere", position=[1, 0, 0])
 
         # Should have both box and sphere
-        assert len(store.scene["children"]) == 2
+        assert len(store.scene_data["children"]) == 2
         sphere = store.get("sphere")
         assert sphere is not None
         assert sphere["position"] == [1, 0, 0]
@@ -121,7 +121,7 @@ class TestSceneStore:
             store.upsert @ Box(key="box", position=[1, 2, 3])
 
         # Should still have one child
-        assert len(store.scene["children"]) == 1
+        assert len(store.scene_data["children"]) == 1
         box = store.get("box")
         assert box["position"] == [1, 2, 3]
 
@@ -137,7 +137,7 @@ class TestSceneStore:
             )
             store.remove @ "box1"
 
-        assert len(store.scene["children"]) == 1
+        assert len(store.scene_data["children"]) == 1
         assert store.get("box1") is None
         assert store.get("box2") is not None
 
