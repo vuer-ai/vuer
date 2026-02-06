@@ -420,6 +420,11 @@ class SceneStore:
     The SceneStore maintains scene state and synchronizes changes
     with all subscribed VuerSession clients.
 
+    Important:
+        After scene operations, you must yield control with ``await asyncio.sleep(0)``
+        to allow messages to be sent to clients. Without this, the event loop won't
+        have a chance to flush the websocket send queue.
+
     Example:
         scene_store = SceneStore()
 
@@ -427,6 +432,7 @@ class SceneStore:
         async def main(sess: VuerSession):
             async with scene_store.subscribe(sess):
                 await scene_store.set_scene(children=[Box(key="box")])
+                await asyncio.sleep(0)  # Required to flush messages
 
                 while True:
                     await scene_store.upsert(Sphere(key="sphere"))
@@ -708,8 +714,8 @@ class SceneStore:
         """Convert an element to a SceneNode."""
         if isinstance(element, SceneNode):
             return element
-        if hasattr(element, "serialize"):
-            data = element.serialize()
+        if hasattr(element, "_serialize"):
+            data = element._serialize()
         elif isinstance(element, dict):
             data = element
         else:
@@ -740,7 +746,10 @@ class SceneStore:
                 if event_type == "SET":
                     # Send full scene
                     scene_dict = self._state.to_dict()
-                    session.set @ Scene(**scene_dict)
+                    # Send scene dict directly via Set event
+                    # Add Scene tag for client to recognize it
+                    scene_dict["tag"] = "Scene"
+                    session @ Set(scene_dict)
                 elif event_type == "ADD":
                     elements = [
                         self._node_to_element(self._to_node(n)) for n in data
@@ -761,6 +770,8 @@ class SceneStore:
                     session.upsert(*elements, to=to)
                 elif event_type == "REMOVE":
                     session.remove(*data)
+                # Yield control to allow message to be sent
+                await asyncio.sleep(0)
             except Exception as e:
                 # Session likely disconnected
                 dead_sessions.append(session)

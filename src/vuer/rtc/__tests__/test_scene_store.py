@@ -16,6 +16,7 @@ from vuer.rtc.scene_store import (
     update_node,
     upsert_node,
 )
+from vuer.schemas import Box, Sphere, Group
 
 
 # =============================================================================
@@ -622,6 +623,80 @@ class TestDeepNesting:
         assert level1 is not None
         assert len(level1.children) == 1
         assert level1.children[0].key == "level2"
+
+
+# =============================================================================
+# Schema Component Integration Tests
+# =============================================================================
+
+
+class TestWithSchemaComponents:
+    """Tests using actual schema components (Box, Sphere, Group) instead of dicts."""
+
+    @pytest.mark.asyncio
+    async def test_set_scene_with_box(self):
+        """Test set_scene with a Box component."""
+        store = SceneStore()
+        await store.set_scene(
+            children=[Box(key="box1", position=[0, 0, 0], args=[1, 1, 1])]
+        )
+
+        assert store.has_node("box1")
+        node = store.get_node("box1")
+        assert node.tag == "Box"
+        assert node.properties["position"] == [0, 0, 0]
+
+    @pytest.mark.asyncio
+    async def test_add_with_sphere(self):
+        """Test add with a Sphere component."""
+        store = SceneStore()
+        await store.add_async(Sphere(key="sphere1", position=[1, 0, 0], args=[0.5, 32, 32]))
+
+        assert store.has_node("sphere1")
+        node = store.get_node("sphere1")
+        assert node.tag == "Sphere"
+
+    @pytest.mark.asyncio
+    async def test_add_to_group(self):
+        """Test adding a child to a Group component."""
+        store = SceneStore()
+        await store.add_async(Group(key="group1", position=[0, 2, 0]))
+        await store.add_async(
+            Sphere(key="child", args=[0.3, 16, 16]),
+            to="group1"
+        )
+
+        group = store.get_node("group1")
+        assert len(group.children) == 1
+        assert group.children[0].key == "child"
+
+    @pytest.mark.asyncio
+    async def test_upsert_with_box(self):
+        """Test upsert inserts new Box and updates existing."""
+        store = SceneStore()
+
+        # Insert new
+        await store.upsert_async(Box(key="box", args=[1, 1, 1], material={"color": "red"}))
+        assert store.has_node("box")
+        assert store.get_node("box").properties["material"]["color"] == "red"
+
+        # Update existing
+        await store.upsert_async(Box(key="box", args=[2, 2, 2], material={"color": "blue"}))
+        node = store.get_node("box")
+        assert node.properties["material"]["color"] == "blue"
+        assert node.properties["args"] == [2, 2, 2]
+
+    @pytest.mark.asyncio
+    async def test_remove_schema_component(self):
+        """Test removing a component added via schema."""
+        store = SceneStore()
+        await store.add_async(Box(key="box1"))
+        await store.add_async(Sphere(key="sphere1"))
+
+        await store.remove_async("box1")
+
+        assert not store.has_node("box1")
+        assert store.has_node("sphere1")
 
 
 if __name__ == "__main__":
