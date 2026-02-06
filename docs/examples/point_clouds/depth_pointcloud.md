@@ -80,6 +80,10 @@ async def main(sess: VuerSession):
 | `depthMax` | float | 50 | Maximum depth for visualization mapping |
 | `heightMin` | float | -2 | Minimum height for visualization mapping |
 | `heightMax` | float | 2 | Maximum height for visualization mapping |
+| `minY` | float | -Infinity | Minimum world Y for filtering - points below are discarded |
+| `maxY` | float | Infinity | Maximum world Y for filtering - points above are discarded |
+| `cx` | float | width/2 | Principal point X in pixels (optical center X) |
+| `cy` | float | height/2 | Principal point Y in pixels (optical center Y) |
 
 ### Color Modes
 
@@ -90,6 +94,28 @@ async def main(sess: VuerSession):
 | 2 | camDist | Color by Euclidean distance from camera |
 | 3 | localY | Color by local Y coordinate |
 | 4 | worldY | Color by world Y coordinate (height) |
+
+### Camera Intrinsics (cx/cy)
+
+For cameras with off-center principal points (optical center), you can specify the `cx` and `cy` parameters
+to properly reconstruct the 3D point cloud. By default, they are centered at `width/2` and `height/2`.
+
+```python
+# Using camera intrinsics from calibration
+sess.upsert @ DepthPointCloud(
+    key="calibrated-pc",
+    depth=vuer.localhost_prefix / "depth.png",
+    rgb=vuer.localhost_prefix / "color.png",
+    fov=58,           # Vertical FOV in degrees
+    cx=320.5,         # Principal point X (pixels)
+    cy=240.3,         # Principal point Y (pixels)
+)
+```
+
+Common sources for camera intrinsics:
+- **ROS camera_info**: `K[2]` = cx, `K[5]` = cy
+- **OpenCV calibration**: `cx`, `cy` from the camera matrix
+- **RealSense SDK**: `ppx`, `ppy` from intrinsics
 
 ## DepthPointCloudProvider Parameters
 
