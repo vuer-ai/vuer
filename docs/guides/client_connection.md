@@ -101,15 +101,19 @@ from vuer import VuerClient
 client = VuerClient()
 
 # Custom URI
-client = VuerClient(URI="ws://192.168.1.100:8012")
+client = VuerClient(uri="ws://192.168.1.100:8012")
 
 # With custom max message size (default 256MB)
-client = VuerClient(URI="ws://localhost:8012", WEBSOCKET_MAX_SIZE=2**30)
+client = VuerClient(uri="ws://localhost:8012", max_size=2**30)
+
+# Disable SSL certificate verification (e.g., for ngrok with self-signed certs)
+client = VuerClient(uri="wss://7.tcp.ngrok.io:26620", ssl_verify=False)
 ```
 
 Configuration can also be set via environment variables:
 - `VUER_CLIENT_URI`: WebSocket URI (default `ws://localhost:8012`)
 - `WEBSOCKET_MAX_SIZE`: Maximum message size in bytes (default 256MB)
+- `VUER_SSL_VERIFY`: Whether to verify SSL certificates (default `true`)
 
 ### Context Manager (Recommended)
 
@@ -271,4 +275,6 @@ Run the server first, then run the client in a separate terminal to see the anim
 - Use `await client.send(Event())` when you need to wait for the send to complete
 - Use `client.connected` to check connection status
 - Reconnect by calling `connect()` again if disconnected
-- Configure via environment variables: `VUER_CLIENT_URI`, `WEBSOCKET_MAX_SIZE`
+- Configure via environment variables: `VUER_CLIENT_URI`, `WEBSOCKET_MAX_SIZE`, `VUER_SSL_VERIFY`
+- Use `ssl_verify=False` when connecting through tunnels with self-signed certificates (e.g., ngrok TCP tunnels)
+- You can also pass any `websockets.connect()` kwargs (e.g., a custom `ssl=` context) through the constructor
