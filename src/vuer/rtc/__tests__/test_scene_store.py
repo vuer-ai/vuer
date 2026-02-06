@@ -48,6 +48,11 @@ class MockSession:
         self.update = MockMethodProxy(self.calls, "update")
         self.remove = MockMethodProxy(self.calls, "remove")
 
+    def __matmul__(self, event):
+        """Handle session @ event pattern."""
+        self.calls.append((event.etype.lower(), event))
+        return None
+
 
 class TestSceneStore:
     """Tests for SceneStore class."""

@@ -27,6 +27,7 @@ Usage:
 import time
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set
 
+from vuer.events import Set, Add, Update, Upsert, Remove
 from vuer.server import At
 
 if TYPE_CHECKING:
@@ -176,24 +177,64 @@ class SceneStore:
     def _remove_subscriber(self, session: "VuerSession") -> None:
         self._subscribers.discard(session)
 
-    def _record(self, etype: str, value: Any, **kwargs) -> None:
-        """Record an operation to history."""
-        entry = {"etype": etype, "timestamp": time.time(), "value": value, **kwargs}
-        self._history.append(entry)
+    def __matmul__(self, event) -> None:
+        """Central dispatch for all operations - updates state, records history, broadcasts."""
+        # Record to history
+        self._history.append({
+            "etype": event.etype.lower(),
+            "timestamp": time.time(),
+            "event": event._serialize(),
+        })
+
+        # Update internal state based on event type
+        if isinstance(event, Set):
+            self._scene = _serialize(event.data)
+
+        elif isinstance(event, Update):
+            if self._scene:
+                for node in event.data["nodes"]:
+                    data = _serialize(node)
+                    key = data.get("key")
+                    if key:
+                        existing = self.get(key)
+                        if existing:
+                            existing.update(data)
+
+        elif isinstance(event, Add):
+            if self._scene:
+                to = event.data.get("to")
+                for node in event.data["nodes"]:
+                    data = _serialize(node)
+                    if to:
+                        parent = self.get(to)
+                        if parent:
+                            children = parent.setdefault("children", [])
+                            children.append(data)
+                    else:
+                        self._scene.setdefault("children", []).append(data)
+
+        elif isinstance(event, Upsert):
+            if self._scene:
+                to = event.data.get("to")
+                for node in event.data["nodes"]:
+                    data = _serialize(node)
+                    children = self._scene.get("children", [])
+                    self._scene["children"] = _upsert_into(children, data, to)
+
+        elif isinstance(event, Remove):
+            if self._scene:
+                for key in event.data["keys"]:
+                    children = self._scene.get("children", [])
+                    self._scene["children"] = _remove_by_key(children, key)
+
+        # Broadcast to all subscribers
+        for session in self._subscribers:
+            session @ event
 
     @property
     def set(self) -> At:
         """Set the scene. Usage: store.set @ Scene(...)"""
-
-        @At
-        def _set(element):
-            data = _serialize(element)
-            self._scene = data
-            self._record("set", data)
-            for session in self._subscribers:
-                session.set @ element
-
-        return _set
+        return At(lambda element: self @ Set(element))
 
     @property
     def update(self) -> At:
@@ -201,19 +242,10 @@ class SceneStore:
 
         @At
         def _update(element):
-            data = _serialize(element) if hasattr(element, "_serialize") else element
-            if self._scene:
-                elements = element if isinstance(element, (list, tuple)) else [element]
-                for elem in elements:
-                    elem_data = _serialize(elem)
-                    key = elem_data.get("key")
-                    if key:
-                        existing = self.get(key)
-                        if existing:
-                            existing.update(elem_data)
-            self._record("update", data)
-            for session in self._subscribers:
-                session.update @ element
+            if isinstance(element, (list, tuple)):
+                self @ Update(*element)
+            else:
+                self @ Update(element)
 
         return _update
 
@@ -223,24 +255,10 @@ class SceneStore:
 
         @At
         def _add(element, to=None):
-            data = _serialize(element) if hasattr(element, "_serialize") else element
-            if self._scene:
-                elements = element if isinstance(element, (list, tuple)) else [element]
-                for elem in elements:
-                    elem_data = _serialize(elem)
-                    if to:
-                        parent = self.get(to)
-                        if parent:
-                            children = parent.setdefault("children", [])
-                            children.append(elem_data)
-                    else:
-                        self._scene.setdefault("children", []).append(elem_data)
-            self._record("add", data, to=to)
-            for session in self._subscribers:
-                if to:
-                    session.add(to=to) @ element
-                else:
-                    session.add @ element
+            if isinstance(element, (list, tuple)):
+                self @ Add(*element, to=to)
+            else:
+                self @ Add(element, to=to)
 
         return _add
 
@@ -250,19 +268,10 @@ class SceneStore:
 
         @At
         def _upsert(element, to=None):
-            data = _serialize(element) if hasattr(element, "_serialize") else element
-            if self._scene:
-                elements = element if isinstance(element, (list, tuple)) else [element]
-                for elem in elements:
-                    elem_data = _serialize(elem)
-                    children = self._scene.get("children", [])
-                    self._scene["children"] = _upsert_into(children, elem_data, to)
-            self._record("upsert", data, to=to)
-            for session in self._subscribers:
-                if to:
-                    session.upsert(to=to) @ element
-                else:
-                    session.upsert @ element
+            if isinstance(element, (list, tuple)):
+                self @ Upsert(*element, to=to)
+            else:
+                self @ Upsert(element, to=to)
 
         return _upsert
 
@@ -272,13 +281,9 @@ class SceneStore:
 
         @At
         def _remove(keys):
-            if self._scene:
-                key_list = keys if isinstance(keys, (list, tuple)) else [keys]
-                for key in key_list:
-                    children = self._scene.get("children", [])
-                    self._scene["children"] = _remove_by_key(children, key)
-            self._record("remove", keys)
-            for session in self._subscribers:
-                session.remove @ keys
+            if isinstance(keys, (list, tuple)):
+                self @ Remove(*keys)
+            else:
+                self @ Remove(keys)
 
         return _remove
