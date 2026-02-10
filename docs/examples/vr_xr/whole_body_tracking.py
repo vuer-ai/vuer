@@ -1,7 +1,7 @@
 from params_proto import EnvVar
 
 from vuer import Vuer, VuerSession
-from vuer.schemas import Scene, Bodies, WebXRMesh
+from vuer.schemas import Scene, Body, WebXRMesh
 from asyncio import sleep
 import dotvar.auto_load  # noqa
 
