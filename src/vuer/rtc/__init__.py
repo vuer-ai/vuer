@@ -100,6 +100,12 @@ from vuer.rtc.scene_store import (
     SubscriptionContext,
 )
 
+# Scene Store RTC
+from vuer.rtc.scene_store_rtc import (
+    SceneStoreRTC,
+    RTCSubscription,
+)
+
 __all__ = [
     # Types
     "VectorClock",
@@ -137,4 +143,7 @@ __all__ = [
     # Scene Store
     "SceneStore",
     "SubscriptionContext",
+    # Scene Store RTC
+    "SceneStoreRTC",
+    "RTCSubscription",
 ]
