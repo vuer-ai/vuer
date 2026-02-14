@@ -182,25 +182,89 @@ class Operation:
     target_msg_id: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
-        """Serialize operation to dictionary."""
-        result = {
+        """Serialize operation to dictionary.
+
+        For ``node.insert`` and ``node.remove`` the wire format matches
+        the JS ``@vuer-ai/vuer-rtc`` convention:
+
+        node.insert:
+            key   = parent node key
+            path  = "children"
+            value = { key, tag, name, ...properties }
+
+        node.remove:
+            key   = parent node key
+            path  = "children"
+            value = child node key (string)
+        """
+        if self.otype == OType.NODE_INSERT.value:
+            # Build the value dict that JS NodeInsert expects
+            node_value: Dict[str, Any] = {
+                "key": self.key,
+                "tag": self.tag or "Group",
+                "name": self.key,
+            }
+            if self.value and isinstance(self.value, dict):
+                node_value.update(self.value)
+            return {
+                "otype": self.otype,
+                "key": self.parent_key or "",
+                "path": "children",
+                "value": node_value,
+            }
+
+        if self.otype == OType.NODE_REMOVE.value:
+            return {
+                "otype": self.otype,
+                "key": self.parent_key or "",
+                "path": "children",
+                "value": self.key,
+            }
+
+        result: Dict[str, Any] = {
             "key": self.key,
             "otype": self.otype,
             "path": self.path,
         }
         if self.value is not None:
             result["value"] = self.value
-        if self.tag is not None:
-            result["tag"] = self.tag
-        if self.parent_key is not None:
-            result["parentKey"] = self.parent_key
         if self.target_msg_id is not None:
             result["targetMsgId"] = self.target_msg_id
         return result
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Operation":
-        """Deserialize operation from dictionary."""
+        """Deserialize operation from dictionary.
+
+        Handles both JS wire format (node.insert: key=parent, value={key,tag,...})
+        and legacy Python format (key=node, parentKey=parent, tag=...).
+        """
+        otype = data["otype"]
+
+        if otype == OType.NODE_INSERT.value and isinstance(data.get("value"), dict) and "tag" in data["value"]:
+            # JS wire format: key=parent, path="children", value={key, tag, ...}
+            value = dict(data["value"])
+            node_key = value.pop("key")
+            tag = value.pop("tag")
+            value.pop("name", None)
+            return cls(
+                key=node_key,
+                otype=otype,
+                path="",
+                value=value or None,
+                tag=tag,
+                parent_key=data["key"] or None,
+            )
+
+        if otype == OType.NODE_REMOVE.value and isinstance(data.get("value"), str):
+            # JS wire format: key=parent, path="children", value=childKey
+            return cls(
+                key=data["value"],
+                otype=otype,
+                path="",
+                parent_key=data["key"] or None,
+            )
+
         return cls(
             key=data["key"],
             otype=data["otype"],
@@ -320,31 +384,47 @@ class SceneNode:
         return self.deleted_at is not None
 
     def to_dict(self) -> Dict[str, Any]:
-        """Serialize node to dictionary."""
+        """Serialize node to dictionary.
+
+        CRDT metadata is nested under ``_crdt`` to match the JS
+        ``CRDTEnvelope`` / ``SceneNode`` interface in ``@vuer-ai/vuer-rtc``.
+        """
+        crdt: Dict[str, Any] = {
+            "clock": self.clock.copy(),
+            "lamportTime": self.lamport_time,
+            "createdAt": self.created_at,
+            "updatedAt": self.updated_at,
+            "lww": {},
+        }
+        if self.deleted_at is not None:
+            crdt["deletedAt"] = self.deleted_at
+
         result = {
             "key": self.key,
             "tag": self.tag,
             "name": self.name,
             "children": self.children.copy(),
-            "clock": self.clock.copy(),
-            "lamportTime": self.lamport_time,
-            "createdAt": self.created_at,
-            "updatedAt": self.updated_at,
+            "_crdt": crdt,
             **self.properties,
         }
-        if self.deleted_at is not None:
-            result["deletedAt"] = self.deleted_at
         return result
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "SceneNode":
-        """Deserialize node from dictionary."""
-        # Extract known fields
+        """Deserialize node from dictionary.
+
+        Supports the ``_crdt`` envelope format (preferred) and falls back
+        to flat CRDT fields for backwards compatibility.
+        """
+        crdt = data.get("_crdt", {})
+
         known_fields = {
             "key",
             "tag",
             "name",
             "children",
+            "_crdt",
+            # Legacy flat fields (backwards compat)
             "clock",
             "lamportTime",
             "createdAt",
@@ -358,11 +438,11 @@ class SceneNode:
             tag=data["tag"],
             name=data.get("name", ""),
             children=data.get("children", []).copy(),
-            clock=data.get("clock", {}).copy(),
-            lamport_time=data.get("lamportTime", 0),
-            created_at=data.get("createdAt", time.time() * 1000),
-            updated_at=data.get("updatedAt", time.time() * 1000),
-            deleted_at=data.get("deletedAt"),
+            clock=crdt.get("clock", data.get("clock", {})).copy(),
+            lamport_time=crdt.get("lamportTime", data.get("lamportTime", 0)),
+            created_at=crdt.get("createdAt", data.get("createdAt", time.time() * 1000)),
+            updated_at=crdt.get("updatedAt", data.get("updatedAt", time.time() * 1000)),
+            deleted_at=crdt.get("deletedAt", data.get("deletedAt")),
             properties=properties,
         )
 
