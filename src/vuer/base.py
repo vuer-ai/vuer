@@ -36,6 +36,8 @@ async def websocket_handler(request, handler, **ws_kwargs):
     await ws.close()
     print("WebSocket connection closed")
 
+  return ws
+
 
 async def handle_file_request(request, root, filename=None):
   if filename is None:
@@ -143,6 +145,19 @@ class Server:
     )
     self._add_route(path, ws_handler)
 
+  def _log_task_exception(self, task):
+    """Log exception from a completed task if present."""
+    if task.cancelled():
+      return
+    try:
+      exc = task.exception()
+      if exc:
+        task_name = task.get_name() if hasattr(task, "get_name") else "unnamed"
+        print(f"Task '{task_name}' raised an exception:")
+        traceback.print_exception(type(exc), exc, exc.__traceback__)
+    except Exception:
+      pass  # Task not done or already retrieved
+
   def _add_task(self, fn: Coroutine, name=None, ws_id=None):
     """Create and track an async task.
 
@@ -159,14 +174,19 @@ class Server:
     loop = asyncio.get_running_loop()
     task = loop.create_task(fn, name=name)
 
+    def handle_done(t, task_set_getter):
+      """Log exceptions and remove task from tracking."""
+      self._log_task_exception(t)
+      task_set_getter().discard(t)
+
     if ws_id is not None:
       if ws_id not in self._tasks:
         self._tasks[ws_id] = set()
       self._tasks[ws_id].add(task)
-      task.add_done_callback(lambda t: self._tasks.get(ws_id, set()).discard(t))
+      task.add_done_callback(lambda t: handle_done(t, lambda: self._tasks.get(ws_id, set())))
     else:
       self._orphan_tasks.add(task)
-      task.add_done_callback(lambda t: self._orphan_tasks.discard(t))
+      task.add_done_callback(lambda t: handle_done(t, lambda: self._orphan_tasks))
 
     return task
 
@@ -176,7 +196,11 @@ class Server:
       return
     tasks = self._tasks.pop(ws_id, set())
     for task in tasks:
-      if not task.done():
+      if task.done():
+        # Task already finished - log any exception before discarding
+        self._log_task_exception(task)
+      else:
+        # Task still running - cancel it
         task.cancel()
 
   def _add_static(self, path, root):
