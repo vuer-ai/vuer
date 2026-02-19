@@ -29,6 +29,7 @@ extensions = [
     "myst_parser",
     "sphinx_copybutton",
     "sphinxcontrib.video",
+    "sphinx_design",
 ]
 
 video_enforce_extra_source = True

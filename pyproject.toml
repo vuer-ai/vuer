@@ -51,6 +51,7 @@ dev = [
     "sphinx_copybutton",
     "sphinxcontrib-video>=0.4.1",
     "myst_parser",
+    "sphinx-design",
     # these are very optional but needed for the doc site
     "trimesh",
     "tqdm",
