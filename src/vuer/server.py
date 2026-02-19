@@ -1181,6 +1181,13 @@ class Vuer(Server):
           vuer_proxy @ serverEvent
 
       print("websocket is now disconnected. Removing the socket.")
+      if not init_received and self.spawn_handlers:
+        handler_names = [e["fn"].__name__ for e in self.spawn_handlers]
+        warnings.warn(
+          f"Client disconnected without sending INIT event. "
+          f"Spawn handlers were never called: {handler_names}",
+          stacklevel=2,
+        )
       await self.close_ws(ws_id)
     except Exception as e:
       print("websocket is now disconnected. Removing the socket.")
