@@ -106,6 +106,7 @@ For more details:
    Static Files & Hot Loading <guides/static_files.md>
    Python Client Connection <guides/client_connection.md>
    Using Vuer with Claude Code <guides/claude_skill.md>
+   CLI Plugin System <guides/cli.md>
 
 .. toctree::
    :maxdepth: 3
