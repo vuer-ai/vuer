@@ -4,4 +4,5 @@
 .. automodule:: vuer.client
    :members:
    :show-inheritance:
+   :no-imported-members:
 ```

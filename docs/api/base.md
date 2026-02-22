@@ -3,8 +3,7 @@
 ```{eval-rst}
 .. automodule:: vuer.base
    :members:
-   :special-members:
-   :private-members:
-   :imported-members: vuer.Vuer.add_handler
+   :show-inheritance:
+   :no-imported-members:
    :exclude-members: __init__, __dict__, __module__, __weakref__, Coroutine, CancelledError, partial, Path, Proto
 ```

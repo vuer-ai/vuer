@@ -3,10 +3,10 @@
 
 ```{eval-rst}
 .. automodule:: vuer.serdes
-   :imported-members: False
    :members:
    :undoc-members:
    :show-inheritance:
+   :no-imported-members:
    :exclude-members: __init__, Coroutine, CancelledError, partial, Path, BytesIO, Proto
 ```
 
