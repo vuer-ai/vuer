@@ -28,13 +28,15 @@ If you encounter build issues with `msgpack` on older systems, you may need gcc@
 Modern versions of macOS should work with the pre-built wheels.
 ```
 
-Here is an example that loads a URDF file and displays it in the browser. For a more comprehensive list of examples, please refer to the [examples](examples/meshes/mesh_loading.md) page.
+Here is an example that loads a URDF file and displays it in the browser. For a more comprehensive list of examples,
+please refer to the [examples](examples/meshes/mesh_loading.md) page.
 
 ```python
 from vuer import Vuer
 from vuer.schemas import DefaultScene, Urdf, OrbitControls
 
 app = Vuer()
+
 
 @app.spawn(start=True)
 async def main(sess):
@@ -59,7 +61,8 @@ Vuer is built by researchers at MIT and UCSD in fields including robotics, compu
 
 ## 🤖 Using Vuer with Claude Code
 
-Vuer includes a [Claude Code skill](https://github.com/vuer-ai/vuer-skill) that teaches Claude how to use the library effectively. To import, run in Claude Code:
+Vuer includes a [Claude Code skill](https://github.com/vuer-ai/vuer-skill) that teaches Claude how to use the library
+effectively. To import, run in Claude Code:
 
 ```
 /plugin marketplace add vuer-ai/vuer-skill
@@ -68,16 +71,20 @@ Vuer includes a [Claude Code skill](https://github.com/vuer-ai/vuer-skill) that 
 
 See the [full guide](guides/claude_skill.md) for more details.
 
-To get a quick overview of what you can do with  <code style="font-size: 1.3em; background-clip: text; color: transparent; background-image: linear-gradient(to right, rgb(0,140,220), rgb(226,213,79), rgb(210,0,12));">vuer</code>, check out the following:
+To get a quick overview of what you can do
+with  <code style="font-size: 1.3em; background-clip: text; color: transparent; background-image: linear-gradient(to right, rgb(0,140,220), rgb(226,213,79), rgb(210,0,12));">
+vuer</code>, check out the following:
 
 - take a look at the basic tutorial or the tutorial for robotics:
-  - [Introduction to Key Vuer Concepts](https://docs.vuer.ai/en/latest/tutorials/basics.html)
+    - [Introduction to Key Vuer Concepts](https://docs.vuer.ai/en/latest/tutorials/basics.html)
 - browse the example gallery [here](https://docs.vuer.ai/en/latest/examples/meshes/mesh_loading.html)
-- try the demo showing a Unitree Go1 robot in front of a staircase [here](https://docs.vuer.ai/en/latest/examples/urdf_go1_stairs.html)
+- try the demo showing a Unitree Go1 robot in front of a
+  staircase [here](https://docs.vuer.ai/en/latest/examples/urdf_go1_stairs.html)
 
 For more details:
 
-- A full list of visualization components: [API documentation on Components](https://docs.vuer.ai/en/latest/api/vuer.html).
+- A full list of visualization
+  components: [API documentation on Components](https://docs.vuer.ai/en/latest/api/vuer.html).
 
 - A full list of data types: [API documentation on Data Types](https://docs.vuer.ai/en/latest/api/types.html).
 
@@ -110,6 +117,17 @@ For more details:
 
 .. toctree::
    :maxdepth: 3
+   :caption: Python API
+   :hidden:
+
+   Client (vuer.client) <api/client.md>
+   Workspace (vuer.workspace) <api/workspace.md>
+   Components (vuer.schemas) <api/schemas.md>
+   Events (vuer.events) <api/events.md>
+   Real-Time Collab (vuer.rtc) <rtc/README.md>
+
+.. toctree::
+   :maxdepth: 3
    :caption: NEW FEATURES 🔥
    :hidden:
    
@@ -131,52 +149,21 @@ For more details:
    MuJoCo Interactive Simulator <tutorials/mujoco_interactive_simulator.md>
    
 .. toctree::
-   :maxdepth: 3
-   :caption: Vuer Component Index
+   :maxdepth: 1
    :hidden:
 
-   Primitive Geometries <components/category_primitives.md>
-   3D Model <components/category_3d_models.md>
-   Gaussian Splatting <components/category_gaussian_splatting.md>
-   Interaction <components/category_interactive.md>
-   Cameras <components/category_camera_view.md>
-   Helper <components/category_helpers.md>
-   Text <components/category_text.md>
-   Background <components/category_background.md>
-   Control <components/category_organization.md>
-
+   Components <components/index.md>
+   Examples <examples/index.md>
+   
 .. toctree::
    :maxdepth: 3
-   :caption: Examples
+   :caption: Internals
    :hidden:
 
-   Hand Tracking <examples/vr_xr/hand_tracking.md>
-   Controller Tracking <examples/vr_xr/motion_controllers.md>
-   Body Tracking <examples/vr_xr/body_tracking.md>
-   examples/meshes.md
-   examples/point_clouds.md
-   examples/urdf_go1_stairs.md
-   examples/spline_frustum.md
-   3DGS from Sora video <examples/openai_sora.md>
-   3D Text, 2D Text, and Billboard <examples/visualization/3d_text.md>
-   Depth Texture <examples/visualization/depth_texture.md>
-   examples/background_environment.md
-   examples/pointer.md
+   Module (vuer) <api/vuer.md>
+   Types (vuer.types) <api/types.md>
+   Server Base (vuer.base) <api/base.md>
+   Coordinates (vuer.frame) <api/frame.md>
+   Serialization (vuer.serdes) <api/serdes.md>
 
-.. toctree::
-   :maxdepth: 3
-   :caption: Python API
-   :hidden:
-
-   vuer <api/vuer.md>
-   vuer.rtc — Real-Time Collaboration <rtc/README.md>
-   vuer.workspace — Workspace <api/workspace.md>
-   vuer.client — Python Client <api/client.md>
-   vuer.frame <api/frame.md>
-   vuer.base <api/base.md>
-   vuer.types — Type Interafce <api/types.md>
-   vuer.events — Event Types <api/events.md>
-   vuer.schemas — Components <api/schemas.md>
-   vuer.serdes — Serialization <api/serdes.md>
-  
 ```

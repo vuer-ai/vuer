@@ -1,9 +1,20 @@
 # `vuer.frame`
 
+Coordinate frame conversion utilities for transforming between different axis conventions.
+
+## Conversion Matrices
+
 ```{eval-rst}
-.. automodule:: vuer.frame
+.. automodule:: vuer.frame.convert
+   :members:
+   :undoc-members:
+   :show-inheritance:
+```
+
+## Transformation Utilities
+
+```{eval-rst}
+.. automodule:: vuer.frame.to_mat
    :members:
    :show-inheritance:
-   :no-imported-members:
-   :exclude-members: __init__, __dict__, __module__, numpy, np
 ```
