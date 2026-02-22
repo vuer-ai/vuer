@@ -13,4 +13,5 @@ Load and display custom 3D models from various formats.
    obj
    glb
    urdf
+   bvh
 ```
