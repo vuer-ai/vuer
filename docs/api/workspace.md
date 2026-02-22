@@ -146,4 +146,5 @@ All workspace types will share the same interface (`overlay()`, `mount()`, `link
 .. automodule:: vuer.workspace
    :members:
    :show-inheritance:
+   :no-imported-members:
 ```
