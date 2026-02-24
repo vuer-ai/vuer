@@ -100,32 +100,6 @@ For more details:
    Report Issues <https://github.com/vuer-ai/vuer/issues?q=is:issue+is:closed>
 
 .. toctree::
-   :maxdepth: 2
-   :caption: 🔌 Vuer Hub
-   :hidden:
-
-   Overview <plugins/vuer-hub/index.md>
-   login <plugins/vuer-hub/commands/login.md>
-   sync <plugins/vuer-hub/commands/sync.md>
-   add <plugins/vuer-hub/commands/add.md>
-   remove <plugins/vuer-hub/commands/remove.md>
-   upgrade <plugins/vuer-hub/commands/upgrade.md>
-   envs-publish <plugins/vuer-hub/commands/envs-publish.md>
-   envs-pull <plugins/vuer-hub/commands/envs-pull.md>
-
-.. toctree::
-   :maxdepth: 2
-   :caption: 🤖 Vuer ROS
-   :hidden:
-
-   Overview <plugins/vuer-ros/index.md>
-   live-server <plugins/vuer-ros/commands/live-server.md>
-   ros-bridge <plugins/vuer-ros/commands/ros-bridge.md>
-   playback <plugins/vuer-ros/commands/playback.md>
-   visualize <plugins/vuer-ros/commands/visualize.md>
-   demcap <plugins/vuer-ros/commands/demcap.md>
-
-.. toctree::
    :maxdepth: 3
    :caption: 📖 Your First 3D Scene (NEW!)
    :hidden:

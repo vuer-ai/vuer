@@ -59,8 +59,6 @@ vuer my-command --host 0.0.0.0 --port 3000
 | Package | Commands | Description |
 |---------|----------|-------------|
 | vuer | serve, version | Core commands |
-| vuer-hub-cli | login, sync, add, remove, upgrade | Environment management |
-| vuer-ros | live-server, playback, visualize, demcap | ROS/MCAP visualization |
 | vuer-ptc-viz | minimap, viz-ptc-cams, viz-ptc-proxie | Point cloud visualization |
 
 ## Command Discovery
