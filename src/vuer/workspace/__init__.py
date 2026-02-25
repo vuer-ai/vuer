@@ -5,8 +5,10 @@ static files from various storage backends.
 
 **Available workspaces**:
 
-- ``Workspace`` - Local filesystem (default)
-- ``Blob`` - In-memory data with explicit content-type
+- ``Workspace``     - Local filesystem (default). Auto-upgrades to
+                      ``McapWorkspace`` when ``.mcap`` files are detected.
+- ``McapWorkspace`` - MCAP recordings (attachments + topics over HTTP).
+- ``Blob``          - In-memory data with explicit content-type.
 
 **Image encoders** (for serving in-memory images)::
 
@@ -33,16 +35,28 @@ static files from various storage backends.
     MIME_TYPES[".npy"] = "application/x-npy"
     MIME_TYPES.guess("data.npy")  # "application/x-npy"
 
+**MCAP recordings**::
+
+    from vuer.workspace import McapWorkspace
+
+    # Workspace() auto-upgrades when .mcap paths are detected
+    ws = Workspace("recording.mcap")
+    ws = Workspace("recording.mcap", "./local_assets")
+
+    # Or use McapWorkspace directly for extra kwargs
+    ws = McapWorkspace("recording.mcap", topic_prefix="/data")
+
 Future workspaces:
 
 - ``DashWorkspace`` - ML-Dash experiments
-- ``McapWorkspace`` - MCAP recordings
 - ``S3Workspace`` - S3 buckets
 """
 
 from vuer.workspace.workspace import (
     Blob,
     MimeTypes,
+    TailRecord,
+    TreeNode,
     Workspace,
     guess_content_type,
     sanitize_path,
@@ -57,12 +71,16 @@ from vuer.workspace.encoders import (
     b64png,
     decode_b64png,
 )
+from vuer.workspace.mcap_workspace import McapWorkspace
 
 __all__ = [
     # Workspace
     "Blob",
     "MimeTypes",
+    "TailRecord",
+    "TreeNode",
     "Workspace",
+    "McapWorkspace",
     "guess_content_type",
     "sanitize_path",
     "workspace_from_config",

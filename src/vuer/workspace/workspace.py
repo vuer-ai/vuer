@@ -48,11 +48,12 @@ Subclasses override ``resolve()`` for different storage:
 """
 
 import asyncio
+import fnmatch
 import inspect
 import json
 import mimetypes
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import AsyncIterator, Callable, List, Optional, Union
 
@@ -184,6 +185,190 @@ class Blob:
 ResolveResult = Union[Path, bytes, Blob, AsyncIterator[bytes], None]
 
 
+@dataclass
+class TailRecord:
+  """A single record returned by :meth:`Workspace.tail`.
+
+  Represents either a line from a filesystem file or a message from an
+  MCAP channel, depending on the workspace backend.
+
+  Attributes:
+      content:  Line text (``str``) for filesystem files, or raw message
+                bytes (``bytes``) for MCAP channels.
+      log_time: Timestamp in nanoseconds.  Always ``0`` for filesystem lines.
+      topic:    MCAP channel topic (e.g. ``"/camera/image_raw"``).
+                Empty string for filesystem records.
+
+  Example::
+
+      # MCAP
+      records = ws.tail(n=5, path="topics/camera/image_raw")
+      last = records[-1]
+      last.content   # b'...'  (raw message bytes)
+      last.log_time  # 1709123456789000000  (ns)
+      last.topic     # "/camera/image_raw"
+
+      # Filesystem
+      records = ws.tail(n=5, path="logs/robot.log")
+      last = records[-1]
+      last.content   # "last line of the log"
+  """
+
+  content: Union[str, bytes]
+  log_time: int = 0
+  topic: str = ""
+
+  def __repr__(self) -> str:
+    if self.topic:
+      ts = f", log_time={self.log_time}"
+      return f"TailRecord(topic={self.topic!r}{ts}, content={self.content!r})"
+    return f"TailRecord(content={self.content!r})"
+
+
+def _tail_lines(filepath: Path, n: int) -> List[str]:
+  """Read the last *n* lines of a text file memory-efficiently.
+
+  Uses a fixed-size :class:`collections.deque` so only the last *n*
+  lines are kept in memory regardless of file size.
+
+  :param filepath: Path to the text file.
+  :param n: Number of lines to return.
+  :return: List of lines (trailing newline stripped).
+  """
+  from collections import deque
+
+  with open(filepath, "r", errors="replace") as f:
+    dq: deque = deque(f, maxlen=n)
+  return [line.rstrip("\n") for line in dq]
+
+
+def _head_lines(filepath: Path, n: int) -> List[str]:
+  """Read the first *n* lines of a text file memory-efficiently.
+
+  Stops reading after *n* lines, so the rest of the file is never loaded.
+
+  :param filepath: Path to the text file.
+  :param n: Number of lines to return.
+  :return: List of lines (trailing newline stripped).
+  """
+  from itertools import islice
+
+  with open(filepath, "r", errors="replace") as f:
+    return [line.rstrip("\n") for line in islice(f, n)]
+
+
+@dataclass
+class TreeNode:
+  """A node in the workspace directory tree.
+
+  Returned by :meth:`Workspace.tree`. Supports pretty-printing via
+  ``str()`` / ``repr()``, which renders an ASCII tree similar to the
+  Linux ``tree`` command.
+
+  Attributes:
+      name:      Display name for this node (filename, path string, or label).
+      path:      Resolved filesystem path, or ``None`` for virtual nodes.
+      is_dir:    Whether this node represents a directory-like container.
+      children:  Child nodes (populated for directories within depth limit).
+      truncated: ``True`` when children were cut off by the ``limit`` argument.
+
+  Example::
+
+      root = workspace.tree(level=2, pattern="*.urdf")
+      print(root)
+      # Workspace
+      # └── ./assets
+      #     ├── robots/
+      #     │   └── panda.urdf
+      #     └── ...
+  """
+
+  name: str
+  path: Optional[Path]
+  is_dir: bool
+  children: List["TreeNode"] = field(default_factory=list)
+  truncated: bool = False
+
+  def __str__(self) -> str:
+    lines = [self.name]
+    for i, child in enumerate(self.children):
+      # When truncated, no real child is the visual last — "..." comes after
+      is_last = (not self.truncated) and (i == len(self.children) - 1)
+      child._render(lines, prefix="", is_last=is_last)
+    if self.truncated:
+      lines.append("└── ...")
+    return "\n".join(lines)
+
+  def __repr__(self) -> str:
+    return str(self)
+
+  def _render(self, lines: list, prefix: str, is_last: bool) -> None:
+    """Recursively render this node into ``lines`` with ASCII connectors."""
+    connector = "└── " if is_last else "├── "
+    lines.append(prefix + connector + self.name)
+    if self.is_dir:
+      child_prefix = prefix + ("    " if is_last else "│   ")
+      for i, child in enumerate(self.children):
+        is_last_child = (not self.truncated) and (i == len(self.children) - 1)
+        child._render(lines, child_prefix, is_last_child)
+      if self.truncated:
+        lines.append(child_prefix + "└── ...")
+
+
+def _build_tree(
+  path: Path,
+  depth: int,
+  max_level: Optional[int],
+  pattern: str,
+  limit: Optional[int],
+) -> TreeNode:
+  """Recursively build a :class:`TreeNode` rooted at *path*.
+
+  :param path:      Directory or file to represent.
+  :param depth:     Current recursion depth (0 = first level below workspace root).
+  :param max_level: Stop expanding directories at this depth (``None`` = unlimited).
+  :param pattern:   ``fnmatch`` pattern applied to *file* names only.
+                    Directories are always included.
+  :param limit:     Maximum children to show per directory.  Extra items are
+                    replaced with a ``"..."`` trailing node (``truncated=True``).
+  :return:          A populated :class:`TreeNode`.
+  """
+  is_dir = path.is_dir()
+  display = path.name + ("/" if is_dir else "")
+  node = TreeNode(name=display, path=path, is_dir=is_dir)
+
+  if not is_dir:
+    return node
+
+  # Depth limit: expand but don't recurse further
+  if max_level is not None and depth >= max_level:
+    return node
+
+  try:
+    entries = sorted(path.iterdir(), key=lambda p: (not p.is_dir(), p.name.lower()))
+  except PermissionError:
+    return node
+
+  # Apply pattern to files only; directories are always kept
+  if pattern != "*":
+    entries = [e for e in entries if e.is_dir() or fnmatch.fnmatch(e.name, pattern)]
+
+  truncated = False
+  if limit is not None and len(entries) > limit:
+    entries = entries[:limit]
+    truncated = True
+
+  for entry in entries:
+    child = _build_tree(entry, depth + 1, max_level, pattern, limit)
+    # Prune directories that became empty after pattern filtering
+    if entry.is_dir() and not child.children and pattern != "*":
+      continue
+    node.children.append(child)
+
+  node.truncated = truncated
+  return node
+
+
 class Workspace:
   """Workspace defines search paths for static file serving.
 
@@ -213,12 +398,33 @@ class Workspace:
   Attributes:
       paths: Tuple of paths that form the search overlay.
       MIME_TYPES: MimeTypes dict for content-type lookup (class attribute).
+
+  **Auto-upgrade to McapWorkspace**:
+
+  When any path ends in ``.mcap``, ``Workspace(...)`` automatically returns
+  a ``McapWorkspace`` instance::
+
+      ws = Workspace("recording.mcap")               # McapWorkspace
+      ws = Workspace("recording.mcap", "./assets")   # McapWorkspace
+      ws = Workspace("./assets")                     # plain Workspace
   """
 
   # Class-level MIME types with guess() method.
   # Add custom types: Workspace.MIME_TYPES[".npy"] = "application/x-npy"
   # Guess type: Workspace.MIME_TYPES.guess("file.npy")
   MIME_TYPES = MIME_TYPES
+
+  def __new__(cls, *paths, **kwargs):
+    """Factory: auto-upgrade to McapWorkspace when .mcap files are detected.
+
+    The guard ``cls is Workspace`` prevents infinite recursion when
+    ``McapWorkspace.__new__`` inherits this method.
+    """
+    if cls is Workspace and any(str(p).endswith(".mcap") for p in paths):
+      from vuer.workspace.mcap_workspace import McapWorkspace
+
+      return object.__new__(McapWorkspace)
+    return object.__new__(cls)
 
   def __init__(self, *overlay: Union[str, Path]):
     """Initialize the Workspace with overlay paths.
@@ -292,6 +498,183 @@ class Workspace:
       if filepath.is_file():
         return filepath
     return None
+
+  def glob(self, pattern: str, wd: str = "") -> List[str]:
+    """Glob files across all overlay paths.
+
+    Searches every overlay directory for entries matching *pattern*, with an
+    optional *wd* (working directory) to restrict the search to a
+    sub-directory.  Works like the shell glob built-in: non-recursive by
+    default (``*``), recursive with ``**``.
+
+    Duplicate relative paths found in multiple overlay roots are
+    deduplicated — first overlay wins, consistent with :meth:`find`.
+
+    :param pattern: Glob pattern (e.g. ``"*"``, ``"*.urdf"``,
+                    ``"**/*.stl"``).  Passed directly to
+                    :meth:`pathlib.Path.glob`.
+    :param wd:      Sub-directory to start the search from, relative to
+                    each overlay root.  Default ``""`` means the overlay
+                    root itself.
+
+    :return: Sorted list of matched paths as strings, **relative to** *wd*
+             (or to each overlay root when *wd* is empty).
+
+    Examples::
+
+        ws = Workspace("./assets", "/shared/robots")
+
+        ws.glob("*")                  # all top-level entries in overlay
+        ws.glob("*.urdf")             # URDF files at the overlay root
+        ws.glob("**/*.urdf")          # all URDF files, recursively
+        ws.glob("*", wd="robots/")    # top-level entries under robots/
+        ws.glob("*.stl", wd="meshes") # STL files inside meshes/
+    """
+    wd_clean = sanitize_path(wd) if wd.strip("/") else ""
+
+    results: List[str] = []
+    seen: set = set()
+
+    for root in self._overlay:
+      search_root = (root / wd_clean) if wd_clean else root
+      if not search_root.is_dir():
+        continue
+      for match in search_root.glob(pattern):
+        try:
+          rel = str(match.relative_to(search_root))
+        except ValueError:
+          continue
+        if rel not in seen:
+          seen.add(rel)
+          results.append(rel)
+
+    results.sort()
+    return results
+
+  def tail(self, n: int = 10, path: str = "") -> List["TailRecord"]:
+    """Return the last *n* lines of a file in the overlay.
+
+    Works like the Unix ``tail`` command for text files found anywhere in
+    the workspace overlay.  Uses a fixed-size deque internally, so only
+    *n* lines are kept in memory regardless of file size.
+
+    :param n:    Number of lines to return (default: ``10``).
+    :param path: Relative path to the file inside the overlay.  Required
+                 for the base ``Workspace``; MCAP subclasses allow an empty
+                 string to tail across all channels.
+    :raises ValueError: If *path* is empty (no file to read).
+    :raises FileNotFoundError: If *path* is not found in the overlay.
+    :return: List of :class:`TailRecord` objects (at most *n* items),
+             ordered from oldest to newest.  Each record's ``content``
+             is a ``str`` (text line, trailing newline stripped).
+
+    Example::
+
+        ws = Workspace("./logs")
+
+        # Last 10 lines of a log file
+        records = ws.tail(path="robot.log")
+        for r in records:
+            print(r.content)
+
+        # Handy one-liner
+        last_line = ws.tail(n=1, path="robot.log")[0].content
+    """
+    if not path.strip("/"):
+      raise ValueError("path must be specified; use McapWorkspace for channel tail without a path")
+
+    filepath = self.find(path)
+    if filepath is None:
+      raise FileNotFoundError(f"File not found in workspace overlay: {path!r}")
+
+    lines = _tail_lines(filepath, n)
+    return [TailRecord(content=line) for line in lines]
+
+  def head(self, n: int = 10, path: str = "") -> List["TailRecord"]:
+    """Return the first *n* lines of a file in the overlay.
+
+    Works like the Unix ``head`` command.  Stops reading after *n* lines,
+    so the rest of the file is never loaded into memory.
+
+    :param n:    Number of lines to return (default: ``10``).
+    :param path: Relative path to the file inside the overlay.  Required
+                 for the base ``Workspace``; MCAP subclasses allow an empty
+                 string to head across all channels.
+    :raises ValueError: If *path* is empty.
+    :raises FileNotFoundError: If *path* is not found in the overlay.
+    :return: List of :class:`TailRecord` objects (at most *n* items),
+             ordered oldest → newest.  Each record's ``content`` is a
+             ``str`` (text line, trailing newline stripped).
+
+    Example::
+
+        ws = Workspace("./logs")
+        first_line = ws.head(n=1, path="robot.log")[0].content
+    """
+    if not path.strip("/"):
+      raise ValueError("path must be specified; use McapWorkspace for channel head without a path")
+
+    filepath = self.find(path)
+    if filepath is None:
+      raise FileNotFoundError(f"File not found in workspace overlay: {path!r}")
+
+    lines = _head_lines(filepath, n)
+    return [TailRecord(content=line) for line in lines]
+
+  def tree(
+    self,
+    level: Optional[int] = None,
+    pattern: str = "*",
+    limit: Optional[int] = None,
+  ) -> "TreeNode":
+    """Build a tree representation of the workspace overlay paths.
+
+    Works like the Linux ``tree`` command: walks each overlay directory
+    and returns a :class:`TreeNode` root that pretty-prints with ASCII
+    connectors.
+
+    :param level:   Maximum display depth below each overlay root.
+                    ``None`` (default) means unlimited, matching ``tree``'s
+                    default behaviour.  ``level=1`` shows only direct
+                    children; ``level=3`` shows three levels deep.
+    :param pattern: ``fnmatch`` glob applied to *file* names.  Directories
+                    are always included in the walk.  Default ``"*"`` shows
+                    everything.  Example: ``"*.urdf"`` shows only URDF files.
+    :param limit:   Maximum number of entries shown *per directory* before
+                    the rest is replaced with a trailing ``"..."`` marker.
+                    ``None`` (default) means no cap.
+
+    :return: A :class:`TreeNode` root whose ``str()`` / ``repr()`` renders
+             the tree.
+
+    Example::
+
+        root = workspace.tree(level=3, pattern="*.urdf", limit=5)
+        print(root)
+        # Workspace
+        # ├── ./local_assets/
+        # │   └── robots/
+        # │       └── panda.urdf
+        # └── /shared/robots/
+        #     └── panda.urdf
+
+        # Inspect programmatically
+        for child in root.children:
+            print(child.name, child.path)
+    """
+    if len(self._overlay) == 1:
+      path = self._overlay[0]
+      node = _build_tree(path, depth=0, max_level=level, pattern=pattern, limit=limit)
+      # Use the path string as the display name so it matches how it was given
+      node.name = str(path)
+      return node
+
+    root = TreeNode(name="Workspace", path=None, is_dir=True)
+    for path in self._overlay:
+      child = _build_tree(path, depth=0, max_level=level, pattern=pattern, limit=limit)
+      child.name = str(path)
+      root.children.append(child)
+    return root
 
   async def exists(self, filepath: Path) -> bool:
     """Check if a file exists at the given path.

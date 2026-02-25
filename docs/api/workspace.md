@@ -129,16 +129,16 @@ MIME_TYPES[".npz"] = "application/x-npz"
 MIME_TYPES[".h5"] = "application/x-hdf5"
 ```
 
-## Future Workspace Types
+## Workspace Types
 
 The Workspace interface is designed for extensibility:
 
-- `Workspace` - Local filesystem (current)
+- `Workspace` - Local filesystem (default). Auto-upgrades to `McapWorkspace` when `.mcap` files are detected.
+- `McapWorkspace` - MCAP recordings (attachments + timestamped topics over HTTP). See [McapWorkspace guide](../guides/mcap_workspace.md).
 - `DashWorkspace` - ML-Dash experiments (future)
-- `McapWorkspace` - MCAP recordings (future)
 - `S3Workspace` - S3 buckets (future)
 
-All workspace types will share the same interface (`overlay()`, `mount()`, `link()`).
+All workspace types share the same interface (`find()`, `resolve()`, `mount()`, `link()`, `glob()`, `tree()`, `tail()`, `head()`).
 
 ## API Reference
 

@@ -137,6 +137,7 @@ For more details:
    Render Modes <guides/first_3d_scene/05_render_modes.md>
    Session API <guides/session_apis.md>
    Static Files & Hot Loading <guides/static_files.md>
+   MCAP Recording Workspace <guides/mcap_workspace.md>
    Python Client Connection <guides/client_connection.md>
    Using Vuer with Claude Code <guides/claude_skill.md>
    CLI Plugin System <guides/cli.md>
