@@ -1225,7 +1225,7 @@ def workspace_from_config(
 
   - ``.mcap`` paths → :class:`McapWorkspace`
   - Other paths → :class:`FilesystemWorkspace`
-  - Mix → :class:`OverlayWorkspace` (MCAP layer first)
+  - Mix → :class:`OverlayWorkspace` (group order follows first occurrence in input)
 
   :param config: Workspace configuration. Can be:
 
@@ -1241,7 +1241,8 @@ def workspace_from_config(
       ws = workspace_from_config(None)                         # FilesystemWorkspace(".")
       ws = workspace_from_config("./assets")                   # FilesystemWorkspace
       ws = workspace_from_config("recording.mcap")             # McapWorkspace
-      ws = workspace_from_config(["recording.mcap", "."])      # OverlayWorkspace
+      ws = workspace_from_config(["recording.mcap", "."])      # OverlayWorkspace(McapWorkspace, FilesystemWorkspace)
+      ws = workspace_from_config([".", "recording.mcap"])      # OverlayWorkspace(FilesystemWorkspace, McapWorkspace)
       ws = workspace_from_config(["rec1.mcap", "rec2.mcap"])   # McapWorkspace
       ws = workspace_from_config(existing_ws)                  # returns existing_ws
   """
@@ -1255,16 +1256,24 @@ def workspace_from_config(
   mcap = [p for p in paths if str(p).endswith(".mcap")]
   fs = [p for p in paths if not str(p).endswith(".mcap")]
 
-  layers: List[BaseWorkspace] = []
-  if mcap:
+  if not mcap:
+    return FilesystemWorkspace(*fs) if fs else FilesystemWorkspace()
+  if not fs:
     from vuer.workspace.mcap_workspace import McapWorkspace
 
-    layers.append(McapWorkspace(*mcap))
-  if fs:
-    layers.append(FilesystemWorkspace(*fs))
+    return McapWorkspace(*mcap)
 
-  if not layers:
-    return FilesystemWorkspace()
-  if len(layers) == 1:
-    return layers[0]
-  return OverlayWorkspace(*layers)
+  # Both types present — order the two groups by which type appears first in
+  # the input list so that workspace_from_config([".", "rec.mcap"]) gives
+  # FilesystemWorkspace priority, not McapWorkspace.
+  from vuer.workspace.mcap_workspace import McapWorkspace
+
+  first_mcap_idx = next(i for i, p in enumerate(paths) if str(p).endswith(".mcap"))
+  first_fs_idx = next(i for i, p in enumerate(paths) if not str(p).endswith(".mcap"))
+
+  mcap_layer = McapWorkspace(*mcap)
+  fs_layer = FilesystemWorkspace(*fs)
+
+  if first_mcap_idx < first_fs_idx:
+    return OverlayWorkspace(mcap_layer, fs_layer)
+  return OverlayWorkspace(fs_layer, mcap_layer)
