@@ -52,27 +52,21 @@ index record types that we exploit at every level:
                 → breakup_chunk() → find Message by (channel_id, log_time)
                                                               # 1 seek + 1 chunk decompress
 
-**Overlay Behavior**
-
-Three layers with their own precedence:
-
-1. MCAP attachments (first MCAP file wins for duplicate names)
-2. MCAP attachments vs filesystem (MCAP takes priority)
-3. Filesystem paths (inherited ``Workspace`` overlay; first path wins)
-
-Channels across multiple MCAP files are **merged** and re-sorted by
-``log_time``, so split recordings reconstruct a seamless timeline.
-
 **Usage**::
 
     # MCAP-only
     ws = McapWorkspace("recording.mcap")
 
-    # MCAP + filesystem overlay
-    ws = McapWorkspace("recording.mcap", "./local_assets", "/shared/robots")
+    # Multiple MCAP files (channels merged by log_time)
+    ws = McapWorkspace("rec1.mcap", "rec2.mcap")
 
-    # Multiple MCAP + filesystem
-    ws = McapWorkspace("rec1.mcap", "rec2.mcap", "./assets")
+    # MCAP + filesystem overlay via OverlayWorkspace
+    from vuer.workspace import OverlayWorkspace, FilesystemWorkspace
+    ws = OverlayWorkspace(McapWorkspace("recording.mcap"), FilesystemWorkspace("./assets"))
+
+    # Or via factory (auto-compose)
+    from vuer.workspace import workspace_from_config
+    ws = workspace_from_config(["recording.mcap", "./assets"])
 
 **Topic URLs**::
 
@@ -91,7 +85,7 @@ from pathlib import Path
 from typing import Dict, IO, List, Optional
 
 from vuer.workspace.mcap_decoders import BUILTIN_DECODERS, Decoder
-from vuer.workspace.workspace import Blob, ResolveResult, TailRecord, TreeNode, Workspace, _build_tree, sanitize_path
+from vuer.workspace.workspace import BaseWorkspace, Blob, ResolveResult, TailRecord, TreeNode, sanitize_path
 
 
 @dataclass
@@ -152,54 +146,47 @@ class _Channel:
     channel_ids: Dict[str, int] = field(default_factory=dict)  # str(path) → int channel_id
 
 
-class McapWorkspace(Workspace):
+class McapWorkspace(BaseWorkspace):
     """Workspace backend for MCAP recording files.
 
-    Extends ``Workspace`` to serve MCAP attachments and channel messages
-    over HTTP.  Fully exploits MCAP's three-level index (``AttachmentIndex``,
-    ``ChunkIndex``, ``MessageIndex``) so that:
+    Serves MCAP attachments and channel messages over HTTP.  Fully exploits
+    MCAP's three-level index (``AttachmentIndex``, ``ChunkIndex``,
+    ``MessageIndex``) so that:
 
     - **Init** never decompresses a single chunk.
     - **Attachment fetch** is a single file seek (O(1)).
     - **Topic fetch** decompresses exactly one chunk per request.
 
-    All base ``Workspace`` APIs work unchanged:
+    All base :class:`BaseWorkspace` APIs work unchanged:
 
     - ``workspace.link(fn, to="/path")``       — inherited
     - ``workspace.unlink("/path")``            — inherited
     - ``workspace.mount("./dir", to="/route")`` — inherited
-    - ``workspace.paths``                      — filesystem paths only
-    - ``workspace.find("file.txt")``           — filesystem only
-    - ``workspace.resolve("file.txt")``        — MCAP attachments first, then fs
+    - ``workspace.links``                      — inherited
+    - ``workspace.resolve("name")``            — MCAP attachments
     - ``workspace.handle_link(path, req)``     — inherited
+
+    For MCAP + filesystem overlay use :class:`OverlayWorkspace` or the
+    :func:`workspace_from_config` factory.
     """
 
     def __init__(
         self,
-        *paths,
+        *mcap_files,
         topic_prefix: str = "/topics",
         decoders: Optional[Dict[str, Decoder]] = None,
     ):
-        """Initialize McapWorkspace.
+        """Initialize McapWorkspace with MCAP files only.
 
-        :param paths: Mix of ``.mcap`` files and filesystem directories.
+        :param mcap_files: One or more ``.mcap`` file paths.
         :param topic_prefix: URL prefix for auto-registered topic links.
                              Default: ``"/topics"``.
         :param decoders: Custom decoders merged over built-ins.
                          ``{schema_name_or_encoding: callable(bytes) -> (bytes, ct)}``
         """
-        mcap_paths = [Path(p) for p in paths if str(p).endswith(".mcap")]
-        overlay = [p for p in paths if not str(p).endswith(".mcap")]
+        super().__init__()
 
-        super().__init__(*overlay)
-
-        # Workspace.__init__ defaults _overlay to (".",) when called with no
-        # paths. For MCAP-only construction (no filesystem overlay), that is
-        # wrong — reset to an empty tuple so "." is not silently mounted.
-        if not overlay:
-            self._overlay = ()
-
-        self._mcap_files: List[Path] = mcap_paths
+        self._mcap_files: List[Path] = [Path(p) for p in mcap_files if str(p).endswith(".mcap")]
         self._topic_prefix: str = topic_prefix.rstrip("/")
         self._decoders: Dict[str, Decoder] = {**BUILTIN_DECODERS, **(decoders or {})}
 
@@ -547,21 +534,21 @@ class McapWorkspace(Workspace):
     # ------------------------------------------------------------------
 
     async def resolve(self, filename: str) -> ResolveResult:
-        """Resolve by name: MCAP attachments first, then filesystem overlay.
+        """Resolve by name: MCAP attachments only.
 
         :param filename: Relative filename to resolve.
-        :return: ``Blob`` (MCAP attachment), ``Path`` (filesystem), or ``None``.
+        :return: ``Blob`` (MCAP attachment) or ``None`` if not found.
         """
         key = sanitize_path(filename)
         if not key:
             return None
 
         ref = self._attachments.get(key)
-        if ref is not None:
-            data = self._fetch_attachment(ref)
-            return Blob(data=data, content_type=ref.media_type)
+        if ref is None:
+            return None
 
-        return await super().resolve(filename)
+        data = self._fetch_attachment(ref)
+        return Blob(data=data, content_type=ref.media_type)
 
     # ------------------------------------------------------------------
     # Decoder dispatch
@@ -582,11 +569,11 @@ class McapWorkspace(Workspace):
     # ------------------------------------------------------------------
 
     def glob(self, pattern: str, wd: str = "") -> List[str]:
-        """Glob across MCAP virtual directories and the filesystem overlay.
+        """Glob across MCAP virtual directories.
 
         ``wd="topics/"`` — matches channel topics.
         ``wd="attachments/"`` — matches attachment names.
-        Anything else — forwarded to :meth:`Workspace.glob`.
+        Anything else — returns empty list (no filesystem in McapWorkspace).
         """
         wd_key = sanitize_path(wd) if wd.strip("/") else ""
 
@@ -604,14 +591,14 @@ class McapWorkspace(Workspace):
                 if fnmatch.fnmatch(name, pattern)
             )
 
-        return super().glob(pattern, wd=wd)
+        return []
 
     # ------------------------------------------------------------------
     # Tail / Head overrides
     # ------------------------------------------------------------------
 
     def tail(self, n: int = 10, path: str = "") -> List["TailRecord"]:
-        """Return the last *n* messages from an MCAP channel, or file lines.
+        """Return the last *n* messages from an MCAP channel.
 
         Fetches only the selected *n* messages on demand (lazy).
 
@@ -619,7 +606,7 @@ class McapWorkspace(Workspace):
 
         - Empty → last *n* across all channels merged by ``log_time``.
         - ``"topics/<topic>"`` or bare topic name → last *n* from that channel.
-        - Anything else → filesystem :meth:`Workspace.tail`.
+        - Anything else → empty list (no filesystem in McapWorkspace).
         """
         path_stripped = path.strip("/")
 
@@ -649,10 +636,10 @@ class McapWorkspace(Workspace):
                     records.append(TailRecord(content=data, log_time=ch.log_times[idx], topic=topic_name))
             return records
 
-        return super().tail(n=n, path=path)
+        return []
 
     def head(self, n: int = 10, path: str = "") -> List["TailRecord"]:
-        """Return the first *n* messages from an MCAP channel, or file lines.
+        """Return the first *n* messages from an MCAP channel.
 
         Symmetric counterpart to :meth:`tail`.  Same path routing rules.
         """
@@ -683,7 +670,7 @@ class McapWorkspace(Workspace):
                     records.append(TailRecord(content=data, log_time=ch.log_times[idx], topic=topic_name))
             return records
 
-        return super().head(n=n, path=path)
+        return []
 
     def _resolve_topic_path(self, path_stripped: str) -> Optional[str]:
         """Convert a user-supplied path to a canonical channel topic string.
@@ -706,6 +693,11 @@ class McapWorkspace(Workspace):
     # ------------------------------------------------------------------
     # Properties
     # ------------------------------------------------------------------
+
+    @property
+    def paths(self) -> tuple:
+        """McapWorkspace has no filesystem paths."""
+        return ()
 
     @property
     def attachments(self) -> Dict[str, _AttachmentRef]:
@@ -742,10 +734,10 @@ class McapWorkspace(Workspace):
         pattern: str = "*",
         limit: Optional[int] = None,
     ) -> TreeNode:
-        """Build a tree representation of all workspace content.
+        """Build a tree representation of all MCAP content.
 
         Each MCAP file is a virtual directory with ``attachments/`` and
-        ``topics/`` sub-sections, followed by filesystem overlay nodes.
+        ``topics/`` sub-sections.
         """
         root = TreeNode(name="McapWorkspace", path=None, is_dir=True)
 
@@ -788,17 +780,10 @@ class McapWorkspace(Workspace):
 
             root.children.append(mcap_node)
 
-        fs_level = None if level is None else max(0, level - 1)
-        for path in self._overlay:
-            child = _build_tree(path, depth=0, max_level=fs_level, pattern=pattern, limit=limit)
-            child.name = str(path)
-            root.children.append(child)
-
         return root
 
     def __repr__(self):
-        parts = [str(p) for p in self._mcap_files] + [str(p) for p in self._overlay]
-        paths_str = ", ".join(f'"{p}"' for p in parts)
+        paths_str = ", ".join(f'"{p}"' for p in self._mcap_files)
         return f"McapWorkspace({paths_str})"
 
 

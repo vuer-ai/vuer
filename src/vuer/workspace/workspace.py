@@ -33,9 +33,10 @@ This module provides the Workspace class which defines multiple search paths
 This module is designed to support different workspace backends.
 Subclasses override ``resolve()`` for different storage:
 
-- ``Workspace`` - Local filesystem (this module)
+- ``FilesystemWorkspace`` / ``Workspace`` - Local filesystem (this module)
+- ``McapWorkspace`` - MCAP recordings
+- ``OverlayWorkspace`` - Composes multiple backends
 - ``DashWorkspace`` - ML-Dash experiments (future)
-- ``McapWorkspace`` - MCAP recordings (future)
 - ``S3Workspace`` - S3 buckets (future)
 
 **Return types from resolve()**::
@@ -53,6 +54,7 @@ import inspect
 import json
 import mimetypes
 import os
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import AsyncIterator, Callable, List, Optional, Union
@@ -187,7 +189,7 @@ ResolveResult = Union[Path, bytes, Blob, AsyncIterator[bytes], None]
 
 @dataclass
 class TailRecord:
-  """A single record returned by :meth:`Workspace.tail`.
+  """A single record returned by :meth:`BaseWorkspace.tail`.
 
   Represents either a line from a filesystem file or a message from an
   MCAP channel, depending on the workspace backend.
@@ -261,7 +263,7 @@ def _head_lines(filepath: Path, n: int) -> List[str]:
 class TreeNode:
   """A node in the workspace directory tree.
 
-  Returned by :meth:`Workspace.tree`. Supports pretty-printing via
+  Returned by :meth:`BaseWorkspace.tree`. Supports pretty-printing via
   ``str()`` / ``repr()``, which renders an ASCII tree similar to the
   Linux ``tree`` command.
 
@@ -369,366 +371,136 @@ def _build_tree(
   return node
 
 
-class Workspace:
-  """Workspace defines search paths for static file serving.
+class BaseWorkspace(ABC):
+  """Abstract base class for all workspace backends.
 
-  A Workspace manages multiple search paths (overlay) for serving static files,
-  similar to how $PATH works for executables. When a file is requested, paths
-  are searched in order and the first match wins.
+  Owns ``_links`` / ``_mounts`` and all link/mount management so every
+  backend gets dynamic URL linking and directory mounting for free.
+  Subclasses implement :meth:`resolve` for their own storage backend.
 
-  This is useful when assets are spread across multiple directories::
+  **Subclasses**:
 
-      # Robot models in one place, textures in another
-      workspace = Workspace("./local_assets", "/shared/robots", "/data/textures")
+  - :class:`FilesystemWorkspace` — local filesystem (alias: ``Workspace``)
+  - :class:`McapWorkspace` — MCAP recording files
+  - :class:`OverlayWorkspace` — composes N backends, first match wins
 
-      # Request for /static/robot.urdf searches:
-      #   1. ./local_assets/robot.urdf
-      #   2. /shared/robots/robot.urdf
-      #   3. /data/textures/robot.urdf
-      # Returns first match
+  **Optional overrides** (default: no-op / empty):
 
-  **API**::
-
-      workspace = Workspace(*overlay)       # Define search paths
-      workspace.paths                       # Access paths (read-only tuple)
-      workspace.find("file.txt")            # Find file in overlay
-      workspace.mount("./dir", to="/route") # Mount single directory
-      workspace.link(fn, to="/api")         # Link callable to URL path
-
-  Attributes:
-      paths: Tuple of paths that form the search overlay.
-      MIME_TYPES: MimeTypes dict for content-type lookup (class attribute).
-
-  **Auto-upgrade to McapWorkspace**:
-
-  When any path ends in ``.mcap``, ``Workspace(...)`` automatically returns
-  a ``McapWorkspace`` instance::
-
-      ws = Workspace("recording.mcap")               # McapWorkspace
-      ws = Workspace("recording.mcap", "./assets")   # McapWorkspace
-      ws = Workspace("./assets")                     # plain Workspace
+  - :meth:`find` — sync file lookup
+  - :meth:`glob` — pattern matching
+  - :meth:`tail` / :meth:`head` — last/first N records
+  - :meth:`exists` — async existence check
+  - :meth:`tree` — directory-tree representation
   """
 
-  # Class-level MIME types with guess() method.
-  # Add custom types: Workspace.MIME_TYPES[".npy"] = "application/x-npy"
-  # Guess type: Workspace.MIME_TYPES.guess("file.npy")
+  # Class-level MIME types shared by all backends.
+  # Add custom types: BaseWorkspace.MIME_TYPES[".npy"] = "application/x-npy"
   MIME_TYPES = MIME_TYPES
 
-  def __new__(cls, *paths, **kwargs):
-    """Factory: auto-upgrade to McapWorkspace when .mcap files are detected.
+  def __init__(self):
+    self._links: dict[str, dict] = {}
+    self._mounts: List[dict] = []
 
-    The guard ``cls is Workspace`` prevents infinite recursion when
-    ``McapWorkspace.__new__`` inherits this method.
+  # ── Must implement ────────────────────────────────────────────────────────
+
+  @abstractmethod
+  async def resolve(self, filename: str) -> ResolveResult:
+    """Resolve a filename to its content.
+
+    :param filename: The filename (relative path) to resolve.
+    :return: Path, bytes, Blob, AsyncIterator, or None if not found.
     """
-    if cls is Workspace and any(str(p).endswith(".mcap") for p in paths):
-      from vuer.workspace.mcap_workspace import McapWorkspace
+    ...
 
-      return object.__new__(McapWorkspace)
-    return object.__new__(cls)
-
-  def __init__(self, *overlay: Union[str, Path]):
-    """Initialize the Workspace with overlay paths.
-
-    :param overlay: Variable number of paths to search for static files.
-                   Earlier paths take precedence (like $PATH).
-                   If no paths provided, defaults to current directory ".".
-
-    Example::
-
-        # Single path
-        workspace = Workspace("./assets")
-
-        # Multiple paths - first match wins
-        workspace = Workspace("./local", "/shared", "/data")
-
-        # No args = current directory
-        workspace = Workspace()
-
-        # Add custom MIME types (class-level, affects all instances)
-        Workspace.MIME_TYPES[".npy"] = "application/x-npy"
-    """
-    if not overlay:
-      overlay = (".",)
-
-    self._overlay: tuple[Path, ...] = tuple(Path(p) for p in overlay)
-    self._mounts: List[dict] = []  # Directory mounts
-    self._links: dict[str, dict] = {}  # Dynamic links keyed by path
+  # ── Properties ────────────────────────────────────────────────────────────
 
   @property
-  def paths(self) -> tuple[Path, ...]:
-    """The overlay paths (read-only).
-
-    :return: Tuple of Path objects representing the search paths.
-    """
-    return self._overlay
+  def paths(self) -> tuple:
+    """Filesystem search paths (empty for non-filesystem backends)."""
+    return ()
 
   @property
   def absolute_paths(self) -> List[str]:
-    """Get absolute paths as strings for display.
+    """Absolute filesystem paths as strings (empty for non-filesystem backends)."""
+    return []
 
-    :return: List of absolute path strings.
+  @property
+  def links(self) -> dict:
+    """Get registered links (read-only view).
+
+    :return: Dict of path -> link config.
     """
-    return [os.path.abspath(p) for p in self._overlay]
+    return self._links
+
+  @property
+  def mounts(self) -> List[dict]:
+    """Get registered mounts for the server to apply.
+
+    :return: List of mount configuration dicts with path, handler, method.
+    """
+    return list(self._mounts)
+
+  # ── Optional overrides (default: no-op / empty) ───────────────────────────
 
   def find(self, filename: str) -> Optional[Path]:
-    """Find a file in the overlay paths (sync version).
+    """Find a file (sync).  Default: not found.
 
-    Searches through paths in order and returns the first match.
-    For async code, use :meth:`resolve` instead.
-
-    Path traversal attacks are prevented by sanitizing the filename.
-
-    :param filename: The filename (relative path) to search for.
-    :return: Path to the file if found, None otherwise.
-
-    Example::
-
-        workspace = Workspace("./assets", "/data")
-        path = workspace.find("models/robot.urdf")
-        if path:
-            print(f"Found at: {path}")
+    :param filename: Relative path to look up.
+    :return: ``Path`` if found, ``None`` otherwise.
     """
-    # Sanitize to prevent path traversal
-    filename = sanitize_path(filename)
-    if not filename:
-      return None
-
-    for root in self._overlay:
-      filepath = root / filename
-      if filepath.is_file():
-        return filepath
     return None
 
   def glob(self, pattern: str, wd: str = "") -> List[str]:
-    """Glob files across all overlay paths.
+    """Glob files matching *pattern*.  Default: empty list.
 
-    Searches every overlay directory for entries matching *pattern*, with an
-    optional *wd* (working directory) to restrict the search to a
-    sub-directory.  Works like the shell glob built-in: non-recursive by
-    default (``*``), recursive with ``**``.
-
-    Duplicate relative paths found in multiple overlay roots are
-    deduplicated — first overlay wins, consistent with :meth:`find`.
-
-    :param pattern: Glob pattern (e.g. ``"*"``, ``"*.urdf"``,
-                    ``"**/*.stl"``).  Passed directly to
-                    :meth:`pathlib.Path.glob`.
-    :param wd:      Sub-directory to start the search from, relative to
-                    each overlay root.  Default ``""`` means the overlay
-                    root itself.
-
-    :return: Sorted list of matched paths as strings, **relative to** *wd*
-             (or to each overlay root when *wd* is empty).
-
-    Examples::
-
-        ws = Workspace("./assets", "/shared/robots")
-
-        ws.glob("*")                  # all top-level entries in overlay
-        ws.glob("*.urdf")             # URDF files at the overlay root
-        ws.glob("**/*.urdf")          # all URDF files, recursively
-        ws.glob("*", wd="robots/")    # top-level entries under robots/
-        ws.glob("*.stl", wd="meshes") # STL files inside meshes/
+    :param pattern: Glob pattern.
+    :param wd: Working directory within the backend.
+    :return: List of matched paths as strings.
     """
-    wd_clean = sanitize_path(wd) if wd.strip("/") else ""
+    return []
 
-    results: List[str] = []
-    seen: set = set()
+  def tail(self, n: int = 10, path: str = "") -> List[TailRecord]:
+    """Return the last *n* records.  Default: empty list.
 
-    for root in self._overlay:
-      search_root = (root / wd_clean) if wd_clean else root
-      if not search_root.is_dir():
-        continue
-      for match in search_root.glob(pattern):
-        try:
-          rel = str(match.relative_to(search_root))
-        except ValueError:
-          continue
-        if rel not in seen:
-          seen.add(rel)
-          results.append(rel)
-
-    results.sort()
-    return results
-
-  def tail(self, n: int = 10, path: str = "") -> List["TailRecord"]:
-    """Return the last *n* lines of a file in the overlay.
-
-    Works like the Unix ``tail`` command for text files found anywhere in
-    the workspace overlay.  Uses a fixed-size deque internally, so only
-    *n* lines are kept in memory regardless of file size.
-
-    :param n:    Number of lines to return (default: ``10``).
-    :param path: Relative path to the file inside the overlay.  Required
-                 for the base ``Workspace``; MCAP subclasses allow an empty
-                 string to tail across all channels.
-    :raises ValueError: If *path* is empty (no file to read).
-    :raises FileNotFoundError: If *path* is not found in the overlay.
-    :return: List of :class:`TailRecord` objects (at most *n* items),
-             ordered from oldest to newest.  Each record's ``content``
-             is a ``str`` (text line, trailing newline stripped).
-
-    Example::
-
-        ws = Workspace("./logs")
-
-        # Last 10 lines of a log file
-        records = ws.tail(path="robot.log")
-        for r in records:
-            print(r.content)
-
-        # Handy one-liner
-        last_line = ws.tail(n=1, path="robot.log")[0].content
+    :param n: Number of records to return.
+    :param path: File or channel path.
+    :return: List of :class:`TailRecord`.
     """
-    if not path.strip("/"):
-      raise ValueError("path must be specified; use McapWorkspace for channel tail without a path")
+    return []
 
-    filepath = self.find(path)
-    if filepath is None:
-      raise FileNotFoundError(f"File not found in workspace overlay: {path!r}")
+  def head(self, n: int = 10, path: str = "") -> List[TailRecord]:
+    """Return the first *n* records.  Default: empty list.
 
-    lines = _tail_lines(filepath, n)
-    return [TailRecord(content=line) for line in lines]
-
-  def head(self, n: int = 10, path: str = "") -> List["TailRecord"]:
-    """Return the first *n* lines of a file in the overlay.
-
-    Works like the Unix ``head`` command.  Stops reading after *n* lines,
-    so the rest of the file is never loaded into memory.
-
-    :param n:    Number of lines to return (default: ``10``).
-    :param path: Relative path to the file inside the overlay.  Required
-                 for the base ``Workspace``; MCAP subclasses allow an empty
-                 string to head across all channels.
-    :raises ValueError: If *path* is empty.
-    :raises FileNotFoundError: If *path* is not found in the overlay.
-    :return: List of :class:`TailRecord` objects (at most *n* items),
-             ordered oldest → newest.  Each record's ``content`` is a
-             ``str`` (text line, trailing newline stripped).
-
-    Example::
-
-        ws = Workspace("./logs")
-        first_line = ws.head(n=1, path="robot.log")[0].content
+    :param n: Number of records to return.
+    :param path: File or channel path.
+    :return: List of :class:`TailRecord`.
     """
-    if not path.strip("/"):
-      raise ValueError("path must be specified; use McapWorkspace for channel head without a path")
+    return []
 
-    filepath = self.find(path)
-    if filepath is None:
-      raise FileNotFoundError(f"File not found in workspace overlay: {path!r}")
+  async def exists(self, filepath: Path) -> bool:
+    """Check if a file exists.  Default: False.
 
-    lines = _head_lines(filepath, n)
-    return [TailRecord(content=line) for line in lines]
+    :param filepath: Full path to check.
+    :return: True if exists.
+    """
+    return False
 
   def tree(
     self,
     level: Optional[int] = None,
     pattern: str = "*",
     limit: Optional[int] = None,
-  ) -> "TreeNode":
-    """Build a tree representation of the workspace overlay paths.
+  ) -> TreeNode:
+    """Build a tree representation.  Default: empty root node.
 
-    Works like the Linux ``tree`` command: walks each overlay directory
-    and returns a :class:`TreeNode` root that pretty-prints with ASCII
-    connectors.
-
-    :param level:   Maximum display depth below each overlay root.
-                    ``None`` (default) means unlimited, matching ``tree``'s
-                    default behaviour.  ``level=1`` shows only direct
-                    children; ``level=3`` shows three levels deep.
-    :param pattern: ``fnmatch`` glob applied to *file* names.  Directories
-                    are always included in the walk.  Default ``"*"`` shows
-                    everything.  Example: ``"*.urdf"`` shows only URDF files.
-    :param limit:   Maximum number of entries shown *per directory* before
-                    the rest is replaced with a trailing ``"..."`` marker.
-                    ``None`` (default) means no cap.
-
-    :return: A :class:`TreeNode` root whose ``str()`` / ``repr()`` renders
-             the tree.
-
-    Example::
-
-        root = workspace.tree(level=3, pattern="*.urdf", limit=5)
-        print(root)
-        # Workspace
-        # ├── ./local_assets/
-        # │   └── robots/
-        # │       └── panda.urdf
-        # └── /shared/robots/
-        #     └── panda.urdf
-
-        # Inspect programmatically
-        for child in root.children:
-            print(child.name, child.path)
+    :param level: Maximum display depth.
+    :param pattern: Filename filter pattern.
+    :param limit: Maximum children per directory.
+    :return: :class:`TreeNode` root.
     """
-    if len(self._overlay) == 1:
-      path = self._overlay[0]
-      node = _build_tree(path, depth=0, max_level=level, pattern=pattern, limit=limit)
-      # Use the path string as the display name so it matches how it was given
-      node.name = str(path)
-      return node
+    return TreeNode(name=repr(self), path=None, is_dir=True)
 
-    root = TreeNode(name="Workspace", path=None, is_dir=True)
-    for path in self._overlay:
-      child = _build_tree(path, depth=0, max_level=level, pattern=pattern, limit=limit)
-      child.name = str(path)
-      root.children.append(child)
-    return root
-
-  async def exists(self, filepath: Path) -> bool:
-    """Check if a file exists at the given path.
-
-    Override this method for remote backends that need async existence checks.
-
-    :param filepath: Full path to check.
-    :return: True if file exists, False otherwise.
-
-    Example subclass for S3::
-
-        class S3Workspace(Workspace):
-            async def exists(self, filepath: Path) -> bool:
-                return await self.s3.head_object(str(filepath))
-    """
-    return filepath.is_file()
-
-  async def resolve(self, filename: str) -> ResolveResult:
-    """Resolve a filename by searching through overlay layers.
-
-    Searches each layer in order, returning the first match.
-    Override this method or :meth:`exists` for different storage backends.
-
-    :param filename: The filename (relative path) to resolve.
-    :return: Path, bytes, Blob, AsyncIterator, or None if not found.
-
-    Example subclasses::
-
-        class S3Workspace(Workspace):
-            async def resolve(self, filename: str) -> ResolveResult:
-                stream = await self.s3.get_object_stream(filename)
-                return stream  # AsyncIterator[bytes]
-
-        class CachedWorkspace(Workspace):
-            async def resolve(self, filename: str) -> ResolveResult:
-                if filename in self.cache:
-                    return self.cache[filename]  # bytes
-                return await super().resolve(filename)
-
-        class ApiWorkspace(Workspace):
-            async def resolve(self, filename: str) -> ResolveResult:
-                data = await self.fetch_json(filename)
-                return Blob(json.dumps(data).encode(), "application/json")
-    """
-    # Sanitize to prevent path traversal
-    filename = sanitize_path(filename)
-    if not filename:
-      return None
-
-    for root in self._overlay:
-      filepath = root / filename
-      if await self.exists(filepath):
-        return filepath
-    return None
+  # ── Concrete: link/mount management (inherited by all) ────────────────────
 
   def mount(self, path: Union[str, Path], *, to: str):
     """Mount a directory at a URL route.
@@ -974,59 +746,525 @@ class Workspace:
     except Exception as e:
       return web.Response(status=500, text=str(e))
 
-  @property
-  def links(self) -> dict[str, dict]:
-    """Get registered links (read-only view).
 
-    :return: Dict of path -> link config.
+class FilesystemWorkspace(BaseWorkspace):
+  """Workspace defines search paths for static file serving.
+
+  A FilesystemWorkspace manages multiple search paths (overlay) for serving
+  static files, similar to how $PATH works for executables. When a file is
+  requested, paths are searched in order and the first match wins.
+
+  This is useful when assets are spread across multiple directories::
+
+      # Robot models in one place, textures in another
+      workspace = FilesystemWorkspace("./local_assets", "/shared/robots", "/data/textures")
+
+      # Request for /static/robot.urdf searches:
+      #   1. ./local_assets/robot.urdf
+      #   2. /shared/robots/robot.urdf
+      #   3. /data/textures/robot.urdf
+      # Returns first match
+
+  **API**::
+
+      workspace = FilesystemWorkspace(*overlay)  # Define search paths
+      workspace.paths                            # Access paths (read-only tuple)
+      workspace.find("file.txt")                 # Find file in overlay
+      workspace.mount("./dir", to="/route")      # Mount single directory
+      workspace.link(fn, to="/api")              # Link callable to URL path
+
+  Attributes:
+      paths: Tuple of paths that form the search overlay.
+      MIME_TYPES: MimeTypes dict for content-type lookup (class attribute).
+  """
+
+  def __init__(self, *overlay: Union[str, Path]):
+    """Initialize the FilesystemWorkspace with overlay paths.
+
+    :param overlay: Variable number of paths to search for static files.
+                   Earlier paths take precedence (like $PATH).
+                   If no paths provided, defaults to current directory ".".
+
+    Example::
+
+        # Single path
+        workspace = FilesystemWorkspace("./assets")
+
+        # Multiple paths - first match wins
+        workspace = FilesystemWorkspace("./local", "/shared", "/data")
+
+        # No args = current directory
+        workspace = FilesystemWorkspace()
+
+        # Add custom MIME types (class-level, affects all instances)
+        FilesystemWorkspace.MIME_TYPES[".npy"] = "application/x-npy"
     """
-    return self._links
+    super().__init__()
+    if not overlay:
+      overlay = (".",)
+
+    self._overlay: tuple[Path, ...] = tuple(Path(p) for p in overlay)
 
   @property
-  def mounts(self) -> List[dict]:
-    """Get registered mounts for the server to apply.
+  def paths(self) -> tuple[Path, ...]:
+    """The overlay paths (read-only).
 
-    Returns a list of mount configurations that the server should
-    register when starting up.
-
-    :return: List of mount configuration dicts with path, handler, method.
+    :return: Tuple of Path objects representing the search paths.
     """
-    return self._mounts
+    return self._overlay
+
+  @property
+  def absolute_paths(self) -> List[str]:
+    """Get absolute paths as strings for display.
+
+    :return: List of absolute path strings.
+    """
+    return [os.path.abspath(p) for p in self._overlay]
+
+  def find(self, filename: str) -> Optional[Path]:
+    """Find a file in the overlay paths (sync version).
+
+    Searches through paths in order and returns the first match.
+    For async code, use :meth:`resolve` instead.
+
+    Path traversal attacks are prevented by sanitizing the filename.
+
+    :param filename: The filename (relative path) to search for.
+    :return: Path to the file if found, None otherwise.
+
+    Example::
+
+        workspace = FilesystemWorkspace("./assets", "/data")
+        path = workspace.find("models/robot.urdf")
+        if path:
+            print(f"Found at: {path}")
+    """
+    # Sanitize to prevent path traversal
+    filename = sanitize_path(filename)
+    if not filename:
+      return None
+
+    for root in self._overlay:
+      filepath = root / filename
+      if filepath.is_file():
+        return filepath
+    return None
+
+  def glob(self, pattern: str, wd: str = "") -> List[str]:
+    """Glob files across all overlay paths.
+
+    Searches every overlay directory for entries matching *pattern*, with an
+    optional *wd* (working directory) to restrict the search to a
+    sub-directory.  Works like the shell glob built-in: non-recursive by
+    default (``*``), recursive with ``**``.
+
+    Duplicate relative paths found in multiple overlay roots are
+    deduplicated — first overlay wins, consistent with :meth:`find`.
+
+    :param pattern: Glob pattern (e.g. ``"*"``, ``"*.urdf"``,
+                    ``"**/*.stl"``).  Passed directly to
+                    :meth:`pathlib.Path.glob`.
+    :param wd:      Sub-directory to start the search from, relative to
+                    each overlay root.  Default ``""`` means the overlay
+                    root itself.
+
+    :return: Sorted list of matched paths as strings, **relative to** *wd*
+             (or to each overlay root when *wd* is empty).
+
+    Examples::
+
+        ws = FilesystemWorkspace("./assets", "/shared/robots")
+
+        ws.glob("*")                  # all top-level entries in overlay
+        ws.glob("*.urdf")             # URDF files at the overlay root
+        ws.glob("**/*.urdf")          # all URDF files, recursively
+        ws.glob("*", wd="robots/")    # top-level entries under robots/
+        ws.glob("*.stl", wd="meshes") # STL files inside meshes/
+    """
+    wd_clean = sanitize_path(wd) if wd.strip("/") else ""
+
+    results: List[str] = []
+    seen: set = set()
+
+    for root in self._overlay:
+      search_root = (root / wd_clean) if wd_clean else root
+      if not search_root.is_dir():
+        continue
+      for match in search_root.glob(pattern):
+        try:
+          rel = str(match.relative_to(search_root))
+        except ValueError:
+          continue
+        if rel not in seen:
+          seen.add(rel)
+          results.append(rel)
+
+    results.sort()
+    return results
+
+  def tail(self, n: int = 10, path: str = "") -> List["TailRecord"]:
+    """Return the last *n* lines of a file in the overlay.
+
+    Works like the Unix ``tail`` command for text files found anywhere in
+    the workspace overlay.  Uses a fixed-size deque internally, so only
+    *n* lines are kept in memory regardless of file size.
+
+    :param n:    Number of lines to return (default: ``10``).
+    :param path: Relative path to the file inside the overlay.  Required
+                 for the base ``FilesystemWorkspace``; MCAP workspaces allow
+                 an empty string to tail across all channels.
+    :raises ValueError: If *path* is empty (no file to read).
+    :raises FileNotFoundError: If *path* is not found in the overlay.
+    :return: List of :class:`TailRecord` objects (at most *n* items),
+             ordered from oldest to newest.  Each record's ``content``
+             is a ``str`` (text line, trailing newline stripped).
+
+    Example::
+
+        ws = FilesystemWorkspace("./logs")
+
+        # Last 10 lines of a log file
+        records = ws.tail(path="robot.log")
+        for r in records:
+            print(r.content)
+
+        # Handy one-liner
+        last_line = ws.tail(n=1, path="robot.log")[0].content
+    """
+    if not path.strip("/"):
+      raise ValueError("path must be specified; use McapWorkspace for channel tail without a path")
+
+    filepath = self.find(path)
+    if filepath is None:
+      raise FileNotFoundError(f"File not found in workspace overlay: {path!r}")
+
+    lines = _tail_lines(filepath, n)
+    return [TailRecord(content=line) for line in lines]
+
+  def head(self, n: int = 10, path: str = "") -> List["TailRecord"]:
+    """Return the first *n* lines of a file in the overlay.
+
+    Works like the Unix ``head`` command.  Stops reading after *n* lines,
+    so the rest of the file is never loaded into memory.
+
+    :param n:    Number of lines to return (default: ``10``).
+    :param path: Relative path to the file inside the overlay.  Required
+                 for the base ``FilesystemWorkspace``; MCAP workspaces allow
+                 an empty string to head across all channels.
+    :raises ValueError: If *path* is empty.
+    :raises FileNotFoundError: If *path* is not found in the overlay.
+    :return: List of :class:`TailRecord` objects (at most *n* items),
+             ordered oldest → newest.  Each record's ``content`` is a
+             ``str`` (text line, trailing newline stripped).
+
+    Example::
+
+        ws = FilesystemWorkspace("./logs")
+        first_line = ws.head(n=1, path="robot.log")[0].content
+    """
+    if not path.strip("/"):
+      raise ValueError("path must be specified; use McapWorkspace for channel head without a path")
+
+    filepath = self.find(path)
+    if filepath is None:
+      raise FileNotFoundError(f"File not found in workspace overlay: {path!r}")
+
+    lines = _head_lines(filepath, n)
+    return [TailRecord(content=line) for line in lines]
+
+  def tree(
+    self,
+    level: Optional[int] = None,
+    pattern: str = "*",
+    limit: Optional[int] = None,
+  ) -> "TreeNode":
+    """Build a tree representation of the workspace overlay paths.
+
+    Works like the Linux ``tree`` command: walks each overlay directory
+    and returns a :class:`TreeNode` root that pretty-prints with ASCII
+    connectors.
+
+    :param level:   Maximum display depth below each overlay root.
+                    ``None`` (default) means unlimited, matching ``tree``'s
+                    default behaviour.  ``level=1`` shows only direct
+                    children; ``level=3`` shows three levels deep.
+    :param pattern: ``fnmatch`` glob applied to *file* names.  Directories
+                    are always included in the walk.  Default ``"*"`` shows
+                    everything.  Example: ``"*.urdf"`` shows only URDF files.
+    :param limit:   Maximum number of entries shown *per directory* before
+                    the rest is replaced with a trailing ``"..."`` marker.
+                    ``None`` (default) means no cap.
+
+    :return: A :class:`TreeNode` root whose ``str()`` / ``repr()`` renders
+             the tree.
+
+    Example::
+
+        root = workspace.tree(level=3, pattern="*.urdf", limit=5)
+        print(root)
+        # FilesystemWorkspace
+        # ├── ./local_assets/
+        # │   └── robots/
+        # │       └── panda.urdf
+        # └── /shared/robots/
+        #     └── panda.urdf
+
+        # Inspect programmatically
+        for child in root.children:
+            print(child.name, child.path)
+    """
+    if len(self._overlay) == 1:
+      path = self._overlay[0]
+      node = _build_tree(path, depth=0, max_level=level, pattern=pattern, limit=limit)
+      # Use the path string as the display name so it matches how it was given
+      node.name = str(path)
+      return node
+
+    root = TreeNode(name="Workspace", path=None, is_dir=True)
+    for path in self._overlay:
+      child = _build_tree(path, depth=0, max_level=level, pattern=pattern, limit=limit)
+      child.name = str(path)
+      root.children.append(child)
+    return root
+
+  async def exists(self, filepath: Path) -> bool:
+    """Check if a file exists at the given path.
+
+    Override this method for remote backends that need async existence checks.
+
+    :param filepath: Full path to check.
+    :return: True if file exists, False otherwise.
+    """
+    return filepath.is_file()
+
+  async def resolve(self, filename: str) -> ResolveResult:
+    """Resolve a filename by searching through overlay layers.
+
+    Searches each layer in order, returning the first match.
+    Override this method or :meth:`exists` for different storage backends.
+
+    :param filename: The filename (relative path) to resolve.
+    :return: Path, bytes, Blob, AsyncIterator, or None if not found.
+
+    Example subclasses::
+
+        class S3Workspace(FilesystemWorkspace):
+            async def resolve(self, filename: str) -> ResolveResult:
+                stream = await self.s3.get_object_stream(filename)
+                return stream  # AsyncIterator[bytes]
+
+        class CachedWorkspace(FilesystemWorkspace):
+            async def resolve(self, filename: str) -> ResolveResult:
+                if filename in self.cache:
+                    return self.cache[filename]  # bytes
+                return await super().resolve(filename)
+    """
+    # Sanitize to prevent path traversal
+    filename = sanitize_path(filename)
+    if not filename:
+      return None
+
+    for root in self._overlay:
+      filepath = root / filename
+      if await self.exists(filepath):
+        return filepath
+    return None
 
   def __repr__(self):
     paths_str = ", ".join(f'"{p}"' for p in self._overlay)
-    return f"Workspace({paths_str})"
+    return f"FilesystemWorkspace({paths_str})"
 
 
-def workspace_from_config(
-  config: Union[str, Path, List[Union[str, Path]], "Workspace", None],
-) -> Workspace:
-  """Convert various workspace configurations to a Workspace instance.
+# Backward-compatibility alias — existing code using ``Workspace(...)`` continues to work.
+Workspace = FilesystemWorkspace
 
-  This handles backwards compatibility with the old workspace parameter
-  that accepted strings, paths, or lists.
 
-  :param config: Workspace configuration. Can be:
-                - None: returns Workspace() (current directory)
-                - str or Path: single path
-                - List of str/Path: multiple paths (overlay)
-                - Workspace: returned as-is
-  :return: A Workspace instance.
+class OverlayWorkspace(BaseWorkspace):
+  """Composes N :class:`BaseWorkspace` layers into a single virtual workspace.
+
+  Resolution order: layers are searched left-to-right; the **first** match
+  wins.  This means the first layer has the highest priority, exactly like
+  ``$PATH``.
+
+  ``handle_link`` checks the OverlayWorkspace's own registered links first,
+  then each layer's links in order (so MCAP auto-registered topic links are
+  accessible without re-registering them on the composite).
 
   Example::
 
-      # All of these work:
-      ws = workspace_from_config(None)           # Workspace(".")
-      ws = workspace_from_config("./assets")     # Workspace("./assets")
-      ws = workspace_from_config(["./a", "./b"]) # Workspace("./a", "./b")
-      ws = workspace_from_config(existing_ws)    # returns existing_ws
+      ws = OverlayWorkspace(
+          McapWorkspace("rec1.mcap", "rec2.mcap"),
+          FilesystemWorkspace("./assets"),
+      )
+
+      # Or via factory:
+      ws = workspace_from_config(["recording.mcap", "./assets"])
+  """
+
+  def __init__(self, *layers: BaseWorkspace):
+    """Initialize with one or more workspace layers.
+
+    :param layers: Backends to compose, highest-priority first.
+    """
+    super().__init__()
+    self._layers: List[BaseWorkspace] = list(layers)
+
+  async def resolve(self, filename: str) -> ResolveResult:
+    """Resolve by trying each layer in order; first match wins.
+
+    :param filename: Relative filename to resolve.
+    :return: First non-``None`` result, or ``None`` if all layers miss.
+    """
+    for layer in self._layers:
+      result = await layer.resolve(filename)
+      if result is not None:
+        return result
+    return None
+
+  async def handle_link(self, path: str, request) -> Optional[web.Response]:
+    """Handle a linked path, checking own links then each layer's links.
+
+    :param path: Normalized URL path.
+    :param request: aiohttp request object.
+    :return: Response if found, None otherwise.
+    """
+    # Own links registered directly on this OverlayWorkspace
+    result = await super().handle_link(path, request)
+    if result is not None:
+      return result
+    # Each layer's auto-registered links (e.g. MCAP topic links)
+    for layer in self._layers:
+      result = await layer.handle_link(path, request)
+      if result is not None:
+        return result
+    return None
+
+  @property
+  def paths(self) -> tuple:
+    """Aggregated filesystem paths from all layers."""
+    result = []
+    for layer in self._layers:
+      result.extend(layer.paths)
+    return tuple(result)
+
+  @property
+  def mounts(self) -> List[dict]:
+    """Aggregated mounts from own + all layers."""
+    result = list(self._mounts)
+    for layer in self._layers:
+      result.extend(layer.mounts)
+    return result
+
+  @property
+  def absolute_paths(self) -> List[str]:
+    """Aggregated absolute paths from all layers."""
+    result = []
+    for layer in self._layers:
+      result.extend(layer.absolute_paths)
+    return result
+
+  def find(self, filename: str) -> Optional[Path]:
+    """Find a file by searching each layer; first match wins."""
+    for layer in self._layers:
+      r = layer.find(filename)
+      if r is not None:
+        return r
+    return None
+
+  def glob(self, pattern: str, wd: str = "") -> List[str]:
+    """Glob across all layers, deduplicating results."""
+    seen: set = set()
+    results: List[str] = []
+    for layer in self._layers:
+      for item in layer.glob(pattern, wd=wd):
+        if item not in seen:
+          seen.add(item)
+          results.append(item)
+    return results
+
+  def tail(self, n: int = 10, path: str = "") -> List[TailRecord]:
+    """Return the last *n* records merged across all layers, sorted by log_time."""
+    all_: List[TailRecord] = []
+    for layer in self._layers:
+      all_.extend(layer.tail(n=n, path=path))
+    all_.sort(key=lambda r: r.log_time)
+    return all_[-n:]
+
+  def head(self, n: int = 10, path: str = "") -> List[TailRecord]:
+    """Return the first *n* records merged across all layers, sorted by log_time."""
+    all_: List[TailRecord] = []
+    for layer in self._layers:
+      all_.extend(layer.head(n=n, path=path))
+    all_.sort(key=lambda r: r.log_time)
+    return all_[:n]
+
+  def tree(
+    self,
+    level: Optional[int] = None,
+    pattern: str = "*",
+    limit: Optional[int] = None,
+  ) -> TreeNode:
+    """Build a tree with one child per layer."""
+    root = TreeNode(name="OverlayWorkspace", path=None, is_dir=True)
+    for layer in self._layers:
+      child = layer.tree(level=level, pattern=pattern, limit=limit)
+      root.children.append(child)
+    return root
+
+  def __repr__(self):
+    return f"OverlayWorkspace({', '.join(repr(l) for l in self._layers)})"
+
+
+def workspace_from_config(
+  config: Union[str, Path, List[Union[str, Path]], "BaseWorkspace", None],
+) -> BaseWorkspace:
+  """Convert various workspace configurations to a BaseWorkspace instance.
+
+  This is the preferred way to construct a workspace from a mixed list of
+  paths.  It automatically composes layers:
+
+  - ``.mcap`` paths → :class:`McapWorkspace`
+  - Other paths → :class:`FilesystemWorkspace`
+  - Mix → :class:`OverlayWorkspace` (MCAP layer first)
+
+  :param config: Workspace configuration. Can be:
+
+                - ``None``: returns ``FilesystemWorkspace(".")``
+                - ``str`` or ``Path``: single path
+                - ``list`` of str/Path: multiple paths (auto-composed)
+                - :class:`BaseWorkspace`: returned as-is
+
+  :return: A :class:`BaseWorkspace` instance.
+
+  Example::
+
+      ws = workspace_from_config(None)                         # FilesystemWorkspace(".")
+      ws = workspace_from_config("./assets")                   # FilesystemWorkspace
+      ws = workspace_from_config("recording.mcap")             # McapWorkspace
+      ws = workspace_from_config(["recording.mcap", "."])      # OverlayWorkspace
+      ws = workspace_from_config(["rec1.mcap", "rec2.mcap"])   # McapWorkspace
+      ws = workspace_from_config(existing_ws)                  # returns existing_ws
   """
   if config is None:
-    return Workspace()
-  if isinstance(config, Workspace):
+    return FilesystemWorkspace()
+
+  if isinstance(config, BaseWorkspace):
     return config
-  if isinstance(config, (str, Path)):
-    return Workspace(config)
-  if isinstance(config, list):
-    return Workspace(*config)
-  raise TypeError(f"Cannot convert {type(config)} to Workspace")
+
+  paths = [config] if isinstance(config, (str, Path)) else list(config)
+  mcap = [p for p in paths if str(p).endswith(".mcap")]
+  fs = [p for p in paths if not str(p).endswith(".mcap")]
+
+  layers: List[BaseWorkspace] = []
+  if mcap:
+    from vuer.workspace.mcap_workspace import McapWorkspace
+
+    layers.append(McapWorkspace(*mcap))
+  if fs:
+    layers.append(FilesystemWorkspace(*fs))
+
+  if not layers:
+    return FilesystemWorkspace()
+  if len(layers) == 1:
+    return layers[0]
+  return OverlayWorkspace(*layers)

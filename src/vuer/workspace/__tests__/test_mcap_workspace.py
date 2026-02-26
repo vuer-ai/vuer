@@ -122,7 +122,7 @@ async def test_resolve_attachment(tmp_path):
 
 @pytest.mark.asyncio
 async def test_resolve_attachment_not_found(tmp_path):
-    """Resolving a name not in MCAP or filesystem returns None."""
+    """Resolving a name not in MCAP returns None."""
     mcap_path = _make_mcap(tmp_path)
 
     from vuer.workspace.mcap_workspace import McapWorkspace
@@ -514,23 +514,44 @@ async def test_custom_decoder(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# Workspace.__new__ factory tests
+# workspace_from_config factory tests
 # ---------------------------------------------------------------------------
 
 
-def test_workspace_factory_upgrades_to_mcap(tmp_path):
-    """``Workspace("file.mcap")`` auto-upgrades to ``McapWorkspace``."""
+def test_workspace_from_config_upgrades_to_mcap(tmp_path):
+    """``workspace_from_config("file.mcap")`` returns a ``McapWorkspace``."""
     mcap_path = _make_mcap(tmp_path)
 
-    from vuer.workspace import Workspace
+    from vuer.workspace import workspace_from_config
     from vuer.workspace.mcap_workspace import McapWorkspace
 
-    ws = Workspace(str(mcap_path))
+    ws = workspace_from_config(str(mcap_path))
     assert isinstance(ws, McapWorkspace)
 
 
-def test_workspace_factory_no_mcap():
-    """``Workspace("./assets")`` stays as plain ``Workspace``."""
+def test_workspace_from_config_filesystem_only():
+    """``workspace_from_config("./assets")`` returns a ``FilesystemWorkspace``."""
+    from vuer.workspace import FilesystemWorkspace, workspace_from_config
+
+    ws = workspace_from_config("./assets")
+    assert isinstance(ws, FilesystemWorkspace)
+
+
+def test_workspace_from_config_mixed_paths(tmp_path):
+    """``workspace_from_config(["file.mcap", "./assets"])`` returns ``OverlayWorkspace``."""
+    mcap_path = _make_mcap(tmp_path)
+
+    from vuer.workspace import FilesystemWorkspace, McapWorkspace, OverlayWorkspace, workspace_from_config
+
+    ws = workspace_from_config([str(mcap_path), "./assets"])
+    assert isinstance(ws, OverlayWorkspace)
+    assert isinstance(ws._layers[0], McapWorkspace)
+    assert isinstance(ws._layers[1], FilesystemWorkspace)
+    assert Path("./assets") in ws.paths
+
+
+def test_workspace_alias_no_mcap():
+    """``Workspace("./assets")`` creates a plain ``FilesystemWorkspace`` (alias)."""
     from vuer.workspace import Workspace
     from vuer.workspace.mcap_workspace import McapWorkspace
 
@@ -539,26 +560,14 @@ def test_workspace_factory_no_mcap():
     assert not isinstance(ws, McapWorkspace)
 
 
-def test_workspace_factory_mixed_paths(tmp_path):
-    """``Workspace("file.mcap", "./assets")`` auto-upgrades to ``McapWorkspace``."""
-    mcap_path = _make_mcap(tmp_path)
-
-    from vuer.workspace import Workspace
-    from vuer.workspace.mcap_workspace import McapWorkspace
-
-    ws = Workspace(str(mcap_path), "./assets")
-    assert isinstance(ws, McapWorkspace)
-    assert Path("./assets") in ws.paths
-
-
 # ---------------------------------------------------------------------------
-# MCAP + filesystem overlay tests
+# MCAP + filesystem overlay via OverlayWorkspace
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.asyncio
 async def test_mcap_attachment_takes_priority_over_filesystem(tmp_path):
-    """MCAP attachment wins over a same-named filesystem file."""
+    """MCAP attachment wins over a same-named filesystem file in OverlayWorkspace."""
     fs_dir = tmp_path / "assets"
     fs_dir.mkdir()
     (fs_dir / "robot.urdf").write_text("<robot>filesystem</robot>")
@@ -574,10 +583,10 @@ async def test_mcap_attachment_takes_priority_over_filesystem(tmp_path):
         ],
     )
 
-    from vuer.workspace import Blob
+    from vuer.workspace import Blob, FilesystemWorkspace, OverlayWorkspace
     from vuer.workspace.mcap_workspace import McapWorkspace
 
-    ws = McapWorkspace(str(mcap_path), str(fs_dir))
+    ws = OverlayWorkspace(McapWorkspace(str(mcap_path)), FilesystemWorkspace(str(fs_dir)))
     result = await ws.resolve("robot.urdf")
 
     assert isinstance(result, Blob)
@@ -593,9 +602,10 @@ async def test_filesystem_fallback_for_missing_attachment(tmp_path):
 
     mcap_path = _make_mcap(tmp_path)  # no attachments
 
+    from vuer.workspace import FilesystemWorkspace, OverlayWorkspace
     from vuer.workspace.mcap_workspace import McapWorkspace
 
-    ws = McapWorkspace(str(mcap_path), str(fs_dir))
+    ws = OverlayWorkspace(McapWorkspace(str(mcap_path)), FilesystemWorkspace(str(fs_dir)))
     result = await ws.resolve("mesh.stl")
 
     assert result is not None
@@ -605,7 +615,7 @@ async def test_filesystem_fallback_for_missing_attachment(tmp_path):
 
 @pytest.mark.asyncio
 async def test_find_searches_filesystem_only(tmp_path):
-    """``find()`` only searches filesystem (not MCAP attachments)."""
+    """``find()`` only searches filesystem layers (not MCAP attachments)."""
     fs_dir = tmp_path / "assets"
     fs_dir.mkdir()
     (fs_dir / "mesh.stl").write_bytes(b"\x00STL")
@@ -617,9 +627,10 @@ async def test_find_searches_filesystem_only(tmp_path):
         ],
     )
 
+    from vuer.workspace import FilesystemWorkspace, OverlayWorkspace
     from vuer.workspace.mcap_workspace import McapWorkspace
 
-    ws = McapWorkspace(str(mcap_path), str(fs_dir))
+    ws = OverlayWorkspace(McapWorkspace(str(mcap_path)), FilesystemWorkspace(str(fs_dir)))
 
     # filesystem file -> found
     assert ws.find("mesh.stl") is not None

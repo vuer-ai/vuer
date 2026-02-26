@@ -5,10 +5,18 @@ static files from various storage backends.
 
 **Available workspaces**:
 
-- ``Workspace``     - Local filesystem (default). Auto-upgrades to
-                      ``McapWorkspace`` when ``.mcap`` files are detected.
+- ``FilesystemWorkspace`` / ``Workspace`` - Local filesystem (default).
 - ``McapWorkspace`` - MCAP recordings (attachments + topics over HTTP).
-- ``Blob``          - In-memory data with explicit content-type.
+- ``OverlayWorkspace`` - Composes multiple backends, first match wins.
+- ``BaseWorkspace`` - Abstract base class for custom backends.
+
+**Factory**::
+
+    from vuer.workspace import workspace_from_config
+
+    ws = workspace_from_config("recording.mcap")             # McapWorkspace
+    ws = workspace_from_config(["recording.mcap", "."])      # OverlayWorkspace
+    ws = workspace_from_config("./assets")                   # FilesystemWorkspace
 
 **Image encoders** (for serving in-memory images)::
 
@@ -37,14 +45,16 @@ static files from various storage backends.
 
 **MCAP recordings**::
 
-    from vuer.workspace import McapWorkspace
+    from vuer.workspace import McapWorkspace, OverlayWorkspace, FilesystemWorkspace
 
-    # Workspace() auto-upgrades when .mcap paths are detected
-    ws = Workspace("recording.mcap")
-    ws = Workspace("recording.mcap", "./local_assets")
-
-    # Or use McapWorkspace directly for extra kwargs
+    # MCAP-only
     ws = McapWorkspace("recording.mcap", topic_prefix="/data")
+
+    # MCAP + filesystem overlay (explicit)
+    ws = OverlayWorkspace(McapWorkspace("recording.mcap"), FilesystemWorkspace("./assets"))
+
+    # Or via factory (auto-compose)
+    ws = workspace_from_config(["recording.mcap", "./assets"])
 
 Future workspaces:
 
@@ -53,8 +63,11 @@ Future workspaces:
 """
 
 from vuer.workspace.workspace import (
+    BaseWorkspace,
     Blob,
+    FilesystemWorkspace,
     MimeTypes,
+    OverlayWorkspace,
     TailRecord,
     TreeNode,
     Workspace,
@@ -74,18 +87,24 @@ from vuer.workspace.encoders import (
 from vuer.workspace.mcap_workspace import McapWorkspace
 
 __all__ = [
-    # Workspace
+    # Workspace hierarchy
+    "BaseWorkspace",
+    "FilesystemWorkspace",
+    "OverlayWorkspace",
+    "McapWorkspace",
+    # Backward-compat alias
+    "Workspace",
+    # Data types
     "Blob",
     "MimeTypes",
     "TailRecord",
     "TreeNode",
-    "Workspace",
-    "McapWorkspace",
+    "ResolveResult",
+    # Utilities
     "guess_content_type",
     "sanitize_path",
     "workspace_from_config",
     "MIME_TYPES",
-    "ResolveResult",
     # Encoders
     "jpg",
     "png",
