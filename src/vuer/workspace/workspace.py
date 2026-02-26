@@ -1020,7 +1020,7 @@ class FilesystemWorkspace(BaseWorkspace):
       node.name = str(path)
       return node
 
-    root = TreeNode(name="Workspace", path=None, is_dir=True)
+    root = TreeNode(name="FilesystemWorkspace", path=None, is_dir=True)
     for path in self._overlay:
       child = _build_tree(path, depth=0, max_level=level, pattern=pattern, limit=limit)
       child.name = str(path)
@@ -1204,11 +1204,21 @@ class OverlayWorkspace(BaseWorkspace):
     pattern: str = "*",
     limit: Optional[int] = None,
   ) -> TreeNode:
-    """Build a tree with one child per layer."""
+    """Build a tree, splicing virtual layer wrappers so only real nodes appear.
+
+    Virtual wrapper nodes (``path=None``, e.g. the ``McapWorkspace`` or
+    ``FilesystemWorkspace`` labels) are flattened — their children are
+    promoted directly under ``OverlayWorkspace``.  Real nodes (actual
+    filesystem paths or ``.mcap`` file nodes) are kept as-is.
+    """
     root = TreeNode(name="OverlayWorkspace", path=None, is_dir=True)
     for layer in self._layers:
       child = layer.tree(level=level, pattern=pattern, limit=limit)
-      root.children.append(child)
+      if child.path is None:
+        # Virtual wrapper — splice its children directly into root
+        root.children.extend(child.children)
+      else:
+        root.children.append(child)
     return root
 
   def __repr__(self):
