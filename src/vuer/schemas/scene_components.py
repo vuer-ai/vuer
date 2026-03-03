@@ -3847,6 +3847,10 @@ class SceneCamera(SceneElement):
   :type near: float, optional
   :param far: Far clipping plane
   :type far: float, optional
+  :param cx: Principal point horizontal offset (0 = centered, range [-1, 1]). Default: 0
+  :type cx: float, optional
+  :param cy: Principal point vertical offset (0 = centered, range [-1, 1]). Default: 0
+  :type cy: float, optional
   """
 
   tag = "SceneCamera"
