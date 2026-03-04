@@ -5,8 +5,18 @@ static files from various storage backends.
 
 **Available workspaces**:
 
-- ``Workspace`` - Local filesystem (default)
-- ``Blob`` - In-memory data with explicit content-type
+- ``FilesystemWorkspace`` / ``Workspace`` - Local filesystem (default).
+- ``McapWorkspace`` - MCAP recordings (attachments + topics over HTTP).
+- ``OverlayWorkspace`` - Composes multiple backends, first match wins.
+- ``BaseWorkspace`` - Abstract base class for custom backends.
+
+**Factory**::
+
+    from vuer.workspace import workspace_from_config
+
+    ws = workspace_from_config("recording.mcap")             # McapWorkspace
+    ws = workspace_from_config(["recording.mcap", "."])      # OverlayWorkspace
+    ws = workspace_from_config("./assets")                   # FilesystemWorkspace
 
 **Image encoders** (for serving in-memory images)::
 
@@ -33,16 +43,33 @@ static files from various storage backends.
     MIME_TYPES[".npy"] = "application/x-npy"
     MIME_TYPES.guess("data.npy")  # "application/x-npy"
 
+**MCAP recordings**::
+
+    from vuer.workspace import McapWorkspace, OverlayWorkspace, FilesystemWorkspace
+
+    # MCAP-only
+    ws = McapWorkspace("recording.mcap", topic_prefix="/data")
+
+    # MCAP + filesystem overlay (explicit)
+    ws = OverlayWorkspace(McapWorkspace("recording.mcap"), FilesystemWorkspace("./assets"))
+
+    # Or via factory (auto-compose)
+    ws = workspace_from_config(["recording.mcap", "./assets"])
+
 Future workspaces:
 
 - ``DashWorkspace`` - ML-Dash experiments
-- ``McapWorkspace`` - MCAP recordings
 - ``S3Workspace`` - S3 buckets
 """
 
 from vuer.workspace.workspace import (
+    BaseWorkspace,
     Blob,
+    FilesystemWorkspace,
     MimeTypes,
+    OverlayWorkspace,
+    TailRecord,
+    TreeNode,
     Workspace,
     guess_content_type,
     sanitize_path,
@@ -57,17 +84,27 @@ from vuer.workspace.encoders import (
     b64png,
     decode_b64png,
 )
+from vuer.workspace.mcap_workspace import McapWorkspace
 
 __all__ = [
-    # Workspace
+    # Workspace hierarchy
+    "BaseWorkspace",
+    "FilesystemWorkspace",
+    "OverlayWorkspace",
+    "McapWorkspace",
+    # Backward-compat alias
+    "Workspace",
+    # Data types
     "Blob",
     "MimeTypes",
-    "Workspace",
+    "TailRecord",
+    "TreeNode",
+    "ResolveResult",
+    # Utilities
     "guess_content_type",
     "sanitize_path",
     "workspace_from_config",
     "MIME_TYPES",
-    "ResolveResult",
     # Encoders
     "jpg",
     "png",

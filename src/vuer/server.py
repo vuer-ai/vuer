@@ -52,7 +52,7 @@ from vuer.events import (
 )
 from vuer.schemas import Page
 from vuer.types import EventHandler, SocketHandler, Url
-from vuer.workspace import Blob, Workspace, guess_content_type, workspace_from_config
+from vuer.workspace import Blob, OverlayWorkspace, Workspace, guess_content_type, workspace_from_config
 
 
 async def workspace_handler(request, workspace: Workspace):
@@ -669,6 +669,11 @@ class Vuer(Server):
     else:
       # Convert workspace to Workspace instance if needed
       self.workspace = workspace_from_config(self.workspace)
+
+    # app.workspace is always an OverlayWorkspace so callers get a uniform
+    # interface regardless of how many backends are configured.
+    if not isinstance(self.workspace, OverlayWorkspace):
+      self.workspace = OverlayWorkspace(self.workspace)
 
     if self.client_url:
       self.client_url = self.client_url.format(

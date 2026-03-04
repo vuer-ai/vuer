@@ -37,6 +37,12 @@ example = [
     "ml_logger",
     "opencv-python"
 ]
+mcap = [
+    "mcap>=1.1.0",
+    # rosbags is optional — only needed for sensor_msgs CDR decoding.
+    # Install manually if needed: pip install "rosbags>=0.9.0"
+    # (requires Python >=3.10 for rosbags>=0.10)
+]
 dev = [
     "cmx",
     "aiohttp>=3.10.5",
@@ -98,6 +104,8 @@ dev = [
     "trimesh",
     "tqdm",
     "roman",
+    "mcap>=1.1.0",
+    "pytest-asyncio>=0.21.0",
 ]
 
 [tool.uv]
