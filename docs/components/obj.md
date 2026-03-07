@@ -28,8 +28,8 @@ async def main(sess):
     sess.set @ DefaultScene(
         Obj(
             key="model",
-            src="http://localhost:8012/static/" + obj_file,
-            mtl="http://localhost:8012/static/" + mtl_file,
+            src="http://localhost:8012/workspace/" + obj_file,
+            mtl="http://localhost:8012/workspace/" + mtl_file,
             position=[0, 0, 0],
             scale=0.01,
         ),

@@ -52,8 +52,8 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     async def main(session):
         session.set @ DefaultScene(
             Obj(
-                src="http://localhost:8012/static/file_loaders/stairs_v1/textured.obj",
-                mtl="http://localhost:8012/static/file_loaders/stairs_v1/textured.mtl",
+                src="http://localhost:8012/workspace/file_loaders/stairs_v1/textured.obj",
+                mtl="http://localhost:8012/workspace/file_loaders/stairs_v1/textured.mtl",
                 position=[-4.5, 1.5, -3.5],
                 # This component emits a `LOAD` event when the mesh is loaded.
                 # this also extends to other 3D asset components.
@@ -66,16 +66,16 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         )
 
         session.add @ Obj(
-            src="http://localhost:8012/static/file_loaders/stairs_v1/textured.obj",
+            src="http://localhost:8012/workspace/file_loaders/stairs_v1/textured.obj",
             # you can omit this. See the red stairs below.
-            mtl="http://localhost:8012/static/file_loaders/stairs_v1/textured.mtl",
+            mtl="http://localhost:8012/workspace/file_loaders/stairs_v1/textured.mtl",
             wireframe=True,
             position=[0, 1.5, 0],
             onLoad="wireframe stairs are loaded",
         )
 
         session.add @ Obj(
-            src="http://localhost:8012/static/file_loaders/stairs_v1/textured.obj",
+            src="http://localhost:8012/workspace/file_loaders/stairs_v1/textured.obj",
             wireframe=True,
             color="#ff0000",
             position=[4.5, 1.5, 3.5],

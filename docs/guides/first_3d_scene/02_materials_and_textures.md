@@ -329,7 +329,7 @@ from vuer import Vuer
 app = Vuer(static_root="./assets")
 
 # Now you can reference textures like:
-# "http://localhost:8012/static/my_texture.jpg"
+# "http://localhost:8012/workspace/my_texture.jpg"
 ```
 
 ### Advanced Textures
@@ -341,18 +341,18 @@ Box(
     materialType="standard",
     material=dict(
         # Color/albedo map
-        map="http://localhost:8012/static/wood_albedo.jpg",
+        map="http://localhost:8012/workspace/wood_albedo.jpg",
 
         # Surface detail (bumps and dents)
-        normalMap="http://localhost:8012/static/wood_normal.jpg",
+        normalMap="http://localhost:8012/workspace/wood_normal.jpg",
         normalScale=[1.0, 1.0],
 
         # Roughness variation
-        roughnessMap="http://localhost:8012/static/wood_roughness.jpg",
+        roughnessMap="http://localhost:8012/workspace/wood_roughness.jpg",
         roughness=1.0,
 
         # Ambient occlusion (crevice darkening)
-        aoMap="http://localhost:8012/static/wood_ao.jpg",
+        aoMap="http://localhost:8012/workspace/wood_ao.jpg",
         aoMapIntensity=1.0,
     ),
     key="wood-box",

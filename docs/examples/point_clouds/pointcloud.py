@@ -50,7 +50,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
             DefaultScene(
                 # Method 1: Load PLY file from static server
                 Ply(
-                    src="http://localhost:8012/static/" + test_file,
+                    src="http://localhost:8012/workspace/" + test_file,
                     size=0.008,
                     position=[0, 0, 5],
                 ),

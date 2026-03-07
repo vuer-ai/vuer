@@ -33,7 +33,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     async def main(sess):
         sess.set @ DefaultScene(
             Glb(
-                src="http://localhost:8012/static/" + glb_file,
+                src="http://localhost:8012/workspace/" + glb_file,
                 position=[0, 0, 0],
                 key="glb-model",
             ),

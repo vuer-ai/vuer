@@ -22,7 +22,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
     app = Vuer(static_root="./assets")
 
-    asset_pref = "http://localhost:8012/static/agility_cassie/"
+    asset_pref = "http://localhost:8012/workspace/agility_cassie/"
 
     @app.spawn(start=True)
     async def main(sess: VuerSession):

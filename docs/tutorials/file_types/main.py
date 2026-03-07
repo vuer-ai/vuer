@@ -81,7 +81,7 @@ sphere = Sphere(
     args=[30, 32, 32],
     materialType="standard",
     material=dict(
-        map="http://localhost:8012/static/water_background.jpg",
+        map="http://localhost:8012/workspace/water_background.jpg",
         side=1,
     ),
     position=[0, 0, 0],
@@ -94,7 +94,7 @@ async def main(session: VuerSession):
     session.remove("default-grid")
     session.upsert @ sphere
     session.upsert @ Glb(
-        src="http://localhost:8012/static/black_cube.glb",
+        src="http://localhost:8012/workspace/black_cube.glb",
         # color="red",
         materialType="standard",
         material=dict(color="red", side=0),
@@ -110,7 +110,7 @@ async def main(session: VuerSession):
         bounding_box = mesh.bounding_box_oriented
         original_size = bounding_box.extents
         position = [item["position"][0], item["position"][1], 0]
-        filename = os.path.join("http://localhost:8012/static", item["filename"].split("/")[-1])
+        filename = os.path.join("http://localhost:8012/workspace", item["filename"].split("/")[-1])
         bounding_box = item["size"]
         factor = calculate_scale_factor(original_size, bounding_box)
         session.upsert @ Glb(

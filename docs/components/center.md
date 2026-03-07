@@ -30,7 +30,7 @@ async def main(sess):
     sess.set @ DefaultScene(
         # Left: Model WITHOUT Center (may be off-center)
         Glb(
-            src="http://localhost:8012/static/" + glb_file,
+            src="http://localhost:8012/workspace/" + glb_file,
             position=[-3, 0, 0],
             scale=0.8,
             key="model-left",
@@ -38,7 +38,7 @@ async def main(sess):
 
         # Center: Model WITH Center (automatically centered)
         Center(
-            Glb(src="http://localhost:8012/static/" + glb_file, key="model-center-inner"),
+            Glb(src="http://localhost:8012/workspace/" + glb_file, key="model-center-inner"),
             position=[0, 0, 0],
             scale=0.8,
             key="model-center",
@@ -46,7 +46,7 @@ async def main(sess):
 
         # Right: Centered model with rotation
         Center(
-            Glb(src="http://localhost:8012/static/" + glb_file, key="model-right-inner"),
+            Glb(src="http://localhost:8012/workspace/" + glb_file, key="model-right-inner"),
             position=[3, 0, 0],
             rotation=[0, 0, 0],  # Will be animated
             scale=0.8,

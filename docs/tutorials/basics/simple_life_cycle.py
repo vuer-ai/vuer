@@ -40,8 +40,8 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         while True:
             session.upsert @ Obj(
                 key="src-loader",
-                src="http://localhost:8012/static/" + test_file,
-                mtl="http://localhost:8012/static/" + test_mtl,
+                src="http://localhost:8012/workspace/" + test_file,
+                mtl="http://localhost:8012/workspace/" + test_mtl,
                 position=[0, 0, 0],
                 wireframe=wireframe,
             )
@@ -52,8 +52,8 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
             session.upsert @ Obj(
                 key="src-loader-wireframe",
-                src="http://localhost:8012/static/" + test_file,
-                mtl="http://localhost:8012/static/" + test_mtl,
+                src="http://localhost:8012/workspace/" + test_file,
+                mtl="http://localhost:8012/workspace/" + test_mtl,
                 position=[0, 0, 5],
                 color="red",
                 wireframe=True,

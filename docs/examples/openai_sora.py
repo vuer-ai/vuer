@@ -38,7 +38,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     @app.spawn(start=True)
     async def main(sess: VuerSession):
         sess.upsert @ Splat(
-            src="http://localhost:8012/static/"  + splat_file,
+            src="http://localhost:8012/workspace/"  + splat_file,
             scale=0.5,
             position=[-0.7, 0.75, 1.58],
             rotation=[75 / 180 * pi, -3.92 / 180 * pi, 25 / 180 * pi],
@@ -73,7 +73,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     @app.spawn(start=True)
     async def main(sess: VuerSession):
         sess.upsert @ Splat(
-            src="http://localhost:8012/static/"  + splat_file,
+            src="http://localhost:8012/workspace/"  + splat_file,
             scale=0.5,
             position=[-0.33, 0.39, -0.07],
             rotation=[94 / 180 * pi, -28 / 180 * pi, 134 / 180 * pi],
@@ -106,7 +106,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     @app.spawn(start=True)
     async def main(sess: VuerSession):
         sess.upsert @ Splat(
-            src="http://localhost:8012/static/"  + splat_file,
+            src="http://localhost:8012/workspace/"  + splat_file,
             scale=5,
             position=[0.0, 0.6, 0.0],
             rotation=[90 * 0.01744, -3 * 0.01744, 0 * 0.01744],
@@ -139,7 +139,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     @app.spawn(start=True)
     async def main(sess: VuerSession):
         sess.upsert @ Splat(
-            src="http://localhost:8012/static/"  + splat_file,
+            src="http://localhost:8012/workspace/"  + splat_file,
             scale=0.5,
             position=[-0.08, 0.31, -0.07],
             rotation=[74 * 0.01744, -11 * 0.01744, 77 * 0.01744],

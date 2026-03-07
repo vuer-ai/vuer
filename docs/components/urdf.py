@@ -80,7 +80,7 @@ async def main(sess: VuerSession):
     sess.set @ DefaultScene(
         Movable(
             Urdf(
-                src="http://localhost:8012/static/" + urdf_path,
+                src="http://localhost:8012/workspace/" + urdf_path,
                 jointValues=initial_joints,
                 key="robot",
             ),
