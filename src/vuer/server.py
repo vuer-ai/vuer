@@ -75,6 +75,8 @@ async def workspace_handler(request, workspace: Workspace):
   result = await workspace.resolve(filename)
 
   if result is None:
+    # Log a warning for potentially misconfigured asset requests.
+    print(f"[WARN] Workspace file not found: {filename}")
     raise web.HTTPNotFound()
 
   # Convert result to response
@@ -1360,6 +1362,14 @@ class Vuer(Server):
         )
 
     self._add_route("/relay", self.relay, method="POST")
+
+    # Catch-all handler for unmatched routes (e.g., /static/*).
+    # This logs a warning for potentially misconfigured asset requests.
+    async def catch_all_handler(request):
+      print(f"[WARN] Unmatched request path: {request.path}")
+      raise web.HTTPNotFound()
+    
+    self._add_route("/{filename:.*}", catch_all_handler, method="GET")
 
     if self.client_url:
       # the ssl is a property.
