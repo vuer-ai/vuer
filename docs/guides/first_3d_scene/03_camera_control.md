@@ -118,10 +118,10 @@ async def main(session: VuerSession):
     )
 
     # Listen for camera move events
-    @session.on("CAMERA_MOVE")
-    async def handle_camera_move(event):
+    @app.add_handler("CAMERA_MOVE")
+    async def handle_camera_move(event, session: VuerSession):
         camera = event.value["camera"]
-        print(f"Camera position: {camera.position}")
+        print(f"Camera position: {camera['position']}")
         # Use camera data for custom logic (recording, analysis, etc.)
 
     await session.forever()
