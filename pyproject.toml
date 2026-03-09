@@ -23,6 +23,7 @@ dependencies = [
     "aiohttp-cors; platform_system != 'Emscripten'",
     "killport; platform_system != 'Emscripten'",
     "dotvar>=0.1.1",
+    "vuer-rtc>=0.0.1",
 ]
 
 [project.optional-dependencies]
