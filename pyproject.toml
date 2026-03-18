@@ -37,6 +37,10 @@ example = [
     "ml_logger",
     "opencv-python"
 ]
+webrtc = [
+    "aiortc>=1.6.0",
+    "av>=10.0.0",
+]
 dev = [
     "cmx",
     "aiohttp>=3.10.5",
