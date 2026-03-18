@@ -212,11 +212,13 @@ class Server:
     self._add_route(f"{path}", _fn, method="GET")
 
   def start(self):
+    self._runner = None
+
     async def init_server():
-      runner = web.AppRunner(self.app)
-      await runner.setup()
+      self._runner = web.AppRunner(self.app)
+      await self._runner.setup()
       if not self.cert:
-        site = web.TCPSite(runner, self.host, self.port)
+        site = web.TCPSite(self._runner, self.host, self.port)
         return await site.start()
 
       ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
@@ -227,7 +229,7 @@ class Server:
       else:
         ssl_context.verify_mode = ssl.CERT_NONE
 
-      site = web.TCPSite(runner, self.host, self.port, ssl_context=ssl_context)
+      site = web.TCPSite(self._runner, self.host, self.port, ssl_context=ssl_context)
       return await site.start()
 
     # Check if there's already a running event loop (e.g., in IPython/Jupyter)
@@ -250,7 +252,21 @@ class Server:
       asyncio.set_event_loop(event_loop)
 
     event_loop.run_until_complete(init_server())
-    event_loop.run_forever()
+
+    try:
+      event_loop.run_forever()
+    except KeyboardInterrupt:
+      pass
+    finally:
+      if self._runner is not None:
+        event_loop.run_until_complete(self._runner.cleanup())
+      # Cancel remaining async tasks to avoid "Task was destroyed" warnings
+      pending = asyncio.all_tasks(event_loop)
+      for task in pending:
+        task.cancel()
+      if pending:
+        event_loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
+      event_loop.close()
 
 
 if __name__ == "__main__":
