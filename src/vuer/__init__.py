@@ -16,11 +16,17 @@ from vuer.client import VuerClient
 #     app.run()
 
 
+try:
+  from vuer.webrtc import WebRTCStream
+except ImportError:
+  WebRTCStream = None
+
 __all__ = [
   "Vuer",
   "VuerSession",
   "VuerClient",
   "Workspace",
   "Blob",
+  "WebRTCStream",
   # "entrypoint",
 ]
