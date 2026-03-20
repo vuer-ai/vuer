@@ -1404,12 +1404,15 @@ class Vuer(Server):
 
     self._add_route("/relay", self.relay, method="POST")
 
-    # Register WebRTC routes if any streams were created
+    # Always serve the WebRTC debug page (static HTML, no dependencies)
+    from vuer.webrtc import serve_debug_page
+    self._add_route("/webrtc/debug", serve_debug_page, method="GET")
+
+    # Register WebRTC stream routes if any streams were created
     if self._webrtc_manager is not None:
       self._add_route(
         "/webrtc/offer/{stream_id}", self._webrtc_manager.offer_handler, method="POST"
       )
-      self._add_route("/webrtc/debug", self._webrtc_manager.debug_page_handler, method="GET")
 
       async def _set_webrtc_loop(app):
         self._webrtc_manager.set_loop(asyncio.get_running_loop())

@@ -17,6 +17,12 @@ from aiohttp import web
 _DEBUG_HTML_PATH = Path(__file__).parent / "debug.html"
 
 
+async def serve_debug_page(request):
+    """Serve the WebRTC debug page (standalone, no manager required)."""
+    html = _DEBUG_HTML_PATH.read_text()
+    return web.Response(content_type="text/html", text=html)
+
+
 def _require_aiortc():
     """Lazy import of aiortc dependencies with a clear error message."""
     try:
@@ -311,11 +317,6 @@ class WebRTCStreamManager:
                 content_type="application/json",
             )
         return await stream.handle_offer(request)
-
-    async def debug_page_handler(self, request):
-        """Serve the WebRTC debug page for verifying stream connectivity."""
-        html = _DEBUG_HTML_PATH.read_text()
-        return web.Response(content_type="text/html", text=html)
 
     def set_loop(self, loop):
         """Propagate event loop reference to all streams."""
