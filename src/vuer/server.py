@@ -75,6 +75,8 @@ async def workspace_handler(request, workspace: Workspace):
   result = await workspace.resolve(filename)
 
   if result is None:
+    # Log a warning for potentially misconfigured asset requests.
+    print(f"[WARN] Workspace file not found: {filename}")
     raise web.HTTPNotFound()
 
   # Convert result to response

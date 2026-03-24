@@ -60,7 +60,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
                     position=[0, 1.7, 0],
                     materialType="phong",
                     material=dict(
-                        map="http://localhost:8012/static/images/marigold/dalle3/dalle3_rgb.jpg",
+                        map="http://localhost:8012/workspace/images/marigold/dalle3/dalle3_rgb.jpg",
                         # mapRepeat=[2, 4],
                     ),
                 ),
@@ -86,7 +86,7 @@ TriMesh(
     ...
     uv=uv,
     material=dict(
-        map="http://localhost:8012/static/images/marigold/dalle3/dalle3_rgb.jpg",
+        map="http://localhost:8012/workspace/images/marigold/dalle3/dalle3_rgb.jpg",
         mapRepeat=[2, 4],
     ),
 ),

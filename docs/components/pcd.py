@@ -34,12 +34,12 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
     @app.spawn(start=True)
     async def main(sess: VuerSession):
         sess.upsert @ Pcd(
-            src="http://localhost:8012/static/" + f3rm_ycb_1,
+            src="http://localhost:8012/workspace/" + f3rm_ycb_1,
             size=0.001,
             position=[0, 0, 0.5],
         )
         sess.upsert @ Pcd(
-            src="http://localhost:8012/static/" + f3rm_ycb_2,
+            src="http://localhost:8012/workspace/" + f3rm_ycb_2,
             size=0.001,
             position=[0, 0, 0.5],
         )

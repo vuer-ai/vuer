@@ -5,7 +5,7 @@ from vuer.schemas import MuJoCo
 
 vuer = Vuer()
 
-host = "http://localhost:8012/static"
+host = "http://localhost:8012/workspace"
 
 
 @vuer.spawn(start=True)

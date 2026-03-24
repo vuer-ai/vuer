@@ -44,8 +44,8 @@ async def main(app: VuerSession):
     await sleep(0.1)
 
     app.upsert @ Obj(
-        src="http://localhost:8012/static/robots/stairway/textured.obj",
-        mtl="http://localhost:8012/static/robots/stairway/textured.mtl",
+        src="http://localhost:8012/workspace/robots/stairway/textured.obj",
+        mtl="http://localhost:8012/workspace/robots/stairway/textured.mtl",
         position=[1.5, -3, 0.727],
         rotation=[3.1415 / 2, 0, 0],
         key="scene",
@@ -54,7 +54,7 @@ async def main(app: VuerSession):
     i = 0
     while True:
         app.upsert @ Urdf(
-            src="http://localhost:8012/static/robots/go1/urdf/go1.urdf",
+            src="http://localhost:8012/workspace/robots/go1/urdf/go1.urdf",
             jointValues={
                 "FL_hip_joint": -0.1,
                 "RL_hip_joint": -0.1,

@@ -70,7 +70,7 @@ class MoveBoxEvent(ClientEvent):
 
 
 async def main():
-    async with VuerClient(URI="ws://localhost:8012") as client:
+    async with VuerClient(uri="ws://localhost:8012") as client:
         # Fire-and-forget with @ syntax (no await needed)
         client.send @ HelloEvent(value={"message": "Hi!"})
 
@@ -118,7 +118,7 @@ Configuration can also be set via environment variables:
 ### Context Manager (Recommended)
 
 ```python
-async with VuerClient(URI="ws://localhost:8012") as client:
+async with VuerClient(uri="ws://localhost:8012") as client:
     await client.send(event)
 ```
 

@@ -13,7 +13,7 @@ within.
 
 Place the image file (e.g., `images/farm_house.jpg`) in the folder specified by
 the `static_root` argument of the `Vuer` class. The Vuer frontend will load the
-texture from `http://localhost:8012/static/images/farm_house.jpg`.
+texture from `http://localhost:8012/workspace/images/farm_house.jpg`.
 
 Here is the expected result:
 ![sky ball result](../figures/17_sky_ball.png)
@@ -40,7 +40,7 @@ sphere = Sphere(
     key="ball",
     args=[1, 32, 32],
     materialType="standard",
-    material={"map": "http://localhost:8012/static/" + test_file, "side": 1},
+    material={"map": "http://localhost:8012/workspace/" + test_file, "side": 1},
     position=[0, 0, 0],
     rotation=[0.5 * np.pi, 0, 0],
 )

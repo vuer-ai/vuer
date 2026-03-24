@@ -57,7 +57,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
         )
 
         sess.upsert @ Ply(
-            src="http://localhost:8012/static/" + pixelnerf,
+            src="http://localhost:8012/workspace/" + pixelnerf,
             size=0.008,
             rotation=[-0.5 * np.pi, 0, -0.5 * np.pi]
         )

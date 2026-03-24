@@ -23,7 +23,7 @@ async def main(sess):
     sess.set @ DefaultScene(
         SparkSplats(
             key="spark-splats",
-            src="http://localhost:8012/static/splats/butterfly.spz",
+            src="http://localhost:8012/workspace/splats/butterfly.spz",
             position=[0, 0.2, 0],
             rotation=[0, 0, 3.14],
             scale=0.5,

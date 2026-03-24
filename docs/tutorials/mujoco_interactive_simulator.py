@@ -26,7 +26,7 @@ with doc, doc.skip if MAKE_DOCS else nullcontext():
 
     app = Vuer(static_root=f"{Path(__file__).parent}/../_static")
 
-    # asset_pref = "http://localhost:8012/static/"
+    # asset_pref = "http://localhost:8012/workspace/"
     asset_pref = "https://docs.vuer.ai/en/latest/_static/"
 
     fileName = "mujoco_scenes/car/car.mjcf.xml"

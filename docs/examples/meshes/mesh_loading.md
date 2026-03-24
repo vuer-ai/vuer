@@ -58,7 +58,7 @@ async def main(session):
             # Method 1: Load from URL (static server)
             Obj(
                 key="src-loader",
-                src="http://localhost:8012/static/" + test_file,
+                src="http://localhost:8012/workspace/" + test_file,
                 position=[3, 0, 0],
             ),
             # Method 2: Load from binary buffer

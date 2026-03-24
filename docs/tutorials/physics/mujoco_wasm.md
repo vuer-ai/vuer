@@ -13,7 +13,7 @@ from vuer.schemas import MuJoCo, Scene, Fog, Sphere, ContribLoader
 
 app = Vuer(static_root="./assets")
 
-asset_pref = "http://localhost:8012/static/agility_cassie/"
+asset_pref = "http://localhost:8012/workspace/agility_cassie/"
 
 
 @app.spawn(start=True)
