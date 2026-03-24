@@ -1,7 +1,7 @@
 .PHONY: docs preview test clean clear clean-tags release-docs build publish-pypi release version
 
 # Extract version from pyproject.toml
-VERSION := $(shell grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+VERSION := $(shell grep '^version = ' pyproject.toml | head -1 | sed 's/version = "\(.*\)"/\1/')
 
 version:
 	@echo "Current version: $(VERSION)"

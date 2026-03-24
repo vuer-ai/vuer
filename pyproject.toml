@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "vuer"
-version = "0.1.5"
+version = "0.1.6"
 description = ""
 readme = "README.md"
 license = { text = "MIT" }
@@ -36,6 +36,10 @@ example = [
     "functional_notations",
     "ml_logger",
     "opencv-python"
+]
+webrtc = [
+    "aiortc>=1.6.0",
+    "av>=10.0.0",
 ]
 dev = [
     "cmx",

@@ -704,6 +704,7 @@ class Vuer(Server):
     # List of spawn handlers with their filters: [{"fn": handler, "filters": {...}}, ...]
     self.spawn_handlers: List[Dict] = []
     self.spawned_coroutines = []
+    self._webrtc_manager = None
 
   @property
   def ssl(self) -> str:
@@ -732,6 +733,48 @@ class Vuer(Server):
       return ip
     except Exception:
       return "127.0.0.1"
+
+  def create_webrtc_stream(
+    self,
+    stream_id,
+    track=None,
+    codec="H264",
+    max_bitrate=None,
+    max_framerate=None,
+    resolution=None,
+  ):
+    """Create a WebRTC stream hosted on this Vuer server.
+
+    Must be called before app.start(). Routes are registered during startup.
+
+    Args:
+        stream_id: Unique identifier for the stream (used in URL path).
+        track: Optional custom MediaStreamTrack. If None, creates an internal
+               track and enables push_frame().
+        codec: Preferred codec ("H264" or "VP8"). Default "H264".
+        max_bitrate: Maximum bitrate in bps (e.g. 2_000_000 for 2 Mbps).
+        max_framerate: Maximum frames per second (e.g. 15, 30).
+        resolution: Tuple of (width, height) for fallback frame. Default (640, 480).
+
+    Returns:
+        WebRTCStream instance with .push_frame() and .endpoint properties.
+    """
+    if getattr(self, "_started", False):
+      raise RuntimeError(
+        "create_webrtc_stream() must be called before app.start(). "
+        "WebRTC routes are registered during server startup."
+      )
+
+    from vuer.webrtc import WebRTCStreamManager
+
+    if self._webrtc_manager is None:
+      self._webrtc_manager = WebRTCStreamManager()
+    return self._webrtc_manager.create_stream(
+      stream_id, self,
+      track=track, codec=codec,
+      max_bitrate=max_bitrate, max_framerate=max_framerate,
+      resolution=resolution,
+    )
 
   async def relay(self, request):
     """This is the relay object for sending events to the server.
@@ -1318,8 +1361,8 @@ class Vuer(Server):
     self.start(free_port=free_port, *args, **kwargs)
 
   def start(self, free_port=None, *args, **kwargs):
-    # protocol, host, _ = self.uri.split(":")
-    # port = int(_)
+    self._started = True
+
     if free_port or self.free_port:
       import time
 
@@ -1363,13 +1406,25 @@ class Vuer(Server):
 
     self._add_route("/relay", self.relay, method="POST")
 
-    # Catch-all handler for unmatched routes (e.g., /static/*).
-    # This logs a warning for potentially misconfigured asset requests.
-    async def catch_all_handler(request):
-      print(f"[WARN] Unmatched request path: {request.path}")
-      raise web.HTTPNotFound()
-    
-    self._add_route("/{filename:.*}", catch_all_handler, method="GET")
+    # Always serve the WebRTC debug page (static HTML, no dependencies)
+    from vuer.webrtc import serve_debug_page
+    self._add_route("/webrtc/debug", serve_debug_page, method="GET")
+
+    # Register WebRTC stream routes if any streams were created
+    if self._webrtc_manager is not None:
+      self._add_route(
+        "/webrtc/offer/{stream_id}", self._webrtc_manager.offer_handler, method="POST"
+      )
+
+      async def _set_webrtc_loop(app):
+        self._webrtc_manager.set_loop(asyncio.get_running_loop())
+
+      self.app.on_startup.append(_set_webrtc_loop)
+
+      async def _shutdown_webrtc(app):
+        await self._webrtc_manager.cleanup_all()
+
+      self.app.on_shutdown.append(_shutdown_webrtc)
 
     if self.client_url:
       # the ssl is a property.
@@ -1385,6 +1440,22 @@ class Vuer(Server):
       workspace_lines.append(f" {DIM}·{RESET} file://{path}")
     workspace_display = "\n".join(workspace_lines)
 
+    # Format WebRTC stream info for display
+    webrtc_display = ""
+    if self._webrtc_manager is not None and self._webrtc_manager.streams:
+      proto = f"http{self.ssl}"
+      base = f"{proto}://{self.local_ip}:{self.port}"
+      webrtc_lines = []
+      for sid in self._webrtc_manager.streams:
+        offer_url = f"{base}/webrtc/offer/{sid}"
+        debug_url = f"{base}/webrtc/debug?url={offer_url}"
+        webrtc_lines.append(f" {DIM}·{RESET} {debug_url}")
+      webrtc_display = f"""
+{CYAN}WebRTC Streams:{RESET}
+
+{chr(10).join(webrtc_lines)}
+"""
+
     print(f"""{BOLD}Vuer Server{RESET}
 
 {CYAN}Local:{RESET}   {base_url}?ws=ws{self.ssl}://localhost:{self.port}
@@ -1394,7 +1465,7 @@ class Vuer(Server):
 
 {workspace_display}
 {DIM}->{RESET} {base_url}/workspace
-""")
+{webrtc_display}""")
 
     Server.start(self)
 

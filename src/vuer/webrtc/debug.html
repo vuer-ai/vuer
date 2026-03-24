@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vuer WebRTC Debug</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #1a1a2e; color: #eee; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; min-height: 100vh; padding: 20px;
+  }
+  h1 { font-size: 1.4em; margin-bottom: 16px; color: #7dd3fc; }
+  .controls {
+    display: flex; gap: 8px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;
+    justify-content: center;
+  }
+  input[type=text] {
+    width: 420px; padding: 8px 12px; border-radius: 6px; border: 1px solid #444;
+    background: #16213e; color: #eee; font-size: 14px; font-family: monospace;
+  }
+  button {
+    padding: 8px 20px; border-radius: 6px; border: none; font-size: 14px;
+    cursor: pointer; font-weight: 600; transition: background 0.2s;
+  }
+  #start { background: #22c55e; color: #000; }
+  #start:hover { background: #16a34a; }
+  #stop { background: #ef4444; color: #fff; display: none; }
+  #stop:hover { background: #dc2626; }
+  #status {
+    padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;
+  }
+  .status-idle { background: #334155; color: #94a3b8; }
+  .status-connecting { background: #854d0e; color: #fde68a; }
+  .status-connected { background: #166534; color: #86efac; }
+  .status-failed { background: #7f1d1d; color: #fca5a5; }
+  video {
+    max-width: 90vw; max-height: 70vh; border-radius: 8px;
+    background: #000; border: 2px solid #334155;
+  }
+</style>
+</head>
+<body>
+<h1>Vuer WebRTC Debug</h1>
+<div class="controls">
+  <input type="text" id="url" placeholder="Offer URL">
+  <button id="start" onclick="start()">Start</button>
+  <button id="stop" onclick="stop()">Stop</button>
+  <span id="status" class="status-idle">Idle</span>
+</div>
+<video id="video" autoplay playsinline muted></video>
+
+<script>
+var pc = null;
+
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var urlParam = params.get('url');
+  if (urlParam) {
+    document.getElementById('url').value = urlParam;
+  } else {
+    var loc = window.location;
+    document.getElementById('url').value =
+      loc.protocol + '//' + loc.host + '/webrtc/offer/default';
+  }
+})();
+
+function setStatus(state, text) {
+  var el = document.getElementById('status');
+  el.textContent = text;
+  el.className = 'status-' + state;
+}
+
+function negotiate(url) {
+  pc.addTransceiver('video', { direction: 'recvonly' });
+  return pc.createOffer().then(function(offer) {
+    return pc.setLocalDescription(offer);
+  }).then(function() {
+    return new Promise(function(resolve) {
+      if (pc.iceGatheringState === 'complete') {
+        resolve();
+      } else {
+        var checkState = function() {
+          if (pc.iceGatheringState === 'complete') {
+            pc.removeEventListener('icegatheringstatechange', checkState);
+            resolve();
+          }
+        };
+        pc.addEventListener('icegatheringstatechange', checkState);
+      }
+    });
+  }).then(function() {
+    var offer = pc.localDescription;
+    return fetch(url, {
+      body: JSON.stringify({ sdp: offer.sdp, type: offer.type }),
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST'
+    });
+  }).then(function(response) {
+    return response.json();
+  }).then(function(answer) {
+    return pc.setRemoteDescription(answer);
+  }).catch(function(e) {
+    setStatus('failed', 'Error: ' + e);
+  });
+}
+
+function start() {
+  var url = document.getElementById('url').value;
+  if (!url) { alert('Enter an offer URL'); return; }
+
+  setStatus('connecting', 'Connecting...');
+
+  pc = new RTCPeerConnection({ sdpSemantics: 'unified-plan' });
+
+  pc.addEventListener('connectionstatechange', function() {
+    if (pc.connectionState === 'connected') {
+      setStatus('connected', 'Connected');
+    } else if (pc.connectionState === 'failed') {
+      setStatus('failed', 'Failed');
+    }
+  });
+
+  pc.addEventListener('track', function(evt) {
+    if (evt.track.kind === 'video') {
+      document.getElementById('video').srcObject = evt.streams[0];
+    }
+  });
+
+  document.getElementById('start').style.display = 'none';
+  document.getElementById('stop').style.display = 'inline-block';
+  negotiate(url);
+}
+
+function stop() {
+  document.getElementById('stop').style.display = 'none';
+  document.getElementById('start').style.display = 'inline-block';
+  setStatus('idle', 'Idle');
+  if (pc) {
+    pc.close();
+    pc = null;
+  }
+  document.getElementById('video').srcObject = null;
+}
+</script>
+</body>
+</html>
