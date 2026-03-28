@@ -1,6 +1,10 @@
 from datetime import datetime as Datetime
-from typing import List, Optional, TypedDict
+from typing import TYPE_CHECKING, Dict, List, Optional, TypedDict
 from uuid import uuid4
+
+if TYPE_CHECKING:
+  from vuer_rtc import CRDTMessage, JournalEntry, Snapshot
+  from vuer_rtc.state.vector_clock import VectorClock
 
 from vuer.schemas import Element, Scene
 from vuer.serdes import serializer
@@ -14,7 +18,7 @@ class Event:
   ts: float
   """
     timestamp is a float representing the UTC datetime. Msgpack natively
-    supports this. `datetime`'s Datetime class is significantly more 
+    supports this. `datetime`'s Datetime class is significantly more
     complex as it includes timezone information.
     """
 
@@ -333,6 +337,123 @@ class End(ServerEvent):
 
 
 END = End()
+
+
+# =============================================================================
+# CRDT Events — used by SceneStoreRTC for real-time collaborative editing
+#
+# All CRDT events share a single etype (RTC) and are distinguished by
+# an internal ``mtype`` field in the event data. The frontend listens for one
+# event type and dispatches by mtype.
+#
+# Wire protocol (matches TypeScript WireMessage union):
+#   mtype: "state"      — full snapshot + journal (sent on subscribe)
+#   mtype: "crdt"       — CRDT message from the server (Python-side commit)
+#   mtype: "broadcast"  — forwarded CRDT message from another client
+#   mtype: "ack"        — acknowledgment of a client message
+#   mtype: "error"      — error response for a client message
+#   mtype: "sync"       — sync request with vector clock and bloom filter
+#   mtype: "heartbeat"  — heartbeat with session info
+#   mtype: "room-reset" — room reset signal
+#
+# Both directions use the same etype:
+#   Server -> Client:  ServerEvent with etype = RTC, data = {mtype, ...}
+#   Client -> Server:  ClientEvent with etype = RTC, value = {mtype, ...}
+# =============================================================================
+
+RTC = "RTC"
+
+
+class CRDTEvent(ServerEvent):
+  """Base class for all CRDT wire messages. Subclasses share etype = RTC."""
+
+  etype = RTC
+
+
+class CRDTStateEvent(CRDTEvent):
+  """mtype: 'state' — full snapshot + journal sent on subscribe."""
+
+  def __init__(self, snapshot: "Snapshot", journal: "List[CRDTMessage]", **kwargs):
+    super().__init__(data={
+      "mtype": "state",
+      "snapshot": snapshot.toDict(),
+      "journal": [msg.toDict() for msg in journal],
+    }, **kwargs)
+
+
+class CRDTOpEvent(CRDTEvent):
+  """mtype: 'crdt' — CRDT message originating from the server (Python-side commit)."""
+
+  def __init__(self, msg: "CRDTMessage", **kwargs):
+    super().__init__(data={
+      "mtype": "crdt",
+      "msg": msg.toDict(),
+    }, **kwargs)
+
+
+class CRDTBroadcastEvent(CRDTEvent):
+  """mtype: 'broadcast' — forwarded CRDT message from another client."""
+
+  def __init__(self, msg: "CRDTMessage", **kwargs):
+    super().__init__(data={
+      "mtype": "broadcast",
+      "msg": msg.toDict(),
+    }, **kwargs)
+
+
+class CRDTAckEvent(CRDTEvent):
+  """mtype: 'ack' — acknowledgment of a client message."""
+
+  def __init__(self, msg_id: str, server_seq: Optional[int] = None, **kwargs):
+    d: dict = {"mtype": "ack", "msgId": msg_id}
+    if server_seq is not None:
+      d["serverSeq"] = server_seq
+    super().__init__(data=d, **kwargs)
+
+
+class CRDTErrorEvent(CRDTEvent):
+  """mtype: 'error' — error response for a client message."""
+
+  def __init__(self, msg_id: str, error: str, **kwargs):
+    super().__init__(data={
+      "mtype": "error",
+      "msgId": msg_id,
+      "error": error,
+    }, **kwargs)
+
+
+class CRDTSyncEvent(CRDTEvent):
+  """mtype: 'sync' — sync request with vector clock and bloom filter."""
+
+  def __init__(
+    self,
+    filter: bytes,
+    count: int,
+    vector_clock: "Optional[VectorClock]" = None,
+    **kwargs,
+  ):
+    d: dict = {"mtype": "sync", "filter": filter, "count": count}
+    if vector_clock is not None:
+      d["vectorClock"] = vector_clock
+    super().__init__(data=d, **kwargs)
+
+
+class CRDTHeartbeatEvent(CRDTEvent):
+  """mtype: 'heartbeat' — heartbeat with session info."""
+
+  def __init__(self, session_id: str, vector_clock: "VectorClock", **kwargs):
+    super().__init__(data={
+      "mtype": "heartbeat",
+      "sessionId": session_id,
+      "vectorClock": vector_clock,
+    }, **kwargs)
+
+
+class CRDTRoomResetEvent(CRDTEvent):
+  """mtype: 'room-reset' — room reset signal."""
+
+  def __init__(self, **kwargs):
+    super().__init__(data={"mtype": "room-reset"}, **kwargs)
 
 
 class ServerRPC(ServerEvent):
