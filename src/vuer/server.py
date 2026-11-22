@@ -2,7 +2,7 @@ import asyncio
 import socket as stdlib_socket
 import warnings
 from asyncio import sleep
-from collections import defaultdict, deque
+from collections import defaultdict
 from fnmatch import fnmatch
 from functools import partial
 from pathlib import Path
@@ -50,6 +50,7 @@ from vuer.events import (
   Update,
   Upsert,
 )
+from vuer.queues import UPLINK_POLICIES, client_frame_key, make_queue, server_frame_key
 from vuer.schemas import Page
 from vuer.types import EventHandler, SocketHandler, Url
 from vuer.workspace import Blob, Workspace, guess_content_type, workspace_from_config
@@ -297,14 +298,23 @@ def _match_filters(obj: dict, **filters) -> bool:
 
 
 class VuerSession(SceneOps):
-  def __init__(self, vuer: "Vuer", ws_id: int, queue_len=100):
+  def __init__(self, vuer: "Vuer", ws_id: int, queue_len=100, uplink_policy="fifo", downlink_policy="fifo"):
+    """
+    :param queue_len: Maximum length of the uplink and downlink queues.
+    :param uplink_policy: "fifo" (default) or "latest". With "latest", a queued
+        server event that has not been sent yet is replaced by a newer event
+        with the same frame key. See :mod:`vuer.queues`.
+    :param downlink_policy: "fifo" (default) or "latest". With "latest",
+        streaming client events (CAMERA_MOVE, HAND_MOVE, ...) that the session
+        has not read yet are replaced by newer ones with the same etype and key.
+    """
     self.vuer = vuer
     self.CURRENT_WS_ID = ws_id
+    self.uplink_policy = uplink_policy
+    self.downlink_policy = downlink_policy
 
-    que_maker = partial(deque, maxlen=queue_len)
-
-    self.downlink_queue: Deque[ClientEvent] = que_maker()
-    self.uplink_queue: Deque[ServerEvent] = que_maker()
+    self.downlink_queue: Deque[ClientEvent] = make_queue(downlink_policy, queue_len, key=client_frame_key)
+    self.uplink_queue: Deque[ServerEvent] = make_queue(uplink_policy, queue_len)
 
   @property
   def socket(self):
@@ -414,9 +424,17 @@ class VuerSession(SceneOps):
 
     return await self.vuer.rpc(self.CURRENT_WS_ID, event, ttl=ttl)
 
-  def send(self, event: ServerEvent) -> None:
+  def send(self, event: ServerEvent, frame_key=None) -> None:
     """
     Sending the event through the uplink queue.
+
+    :param event: The ServerEvent to send.
+    :param frame_key: Optional hashable key for the "latest" uplink policy.
+        A queued event with the same frame key that has not been sent yet is
+        dropped, so the client gets only the newest frame. When omitted, the
+        key comes from :func:`vuer.queues.server_frame_key` (event type plus
+        element keys for SET, UPDATE, UPSERT and ADD). Ignored with the
+        default "fifo" policy.
     """
     assert self.CURRENT_WS_ID is not None, (
       "Websocket session is missing. CURRENT_WS_ID is None."
@@ -432,6 +450,11 @@ class VuerSession(SceneOps):
     event_bytes = packb(
       event_obj, use_single_float=True, use_bin_type=True, default=_default_encoder
     )
+
+    if self.uplink_policy == "latest":
+      if frame_key is None:
+        frame_key = server_frame_key(event)
+      return self.uplink_queue.append(event_bytes, frame_key=frame_key)
 
     return self.uplink_queue.append(event_bytes)
 
@@ -641,6 +664,9 @@ class Vuer(Server):
 
   free_port: bool = False
   queue_len: int = 100
+  # "fifo" (default) or "latest": latest-frame-wins for slow clients. See vuer.queues.
+  uplink_policy: str = EnvVar @ "VUER_UPLINK_POLICY" | "fifo"
+  downlink_policy: str = EnvVar @ "VUER_DOWNLINK_POLICY" | "fifo"
   queries: Dict = None  # URL query parameters to pass to client
   client_root: Path = DEFAULT_CLIENT_ROOT  # Path to client build directory
   verbose: bool = False  # Print server settings on startup
@@ -653,12 +679,22 @@ class Vuer(Server):
     :return: A proxy object.
     """
     # todo: check if shallow copy suffices
-    proxy = VuerSession(self, ws_id, queue_len=self.queue_len)
+    proxy = VuerSession(
+      self,
+      ws_id,
+      queue_len=self.queue_len,
+      uplink_policy=self.uplink_policy,
+      downlink_policy=self.downlink_policy,
+    )
 
     return proxy
 
   def __post_init__(self):
     """Initialize Vuer after params-proto sets up fields."""
+
+    for name in ("uplink_policy", "downlink_policy"):
+      if getattr(self, name) not in UPLINK_POLICIES:
+        raise ValueError(f"{name} must be one of {UPLINK_POLICIES}, not {getattr(self, name)!r}")
 
     # Handle deprecated static_root parameter
     if self.static_root is not None:
