@@ -1,0 +1,13 @@
+{
+  "current": "0.2.0",
+  "aliases": {
+    "latest": "https://vuer-docs.dreamlake.ai"
+  },
+  "versions": [
+    {
+      "version": "0.2.0",
+      "url": "https://docs-v0-2-0--vuer-docs.netlify.app",
+      "date": "2026-11-22"
+    }
+  ]
+}

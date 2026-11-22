@@ -1,0 +1,35 @@
+{
+  "name": "vuer-docs",
+  "version": "0.2.0",
+  "description": "Vuer documentation site (@dreamlake/dockit shell + MDX pages)",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && ([ -f dist/client/index.html ] || vike prerender) && node scripts/gen-llms.mjs && pagefind --site dist/client",
+    "preview": "vite preview",
+    "gen:llms": "node scripts/gen-llms.mjs",
+    "check:llms": "node scripts/gen-llms.mjs --check",
+    "typecheck": "tsc --noEmit",
+    "set-version": "node scripts/set-version.mjs",
+    "version-branch": "sh scripts/version-branch.sh"
+  },
+  "dependencies": {
+    "@dreamlake/dockit": "0.2.36",
+    "@mdx-js/react": "^3.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwindcss": "^4.3.2",
+    "vike": "^0.4.260",
+    "vike-react": "^0.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "pagefind": "^1.5.2",
+    "typescript": "^5.7.0",
+    "vite": "^7.3.6"
+  }
+}

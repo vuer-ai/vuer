@@ -1,0 +1,142 @@
+---
+title: Migrate from 0.1 to 0.2
+section: Release
+order: 1
+description: Every breaking change in vuer 0.2.0 and @vuer-ai/vuer 0.1.0, who it affects, and the fix.
+---
+
+# Migrate from vuer 0.1 to 0.2
+
+This page lists every breaking change in vuer **0.2.0** (Python) and
+@vuer-ai/vuer **0.1.0** (TypeScript). For each change it gives the users that
+it affects and the fix.
+
+<Callout variant="warn" title="Not released">
+These versions are in review. Upgrade the Python package, the bundled
+`client_build` and the TypeScript client together.
+</Callout>
+
+## Summary
+
+| # | Change | Package | Affects |
+| --- | --- | --- | --- |
+| 1 | Python 3.10 or later | vuer | Python 3.8 / 3.9 users |
+| 2 | numpy arrays go on the wire as binary arrays | vuer, @vuer-ai/vuer | custom clients, code that reads `_serialize()` |
+| 3 | `SERVER_INFO` is the first message | vuer | code that reads the first message of `VuerClient` |
+| 4 | `VUER_CORS` default no longer ends in `*` | vuer | pages on other origins |
+| 5 | `Server.cors_context` is `None` | vuer | code that adds routes to `cors_context` |
+| 6 | `__module__` of scene components | vuer | code that reads `__module__` or unpickles 0.1 objects |
+| 7 | Peer ranges instead of `latest` | @vuer-ai/vuer | apps on React 18, r3f 8 or three older than r178 |
+| 8 | `./workspace` uses `@dreamlake/uikit` | @vuer-ai/vuer | apps that import `@vuer-ai/vuer/workspace` |
+
+Auth, the `latest` queue policy and library mode are new and off by default.
+They do not break code.
+
+## 1. Python 3.10 or later
+
+**Change.** `requires-python = ">=3.10"`.
+
+**Fix.** Use Python 3.10 or later. On 3.8 / 3.9, pip installs 0.1.6.
+
+## 2. Binary arrays (wire protocol 2)
+
+**Change.** With the default `array_protocol="auto"`, a client that announces
+protocol 2 gets numpy arrays with more than 16 elements as MessagePack ExtType
+`0x56`. `Element._serialize()` now returns numpy arrays, not lists. Event
+handlers get ndarrays when a client sends binary arrays. Refer to
+[Wire protocol 2](/transport/protocol).
+
+**Fix.**
+
+- Custom clients that send `protocol=2` must decode ExtType `0x56`.
+- If you `json.dumps` the output of `_serialize()`, convert the arrays first:
+  `.tolist()`, or use `vuer.protocol.pack_event`.
+- If a handler needs a list, call `.tolist()` on the value.
+- To get the 0.1 output for every client: `Vuer(array_protocol="list")` or
+  `VUER_ARRAY_PROTOCOL=list`.
+- In a TypeScript component that needs plain arrays, call `asNestedList(value)`,
+  or call `setArrayDecoding('list')` one time at start.
+
+Old browser clients (vuer.ai builds before vuer-ts#183, and the 0.1.x
+`client_build`) do not send `protocol=2`. They continue to get lists. You do not
+need to do anything for them.
+
+## 3. `SERVER_INFO` first
+
+**Change.** The server sends `SERVER_INFO` to each session before other events.
+`VuerClient.recv()` returns it first.
+
+**Fix.** Skip events with `etype == "SERVER_INFO"`, or read
+`client.server_protocol`.
+
+## 4. `VUER_CORS` default
+
+**Change.** The default allow-list is `https://vuer.ai`, `https://*.vuer.ai`,
+`http(s)://localhost:*`, `http(s)://127.0.0.1:*` and `https://dash.ml`. The list
+also checks the `Origin` of WebSocket upgrades (HTTP 403). Same-origin pages and
+non-browser clients are always allowed.
+
+**Fix.** If a page on another origin loads files from your server or opens its
+WebSocket, add the origin:
+
+```bash
+export VUER_CORS="https://vuer.ai,https://*.vuer.ai,http://localhost:*,https://my-app.example.com"
+```
+
+For the 0.1 behavior, set `VUER_CORS="*"`.
+
+## 5. `Server.cors_context`
+
+**Change.** CORS is a middleware that matches fnmatch patterns.
+`Server.cors_context` is `None`.
+
+**Fix.** Add routes with `Server._add_route()`. The middleware applies CORS to
+every route.
+
+## 6. Module layout
+
+**Change.** Scene component classes moved to `vuer.schemas._scene.*`. The public
+import paths do not change.
+
+**Fix.** Import from `vuer.schemas`. Do not compare `__module__` strings. Pickle
+schema objects again with 0.2.
+
+## 7. Peer ranges
+
+**Change.** `@vuer-ai/vuer` 0.1.0 needs React 19, @react-three/fiber 9 and
+three r178 or later. Refer to [Packaging](/client/packaging).
+
+**Fix.** Upgrade these packages. In the vuer-web-workspace monorepo, add the
+root `@types` overrides on the packaging page.
+
+## 8. UI kit of the workspace entry
+
+**Change.** `@vuer-ai/vuer/workspace` uses `@dreamlake/uikit` ^0.3.0, follows
+the host theme, and has no theme switch. `SimpleVuer` no longer reads the
+vuer-uikit `ThemeProvider`.
+
+**Fix.** Install `@dreamlake/uikit` and load its stylesheet (refer to
+[Theme and UI kit](/client/theme)). To set the theme, set `data-theme` on the
+host page, or send a `{ type: 'theme', theme, source: 'vuer-host' }` message to
+the iframe.
+
+## Downstream projects
+
+| Project | Effect | Action |
+| --- | --- | --- |
+| **dreamlake-ai/dreamlake-ai** (`@vuer-ai/vuer` ^0.0.103, `@vuer-ai/mujoco-ts`) | Its React 19.2, r3f 9.8, three 0.187, jotai 3 and immer 11 are in the new peer ranges. No source file imports `@vuer-ai/vuer/workspace`. It does not use the Python server. | Change the range to `^0.1.0` after the release. Optional: replace the `NOOP_SOCKET` shim in `components/envs/mujocoShims.ts` with `VuerLocalProvider` or `createLocalSocket()`. |
+| **vuer-ai/vuer-web-workspace** (`vuer-web`, `vuer-py-client`) | It builds `client_build` and the vuer.ai client. | Merge vuer-py-client#4 (kit stylesheet, no page ThemeProvider). Add the root `@types` overrides and `link-workspace-packages=true`. Add `@dreamlake/uikit` and its stylesheet to `vuer-web`. Rebuild `client_build` from the release commit of vuer-ts and run `python -m vuer.protocol --check-client-build`. Rebuild and deploy vuer.ai so that it sends `protocol=2`. |
+| **vuer client_build** (in the wheel) | It must match the server protocol. | Rebuild in the release PR. The test `test_client_build.py` fails if the bundle and the server differ. |
+| **Python demos** (`docs/examples`, vuer-examples, min-teleop) | `TriMesh` and `PointCloud` already send bytes. Other props with large numpy arrays now go binary to new clients. | No change for the bundled client. Use Python 3.10+. Set `VUER_CORS` if the demo page is on another origin. |
+| **robot-env** (`rigs`, `vuer_env`) | It uses its own transport and its own token code with the same design. | No change now. Later, `rigs` can use `vuer.auth` (the domain string is different: `vuer-access-v1.`). |
+| **@vuer-ai/mujoco-ts** | Peer of `@vuer-ai/vuer`. | Change its peer range to `^0.1.0` at its next release. |
+
+## Upgrade checklist
+
+1. Use Python 3.10 or later.
+2. `pip install vuer==0.2.0` (after the release).
+3. Run your app. Look for `SERVER_INFO` in custom readers and for ndarrays in
+   handlers.
+4. If a page on another origin uses the server, set `VUER_CORS`.
+5. In TypeScript apps: upgrade React, r3f and three; set `@vuer-ai/vuer` to
+   `^0.1.0`; if you use `./workspace`, install and load `@dreamlake/uikit`.

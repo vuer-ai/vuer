@@ -1,0 +1,104 @@
+# Wire protocol 2
+
+Vuer sends MessagePack frames on one WebSocket. Protocol 2 adds one change:
+numpy arrays go on the wire as binary typed arrays, not as lists.
+
+Pull requests: vuer-ai/vuer#177 (server), vuer-ai/vuer-ts#183 (client).
+
+## Handshake
+
+1. The client opens the WebSocket with `?protocol=2` on the URL.
+2. The client sends `INIT` with `protocol: 2` in its value.
+3. The server sends `SERVER_INFO` first. Its value has `protocol`, `arrayProtocol`
+   (`"binary"` or `"list"`) and, when auth is on, `role`.
+
+A client that does not send `protocol=2` is a protocol-1 (legacy) client. The
+server sends lists to it. Old clients ignore `SERVER_INFO`, because they ignore
+unknown event types.
+
+## Binary arrays
+
+The server encodes a numpy array as MessagePack ExtType **0x56**. The payload is:
+
+| Byte | Content |
+| --- | --- |
+| 0 | Format version (`1`) |
+| 1 | dtype code (table below) |
+| 2 | Number of dimensions (`ndim`) |
+| 3 | Reserved (`0`) |
+| 4 … | `ndim` × `uint32` little-endian dimensions |
+| then | Raw little-endian data in C order |
+
+| Code | dtype | Code | dtype |
+| --- | --- | --- | --- |
+| 1 | uint8 | 7 | float16 |
+| 2 | int8 | 8 | float32 |
+| 3 | uint16 | 9 | float64 |
+| 4 | int16 | 10 | int64 |
+| 5 | uint32 | 11 | uint64 |
+| 6 | int32 | 12 | bool |
+
+The server converts big-endian and non-contiguous arrays before it encodes them.
+
+### Small arrays stay lists
+
+An array with `size <= array_list_max` (default **16**) goes on the wire as a
+list. Positions, quaternions, colors and 4×4 matrices are small.
+react-three-fiber expects these props as plain arrays. numpy scalars go on the
+wire as numbers.
+
+## Server options
+
+| Option | Environment variable | Default | Effect |
+| --- | --- | --- | --- |
+| `array_protocol` | `VUER_ARRAY_PROTOCOL` | `"auto"` | `auto`: binary for protocol-2 clients, lists for legacy clients. `binary`: always binary. `list`: always lists (compatibility flag). |
+| `array_list_max` | — | `16` | Arrays with this number of elements or fewer stay lists. |
+
+```python
+app = Vuer(array_protocol="list")  # protocol-1 output for every client
+```
+
+Each session has `session.protocol` and `session.array_protocol`.
+
+## Client
+
+`@vuer-ai/vuer` registers the 0x56 extension with msgpackr. It decodes the
+payload into a typed array (`Float32Array`, `Uint8Array`, …). float16 decodes
+into `Float16Array` from `@petamoriken/float16`; bool decodes into `Uint8Array`.
+The typed array has non-enumerable `shape` and `dtype` properties.
+
+```ts
+import { isNDArray, setArrayDecoding, asNestedList } from '@vuer-ai/vuer';
+
+// Compatibility flag: decode binary arrays into nested plain arrays (protocol-1 shape).
+setArrayDecoding('list');
+
+// In a component that needs a plain array:
+const points = asNestedList(props.points);
+```
+
+Other exports: `PROTOCOL_VERSION`, `NDARRAY_EXT`, `decodeNDArray`,
+`encodeNDArray`, `registerVuerExtensions`, `buildSocketUrl` and `serverInfoAtom`.
+
+## Client to server
+
+The Python server decodes 0x56 and msgpackr's native typed-array extension
+(0x74) into numpy arrays. Event handlers then get ndarrays, not lists.
+
+## Python client
+
+`VuerClient` connects with `?protocol=2`, sends `protocol: 2` in `INIT`, and
+decodes binary arrays. It sends binary arrays only after the server announces
+protocol 2, so it continues to work with 0.1.x servers.
+
+## Bundled client
+
+The wheel contains `vuer/client_build`, built from the matching vuer-ts commit.
+The bundle contains the marker `vuer-wire-protocol/2`. This command fails when
+the bundled client and the server protocol are different:
+
+```bash
+python -m vuer.protocol --check-client-build
+```
+
+To rebuild the bundle, refer to [CI and local tests](reference/development-ci.md#rebuild-the-bundled-client).

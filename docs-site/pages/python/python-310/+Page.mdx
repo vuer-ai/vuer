@@ -1,0 +1,57 @@
+---
+title: Python 3.10 and module layout
+section: Python
+order: 1
+description: vuer 0.2.0 needs Python 3.10 or later; scene components are split into modules under vuer.schemas._scene with unchanged public imports.
+---
+
+# Python 3.10 and module layout
+
+Pull request: vuer-ai/vuer#173.
+
+## Python 3.10 or later
+
+vuer 0.2.0 has `requires-python = ">=3.10"`. On Python 3.8 and 3.9, pip installs
+vuer 0.1.6.
+
+## Scene components
+
+`vuer/schemas/scene_components.py` had 4115 lines. Most classes are now in
+smaller modules in `vuer/schemas/_scene/`:
+
+| Module | Contents |
+| --- | --- |
+| `base` | `SceneElement` and the shared base classes |
+| `root` | `Scene`, `DefaultScene` |
+| `geometry` | primitives (`Box`, `Sphere`, …), `TriMesh`, `PointCloud`, `Group`, `Grid`, `Arrow`, bounding boxes |
+| `splats` | Gaussian splats, `Pcd`, depth point clouds |
+| `media` | images, video and WebRTC planes, `Html`, `Text`, backgrounds |
+| `lights` | lights, `Stage`, `Fog`, shadows |
+| `controls` | cameras, camera controls, `Movable`, `Pivot`, gamepad and keyboard monitors, HUD |
+| `xr` | `Hands`, `MotionControllers`, `Body`, `Head`, `WebXRMesh` |
+| `models` | file models (`Obj`, `Fbx`, `Stl`, `Dae`, `Ply`, `Glb`, `Bvh`) |
+| `animation` | animation clips and tracks |
+
+The frustum classes, `CameraHelper`, `Urdf`, `Gripper` and `SkeletalGripper`
+stay in `scene_components.py`.
+
+### Imports do not change
+
+Both import paths continue to work for every name:
+
+```python
+from vuer.schemas import Box, Scene, Urdf
+from vuer.schemas.scene_components import Box, Scene, Urdf
+```
+
+A test fixture records every name that 0.1.6 exports and the `_serialize()`
+output of all 169 component classes. The test fails when a name or an output
+changes.
+
+<Callout variant="info" title="__module__ changes">
+`Box.__module__` is now `vuer.schemas._scene.geometry`. This is important only
+when code reads `__module__`, or loads schema objects that 0.1.x pickled.
+</Callout>
+
+The package name is `_scene`, not `scene`, so that `from vuer.schemas import *`
+does not replace a variable with the name `scene`.
