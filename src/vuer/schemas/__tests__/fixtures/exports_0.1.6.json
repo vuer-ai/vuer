@@ -1,0 +1,1155 @@
+{
+ "names": {
+  "vuer.schemas": [
+   "AccumulativeShadows",
+   "AmbientLight",
+   "AmbientLightStage",
+   "AnimationClip",
+   "Arrow",
+   "AutoScroll",
+   "BBox",
+   "BackgroundColor",
+   "Billboard",
+   "BlockElement",
+   "Body",
+   "Bold",
+   "BoundingBox",
+   "BoundingBoxProvider",
+   "Box",
+   "Button",
+   "Bvh",
+   "BytesIO",
+   "CameraHelper",
+   "CameraPreviewOverlay",
+   "CameraPreviewThumbs",
+   "CameraView",
+   "Capsule",
+   "CatmullRomLine",
+   "Center",
+   "Circle",
+   "Clickable",
+   "Cone",
+   "ContribLoader",
+   "CoordsMarker",
+   "CubicBezierLine",
+   "Cylinder",
+   "Dae",
+   "DefaultScene",
+   "DepthPointCloud",
+   "DepthPointCloudProvider",
+   "DirectionalLight",
+   "Dodecahedron",
+   "Edges",
+   "Element",
+   "Extrude",
+   "Facemesh",
+   "Fbx",
+   "FisheyeCamera",
+   "FisheyeFrustum",
+   "Fog",
+   "Frustum",
+   "Gamepad",
+   "Glb",
+   "GrabRender",
+   "Grid",
+   "Gripper",
+   "Group",
+   "HUDPlane",
+   "HandActuator",
+   "Hands",
+   "Head",
+   "Header",
+   "Header1",
+   "Header2",
+   "Header3",
+   "HemisphereLight",
+   "HemisphereLightStage",
+   "Html",
+   "IMAGE_FORMATS",
+   "Icosahedron",
+   "Iframe",
+   "Image",
+   "ImageBackground",
+   "Img",
+   "InPlaceDepthPointCloud",
+   "InputBox",
+   "Italic",
+   "KeyboardMonitor",
+   "Lathe",
+   "Line",
+   "LineBasicMaterial",
+   "LineDashedMaterial",
+   "Link",
+   "List",
+   "Literal",
+   "LumaSplats",
+   "Markdown",
+   "Material",
+   "MeshBasicMaterial",
+   "MeshDepthMaterial",
+   "MeshDistanceMaterial",
+   "MeshLambertMaterial",
+   "MeshMatcapMaterial",
+   "MeshNormalMaterial",
+   "MeshPhongMaterial",
+   "MeshPhysicalMaterial",
+   "MeshStandardMaterial",
+   "MeshToonMaterial",
+   "MjCameraView",
+   "ModelNode",
+   "MotionControllerActuator",
+   "MotionControllers",
+   "Movable",
+   "MuJoCo",
+   "MuJoCoProvider",
+   "NDArray",
+   "Obj",
+   "Octahedron",
+   "OrbitControls",
+   "OrthographicCamera",
+   "OrthographicFrustum",
+   "Page",
+   "Paragraph",
+   "Path",
+   "Pcd",
+   "PerspectiveCamera",
+   "PerspectiveFrustum",
+   "Pivot",
+   "Plane",
+   "PlaybackAnimate",
+   "Ply",
+   "PointCloud",
+   "PointLight",
+   "PointerControls",
+   "PointsMaterial",
+   "Polyhedron",
+   "QuadraticBezierLine",
+   "QuaternionTrack",
+   "RandomizedLight",
+   "RawShaderMaterial",
+   "RectAreaLight",
+   "Ring",
+   "Scene",
+   "SceneBackground",
+   "SceneCamera",
+   "SceneCameraControl",
+   "SceneElement",
+   "ShaderMaterial",
+   "ShadowMaterial",
+   "Shape",
+   "SimpleOrthographicCamera",
+   "SimplePerspectiveCamera",
+   "SkeletalGripper",
+   "Slider",
+   "SparkSplats",
+   "Sphere",
+   "Splat",
+   "SpotLight",
+   "SpriteMaterial",
+   "Stage",
+   "StereoVideoPlane",
+   "Stl",
+   "Tetrahedron",
+   "Text",
+   "Text3D",
+   "ThreeAnimate",
+   "TimelineControls",
+   "Torus",
+   "TorusKnot",
+   "Trail",
+   "TriMesh",
+   "Tube",
+   "Tuple",
+   "Union",
+   "Urdf",
+   "Url",
+   "VectorTrack",
+   "VideoMaterial",
+   "VideoPlane",
+   "ViewportHud",
+   "VuerGroup",
+   "VuerSplat",
+   "WebRTCStereoVideoPlane",
+   "WebRTCVideoMaterial",
+   "WebRTCVideoPlane",
+   "WebXRMesh",
+   "Wireframe",
+   "count",
+   "div",
+   "drei_components",
+   "element_counter",
+   "fnmatch",
+   "group",
+   "html_components",
+   "material_components",
+   "mesh",
+   "np",
+   "omit",
+   "p",
+   "physics_components",
+   "pil_image",
+   "scene_components",
+   "span",
+   "vuer_components"
+  ],
+  "vuer.schemas.drei_components": [
+   "CatmullRomLine",
+   "CubicBezierLine",
+   "Facemesh",
+   "FisheyeCamera",
+   "Html",
+   "Line",
+   "OrbitControls",
+   "OrthographicCamera",
+   "PerspectiveCamera",
+   "QuadraticBezierLine",
+   "SceneElement",
+   "SimpleOrthographicCamera",
+   "SimplePerspectiveCamera",
+   "Splat"
+  ],
+  "vuer.schemas.html_components": [
+   "AutoScroll",
+   "BlockElement",
+   "Bold",
+   "Button",
+   "BytesIO",
+   "Element",
+   "Header",
+   "Header1",
+   "Header2",
+   "Header3",
+   "IMAGE_FORMATS",
+   "Iframe",
+   "Img",
+   "InputBox",
+   "Italic",
+   "Link",
+   "Literal",
+   "Markdown",
+   "Page",
+   "Paragraph",
+   "Path",
+   "Slider",
+   "Tuple",
+   "Union",
+   "Url",
+   "count",
+   "div",
+   "element_counter",
+   "fnmatch",
+   "np",
+   "omit",
+   "pil_image",
+   "span"
+  ],
+  "vuer.schemas.material_components": [
+   "Element",
+   "LineBasicMaterial",
+   "LineDashedMaterial",
+   "Material",
+   "MeshBasicMaterial",
+   "MeshDepthMaterial",
+   "MeshDistanceMaterial",
+   "MeshLambertMaterial",
+   "MeshMatcapMaterial",
+   "MeshNormalMaterial",
+   "MeshPhongMaterial",
+   "MeshPhysicalMaterial",
+   "MeshStandardMaterial",
+   "MeshToonMaterial",
+   "PointsMaterial",
+   "RawShaderMaterial",
+   "ShaderMaterial",
+   "ShadowMaterial",
+   "SpriteMaterial"
+  ],
+  "vuer.schemas.physics_components": [
+   "HandActuator",
+   "List",
+   "MjCameraView",
+   "MotionControllerActuator",
+   "MuJoCo",
+   "MuJoCoProvider",
+   "SceneElement"
+  ],
+  "vuer.schemas.scene_components": [
+   "AccumulativeShadows",
+   "AmbientLight",
+   "AmbientLightStage",
+   "AnimationClip",
+   "Arrow",
+   "BBox",
+   "BackgroundColor",
+   "Billboard",
+   "BlockElement",
+   "Body",
+   "BoundingBox",
+   "BoundingBoxProvider",
+   "Box",
+   "Bvh",
+   "CameraHelper",
+   "CameraPreviewOverlay",
+   "CameraPreviewThumbs",
+   "CameraView",
+   "Capsule",
+   "Center",
+   "Circle",
+   "Clickable",
+   "Cone",
+   "CoordsMarker",
+   "Cylinder",
+   "Dae",
+   "DefaultScene",
+   "DepthPointCloud",
+   "DepthPointCloudProvider",
+   "DirectionalLight",
+   "Dodecahedron",
+   "Edges",
+   "Element",
+   "Extrude",
+   "Fbx",
+   "FisheyeFrustum",
+   "Fog",
+   "Frustum",
+   "Gamepad",
+   "Glb",
+   "GrabRender",
+   "Grid",
+   "Gripper",
+   "Group",
+   "HUDPlane",
+   "Hands",
+   "Head",
+   "HemisphereLight",
+   "HemisphereLightStage",
+   "Html",
+   "Icosahedron",
+   "Image",
+   "ImageBackground",
+   "Img",
+   "InPlaceDepthPointCloud",
+   "KeyboardMonitor",
+   "Lathe",
+   "List",
+   "Literal",
+   "LumaSplats",
+   "ModelNode",
+   "MotionControllers",
+   "Movable",
+   "NDArray",
+   "Obj",
+   "Octahedron",
+   "OrthographicFrustum",
+   "Pcd",
+   "PerspectiveFrustum",
+   "Pivot",
+   "Plane",
+   "PlaybackAnimate",
+   "Ply",
+   "PointCloud",
+   "PointLight",
+   "PointerControls",
+   "Polyhedron",
+   "QuaternionTrack",
+   "RandomizedLight",
+   "RectAreaLight",
+   "Ring",
+   "Scene",
+   "SceneBackground",
+   "SceneCamera",
+   "SceneCameraControl",
+   "SceneElement",
+   "Shape",
+   "SkeletalGripper",
+   "SparkSplats",
+   "Sphere",
+   "Splat",
+   "SpotLight",
+   "Stage",
+   "StereoVideoPlane",
+   "Stl",
+   "Tetrahedron",
+   "Text",
+   "Text3D",
+   "ThreeAnimate",
+   "TimelineControls",
+   "Torus",
+   "TorusKnot",
+   "Trail",
+   "TriMesh",
+   "Tube",
+   "Urdf",
+   "VectorTrack",
+   "VideoMaterial",
+   "VideoPlane",
+   "ViewportHud",
+   "VuerGroup",
+   "VuerSplat",
+   "WebRTCStereoVideoPlane",
+   "WebRTCVideoMaterial",
+   "WebRTCVideoPlane",
+   "WebXRMesh",
+   "Wireframe",
+   "group",
+   "mesh",
+   "np",
+   "p"
+  ],
+  "vuer.schemas.vuer_components": [
+   "ContribLoader",
+   "SceneElement"
+  ]
+ },
+ "serialize": {
+  "AccumulativeShadows": {
+   "key": "k-AccumulativeShadows",
+   "tag": "AccumulativeShadows"
+  },
+  "AmbientLight": {
+   "key": "k-AmbientLight",
+   "tag": "AmbientLight"
+  },
+  "AmbientLightStage": {
+   "key": "k-AmbientLightStage",
+   "tag": "AmbientLightStage"
+  },
+  "AnimationClip": {
+   "key": "k-AnimationClip",
+   "tag": "AnimationClip"
+  },
+  "Arrow": {
+   "key": "k-Arrow",
+   "tag": "Arrow"
+  },
+  "AutoScroll": {
+   "key": "k-AutoScroll",
+   "tag": "AutoScroll"
+  },
+  "BBox": {
+   "color": "0xffffff",
+   "key": "k-BBox",
+   "max": {
+    "x": 1,
+    "y": 1,
+    "z": 1
+   },
+   "min": {
+    "x": -1,
+    "y": -1,
+    "z": -1
+   },
+   "scale": 1.01,
+   "tag": "BBox"
+  },
+  "BackgroundColor": {
+   "color": "#131416",
+   "key": "k-BackgroundColor",
+   "tag": "BackgroundColor"
+  },
+  "Billboard": {
+   "follow": true,
+   "key": "k-Billboard",
+   "lockX": false,
+   "lockY": false,
+   "lockZ": false,
+   "tag": "Billboard"
+  },
+  "BlockElement": {
+   "key": "k-BlockElement",
+   "tag": "div"
+  },
+  "Body": {
+   "key": "k-Body",
+   "tag": "Body"
+  },
+  "Bold": {
+   "key": "k-Bold",
+   "style": {
+    "fontWeight": "bold"
+   },
+   "tag": "Span",
+   "text": ""
+  },
+  "BoundingBox": {
+   "key": "k-BoundingBox",
+   "tag": "BoundingBox"
+  },
+  "BoundingBoxProvider": {
+   "key": "k-BoundingBoxProvider",
+   "tag": "BoundingBoxProvider"
+  },
+  "Box": {
+   "key": "k-Box",
+   "tag": "Box"
+  },
+  "Button": {
+   "key": "k-Button",
+   "tag": "Button"
+  },
+  "Bvh": {
+   "key": "k-Bvh",
+   "tag": "Bvh"
+  },
+  "CameraHelper": {
+   "key": "k-CameraHelper",
+   "tag": "CameraHelper"
+  },
+  "CameraPreviewOverlay": {
+   "key": "k-CameraPreviewOverlay",
+   "tag": "CameraPreviewOverlay"
+  },
+  "CameraPreviewThumbs": {
+   "key": "k-CameraPreviewThumbs",
+   "tag": "CameraPreviewThumbs"
+  },
+  "CameraView": {
+   "key": "k-CameraView",
+   "tag": "CameraView"
+  },
+  "Capsule": {
+   "key": "k-Capsule",
+   "tag": "Capsule"
+  },
+  "CatmullRomLine": {
+   "key": "k-CatmullRomLine",
+   "tag": "CatmullRomLine"
+  },
+  "Center": {
+   "key": "k-Center",
+   "tag": "Center"
+  },
+  "Circle": {
+   "key": "k-Circle",
+   "tag": "Circle"
+  },
+  "Clickable": {
+   "key": "k-Clickable",
+   "tag": "Clickable"
+  },
+  "Cone": {
+   "key": "k-Cone",
+   "tag": "Cone"
+  },
+  "ContribLoader": {
+   "key": "k-ContribLoader",
+   "tag": "ContribLoader"
+  },
+  "CoordsMarker": {
+   "key": "k-CoordsMarker",
+   "tag": "CoordsMarker"
+  },
+  "CubicBezierLine": {
+   "key": "k-CubicBezierLine",
+   "tag": "CubicBezierLine"
+  },
+  "Cylinder": {
+   "key": "k-Cylinder",
+   "tag": "Cylinder"
+  },
+  "Dae": {
+   "key": "k-Dae",
+   "tag": "Dae"
+  },
+  "DefaultScene": {
+   "bgChildren": [
+    {
+     "key": "grid",
+     "tag": "Grid"
+    },
+    {
+     "key": "light-stage",
+     "tag": "HemisphereLightStage"
+    },
+    {
+     "index": 0,
+     "key": "gamepad-0",
+     "tag": "Gamepad"
+    },
+    {
+     "fps": 30,
+     "key": "hands",
+     "stream": true,
+     "tag": "Hands"
+    },
+    {
+     "eventTypes": [
+      "trigger",
+      "squeeze"
+     ],
+     "fps": 30,
+     "key": "motion-controllers",
+     "left": null,
+     "right": null,
+     "stream": true,
+     "tag": "MotionControllers"
+    },
+    {
+     "key": "SceneCamera",
+     "position": [
+      0,
+      5,
+      10
+     ],
+     "tag": "SceneCamera"
+    },
+    {
+     "key": "SceneCameraControl",
+     "makeDefault": true,
+     "tag": "SceneCameraControl"
+    },
+    {
+     "key": "CameraPreviewThumbs",
+     "tag": "CameraPreviewThumbs"
+    },
+    {
+     "key": "CameraPreviewOverlay",
+     "tag": "CameraPreviewOverlay"
+    }
+   ],
+   "key": "k-DefaultScene",
+   "tag": "Scene",
+   "up": [
+    0,
+    1,
+    0
+   ]
+  },
+  "DepthPointCloud": {
+   "key": "k-DepthPointCloud",
+   "tag": "DepthPointCloud"
+  },
+  "DepthPointCloudProvider": {
+   "key": "k-DepthPointCloudProvider",
+   "tag": "DepthPointCloudProvider"
+  },
+  "DirectionalLight": {
+   "key": "k-DirectionalLight",
+   "tag": "DirectionalLight"
+  },
+  "Dodecahedron": {
+   "key": "k-Dodecahedron",
+   "tag": "Dodecahedron"
+  },
+  "Edges": {
+   "key": "k-Edges",
+   "tag": "Edges"
+  },
+  "Element": {
+   "key": "k-Element",
+   "tag": "div"
+  },
+  "Extrude": {
+   "key": "k-Extrude",
+   "tag": "Extrude"
+  },
+  "Facemesh": {
+   "key": "k-Facemesh",
+   "tag": "Facemesh"
+  },
+  "Fbx": {
+   "key": "k-Fbx",
+   "tag": "Fbx"
+  },
+  "FisheyeCamera": {
+   "key": "k-FisheyeCamera",
+   "tag": "FisheyeCamera"
+  },
+  "FisheyeFrustum": {
+   "key": "k-FisheyeFrustum",
+   "tag": "FisheyeFrustum"
+  },
+  "Fog": {
+   "key": "k-Fog",
+   "tag": "fog"
+  },
+  "Frustum": {
+   "key": "k-Frustum",
+   "tag": "Frustum"
+  },
+  "Gamepad": {
+   "key": "k-Gamepad",
+   "tag": "Gamepad"
+  },
+  "Glb": {
+   "key": "k-Glb",
+   "tag": "Glb"
+  },
+  "GrabRender": {
+   "key": "k-GrabRender",
+   "tag": "GrabRender"
+  },
+  "Grid": {
+   "key": "k-Grid",
+   "tag": "Grid"
+  },
+  "Gripper": {
+   "key": "k-Gripper",
+   "tag": "Gripper"
+  },
+  "Group": {
+   "key": "k-Group",
+   "tag": "VuerGroup"
+  },
+  "HUDPlane": {
+   "key": "k-HUDPlane",
+   "tag": "HUDPlane"
+  },
+  "HandActuator": {
+   "key": "k-HandActuator",
+   "tag": "HandActuator"
+  },
+  "Hands": {
+   "key": "k-Hands",
+   "tag": "Hands"
+  },
+  "Head": {
+   "key": "k-Head",
+   "tag": "Head"
+  },
+  "Header": {
+   "key": "k-Header",
+   "tag": "h1"
+  },
+  "Header1": {
+   "key": "k-Header1",
+   "tag": "h1"
+  },
+  "Header2": {
+   "key": "k-Header2",
+   "tag": "h2"
+  },
+  "Header3": {
+   "key": "k-Header3",
+   "tag": "h3"
+  },
+  "HemisphereLight": {
+   "key": "k-HemisphereLight",
+   "tag": "HemisphereLight"
+  },
+  "HemisphereLightStage": {
+   "key": "k-HemisphereLightStage",
+   "tag": "HemisphereLightStage"
+  },
+  "Html": {
+   "key": "k-Html",
+   "tag": "Html"
+  },
+  "Icosahedron": {
+   "key": "k-Icosahedron",
+   "tag": "Icosahedron"
+  },
+  "Iframe": {
+   "key": "k-Iframe",
+   "tag": "iframe"
+  },
+  "Image": {},
+  "ImageBackground": {},
+  "Img": {},
+  "InPlaceDepthPointCloud": {
+   "key": "k-InPlaceDepthPointCloud",
+   "tag": "InPlaceDepthPointCloud"
+  },
+  "InputBox": {
+   "key": "k-InputBox",
+   "tag": "Input"
+  },
+  "Italic": {
+   "key": "k-Italic",
+   "style": {
+    "fontStyle": "italic"
+   },
+   "tag": "Span",
+   "text": ""
+  },
+  "KeyboardMonitor": {
+   "key": "k-KeyboardMonitor",
+   "tag": "KeyboardMonitor"
+  },
+  "Lathe": {
+   "key": "k-Lathe",
+   "tag": "Lathe"
+  },
+  "Line": {
+   "key": "k-Line",
+   "tag": "Line"
+  },
+  "LineBasicMaterial": {
+   "key": "k-LineBasicMaterial",
+   "tag": "lineBasicMaterial"
+  },
+  "LineDashedMaterial": {
+   "key": "k-LineDashedMaterial",
+   "tag": "lineDashedMaterial"
+  },
+  "Link": {
+   "key": "k-Link",
+   "tag": "a",
+   "text": ""
+  },
+  "LumaSplats": {
+   "key": "k-LumaSplats",
+   "tag": "Splats"
+  },
+  "Markdown": {
+   "key": "k-Markdown",
+   "tag": "Markdown"
+  },
+  "Material": {
+   "key": "k-Material",
+   "tag": "material"
+  },
+  "MeshBasicMaterial": {
+   "key": "k-MeshBasicMaterial",
+   "tag": "meshBasicMaterial"
+  },
+  "MeshDepthMaterial": {
+   "key": "k-MeshDepthMaterial",
+   "tag": "meshDepthMaterial"
+  },
+  "MeshDistanceMaterial": {
+   "key": "k-MeshDistanceMaterial",
+   "tag": "meshDistanceMaterial"
+  },
+  "MeshLambertMaterial": {
+   "key": "k-MeshLambertMaterial",
+   "tag": "meshLambertMaterial"
+  },
+  "MeshMatcapMaterial": {
+   "key": "k-MeshMatcapMaterial",
+   "tag": "meshMatcapMaterial"
+  },
+  "MeshNormalMaterial": {
+   "key": "k-MeshNormalMaterial",
+   "tag": "meshNormalMaterial"
+  },
+  "MeshPhongMaterial": {
+   "key": "k-MeshPhongMaterial",
+   "tag": "meshPhongMaterial"
+  },
+  "MeshPhysicalMaterial": {
+   "key": "k-MeshPhysicalMaterial",
+   "tag": "meshPhysicalMaterial"
+  },
+  "MeshStandardMaterial": {
+   "key": "k-MeshStandardMaterial",
+   "tag": "meshStandardMaterial"
+  },
+  "MeshToonMaterial": {
+   "key": "k-MeshToonMaterial",
+   "tag": "meshToonMaterial"
+  },
+  "MjCameraView": {
+   "key": "k-MjCameraView",
+   "tag": "MjCameraView"
+  },
+  "ModelNode": {
+   "key": "k-ModelNode",
+   "tag": "div"
+  },
+  "MotionControllerActuator": {
+   "key": "k-MotionControllerActuator",
+   "tag": "MotionControllerActuator"
+  },
+  "MotionControllers": {
+   "eventTypes": [
+    "trigger",
+    "squeeze"
+   ],
+   "key": "k-MotionControllers",
+   "left": null,
+   "right": null,
+   "stream": true,
+   "tag": "MotionControllers"
+  },
+  "Movable": {
+   "key": "k-Movable",
+   "tag": "Movable"
+  },
+  "MuJoCo": {
+   "key": "k-MuJoCo",
+   "tag": "MuJoCo"
+  },
+  "MuJoCoProvider": {
+   "key": "k-MuJoCoProvider",
+   "tag": "MuJoCoProvider"
+  },
+  "Obj": {
+   "key": "k-Obj",
+   "tag": "Obj"
+  },
+  "Octahedron": {
+   "key": "k-Octahedron",
+   "tag": "Octahedron"
+  },
+  "OrbitControls": {
+   "key": "k-OrbitControls",
+   "tag": "OrbitControls"
+  },
+  "OrthographicCamera": {
+   "key": "k-OrthographicCamera",
+   "tag": "OrthographicCamera"
+  },
+  "OrthographicFrustum": {
+   "key": "k-OrthographicFrustum",
+   "tag": "OrthographicFrustum"
+  },
+  "Page": {
+   "key": "k-Page",
+   "tag": "article"
+  },
+  "Paragraph": {
+   "key": "k-Paragraph",
+   "tag": "p"
+  },
+  "Pcd": {
+   "key": "k-Pcd",
+   "tag": "Pcd"
+  },
+  "PerspectiveCamera": {
+   "key": "k-PerspectiveCamera",
+   "tag": "PerspectiveCamera"
+  },
+  "PerspectiveFrustum": {
+   "key": "k-PerspectiveFrustum",
+   "tag": "PerspectiveFrustum"
+  },
+  "Pivot": {
+   "key": "k-Pivot",
+   "tag": "Pivot"
+  },
+  "Plane": {
+   "key": "k-Plane",
+   "tag": "Plane"
+  },
+  "PlaybackAnimate": {
+   "key": "k-PlaybackAnimate",
+   "tag": "PlaybackAnimate"
+  },
+  "Ply": {
+   "key": "k-Ply",
+   "tag": "Ply"
+  },
+  "PointCloud": "<error AttributeError>",
+  "PointLight": {
+   "key": "k-PointLight",
+   "tag": "PointLight"
+  },
+  "PointerControls": {
+   "key": "k-PointerControls",
+   "tag": "PointerControls"
+  },
+  "PointsMaterial": {
+   "key": "k-PointsMaterial",
+   "tag": "pointsMaterial"
+  },
+  "Polyhedron": {
+   "key": "k-Polyhedron",
+   "tag": "Polyhedron"
+  },
+  "QuadraticBezierLine": {
+   "key": "k-QuadraticBezierLine",
+   "tag": "QuadraticBezierLine"
+  },
+  "QuaternionTrack": {
+   "key": "k-QuaternionTrack",
+   "tag": "QuaternionTrack"
+  },
+  "RandomizedLight": {
+   "key": "k-RandomizedLight",
+   "tag": "RandomizedLight"
+  },
+  "RawShaderMaterial": {
+   "key": "k-RawShaderMaterial",
+   "tag": "rawShaderMaterial"
+  },
+  "RectAreaLight": {
+   "key": "k-RectAreaLight",
+   "tag": "RectAreaLight"
+  },
+  "Ring": {
+   "key": "k-Ring",
+   "tag": "Ring"
+  },
+  "Scene": {
+   "key": "k-Scene",
+   "tag": "Scene",
+   "up": [
+    0,
+    1,
+    0
+   ]
+  },
+  "SceneBackground": {},
+  "SceneCamera": {
+   "key": "k-SceneCamera",
+   "tag": "SceneCamera"
+  },
+  "SceneCameraControl": {
+   "key": "k-SceneCameraControl",
+   "tag": "SceneCameraControl"
+  },
+  "SceneElement": {
+   "key": "k-SceneElement",
+   "tag": "div"
+  },
+  "ShaderMaterial": {
+   "key": "k-ShaderMaterial",
+   "tag": "shaderMaterial"
+  },
+  "ShadowMaterial": {
+   "key": "k-ShadowMaterial",
+   "tag": "shadowMaterial"
+  },
+  "Shape": {
+   "key": "k-Shape",
+   "tag": "Shape"
+  },
+  "SimpleOrthographicCamera": {
+   "key": "k-SimpleOrthographicCamera",
+   "tag": "SimpleOrthographicCamera"
+  },
+  "SimplePerspectiveCamera": {
+   "key": "k-SimplePerspectiveCamera",
+   "tag": "SimplePerspectiveCamera"
+  },
+  "SkeletalGripper": {
+   "key": "k-SkeletalGripper",
+   "tag": "SkeletalGripper"
+  },
+  "Slider": {
+   "key": "k-Slider",
+   "tag": "Slider"
+  },
+  "SparkSplats": {
+   "key": "k-SparkSplats",
+   "tag": "SparkSplats"
+  },
+  "Sphere": {
+   "key": "k-Sphere",
+   "tag": "Sphere"
+  },
+  "Splat": {
+   "key": "k-Splat",
+   "tag": "Splat"
+  },
+  "SpotLight": {
+   "key": "k-SpotLight",
+   "tag": "SpotLight"
+  },
+  "SpriteMaterial": {
+   "key": "k-SpriteMaterial",
+   "tag": "spriteMaterial"
+  },
+  "Stage": {
+   "key": "k-Stage",
+   "tag": "Stage"
+  },
+  "StereoVideoPlane": {},
+  "Stl": {
+   "key": "k-Stl",
+   "tag": "Stl"
+  },
+  "Tetrahedron": {
+   "key": "k-Tetrahedron",
+   "tag": "Tetrahedron"
+  },
+  "Text": {
+   "key": "k-Text",
+   "tag": "Text"
+  },
+  "Text3D": {
+   "font": null,
+   "key": "k-Text3D",
+   "letterSpacing": 1,
+   "lineHeight": 0,
+   "smooth": null,
+   "tag": "Text3D"
+  },
+  "ThreeAnimate": {
+   "key": "k-ThreeAnimate",
+   "tag": "ThreeAnimate"
+  },
+  "TimelineControls": {
+   "key": "k-TimelineControls",
+   "tag": "TimelineControls"
+  },
+  "Torus": {
+   "key": "k-Torus",
+   "tag": "Torus"
+  },
+  "TorusKnot": {
+   "key": "k-TorusKnot",
+   "tag": "TorusKnot"
+  },
+  "Trail": {
+   "key": "k-Trail",
+   "tag": "Trail"
+  },
+  "TriMesh": "<error AttributeError>",
+  "Tube": {
+   "key": "k-Tube",
+   "tag": "Tube"
+  },
+  "Urdf": {
+   "key": "k-Urdf",
+   "tag": "Urdf"
+  },
+  "VectorTrack": {
+   "key": "k-VectorTrack",
+   "tag": "VectorTrack"
+  },
+  "VideoMaterial": {},
+  "VideoPlane": {},
+  "ViewportHud": {
+   "key": "k-ViewportHud",
+   "tag": "ViewportHud"
+  },
+  "VuerGroup": {
+   "key": "k-VuerGroup",
+   "tag": "VuerGroup"
+  },
+  "VuerSplat": {
+   "key": "k-VuerSplat",
+   "tag": "VuerSplat"
+  },
+  "WebRTCStereoVideoPlane": {
+   "key": "k-WebRTCStereoVideoPlane",
+   "tag": "WebRTCStereoVideoPlane"
+  },
+  "WebRTCVideoMaterial": {},
+  "WebRTCVideoPlane": {
+   "key": "k-WebRTCVideoPlane",
+   "tag": "WebRTCVideoPlane"
+  },
+  "WebXRMesh": {
+   "autoUpdate": true,
+   "color": null,
+   "key": "k-WebXRMesh",
+   "opacity": 0.15,
+   "tag": "WebXRMesh"
+  },
+  "Wireframe": {
+   "key": "k-Wireframe",
+   "tag": "Wireframe"
+  },
+  "div": {
+   "key": "k-div",
+   "tag": "Div"
+  },
+  "group": {
+   "key": "k-group",
+   "tag": "group"
+  },
+  "mesh": {
+   "key": "k-mesh",
+   "tag": "mesh"
+  },
+  "p": "<error AttributeError>",
+  "span": {
+   "key": "k-span",
+   "tag": "Span",
+   "text": ""
+  }
+ }
+}
