@@ -1,7 +1,32 @@
 # Change Log
 
-## Unreleased (0.2.0)
+## 0.2.0 (release candidate, not published)
 
+Paired with `@vuer-ai/vuer` 0.1.0. See `docs/RELEASE_NOTES.md` and the
+migration page of the docs site (`docs-site/`) for the upgrade steps.
+
+- **Breaking:** Python 3.10 or later (`requires-python = ">=3.10"`).
+- `vuer/schemas/scene_components.py` is split into `vuer/schemas/_scene/`
+  modules. `from vuer.schemas import X` and
+  `from vuer.schemas.scene_components import X` still work for every name
+  (export guard test). Robot and physics components did not move.
+- Wire protocol 2: numpy arrays with more than `array_list_max` (16) elements go
+  on the wire as the msgpack ExtType `0x56` (dtype, shape, bytes) and arrive in the
+  browser as typed arrays. Clients announce `protocol=2` at the handshake and in
+  `INIT`; legacy clients still get lists (`array_protocol="auto"`). The
+  compatibility flag is `array_protocol="list"` / `VUER_ARRAY_PROTOCOL=list`.
+  The server decodes `0x56` and msgpackr's `0x74` from clients into ndarrays.
+- **Breaking:** `Element._serialize()` keeps ndarrays (it no longer calls
+  `.tolist()`), so its output is not JSON-serializable when it holds arrays.
+- Each session first gets a `SERVER_INFO` event (`protocol`, `arrayProtocol`,
+  `role`). `VuerClient.recv()` returns it first.
+- Latest-frame-wins queues: `Vuer(uplink_policy="latest")` /
+  `VUER_UPLINK_POLICY`, `downlink_policy`, and `session.send(event, frame_key=...)`.
+  The default stays `"fifo"`.
+- The bundled `client_build` is rebuilt from `@vuer-ai/vuer` 0.1.0 and speaks
+  protocol 2 (`python -m vuer.protocol --check-client-build`).
+- CI: ruff (bug classes) and pytest on Python 3.10 and 3.12; heavier checks run
+  with `scripts/test-local.sh`.
 - Access tokens and roles (`vuer.auth`). `Vuer(auth=True)` needs a token at the
   WebSocket handshake (`?token=` or `Authorization: Bearer`); the server answers
   HTTP 401 before the upgrade otherwise. Tokens are one-time by default; `uses=N`

@@ -1,5 +1,29 @@
 # Release Notes
 
+## v0.2.0 - Binary arrays, auth and roles, Python 3.10
+
+Release candidate. Pair it with the npm package `@vuer-ai/vuer` 0.1.0.
+
+### Breaking changes
+
+| Change | Who is affected | What to do |
+| --- | --- | --- |
+| Python 3.10 or later | Python 3.8 / 3.9 users | Upgrade Python. pip on 3.8 / 3.9 keeps 0.1.6. |
+| Arrays with more than 16 elements go as ExtType `0x56` to protocol-2 clients | Custom TS code that reads arrays from events | Read typed arrays (`.shape`, `.dtype`), or call `setArrayDecoding('list')`, or run the server with `array_protocol="list"`. |
+| `Element._serialize()` keeps ndarrays | Code that `json.dumps` component output | Convert arrays first (`.tolist()`). |
+| First message is `SERVER_INFO` | Code that reads `VuerClient.recv()` | Skip or read `SERVER_INFO`. |
+| `VUER_CORS` default no longer ends in `*`; WebSocket `Origin` is checked | Pages on origins other than vuer.ai, localhost, 127.0.0.1, dash.ml | Add the origin to `VUER_CORS`, or set `VUER_CORS="*"`. |
+| `Server.cors_context` is `None` | Code that adds routes through `aiohttp_cors` | Use `Vuer._add_route`; the CORS middleware covers every route. |
+| Moved schema classes have a new `__module__` | Pickles of 0.1.x schema objects | Re-create the objects; imports do not change. |
+
+### New
+
+- `vuer.protocol`: wire protocol 2 and binary arrays.
+- `vuer.auth`: one-time, N-use and reusable access links; `viewer` and
+  `controller` roles; `vuer token` CLI; `Vuer(auth=True)`.
+- `vuer.queues`: latest-frame-wins uplink and downlink queues.
+- `vuer/schemas/_scene/`: the split component modules.
+
 ## v0.1.5 - ModelNode Base Class & Bvh Support
 
 ### New Features
