@@ -10,7 +10,7 @@ This module provides functions that match the TypeScript API:
 """
 
 import time
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from vuer.rtc.types import (
     CRDTMessage,
@@ -21,6 +21,9 @@ from vuer.rtc.types import (
     merge_clocks,
 )
 from vuer.rtc.operations.registry import registry
+
+if TYPE_CHECKING:
+    from vuer.rtc.types import JournalEntry
 
 
 class OperationMeta:

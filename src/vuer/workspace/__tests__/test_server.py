@@ -20,7 +20,7 @@ def run_server():
     from vuer import Vuer
 
     app = Vuer(
-        host="localhost",
+        host="127.0.0.1",
         port=TEST_PORT,
         workspace=str(FIXTURES_DIR),
     )
@@ -37,7 +37,7 @@ def server():
     proc.start()
 
     # Wait for server to start
-    base_url = f"http://localhost:{TEST_PORT}"
+    base_url = f"http://127.0.0.1:{TEST_PORT}"
 
     async def wait_for_server():
         async with aiohttp.ClientSession() as session:

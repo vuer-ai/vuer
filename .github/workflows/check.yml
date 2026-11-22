@@ -1,0 +1,55 @@
+name: Checks
+
+# PR CI runs only the cheap checks: ruff (bug classes) and the fast pytest
+# suite. Browser, rendering and docs checks run locally with
+# `scripts/test-local.sh`; `workflow_dispatch` reruns these checks on demand.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'specs/**'
+      - 'pyproject.toml'
+      - '.github/workflows/check.yml'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'specs/**'
+      - 'pyproject.toml'
+      - '.github/workflows/check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      # Syntax errors and undefined names only; the full rule set is not
+      # clean yet (see `uvx ruff check src/vuer --statistics`).
+      - run: uvx ruff check src/vuer --select E9,F63,F7,F82
+
+  test:
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: pyproject.toml
+          python-version: ${{ matrix.python-version }}
+      - run: uv run --extra dev pytest src specs -q
