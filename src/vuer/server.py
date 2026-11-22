@@ -13,22 +13,6 @@ from aiohttp.hdrs import UPGRADE
 from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import Response
 from aiohttp.web_ws import WebSocketResponse
-from msgpack import packb, unpackb
-
-
-def _default_encoder(obj):
-  """Custom encoder for msgpack to handle numpy types."""
-  try:
-    import numpy as np
-
-    if isinstance(obj, np.ndarray):
-      return obj.tolist()
-    if isinstance(obj, (np.integer, np.floating)):
-      return obj.item()
-  except ImportError:
-    pass
-  raise TypeError(f"Cannot serialize object of type {type(obj)}")
-
 
 from aiohttp import web
 from params_proto import EnvVar, proto
@@ -45,15 +29,36 @@ from vuer.events import (
   NullEvent,
   Remove,
   ServerEvent,
+  ServerInfo,
   ServerRPC,
   Set,
   Update,
   Upsert,
 )
 from vuer.queues import UPLINK_POLICIES, client_frame_key, make_queue, server_frame_key
+from vuer.protocol import (
+  DEFAULT_ARRAY_LIST_MAX,
+  PROTOCOL_VERSION,
+  make_encoder,
+  pack_event,
+  parse_protocol,
+  resolve_array_protocol,
+  unpack_event,
+)
 from vuer.schemas import Page
 from vuer.types import EventHandler, SocketHandler, Url
 from vuer.workspace import Blob, Workspace, guess_content_type, workspace_from_config
+
+
+def _default_encoder(obj):
+  """msgpack encoder for numpy values in protocol 1 (arrays as lists).
+
+  Kept for backward compatibility. The server uses :mod:`vuer.protocol`.
+  """
+  return _legacy_encoder(obj)
+
+
+_legacy_encoder = make_encoder(binary=False)
 
 
 async def workspace_handler(request, workspace: Workspace):
@@ -312,9 +317,24 @@ class VuerSession(SceneOps):
     self.CURRENT_WS_ID = ws_id
     self.uplink_policy = uplink_policy
     self.downlink_policy = downlink_policy
+    # Wire protocol that the client announced: None for legacy (protocol 1) clients.
+    self.protocol: Optional[int] = None
 
     self.downlink_queue: Deque[ClientEvent] = make_queue(downlink_policy, queue_len, key=client_frame_key)
     self.uplink_queue: Deque[ServerEvent] = make_queue(uplink_policy, queue_len)
+
+  @property
+  def array_protocol(self) -> str:
+    """How this session sends numpy arrays: ``"binary"`` (protocol 2) or ``"list"``."""
+    return resolve_array_protocol(getattr(self.vuer, "array_protocol", "auto"), self.protocol)
+
+  def pack(self, event_obj) -> bytes:
+    """Pack a serialized event for the wire protocol of this session."""
+    return pack_event(
+      event_obj,
+      binary=self.array_protocol == "binary",
+      array_list_max=getattr(self.vuer, "array_list_max", DEFAULT_ARRAY_LIST_MAX),
+    )
 
   @property
   def socket(self):
@@ -447,9 +467,7 @@ class VuerSession(SceneOps):
     # Therefore, convert ts to an integer in milliseconds before sending to the frontend.
     if "ts" in event_obj and isinstance(event_obj["ts"], float):
       event_obj["ts"] = int(event_obj["ts"] * 1000)
-    event_bytes = packb(
-      event_obj, use_single_float=True, use_bin_type=True, default=_default_encoder
-    )
+    event_bytes = self.pack(event_obj)
 
     if self.uplink_policy == "latest":
       if frame_key is None:
@@ -667,6 +685,11 @@ class Vuer(Server):
   # "fifo" (default) or "latest": latest-frame-wins for slow clients. See vuer.queues.
   uplink_policy: str = EnvVar @ "VUER_UPLINK_POLICY" | "fifo"
   downlink_policy: str = EnvVar @ "VUER_DOWNLINK_POLICY" | "fifo"
+  # Wire format of numpy arrays. "auto": binary arrays (protocol 2) for clients that
+  # announce protocol 2, lists for legacy clients. "binary": always binary arrays.
+  # "list": always lists (compatibility flag for old clients and components).
+  array_protocol: str = EnvVar @ "VUER_ARRAY_PROTOCOL" | "auto"
+  array_list_max: int = DEFAULT_ARRAY_LIST_MAX  # arrays with at most this many elements stay lists
   queries: Dict = None  # URL query parameters to pass to client
   client_root: Path = DEFAULT_CLIENT_ROOT  # Path to client build directory
   verbose: bool = False  # Print server settings on startup
@@ -737,6 +760,8 @@ class Vuer(Server):
     self.handlers = defaultdict(dict)
     self.page = Page()
     self.ws: Dict[str, WebSocketResponse] = {}
+    self.sessions: Dict[str, VuerSession] = {}
+    resolve_array_protocol(self.array_protocol, None)  # validate the option early
     # List of spawn handlers with their filters: [{"fn": handler, "filters": {...}}, ...]
     self.spawn_handlers: List[Dict] = []
     self.spawned_coroutines = []
@@ -1071,9 +1096,12 @@ class Vuer(Server):
       # Therefore, convert ts to an integer in milliseconds before sending to the frontend.
       if "ts" in event_obj and isinstance(event_obj["ts"], float):
         event_obj["ts"] = int(event_obj["ts"] * 1000)
-      event_bytes = packb(
-        event_obj, use_single_float=True, use_bin_type=True, default=_default_encoder
-      )
+      session = self.sessions.get(ws_id)
+      if session is not None:
+        event_bytes = session.pack(event_obj)
+      else:
+        binary = resolve_array_protocol(self.array_protocol, None) == "binary"
+        event_bytes = pack_event(event_obj, binary=binary, array_list_max=self.array_list_max)
     else:
       assert event is None, "Can not pass in both at the same time."
 
@@ -1116,6 +1144,13 @@ class Vuer(Server):
 
     return response
 
+  def _server_info(self, session: VuerSession) -> dict:
+    """Value of the SERVER_INFO event that the server sends after the handshake."""
+    return {
+      "protocol": PROTOCOL_VERSION,
+      "arrayProtocol": session.array_protocol,
+    }
+
   async def rpc_stream(self, ws_id, event: ServerEvent = None, event_bytes=None):
     """This RPC offers multiple responses."""
     raise NotImplementedError("This is not implemented yet.")
@@ -1125,6 +1160,7 @@ class Vuer(Server):
     self._cancel_tasks(ws_id)
     # uplink is moved to the proxy object. Cleaned by garbage collection.
     # self.uplink_queue.pop(ws_id)
+    self.sessions.pop(ws_id, None)
     try:
       ws = self.ws.pop(ws_id)
       await ws.close()
@@ -1176,6 +1212,10 @@ class Vuer(Server):
 
     print(f"websocket is connected. id:{ws_id}")
     vuer_proxy = self._proxy(ws_id)
+    # The client announces its wire protocol in the handshake (?protocol=2) and in INIT.
+    vuer_proxy.protocol = parse_protocol(request.rel_url.query.get("protocol"))
+    self.sessions[ws_id] = vuer_proxy
+    vuer_proxy @ ServerInfo(self._server_info(vuer_proxy))
 
     generator = self.bound_fn(vuer_proxy)
 
@@ -1233,7 +1273,7 @@ class Vuer(Server):
 
     try:
       async for msg in ws:
-        payload = unpackb(msg.data, raw=False)
+        payload = unpack_event(msg.data)
         # todo: we want to enforce the payload to contain the timestamp.
         clientEvent = ClientEvent._deserialize(**payload)
 
@@ -1241,6 +1281,10 @@ class Vuer(Server):
         if not init_received and clientEvent.etype == "INIT":
           init_received = True
           client_info = clientEvent.value if isinstance(clientEvent.value, dict) else {}
+          announced = parse_protocol(client_info.get("protocol"))
+          if announced is not None and announced != vuer_proxy.protocol:
+            vuer_proxy.protocol = announced
+            vuer_proxy @ ServerInfo(self._server_info(vuer_proxy))
           await spawn_matching_handler(client_info)
 
         if hasattr(generator, "__anext__"):
