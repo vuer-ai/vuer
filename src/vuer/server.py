@@ -34,6 +34,7 @@ from aiohttp import web
 from params_proto import EnvVar, proto
 from websockets import ConnectionClosedError
 
+from vuer import auth as vuer_auth
 from vuer.base import Server, handle_file_request, websocket_handler
 from vuer.events import (
   INIT,
@@ -300,6 +301,8 @@ class VuerSession(SceneOps):
   def __init__(self, vuer: "Vuer", ws_id: int, queue_len=100):
     self.vuer = vuer
     self.CURRENT_WS_ID = ws_id
+    # "viewer" or "controller" when the server runs with auth=True, else None.
+    self.role: Optional[str] = None
 
     que_maker = partial(deque, maxlen=queue_len)
 
@@ -585,7 +588,11 @@ class VuerSession(SceneOps):
 
 
 DEFAULT_PORT = 8012
-DEFAULT_CORS = "https://vuer.ai,https://staging.vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
+# Request storage key for the role that the handshake assigned.
+_ROLE_KEY = web.RequestKey("vuer_role", str) if hasattr(web, "RequestKey") else "vuer_role"
+# Origin allow-list (fnmatch patterns) for CORS and the WebSocket Origin check.
+# It does not end in "*" any more; set VUER_CORS="*" to allow every origin.
+DEFAULT_CORS = vuer_auth.DEFAULT_ORIGINS + ",https://dash.ml"
 DEFAULT_CLIENT_ROOT: Path = Path(__file__).parent / "client_build"
 
 
@@ -645,6 +652,11 @@ class Vuer(Server):
   client_root: Path = DEFAULT_CLIENT_ROOT  # Path to client build directory
   verbose: bool = False  # Print server settings on startup
 
+  # Access control. With auth=True every WebSocket needs a token (see vuer.auth).
+  auth: bool = EnvVar @ "VUER_AUTH" | False
+  auth_secret: str = None  # Default: VUER_AUTH_SECRET, else ~/.local/share/vuer/auth-secret
+  viewer_events: tuple = vuer_auth.VIEWER_EVENTS  # Events given to handlers from viewers
+
   def _proxy(self, ws_id) -> "VuerSession":
     """This is a proxy object that allows us to use the @ notation
     to send events to the client.
@@ -697,6 +709,13 @@ class Vuer(Server):
 
     # Initialize base Server (app, cors_context)
     self._init_app()
+
+    self._token_ledger = None
+    if self.auth:
+      secret = self.auth_secret or vuer_auth.load_secret()
+      self._token_ledger = vuer_auth.TokenLedger(secret)
+      if "*" in self.allowed_origins:
+        warnings.warn("VUER_CORS allows every origin ('*') while auth is on.", stacklevel=2)
 
     self.handlers = defaultdict(dict)
     self.page = Page()
@@ -791,19 +810,21 @@ class Vuer(Server):
 
     """
     # todo: need to implement msgpack encoding, interface
-    bytes = request.bytes()
+    if self.auth and not self._is_controller_request(request):
+      return Response(status=401, text="A controller token is required.")
+    bytes = await request.read()
     session_id = request.rel_url.query.get("sid", None)
     if session_id is None:
       return Response(status=400)
     elif session_id in self.ws:
-      self.send(ws_id=session_id, event_bytes=bytes)
+      await self.send(ws_id=session_id, event_bytes=bytes)
 
       return Response(status=200)
     elif session_id == "*":
       # print broadcast
       for ws_id in self.ws:
         try:
-          self.send(ws_id=ws_id, event_bytes=bytes)
+          await self.send(ws_id=ws_id, event_bytes=bytes)
         except Exception as e:
           print("Exception: ", e)
           return Response(status=502, text=str(e))
@@ -1140,6 +1161,10 @@ class Vuer(Server):
 
     print(f"websocket is connected. id:{ws_id}")
     vuer_proxy = self._proxy(ws_id)
+    vuer_proxy.role = request.get(_ROLE_KEY)
+    vuer_proxy.uplink_queue.append(
+      packb({"etype": "SERVER_INFO", "value": self._server_info(vuer_proxy)}, use_bin_type=True)
+    )
 
     generator = self.bound_fn(vuer_proxy)
 
@@ -1201,10 +1226,18 @@ class Vuer(Server):
         # todo: we want to enforce the payload to contain the timestamp.
         clientEvent = ClientEvent._deserialize(**payload)
 
+        # A viewer sees the scene; the app does not get its events (except INIT
+        # and RPC responses).
+        if vuer_proxy.role == "viewer" and not vuer_auth.viewer_may_send(clientEvent.etype, self.viewer_events):
+          continue
+
         # Check for INIT event to spawn matching handler
         if not init_received and clientEvent.etype == "INIT":
           init_received = True
           client_info = clientEvent.value if isinstance(clientEvent.value, dict) else {}
+          if vuer_proxy.role is not None:
+            # lets @app.spawn(role="controller") select sessions by role.
+            client_info = {**client_info, "role": vuer_proxy.role}
           await spawn_matching_handler(client_info)
 
         if hasattr(generator, "__anext__"):
@@ -1323,7 +1356,41 @@ class Vuer(Server):
     if "websocket" != headers.get(UPGRADE, "").lower().strip():
       return await handle_file_request(request, self.client_root, filename="index.html")
     else:
+      # Check the origin and the token before the upgrade (HTTP 403 / 401).
+      if not self.origin_allowed(request):
+        raise web.HTTPForbidden(text="Origin not allowed")
+      if self.auth:
+        token = vuer_auth.token_from_request(request)
+        role = token and self._token_ledger.redeem(token)
+        if not role:
+          raise web.HTTPUnauthorized(text="A valid access token is required.")
+        request[_ROLE_KEY] = role
       return await websocket_handler(request, self.downlink)
+
+  def _server_info(self, session: VuerSession) -> dict:
+    """Value of the SERVER_INFO event that each session gets first."""
+    return {"protocol": 2, "role": session.role}
+
+  def _is_controller_request(self, request) -> bool:
+    token = vuer_auth.token_from_request(request)
+    payload = token and vuer_auth.verify_token(self._token_ledger.secret, token)
+    return bool(payload) and payload["role"] == "controller"
+
+  def issue_token(self, role: str = "viewer", ttl: float = vuer_auth.DEFAULT_TTL, uses: Optional[int] = 1) -> str:
+    """Issue an access token for this server (needs ``auth=True``).
+
+    :param role: ``"viewer"`` (sees the scene) or ``"controller"`` (full access).
+    :param ttl: Lifetime in seconds.
+    :param uses: Number of sessions that the token can open (1 to 50), or
+        ``None`` for any number until it expires.
+    """
+    if self._token_ledger is None:
+      raise RuntimeError("issue_token() needs Vuer(auth=True).")
+    return vuer_auth.issue_token(self._token_ledger.secret, role=role, ttl=ttl, uses=uses)
+
+  def share_url(self, token: str, host: str = "localhost") -> str:
+    """Client URL that carries ``token`` in the fragment (not sent to servers or logs)."""
+    return f"{self.get_url(host)}#token={token}"
 
   def add_route(self, path, fn: Callable, method="GET", content_type="text/html"):
     if self.verbose:
@@ -1466,6 +1533,16 @@ class Vuer(Server):
 {workspace_display}
 {DIM}->{RESET} {base_url}/workspace
 {webrtc_display}""")
+
+    if self.auth:
+      # A one-time controller link for the person who starts the server.
+      token = self.issue_token("controller", ttl=600, uses=1)
+      print(f"""{CYAN}Access:{RESET}  auth is on. One-time controller link (10 minutes):
+
+ {DIM}·{RESET} {self.share_url(token)}
+
+{DIM}   More links: vuer token --role viewer --uses 5 | --reusable{RESET}
+""")
 
     Server.start(self)
 

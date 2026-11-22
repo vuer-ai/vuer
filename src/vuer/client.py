@@ -162,17 +162,20 @@ class VuerClient:
   uri: str = EnvVar @ "VUER_CLIENT_URI" | "ws://localhost:8012"
   websocket_max_size: int = EnvVar @ "WEBSOCKET_MAX_SIZE" | 2**28
   ssl_verify: bool = EnvVar @ "VUER_SSL_VERIFY" | True
+  token: str = EnvVar @ "VUER_TOKEN" | None  # Access token for servers with auth=True
 
   _ws = None
   _connected = False
 
-  def __init__(self, uri: str = None, max_size: int = None, ssl_verify: bool = None, **kwargs):
+  def __init__(self, uri: str = None, max_size: int = None, ssl_verify: bool = None, token: str = None, **kwargs):
     """Initialize the Vuer client.
 
     :param uri: WebSocket URI to connect to (e.g., "ws://localhost:8012")
     :param max_size: Maximum websocket message size in bytes (default 256MB)
     :param ssl_verify: Whether to verify SSL certificates (default True, env: VUER_SSL_VERIFY).
         Set to False for self-signed certs (e.g., ngrok tunnels).
+    :param token: Access token (env: VUER_TOKEN) for a server that runs with
+        ``auth=True``. It is sent as ``Authorization: Bearer <token>``.
     :param kwargs: Additional keyword arguments passed to websockets.connect()
         (e.g., ssl=ssl_context for custom SSL/TLS configuration)
     """
@@ -182,6 +185,8 @@ class VuerClient:
       self.websocket_max_size = max_size
     if ssl_verify is not None:
       self.ssl_verify = ssl_verify
+    if token is not None:
+      self.token = token
 
     if not self.ssl_verify and "ssl" not in kwargs:
       import ssl
@@ -200,10 +205,19 @@ class VuerClient:
     """
     try:
       from websockets.asyncio.client import connect
+
+      header_kwarg = "additional_headers"
     except ImportError:
       from websockets import connect
 
-    self._ws = await connect(self.uri, max_size=self.websocket_max_size, **self._connect_kwargs)
+      header_kwarg = "extra_headers"
+
+    kwargs = dict(self._connect_kwargs)
+    if self.token:
+      headers = dict(kwargs.pop(header_kwarg, None) or {})
+      headers["Authorization"] = f"Bearer {self.token}"
+      kwargs[header_kwarg] = headers
+    self._ws = await connect(self.uri, max_size=self.websocket_max_size, **kwargs)
     self._connected = True
 
     # Send INIT event with Python client system info (matches browser's INIT event)
