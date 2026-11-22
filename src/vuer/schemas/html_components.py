@@ -13,6 +13,11 @@ from vuer.types import Url
 element_counter = count()
 
 
+def _is_ndarray(v) -> bool:
+  # 0-d arrays become Python scalars like numpy scalars do.
+  return isinstance(v, np.ndarray) and v.ndim > 0
+
+
 def omit(d, *patterns):
   """Omit keys from dictionary that match any of the glob patterns.
 
@@ -59,7 +64,13 @@ class Element:
     """
 
     def convert_value(v):
-      """Recursively convert numpy types to Python types."""
+      """Recursively convert numpy scalars to Python types.
+
+      numpy arrays stay arrays: the wire encoder (vuer.protocol) sends them as
+      binary arrays to protocol-2 clients and as lists to legacy clients.
+      """
+      if _is_ndarray(v):
+        return v
       if hasattr(v, "tolist"):
         return v.tolist()
       elif isinstance(v, Url):

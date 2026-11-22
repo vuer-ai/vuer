@@ -130,6 +130,22 @@ class Noop(ServerEvent):
     super().__init__(data=None, **kwargs)
 
 
+class ServerInfo(ServerEvent):
+  """SERVER_INFO (Server Event).
+
+  The server sends it after the WebSocket handshake, and again when the INIT
+  event changes the wire protocol of the session. Clients that do not know
+  this event ignore it.
+
+  ``value`` holds ``{"protocol": 2, "arrayProtocol": "binary" | "list"}``.
+  """
+
+  etype = "SERVER_INFO"
+
+  def __init__(self, value: dict, **kwargs):
+    super().__init__(data=None, value=value, **kwargs)
+
+
 NOOP = Noop()
 
 

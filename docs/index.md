@@ -112,6 +112,7 @@ For more details:
    Session API <guides/session_apis.md>
    Static Files & Hot Loading <guides/static_files.md>
    Python Client Connection <guides/client_connection.md>
+   Wire Protocol & Binary Arrays <guides/wire_protocol.md>
    Using Vuer with Claude Code <guides/claude_skill.md>
    CLI Plugin System <guides/cli.md>
 
