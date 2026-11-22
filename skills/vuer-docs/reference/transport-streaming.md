@@ -1,0 +1,55 @@
+# Streaming queues
+
+Pull request: vuer-ai/vuer#175.
+
+Each session has an uplink queue (server to client) and a downlink queue
+(client to server). By default (`"fifo"`) the server sends every event in
+order. The queue holds up to `queue_len` events (default 100). When the queue
+is full, the oldest event is lost.
+
+When a client is slow, a fifo queue sends old frames. The **latest** policy
+keeps only the newest frame for each frame key.
+
+## Turn on "latest frame wins"
+
+```python
+app = Vuer(uplink_policy="latest")  # or: export VUER_UPLINK_POLICY=latest
+```
+
+With `"latest"`, the server drops an event that is not sent yet when a newer
+event with the same frame key arrives. The newer event goes to the end of the
+queue. Thus the order with other events stays correct.
+
+## Frame keys
+
+| Event | Default frame key |
+| --- | --- |
+| `Set` | one key for all `Set` events |
+| `Update`, `Upsert`, `Add` | event type + parent (`to=`) + element keys |
+| `Remove`, RPC, custom events | none: the server never drops these |
+
+To set a key yourself:
+
+```python
+session.send(Upsert(PointCloud(key="lidar", vertices=v)), frame_key="lidar")
+```
+
+> **Warning:** A newer `Update` replaces the queued one completely. With `"latest"`, each
+> frame must contain the full state of the element, not a part of it.
+
+## Downlink
+
+`Vuer(downlink_policy="latest")` (`VUER_DOWNLINK_POLICY`) does the same for
+streaming client events (`CAMERA_MOVE`, `HAND_MOVE`, …) in the session queue.
+Event handlers still get every event.
+
+## Options
+
+| Option | Environment variable | Values | Default |
+| --- | --- | --- | --- |
+| `uplink_policy` | `VUER_UPLINK_POLICY` | `fifo`, `latest` | `fifo` |
+| `downlink_policy` | `VUER_DOWNLINK_POLICY` | `fifo`, `latest` | `fifo` |
+| `queue_len` | — | integer | `100` |
+
+The queue classes are in `vuer.queues` (`LatestFrameQueue`, `make_queue`,
+`server_frame_key`, `client_frame_key`).

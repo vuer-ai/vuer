@@ -1,0 +1,82 @@
+# Library mode
+
+Pull request: vuer-ai/vuer-ts#178.
+
+You can show a vuer scene in a React 19 app with no Python server and no
+WebSocket. The main `@vuer-ai/vuer` entry has all of this. It does not import a
+UI kit.
+
+## `VuerScene`
+
+`VuerScene` takes the scene as a prop: a `Scene` props object or a list of
+nodes. The ref handle has the same operations as the Python session.
+
+```tsx
+import { useRef } from 'react';
+import { VuerScene, type VuerSceneHandle } from '@vuer-ai/vuer';
+
+export function Viewer() {
+  const scene = useRef<VuerSceneHandle>(null);
+  return (
+    <>
+      <VuerScene
+        ref={scene}
+        scene={[{ tag: 'Box', key: 'box', args: [0.2, 0.2, 0.2] }]}
+        onEvent={(e) => console.log(e.etype, e.key, e.value)}
+        style={{ height: 480 }}
+      />
+      <button onClick={() => scene.current?.update({ key: 'box', position: [0, 0.5, 0] })}>
+        Lift
+      </button>
+    </>
+  );
+}
+```
+
+| Handle method | Python equivalent |
+| --- | --- |
+| `set(scene)` | `session.set @ Scene(...)` |
+| `add(nodes, { to })` | `session.add(to=...) @ ...` |
+| `update(nodes)` | `session.update @ ...` |
+| `upsert(nodes, { to })` | `session.upsert(to=...) @ ...` |
+| `remove(keys)` | `session.remove @ ...` |
+| `getNode(key)` | — |
+
+- A new `scene` prop value replaces the scene. If you do not give `scene`, use
+  only the handle.
+- `onEvent` gets the client events that go to a server in normal mode (clicks,
+  camera moves, `ON_MUJOCO_FRAME`, …). It does not get `silent` events.
+- `VuerScene` ignores the `?scene=` parameter of the page URL
+  (`loadSceneFromUrl={false}`).
+- The scene is in the shared `useSceneStore`. Thus you can have one vuer scene
+  on a page.
+
+## `VuerLocalProvider`
+
+To use vuer components in your own react-three-fiber `<Canvas>`, for example
+`<MuJoCo>` from `@vuer-ai/mujoco-ts`, put them in `VuerLocalProvider`. It gives
+the socket context that `useSocket()` needs, with no WebSocket.
+
+```tsx
+import { Canvas } from '@react-three/fiber';
+import { VuerLocalProvider } from '@vuer-ai/vuer';
+
+<Canvas>
+  <VuerLocalProvider onEvent={(e) => e.etype === 'ON_MUJOCO_LOAD' && setReady(true)}>
+    <MuJoCo src={src} />
+  </VuerLocalProvider>
+</Canvas>;
+```
+
+`createLocalSocket(onEvent)` returns the same context value without React.
+
+## Test without WebGL
+
+`pnpm test:render` mounts scenes with `@react-three/test-renderer` (vitest and
+jsdom, no GPU). It applies handle operations and checks the three.js scene
+graph. These tests load all components. Thus they run locally, not in PR CI.
+
+## `SceneContainer`
+
+`SceneContainer` has a new prop, `loadSceneFromUrl` (default `true`). The
+default does not change the behavior.

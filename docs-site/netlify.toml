@@ -1,0 +1,23 @@
+# Netlify config for the vuer Dockit docs site (base directory: docs-site/).
+# Not deployed yet: the owner creates the Netlify site and the DNS record.
+
+[build]
+base = "docs-site"
+command = "pnpm install --frozen-lockfile && pnpm build"
+publish = "dist/client"
+
+[build.environment]
+NODE_VERSION = "22"
+PNPM_VERSION = "10.33.0"
+COREPACK_INTEGRITY_KEYS = "0"
+
+[context.deploy-preview]
+
+[context.branch-deploy]
+
+# Old version deploys fetch the production manifest cross-origin.
+[[headers]]
+for = "/versions.json"
+
+[headers.values]
+Access-Control-Allow-Origin = "*"
