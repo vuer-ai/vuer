@@ -1,5 +1,24 @@
 # Change Log
 
+## Unreleased (0.2.0)
+
+- Access tokens and roles (`vuer.auth`). `Vuer(auth=True)` needs a token at the
+  WebSocket handshake (`?token=` or `Authorization: Bearer`); the server answers
+  HTTP 401 before the upgrade otherwise. Tokens are one-time by default; `uses=N`
+  or `uses=None` (reusable until expiry) make shared links. `viewer` sessions see
+  the scene, and the app does not get their events (except `INIT` and RPC
+  responses); `controller` sessions have full access. `app.issue_token()`,
+  `app.share_url()`, `vuer token --role viewer --uses 5 | --reusable`,
+  `VuerClient(token=...)` / `VUER_TOKEN`.
+- Each session first gets a `SERVER_INFO` event with its `role`.
+- **Breaking:** the default `VUER_CORS` is an allow-list of origin patterns
+  (`https://vuer.ai`, `https://*.vuer.ai`, `http(s)://localhost:*`,
+  `http(s)://127.0.0.1:*`, `https://dash.ml`) and no longer ends in `*`. The same
+  list checks the `Origin` of WebSocket upgrades (HTTP 403). Same-origin pages and
+  non-browser clients are always allowed. Set `VUER_CORS="*"` for the old behavior.
+- `/relay` needs a controller token when auth is on, and now awaits the request
+  body and the send (it did not work before).
+
 ## 0.0.30
 
 - update the webapp client, now using 0.0.30 Ge Yang 2 minutes ago

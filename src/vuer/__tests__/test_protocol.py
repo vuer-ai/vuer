@@ -184,7 +184,7 @@ async def _run_session(app, query, init_value):
 async def test_e2e_protocol_2_client_gets_binary_arrays(make_app):
   app = make_app()
   info, raw, big = await _run_session(app, "?protocol=2", {"client": "test", "protocol": 2})
-  assert info["value"] == {"protocol": 2, "arrayProtocol": "binary"}
+  assert info["value"] == {"protocol": 2, "arrayProtocol": "binary", "role": None}
   points = big["data"]["points"]
   assert isinstance(points, np.ndarray) and points.dtype == np.float32 and points.shape == (100, 3)
   assert big["data"]["pos"] == [1.0, 2.0, 3.0]
