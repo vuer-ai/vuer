@@ -4,14 +4,20 @@ build-backend = "hatchling.build"
 
 [project]
 name = "vuer"
-version = "0.1.6"
+version = "0.2.0"
 description = ""
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
     "params-proto==3.3.0",
@@ -70,6 +76,7 @@ vuer-docs-build = "sphinx.cmd.build:main"
 [project.entry-points."vuer.cli"]
 serve = "vuer.cli.commands.serve:Serve"
 version = "vuer.cli.commands.version:Version"
+token = "vuer.cli.commands.token:Token"
 
 [tool.hatch.metadata]
 allow-direct-references = true
@@ -115,7 +122,7 @@ override-dependencies = [
 [tool.ruff]
 line-length = 140
 indent-width = 4
-target-version = "py311"
+target-version = "py310"
 exclude = [
     ".bzr",
     ".direnv",
@@ -196,5 +203,5 @@ reportMissingTypeStubs = false
 reportPrivateImportUsage = false
 reportUndefinedVariable = false
 
-#pythonVersion = "3.8"
+#pythonVersion = "3.10"
 #pythonPlatform = "Linux"

@@ -117,7 +117,8 @@ pip install -e '.[dev]'
 ### Common Tasks
 
 ```bash
-make docs     # Build documentation
+make docs     # Build documentation (Sphinx, 0.1 API)
+cd docs-site && pnpm install && pnpm dev   # Dockit site (0.2 guides and migration)
 make preview  # Build and live preview at http://localhost:8000/
 make test     # Run tests
 make clean    # Clean build artifacts

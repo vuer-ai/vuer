@@ -32,10 +32,10 @@ import asyncio
 import platform
 from typing import AsyncIterator, Optional, Union
 
-from msgpack import packb, unpackb
 from params_proto import EnvVar
 
 from vuer.events import ClientEvent
+from vuer.protocol import PROTOCOL_VERSION, make_encoder, pack_event, unpack_event
 
 
 def get_client_info() -> dict:
@@ -90,6 +90,7 @@ def get_client_info() -> dict:
     # Common fields
     "client": "python",
     "clientVersion": client_version,
+    "protocol": PROTOCOL_VERSION,
     "timezone": tz_name,
     "timezoneOffset": tz_offset,
     # Python-specific fields
@@ -101,17 +102,29 @@ def get_client_info() -> dict:
 
 
 def _default_encoder(obj):
-  """Custom encoder for msgpack to handle numpy types."""
-  try:
-    import numpy as np
+  """msgpack encoder for numpy values in protocol 1 (arrays as lists). Kept for backward compatibility."""
+  return _legacy_encoder(obj)
 
-    if isinstance(obj, np.ndarray):
-      return obj.tolist()
-    if isinstance(obj, (np.integer, np.floating)):
-      return obj.item()
-  except ImportError:
-    pass
-  raise TypeError(f"Cannot serialize object of type {type(obj)}")
+
+_legacy_encoder = make_encoder(binary=False)
+
+
+def build_socket_url(base: str, protocol: Optional[int] = PROTOCOL_VERSION) -> str:
+  """Add the wire-protocol query parameter to a WebSocket URL.
+
+  Mirrors ``buildSocketUrl`` in the TypeScript client.
+
+  :param base: WebSocket URL, e.g. ``ws://localhost:8012``.
+  :param protocol: Protocol version to announce. ``None`` leaves the URL unchanged.
+  """
+  from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+
+  if protocol is None:
+    return base
+  parts = urlsplit(base)
+  query = [(k, v) for k, v in parse_qsl(parts.query, keep_blank_values=True) if k != "protocol"]
+  query.append(("protocol", str(protocol)))
+  return urlunsplit((parts.scheme, parts.netloc, parts.path or "/", urlencode(query), parts.fragment))
 
 
 class AsyncAt:
@@ -162,17 +175,23 @@ class VuerClient:
   uri: str = EnvVar @ "VUER_CLIENT_URI" | "ws://localhost:8012"
   websocket_max_size: int = EnvVar @ "WEBSOCKET_MAX_SIZE" | 2**28
   ssl_verify: bool = EnvVar @ "VUER_SSL_VERIFY" | True
+  token: str = EnvVar @ "VUER_TOKEN" | None  # Access token for servers with auth=True
 
   _ws = None
   _connected = False
+  # Wire protocol of the server, from its SERVER_INFO event. None until it arrives
+  # (old servers do not send it); until then, arrays go out as lists.
+  server_protocol: Optional[int] = None
 
-  def __init__(self, uri: str = None, max_size: int = None, ssl_verify: bool = None, **kwargs):
+  def __init__(self, uri: str = None, max_size: int = None, ssl_verify: bool = None, token: str = None, **kwargs):
     """Initialize the Vuer client.
 
     :param uri: WebSocket URI to connect to (e.g., "ws://localhost:8012")
     :param max_size: Maximum websocket message size in bytes (default 256MB)
     :param ssl_verify: Whether to verify SSL certificates (default True, env: VUER_SSL_VERIFY).
         Set to False for self-signed certs (e.g., ngrok tunnels).
+    :param token: Access token (env: VUER_TOKEN) for a server that runs with
+        ``auth=True``. It is sent as ``Authorization: Bearer <token>``.
     :param kwargs: Additional keyword arguments passed to websockets.connect()
         (e.g., ssl=ssl_context for custom SSL/TLS configuration)
     """
@@ -182,6 +201,8 @@ class VuerClient:
       self.websocket_max_size = max_size
     if ssl_verify is not None:
       self.ssl_verify = ssl_verify
+    if token is not None:
+      self.token = token
 
     if not self.ssl_verify and "ssl" not in kwargs:
       import ssl
@@ -200,11 +221,22 @@ class VuerClient:
     """
     try:
       from websockets.asyncio.client import connect
+
+      header_kwarg = "additional_headers"
     except ImportError:
       from websockets import connect
 
-    self._ws = await connect(self.uri, max_size=self.websocket_max_size, **self._connect_kwargs)
+      header_kwarg = "extra_headers"
+
+    kwargs = dict(self._connect_kwargs)
+    if self.token:
+      headers = dict(kwargs.pop(header_kwarg, None) or {})
+      headers["Authorization"] = f"Bearer {self.token}"
+      kwargs[header_kwarg] = headers
+    url = build_socket_url(self.uri)
+    self._ws = await connect(url, max_size=self.websocket_max_size, **kwargs)
     self._connected = True
+    self.server_protocol = None
 
     # Send INIT event with Python client system info (matches browser's INIT event)
     init_event = ClientEvent(etype="INIT", value=get_client_info())
@@ -262,9 +294,8 @@ class VuerClient:
     if "ts" in event_obj and isinstance(event_obj["ts"], float):
       event_obj["ts"] = int(event_obj["ts"] * 1000)
 
-    event_bytes = packb(
-      event_obj, use_single_float=True, use_bin_type=True, default=_default_encoder
-    )
+    # The server decodes binary arrays from protocol-2 clients.
+    event_bytes = pack_event(event_obj, binary=(self.server_protocol or 1) >= PROTOCOL_VERSION)
     await self._ws.send(event_bytes)
 
   @property
@@ -299,7 +330,9 @@ class VuerClient:
       else:
         msg = await self._ws.recv()
 
-      payload = unpackb(msg, raw=False)
+      payload = unpack_event(msg)
+      if payload.get("etype") == "SERVER_INFO" and isinstance(payload.get("value"), dict):
+        self.server_protocol = payload["value"].get("protocol")
       return ClientEvent(**payload)
 
     except asyncio.TimeoutError:

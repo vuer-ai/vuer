@@ -27,10 +27,13 @@ Shape should be (H, W, C) where C is 1, 3, or 4 channels.
 
 import base64
 from io import BytesIO
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
 import numpy as np
 from PIL import Image
+
+if TYPE_CHECKING:
+    import torch
 
 # Type alias for array-like inputs
 ArrayLike = Union[np.ndarray, "torch.Tensor"]

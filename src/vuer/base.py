@@ -6,9 +6,10 @@ from concurrent.futures import CancelledError
 from functools import partial
 from pathlib import Path
 
-import aiohttp_cors
 from aiohttp import web
 from params_proto import EnvVar
+
+from vuer.auth import DEFAULT_ORIGINS, origin_allowed, parse_origins
 
 
 async def default_handler(request, ws):
@@ -89,7 +90,9 @@ class Server:
   Attributes:
       host: Server hostname. Set to "0.0.0.0" to accept remote connections.
       port: Server port number.
-      cors: Comma-separated list of allowed CORS origins. Use "*" for all.
+      cors: Comma-separated origin allow-list (fnmatch patterns such as
+          ``http://localhost:*``) for CORS and for the WebSocket ``Origin`` check.
+          Use "*" to allow every origin.
       cert: Path to SSL certificate file for HTTPS.
       key: Path to SSL private key file for HTTPS.
       ca_cert: Path to CA certificate for client certificate verification.
@@ -99,7 +102,7 @@ class Server:
 
   host: str = EnvVar @ "VUER_HOST" | "localhost"
   port: int = EnvVar @ "VUER_PORT" | 8012
-  cors: str = EnvVar @ "VUER_CORS" | "*"
+  cors: str = EnvVar @ "VUER_CORS" | DEFAULT_ORIGINS
 
   cert: str = EnvVar @ "VUER_SSL_CERT" | None
   key: str = EnvVar @ "VUER_SSL_KEY" | None
@@ -109,26 +112,63 @@ class Server:
   REQUEST_MAX_SIZE: int = EnvVar @ "REQUEST_MAX_SIZE" | 2**28
 
   def _init_app(self):
-    """Initialize the aiohttp application and CORS context.
+    """Initialize the aiohttp application and CORS handling.
 
     This must be called before using any server methods. Subclasses
     should call this in their __post_init__ method.
 
     Creates:
         self.app: The aiohttp web.Application instance.
-        self.cors_context: The aiohttp_cors setup for CORS handling.
+        self.allowed_origins: The origin allow-list (fnmatch patterns) from ``cors``.
     """
     if hasattr(self, "app"):
       return
-    self.app = web.Application(client_max_size=self.REQUEST_MAX_SIZE)
-    default = aiohttp_cors.ResourceOptions(
-      allow_credentials=True,
-      expose_headers="*",
-      allow_headers="*",
-      allow_methods="*",
-    )
-    cors_config = {k: default for k in self.cors.split(",")}
-    self.cors_context = aiohttp_cors.setup(self.app, defaults=cors_config)
+    self.allowed_origins = parse_origins(self.cors)
+    self.app = web.Application(client_max_size=self.REQUEST_MAX_SIZE, middlewares=[self._cors_middleware])
+    self.app.on_response_prepare.append(self._cors_headers)
+    # kept for code that checks the attribute; CORS is a middleware now.
+    self.cors_context = None
+
+  def origin_allowed(self, request) -> bool:
+    """True if the request's ``Origin`` header is allowed.
+
+    Same-origin requests (the page that this server serves) and requests
+    without an ``Origin`` header (non-browser clients) are always allowed.
+    Other origins must match a pattern in ``cors``, e.g. ``http://localhost:*``.
+    """
+    origin = request.headers.get("Origin")
+    if not origin:
+      return True
+    if origin.rstrip("/").split("://", 1)[-1].lower() == (request.host or "").lower():
+      return True
+    return origin_allowed(origin, self.allowed_origins)
+
+  @web.middleware
+  async def _cors_middleware(self, request, handler):
+    origin = request.headers.get("Origin")
+    allowed = origin and self.origin_allowed(request)
+    if request.method == "OPTIONS" and origin and "Access-Control-Request-Method" in request.headers:
+      if not allowed:
+        raise web.HTTPForbidden(text="Origin not allowed")
+      response = web.Response(status=200)
+      response.headers["Access-Control-Allow-Methods"] = request.headers["Access-Control-Request-Method"]
+      requested = request.headers.get("Access-Control-Request-Headers")
+      if requested:
+        response.headers["Access-Control-Allow-Headers"] = requested
+      # Chrome asks before a public page (vuer.ai) talks to a local server.
+      if request.headers.get("Access-Control-Request-Private-Network") == "true":
+        response.headers["Access-Control-Allow-Private-Network"] = "true"
+      return response
+    return await handler(request)
+
+  async def _cors_headers(self, request, response):
+    """Add CORS headers to every response (streamed ones too) for allowed origins."""
+    origin = request.headers.get("Origin")
+    if origin and self.origin_allowed(request):
+      response.headers["Access-Control-Allow-Origin"] = origin
+      response.headers["Access-Control-Allow-Credentials"] = "true"
+      response.headers["Access-Control-Expose-Headers"] = "*"
+      response.headers.add("Vary", "Origin")
 
   def _add_route(
     self,
@@ -136,8 +176,7 @@ class Server:
     handler: callable,
     method: str = "GET",
   ):
-    route = self.app.router.add_resource(path).add_route(method, handler)
-    self.cors_context.add(route)
+    self.app.router.add_resource(path).add_route(method, handler)
 
   def _socket(self, path: str, handler: callable):
     ws_handler = partial(

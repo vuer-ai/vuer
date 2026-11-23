@@ -1,0 +1,61 @@
+# Packaging
+
+Pull request: vuer-ai/vuer-ts#179.
+
+In 0.0.x every peer of `@vuer-ai/vuer` was `"latest"`. Two apps could then get
+different copies of React or three.js. In 0.1.0 the peers have ranges.
+
+| Peer | Range |
+| --- | --- |
+| `react`, `react-dom` | `^19.0.0` |
+| `@react-three/fiber` | `^9.0.0` |
+| `three` | `>=0.178.0` |
+| `@react-three/drei` | `^10.0.0` |
+| `@react-three/xr` | `^6.0.0` |
+| `@react-three/postprocessing` | `^3.0.0` |
+| `leva` | `^0.10.0` |
+| `zustand` | `^5.0.0` |
+| `jotai` | `^2.13.1 \|\| ^3.0.0` |
+| `immer` | `^10.0.0 \|\| ^11.0.0` |
+| `camera-controls` | `^3.0.0` |
+| `three-stdlib` | `^2.36.0` |
+| `three-mesh-bvh` | `^0.9.0` |
+| `three-gpu-pathtracer` | `^0.0.28` |
+| `react-error-boundary` | `^5.0.0 \|\| ^6.0.0` |
+| `react-reconciler` | `^0.31.0` to `^0.34.0` |
+| `react-use-websocket` | `^4.0.0` |
+| `react-streaming` | `^0.4.0` |
+| `react-gamepads` | `^1.0.0` |
+| `@vuer-ai/react-helmet-async` | `^2.0.0` |
+
+Optional peers: `@types/react`, `@types/react-dom`, and the UI kit of the
+`./workspace` entry (refer to [Theme and UI kit](reference/client-theme.md)).
+
+## Other changes
+
+- `@vuer-ai/dial-types` is `^0.0.1`. The published package has no `workspace:`
+  specs.
+- The repository installs outside the vuer-web-workspace monorepo
+  (`pnpm install && pnpm typecheck && pnpm test && pnpm build`). It has its own
+  `pnpm-lock.yaml`.
+- `pnpm typecheck` has 0 errors in a standalone install.
+
+## In the vuer-web-workspace monorepo
+
+The workspace root resolves two copies of `@types/react`. Add root overrides:
+
+```json file="package.json"
+{
+  "pnpm": {
+    "overrides": {
+      "@types/react": "^19.3.0",
+      "@types/react-dom": "^19.3.0",
+      "@types/three": "^0.187.0"
+    }
+  }
+}
+```
+
+vuer-ts now takes `@vuer-ai/vuer-uikit` and `@vuer-ai/dial-cli` from npm. To
+link the local source, set `link-workspace-packages=true` in the workspace
+`.npmrc`.

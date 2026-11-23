@@ -2,7 +2,7 @@ import asyncio
 import socket as stdlib_socket
 import warnings
 from asyncio import sleep
-from collections import defaultdict, deque
+from collections import defaultdict
 from fnmatch import fnmatch
 from functools import partial
 from pathlib import Path
@@ -13,27 +13,12 @@ from aiohttp.hdrs import UPGRADE
 from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import Response
 from aiohttp.web_ws import WebSocketResponse
-from msgpack import packb, unpackb
-
-
-def _default_encoder(obj):
-  """Custom encoder for msgpack to handle numpy types."""
-  try:
-    import numpy as np
-
-    if isinstance(obj, np.ndarray):
-      return obj.tolist()
-    if isinstance(obj, (np.integer, np.floating)):
-      return obj.item()
-  except ImportError:
-    pass
-  raise TypeError(f"Cannot serialize object of type {type(obj)}")
-
 
 from aiohttp import web
 from params_proto import EnvVar, proto
 from websockets import ConnectionClosedError
 
+from vuer import auth as vuer_auth
 from vuer.base import Server, handle_file_request, websocket_handler
 from vuer.events import (
   INIT,
@@ -45,14 +30,36 @@ from vuer.events import (
   NullEvent,
   Remove,
   ServerEvent,
+  ServerInfo,
   ServerRPC,
   Set,
   Update,
   Upsert,
 )
+from vuer.queues import UPLINK_POLICIES, client_frame_key, make_queue, server_frame_key
+from vuer.protocol import (
+  DEFAULT_ARRAY_LIST_MAX,
+  PROTOCOL_VERSION,
+  make_encoder,
+  pack_event,
+  parse_protocol,
+  resolve_array_protocol,
+  unpack_event,
+)
 from vuer.schemas import Page
 from vuer.types import EventHandler, SocketHandler, Url
 from vuer.workspace import Blob, Workspace, guess_content_type, workspace_from_config
+
+
+def _default_encoder(obj):
+  """msgpack encoder for numpy values in protocol 1 (arrays as lists).
+
+  Kept for backward compatibility. The server uses :mod:`vuer.protocol`.
+  """
+  return _legacy_encoder(obj)
+
+
+_legacy_encoder = make_encoder(binary=False)
 
 
 async def workspace_handler(request, workspace: Workspace):
@@ -297,14 +304,40 @@ def _match_filters(obj: dict, **filters) -> bool:
 
 
 class VuerSession(SceneOps):
-  def __init__(self, vuer: "Vuer", ws_id: int, queue_len=100):
+  def __init__(self, vuer: "Vuer", ws_id: int, queue_len=100, uplink_policy="fifo", downlink_policy="fifo"):
+    """
+    :param queue_len: Maximum length of the uplink and downlink queues.
+    :param uplink_policy: "fifo" (default) or "latest". With "latest", a queued
+        server event that has not been sent yet is replaced by a newer event
+        with the same frame key. See :mod:`vuer.queues`.
+    :param downlink_policy: "fifo" (default) or "latest". With "latest",
+        streaming client events (CAMERA_MOVE, HAND_MOVE, ...) that the session
+        has not read yet are replaced by newer ones with the same etype and key.
+    """
     self.vuer = vuer
     self.CURRENT_WS_ID = ws_id
+    self.uplink_policy = uplink_policy
+    self.downlink_policy = downlink_policy
+    # Wire protocol that the client announced: None for legacy (protocol 1) clients.
+    self.protocol: Optional[int] = None
+    # "viewer" or "controller" when the server runs with auth=True, else None.
+    self.role: Optional[str] = None
 
-    que_maker = partial(deque, maxlen=queue_len)
+    self.downlink_queue: Deque[ClientEvent] = make_queue(downlink_policy, queue_len, key=client_frame_key)
+    self.uplink_queue: Deque[ServerEvent] = make_queue(uplink_policy, queue_len)
 
-    self.downlink_queue: Deque[ClientEvent] = que_maker()
-    self.uplink_queue: Deque[ServerEvent] = que_maker()
+  @property
+  def array_protocol(self) -> str:
+    """How this session sends numpy arrays: ``"binary"`` (protocol 2) or ``"list"``."""
+    return resolve_array_protocol(getattr(self.vuer, "array_protocol", "auto"), self.protocol)
+
+  def pack(self, event_obj) -> bytes:
+    """Pack a serialized event for the wire protocol of this session."""
+    return pack_event(
+      event_obj,
+      binary=self.array_protocol == "binary",
+      array_list_max=getattr(self.vuer, "array_list_max", DEFAULT_ARRAY_LIST_MAX),
+    )
 
   @property
   def socket(self):
@@ -414,9 +447,17 @@ class VuerSession(SceneOps):
 
     return await self.vuer.rpc(self.CURRENT_WS_ID, event, ttl=ttl)
 
-  def send(self, event: ServerEvent) -> None:
+  def send(self, event: ServerEvent, frame_key=None) -> None:
     """
     Sending the event through the uplink queue.
+
+    :param event: The ServerEvent to send.
+    :param frame_key: Optional hashable key for the "latest" uplink policy.
+        A queued event with the same frame key that has not been sent yet is
+        dropped, so the client gets only the newest frame. When omitted, the
+        key comes from :func:`vuer.queues.server_frame_key` (event type plus
+        element keys for SET, UPDATE, UPSERT and ADD). Ignored with the
+        default "fifo" policy.
     """
     assert self.CURRENT_WS_ID is not None, (
       "Websocket session is missing. CURRENT_WS_ID is None."
@@ -429,9 +470,12 @@ class VuerSession(SceneOps):
     # Therefore, convert ts to an integer in milliseconds before sending to the frontend.
     if "ts" in event_obj and isinstance(event_obj["ts"], float):
       event_obj["ts"] = int(event_obj["ts"] * 1000)
-    event_bytes = packb(
-      event_obj, use_single_float=True, use_bin_type=True, default=_default_encoder
-    )
+    event_bytes = self.pack(event_obj)
+
+    if self.uplink_policy == "latest":
+      if frame_key is None:
+        frame_key = server_frame_key(event)
+      return self.uplink_queue.append(event_bytes, frame_key=frame_key)
 
     return self.uplink_queue.append(event_bytes)
 
@@ -585,7 +629,11 @@ class VuerSession(SceneOps):
 
 
 DEFAULT_PORT = 8012
-DEFAULT_CORS = "https://vuer.ai,https://staging.vuer.ai,https://dash.ml,http://localhost:8000,http://127.0.0.1:8000,*"
+# Request storage key for the role that the handshake assigned.
+_ROLE_KEY = web.RequestKey("vuer_role", str) if hasattr(web, "RequestKey") else "vuer_role"
+# Origin allow-list (fnmatch patterns) for CORS and the WebSocket Origin check.
+# It does not end in "*" any more; set VUER_CORS="*" to allow every origin.
+DEFAULT_CORS = vuer_auth.DEFAULT_ORIGINS + ",https://dash.ml"
 DEFAULT_CLIENT_ROOT: Path = Path(__file__).parent / "client_build"
 
 
@@ -641,9 +689,22 @@ class Vuer(Server):
 
   free_port: bool = False
   queue_len: int = 100
+  # "fifo" (default) or "latest": latest-frame-wins for slow clients. See vuer.queues.
+  uplink_policy: str = EnvVar @ "VUER_UPLINK_POLICY" | "fifo"
+  downlink_policy: str = EnvVar @ "VUER_DOWNLINK_POLICY" | "fifo"
+  # Wire format of numpy arrays. "auto": binary arrays (protocol 2) for clients that
+  # announce protocol 2, lists for legacy clients. "binary": always binary arrays.
+  # "list": always lists (compatibility flag for old clients and components).
+  array_protocol: str = EnvVar @ "VUER_ARRAY_PROTOCOL" | "auto"
+  array_list_max: int = DEFAULT_ARRAY_LIST_MAX  # arrays with at most this many elements stay lists
   queries: Dict = None  # URL query parameters to pass to client
   client_root: Path = DEFAULT_CLIENT_ROOT  # Path to client build directory
   verbose: bool = False  # Print server settings on startup
+
+  # Access control. With auth=True every WebSocket needs a token (see vuer.auth).
+  auth: bool = EnvVar @ "VUER_AUTH" | False
+  auth_secret: str = None  # Default: VUER_AUTH_SECRET, else ~/.local/share/vuer/auth-secret
+  viewer_events: tuple = vuer_auth.VIEWER_EVENTS  # Events given to handlers from viewers
 
   def _proxy(self, ws_id) -> "VuerSession":
     """This is a proxy object that allows us to use the @ notation
@@ -653,12 +714,22 @@ class Vuer(Server):
     :return: A proxy object.
     """
     # todo: check if shallow copy suffices
-    proxy = VuerSession(self, ws_id, queue_len=self.queue_len)
+    proxy = VuerSession(
+      self,
+      ws_id,
+      queue_len=self.queue_len,
+      uplink_policy=self.uplink_policy,
+      downlink_policy=self.downlink_policy,
+    )
 
     return proxy
 
   def __post_init__(self):
     """Initialize Vuer after params-proto sets up fields."""
+
+    for name in ("uplink_policy", "downlink_policy"):
+      if getattr(self, name) not in UPLINK_POLICIES:
+        raise ValueError(f"{name} must be one of {UPLINK_POLICIES}, not {getattr(self, name)!r}")
 
     # Handle deprecated static_root parameter
     if self.static_root is not None:
@@ -698,9 +769,18 @@ class Vuer(Server):
     # Initialize base Server (app, cors_context)
     self._init_app()
 
+    self._token_ledger = None
+    if self.auth:
+      secret = self.auth_secret or vuer_auth.load_secret()
+      self._token_ledger = vuer_auth.TokenLedger(secret)
+      if "*" in self.allowed_origins:
+        warnings.warn("VUER_CORS allows every origin ('*') while auth is on.", stacklevel=2)
+
     self.handlers = defaultdict(dict)
     self.page = Page()
     self.ws: Dict[str, WebSocketResponse] = {}
+    self.sessions: Dict[str, VuerSession] = {}
+    resolve_array_protocol(self.array_protocol, None)  # validate the option early
     # List of spawn handlers with their filters: [{"fn": handler, "filters": {...}}, ...]
     self.spawn_handlers: List[Dict] = []
     self.spawned_coroutines = []
@@ -791,19 +871,21 @@ class Vuer(Server):
 
     """
     # todo: need to implement msgpack encoding, interface
-    bytes = request.bytes()
+    if self.auth and not self._is_controller_request(request):
+      return Response(status=401, text="A controller token is required.")
+    bytes = await request.read()
     session_id = request.rel_url.query.get("sid", None)
     if session_id is None:
       return Response(status=400)
     elif session_id in self.ws:
-      self.send(ws_id=session_id, event_bytes=bytes)
+      await self.send(ws_id=session_id, event_bytes=bytes)
 
       return Response(status=200)
     elif session_id == "*":
       # print broadcast
       for ws_id in self.ws:
         try:
-          self.send(ws_id=ws_id, event_bytes=bytes)
+          await self.send(ws_id=ws_id, event_bytes=bytes)
         except Exception as e:
           print("Exception: ", e)
           return Response(status=502, text=str(e))
@@ -1035,9 +1117,12 @@ class Vuer(Server):
       # Therefore, convert ts to an integer in milliseconds before sending to the frontend.
       if "ts" in event_obj and isinstance(event_obj["ts"], float):
         event_obj["ts"] = int(event_obj["ts"] * 1000)
-      event_bytes = packb(
-        event_obj, use_single_float=True, use_bin_type=True, default=_default_encoder
-      )
+      session = self.sessions.get(ws_id)
+      if session is not None:
+        event_bytes = session.pack(event_obj)
+      else:
+        binary = resolve_array_protocol(self.array_protocol, None) == "binary"
+        event_bytes = pack_event(event_obj, binary=binary, array_list_max=self.array_list_max)
     else:
       assert event is None, "Can not pass in both at the same time."
 
@@ -1080,6 +1165,15 @@ class Vuer(Server):
 
     return response
 
+  def _server_info(self, session: VuerSession) -> dict:
+    """Value of the SERVER_INFO event that the server sends after the handshake."""
+    return {
+      "protocol": PROTOCOL_VERSION,
+      "arrayProtocol": session.array_protocol,
+      # "viewer" or "controller" when the server runs with auth=True, else None.
+      "role": session.role,
+    }
+
   async def rpc_stream(self, ws_id, event: ServerEvent = None, event_bytes=None):
     """This RPC offers multiple responses."""
     raise NotImplementedError("This is not implemented yet.")
@@ -1089,6 +1183,7 @@ class Vuer(Server):
     self._cancel_tasks(ws_id)
     # uplink is moved to the proxy object. Cleaned by garbage collection.
     # self.uplink_queue.pop(ws_id)
+    self.sessions.pop(ws_id, None)
     try:
       ws = self.ws.pop(ws_id)
       await ws.close()
@@ -1140,6 +1235,11 @@ class Vuer(Server):
 
     print(f"websocket is connected. id:{ws_id}")
     vuer_proxy = self._proxy(ws_id)
+    # The client announces its wire protocol in the handshake (?protocol=2) and in INIT.
+    vuer_proxy.protocol = parse_protocol(request.rel_url.query.get("protocol"))
+    vuer_proxy.role = request.get(_ROLE_KEY)
+    self.sessions[ws_id] = vuer_proxy
+    vuer_proxy @ ServerInfo(self._server_info(vuer_proxy))
 
     generator = self.bound_fn(vuer_proxy)
 
@@ -1197,14 +1297,26 @@ class Vuer(Server):
 
     try:
       async for msg in ws:
-        payload = unpackb(msg.data, raw=False)
+        payload = unpack_event(msg.data)
         # todo: we want to enforce the payload to contain the timestamp.
         clientEvent = ClientEvent._deserialize(**payload)
+
+        # A viewer sees the scene; the app does not get its events (except INIT
+        # and RPC responses).
+        if vuer_proxy.role == "viewer" and not vuer_auth.viewer_may_send(clientEvent.etype, self.viewer_events):
+          continue
 
         # Check for INIT event to spawn matching handler
         if not init_received and clientEvent.etype == "INIT":
           init_received = True
           client_info = clientEvent.value if isinstance(clientEvent.value, dict) else {}
+          announced = parse_protocol(client_info.get("protocol"))
+          if announced is not None and announced != vuer_proxy.protocol:
+            vuer_proxy.protocol = announced
+            vuer_proxy @ ServerInfo(self._server_info(vuer_proxy))
+          if vuer_proxy.role is not None:
+            # lets @app.spawn(role="controller") select sessions by role.
+            client_info = {**client_info, "role": vuer_proxy.role}
           await spawn_matching_handler(client_info)
 
         if hasattr(generator, "__anext__"):
@@ -1323,7 +1435,37 @@ class Vuer(Server):
     if "websocket" != headers.get(UPGRADE, "").lower().strip():
       return await handle_file_request(request, self.client_root, filename="index.html")
     else:
+      # Check the origin and the token before the upgrade (HTTP 403 / 401).
+      if not self.origin_allowed(request):
+        raise web.HTTPForbidden(text="Origin not allowed")
+      if self.auth:
+        token = vuer_auth.token_from_request(request)
+        role = token and self._token_ledger.redeem(token)
+        if not role:
+          raise web.HTTPUnauthorized(text="A valid access token is required.")
+        request[_ROLE_KEY] = role
       return await websocket_handler(request, self.downlink)
+
+  def _is_controller_request(self, request) -> bool:
+    token = vuer_auth.token_from_request(request)
+    payload = token and vuer_auth.verify_token(self._token_ledger.secret, token)
+    return bool(payload) and payload["role"] == "controller"
+
+  def issue_token(self, role: str = "viewer", ttl: float = vuer_auth.DEFAULT_TTL, uses: Optional[int] = 1) -> str:
+    """Issue an access token for this server (needs ``auth=True``).
+
+    :param role: ``"viewer"`` (sees the scene) or ``"controller"`` (full access).
+    :param ttl: Lifetime in seconds.
+    :param uses: Number of sessions that the token can open (1 to 50), or
+        ``None`` for any number until it expires.
+    """
+    if self._token_ledger is None:
+      raise RuntimeError("issue_token() needs Vuer(auth=True).")
+    return vuer_auth.issue_token(self._token_ledger.secret, role=role, ttl=ttl, uses=uses)
+
+  def share_url(self, token: str, host: str = "localhost") -> str:
+    """Client URL that carries ``token`` in the fragment (not sent to servers or logs)."""
+    return f"{self.get_url(host)}#token={token}"
 
   def add_route(self, path, fn: Callable, method="GET", content_type="text/html"):
     if self.verbose:
@@ -1466,6 +1608,16 @@ class Vuer(Server):
 {workspace_display}
 {DIM}->{RESET} {base_url}/workspace
 {webrtc_display}""")
+
+    if self.auth:
+      # A one-time controller link for the person who starts the server.
+      token = self.issue_token("controller", ttl=600, uses=1)
+      print(f"""{CYAN}Access:{RESET}  auth is on. One-time controller link (10 minutes):
+
+ {DIM}·{RESET} {self.share_url(token)}
+
+{DIM}   More links: vuer token --role viewer --uses 5 | --reusable{RESET}
+""")
 
     Server.start(self)
 

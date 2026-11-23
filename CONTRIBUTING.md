@@ -52,6 +52,15 @@ Run tests:
 make test
 ```
 
+CI (`.github/workflows/check.yml`) runs only the cheap checks on pull requests:
+`ruff check src/vuer --select E9,F63,F7,F82` and `pytest src specs` on Python 3.10 and 3.12.
+Before you open a pull request, run the checks that CI does not run (docs build and a
+server smoke test that serves the bundled `client_build`), then open the printed URL in a browser:
+
+```bash
+scripts/test-local.sh
+```
+
 ### Code Quality
 
 Format code with ruff:

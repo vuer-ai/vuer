@@ -10,6 +10,11 @@ VR and AR ready, and can be run on mobile devices. To get started, just run:
 pip install 'vuer=={VERSION}'
 ```
 
+```{admonition} vuer 0.2 documentation (Dockit)
+:class: note
+The 0.2 changes (wire protocol 2, access tokens and roles, streaming queues, library mode, theme, migration guide) are documented on the new self-hosted Dockit site in [`docs-site/`](https://github.com/vuer-ai/vuer/tree/main/docs-site). This Sphinx site stays in place for the 0.1 API.
+```
+
 ```{admonition} Running Vuer from the Browser
 :class: tip
 Vuer can run directly in the browser via PyScript and Pyodide. Server dependencies are auto-excluded on Emscripten:
@@ -112,6 +117,7 @@ For more details:
    Session API <guides/session_apis.md>
    Static Files & Hot Loading <guides/static_files.md>
    Python Client Connection <guides/client_connection.md>
+   Wire Protocol & Binary Arrays <guides/wire_protocol.md>
    Using Vuer with Claude Code <guides/claude_skill.md>
    CLI Plugin System <guides/cli.md>
 

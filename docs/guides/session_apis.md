@@ -394,6 +394,57 @@ for i in range(10):
     session.upsert @ Box(key=f"box-{i}", position=[i, 0, 0])
 ```
 
+### Streaming to Slow Clients: Latest Frame Wins
+
+Each session buffers outgoing events in a queue (`queue_len`, default 100). By
+default (`uplink_policy="fifo"`) every event is sent in order. When a client is
+slower than your stream (a VR headset on Wi-Fi, a remote browser), the queue
+fills with stale frames and the client lags further and further behind.
+
+Set `uplink_policy="latest"` to keep only the newest frame:
+
+```python
+app = Vuer(uplink_policy="latest")  # or: export VUER_UPLINK_POLICY=latest
+
+@app.spawn(start=True)
+async def main(session):
+    session.set @ DefaultScene(Box(key="robot"))
+    while True:
+        # If the client has not received the previous frame yet, this one replaces it.
+        session.upsert @ Box(key="robot", position=get_position())
+        await sleep(1 / 60)
+```
+
+With the "latest" policy, an event that has not been sent yet is dropped when a
+newer event with the same *frame key* arrives. The newer event goes to the end
+of the queue, so the order relative to other events stays correct.
+
+| Event | Default frame key |
+| --- | --- |
+| `Set` | one key for all `Set` events: a newer scene replaces an unsent older one |
+| `Update`, `Upsert`, `Add` | event type + `to` + the keys of the elements |
+| `Remove`, RPCs, custom events | none: never dropped |
+
+Pass an explicit key to coalesce other events, for example one key per sensor:
+
+```python
+session.send(Upsert(PointCloud(key="lidar", vertices=v)), frame_key="lidar")
+```
+
+```{admonition} Send complete frames
+:class: warning
+A newer `Update` or `Upsert` replaces the queued one completely. When you use
+the "latest" policy, send the full state of a streamed element in each frame,
+not a different property in each event.
+```
+
+`downlink_policy="latest"` (`VUER_DOWNLINK_POLICY`) does the same for client
+events that your code reads from `session.downlink_queue` (`session.popleft()`,
+`session.stream()`): streaming events such as `CAMERA_MOVE`, `HAND_MOVE`,
+`CONTROLLER_MOVE`, `BODY_MOVE` and `HEAD_MOVE` keep only the newest event for
+each event type and key. Event handlers (`@app.add_handler`) still receive every
+event.
+
 ## Summary
 
 **Decision Tree:**
